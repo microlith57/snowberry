@@ -78,7 +78,11 @@ namespace Snowberry.Editor {
         }
 
         public override bool Equals(object obj) {
-            return obj != null && obj is EntitySelection s && s.Entity.Equals(Entity) && s.Selections.All(it => Selections.Any(x => x.Index == it.Index));
+            return obj is EntitySelection s && s.Entity.Equals(Entity) && s.Selections.All(it => Selections.Any(x => x.Index == it.Index));
+        }
+
+        public override int GetHashCode() {
+            return Entity.GetHashCode() ^ Selections.GetHashCode();
         }
     }
 }
