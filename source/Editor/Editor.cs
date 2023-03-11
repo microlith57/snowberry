@@ -149,6 +149,8 @@ namespace Snowberry.Editor {
             SelectedRoom = null;
             SelectedFillerIndex = -1;
             Instance = this;
+
+            SaveData.InitializeDebugMode();
         }
 
         internal static void Open(MapData data) {
