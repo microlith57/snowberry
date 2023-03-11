@@ -139,12 +139,16 @@ namespace Snowberry.Editor.Tools {
 
         private void AddStylegroundInfo(UIElement panel) {
             panel.Clear();
-            var styleground = Stylegrounds[SelectedButton()];
-            panel.Add(UIPluginOptionList.StringOption("Only In", styleground.OnlyIn, onChange: null));
-            panel.AddBelow(UIPluginOptionList.StringOption("Not In", styleground.ExcludeFrom, onChange: null));
-            panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, onChange: null));
-            panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, onChange: null));
-            panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, onChange: null));
+            var selected = SelectedButton();
+            // might not have any stylegrounds
+            if(selected != null && Stylegrounds.ContainsKey(selected)){
+                var styleground = Stylegrounds[selected];
+                panel.Add(UIPluginOptionList.StringOption("Only In", styleground.OnlyIn, onChange: null));
+                panel.AddBelow(UIPluginOptionList.StringOption("Not In", styleground.ExcludeFrom, onChange: null));
+                panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, onChange: null));
+                panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, onChange: null));
+                panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, onChange: null));
+            }
         }
 
         private void MoveStyleground(int by) {
