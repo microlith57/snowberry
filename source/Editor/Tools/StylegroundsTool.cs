@@ -143,11 +143,12 @@ namespace Snowberry.Editor.Tools {
             // might not have any stylegrounds
             if(selected != null && Stylegrounds.ContainsKey(selected)){
                 var styleground = Stylegrounds[selected];
+                var offset = Vector2.UnitY * 4;
                 panel.Add(UIPluginOptionList.StringOption("Only In", styleground.OnlyIn, onChange: null));
-                panel.AddBelow(UIPluginOptionList.StringOption("Not In", styleground.ExcludeFrom, onChange: null));
-                panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, onChange: null));
-                panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, onChange: null));
-                panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, onChange: null));
+                panel.AddBelow(UIPluginOptionList.StringOption("Not In", styleground.ExcludeFrom, onChange: null), offset);
+                panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, onChange: null), offset);
+                panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, onChange: null), offset);
+                panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, onChange: null), offset);
             }
         }
 
