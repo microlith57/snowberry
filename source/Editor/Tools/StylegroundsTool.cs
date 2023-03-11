@@ -149,6 +149,9 @@ namespace Snowberry.Editor.Tools {
                 panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, onChange: null), offset);
                 panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, onChange: null), offset);
                 panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, onChange: null), offset);
+
+                UIPluginOptionList options = new UIPluginOptionList(styleground);
+                panel.AddBelow(options, offset * 2);
             }
         }
 
