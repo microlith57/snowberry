@@ -52,7 +52,7 @@ namespace Snowberry.Editor.UI.Menus {
                     }
                 },
             };
-            
+
             load = new UIButton(mainmenuload, Fonts.Regular, 5, 4) {
                 OnPress = () => {
                     if (state == States.Load) {
@@ -66,7 +66,7 @@ namespace Snowberry.Editor.UI.Menus {
                     }
                 },
             };
-            
+
             exit = new UIButton(Dialog.Clean("SNOWBERRY_MAINMENU_EXIT"), Fonts.Regular, 10, 4) {
                 FG = Util.Colors.White,
                 BG = Util.Colors.Red,
@@ -116,13 +116,21 @@ namespace Snowberry.Editor.UI.Menus {
             switch (state) {
                 case States.Exiting:
                     fade = Calc.Approach(fade, 1f, Engine.DeltaTime * 2f);
-                    if (fade == 1f) {
+                    if (Math.Abs(fade - 1f) < 0.05) {
                         if (SaveData.Instance == null) {
                             SaveData.InitializeDebugMode();
                             SaveData.Instance.CurrentSession_Safe = new Session(AreaKey.Default);
                         }
                         Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
                     }
+                    break;
+
+                case States.Create:
+                    fade = Calc.Approach(fade, 1f, Engine.DeltaTime * 2f);
+                    if (Math.Abs(fade - 1f) < 0.05) {
+                        Editor.OpenNew();
+                    }
+
                     break;
 
                 default:
