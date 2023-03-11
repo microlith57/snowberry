@@ -149,7 +149,7 @@ namespace Snowberry.Editor.UI {
         }
 
         public bool CanClickThrough() {
-            return !HoveredChildProperty(k => k.GrabsScroll, false);
+            return !HoveredChildProperty(k => k.GrabsClick, false);
         }
 
         public string HoveredTooltip() {
