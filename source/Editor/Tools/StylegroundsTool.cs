@@ -44,7 +44,10 @@ namespace Snowberry.Editor.Tools {
                 int copy = i;
                 UIButton element = new UIButton(styleground.Title(), Fonts.Regular, 4, 2) {
                     Position = new Vector2(10, i * 20 + 30),
-                    OnPress = () => { SelectedStyleground = copy; }
+                    OnPress = () => {
+                        SelectedStyleground = copy;
+                        AddStylegroundInfo(panel.NestedChildWithTag<UIElement>("stylegrounds_info"));
+                    }
                 };
                 stylegrounds.Add(element);
                 StylegroundButtons.Add(element);
@@ -89,7 +92,9 @@ namespace Snowberry.Editor.Tools {
             optionsPanel.AddRight(Add = new UIButton("+ \uF036", Fonts.Regular, 4, 4) {
                 // add new styleground
                 OnPress = () => {
-                    Editor.Instance.ToolPanel.Add(new UIDropdown(Fonts.Regular, PluginInfo.Stylegrounds.Keys.Select(k => new UIDropdown.DropdownEntry(k, () => { }) {
+                    Editor.Instance.ToolPanel.Add(new UIDropdown(Fonts.Regular, PluginInfo.Stylegrounds.Select(k => new UIDropdown.DropdownEntry(k.Key, () => {
+                        // ...
+                    }) {
                         BG = BothSelectedBtnBg,
                         HoveredBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.25f),
                         PressedBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.5f)
@@ -144,11 +149,11 @@ namespace Snowberry.Editor.Tools {
             if(selected != null && Stylegrounds.ContainsKey(selected)){
                 var styleground = Stylegrounds[selected];
                 var offset = Vector2.UnitY * 4;
-                panel.Add(UIPluginOptionList.StringOption("Only In", styleground.OnlyIn, onChange: null));
-                panel.AddBelow(UIPluginOptionList.StringOption("Not In", styleground.ExcludeFrom, onChange: null), offset);
-                panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, onChange: null), offset);
-                panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, onChange: null), offset);
-                panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, onChange: null), offset);
+                panel.Add(UIPluginOptionList.StringOption("Only In", styleground.OnlyIn, s => styleground.OnlyIn = s));
+                panel.AddBelow(UIPluginOptionList.StringOption("Not In", styleground.ExcludeFrom, s => styleground.ExcludeFrom = s), offset);
+                panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, s => styleground.Flag = s), offset);
+                panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, s => styleground.NotFlag = s), offset);
+                panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, s => styleground.ForceFlag = s), offset);
 
                 panel.AddBelow(new UIPluginOptionList(styleground), offset * 2);
             }
