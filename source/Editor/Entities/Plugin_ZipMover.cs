@@ -57,67 +57,83 @@ namespace Snowberry.Editor.Entities {
 
             cog.DrawCentered(end);
 
-            // Draw black background
-            if (outline)
-                Draw.Rect(X - 1, Y - 1, Width + 2, Height + 2, Color.Black);
-            else
-                Draw.Rect(X + 1, Y + 1, Width - 2, Height - 2, Color.Black);
+            drawBlock(Nodes[0], 0.15f);
+            drawBlock(Position, 1);
 
-            // Draw inner cogs
-            var innerCogs = GFX.Game.GetAtlasSubtextures(innercog);
-            int fg = 1;
-            float rotation = 0;
-            MTexture temp = new MTexture();
-            for (int y = 4; y <= Height - 4f; y += 8) {
-                int odd = fg;
-                for (int x = 4; x <= Width - 4f; x += 8) {
-                    int index = (int)((rotation / ((float)Math.PI / 2f) % 1f) * innerCogs.Count);
-                    MTexture iCog = innerCogs[index];
-                    Rectangle bounds = new Rectangle(0, 0, iCog.Width, iCog.Height);
-                    Vector2 innerbounds = Vector2.Zero;
-                    if (x <= 4) {
-                        innerbounds.X = 2f;
-                        bounds.X = 2;
-                        bounds.Width -= 2;
-                    } else if (x >= Width - 4f) {
-                        innerbounds.X = -2f;
-                        bounds.Width -= 2;
+            void drawBlock(Vector2 position, float opacity){
+                // Draw black background
+                if(outline)
+                    Draw.Rect(position.X - 1, position.Y - 1, Width + 2, Height + 2, Color.Black * opacity);
+                else
+                    Draw.Rect(position.X + 1, position.Y + 1, Width - 2, Height - 2, Color.Black * opacity);
+
+                // Draw inner cogs
+                var innerCogs = GFX.Game.GetAtlasSubtextures(innercog);
+                int fg = 1;
+                float rotation = 0;
+                MTexture temp = new MTexture();
+                for(int y = 4; y <= Height - 4f; y += 8){
+                    int odd = fg;
+                    for(int x = 4; x <= Width - 4f; x += 8){
+                        int index = (int)((rotation / ((float)Math.PI / 2f) % 1f) * innerCogs.Count);
+                        MTexture iCog = innerCogs[index];
+                        Rectangle bounds = new Rectangle(0, 0, iCog.Width, iCog.Height);
+                        Vector2 innerbounds = Vector2.Zero;
+                        if(x <= 4){
+                            innerbounds.X = 2f;
+                            bounds.X = 2;
+                            bounds.Width -= 2;
+                        } else if(x >= Width - 4f){
+                            innerbounds.X = -2f;
+                            bounds.Width -= 2;
+                        }
+
+                        if(y <= 4){
+                            innerbounds.Y = 2f;
+                            bounds.Y = 2;
+                            bounds.Height -= 2;
+                        } else if(y >= Height - 4f){
+                            innerbounds.Y = -2f;
+                            bounds.Height -= 2;
+                        }
+
+                        iCog = iCog.GetSubtexture(bounds.X, bounds.Y, bounds.Width, bounds.Height, temp);
+                        iCog.DrawCentered(position + new Vector2(x, y) + innerbounds, Color.White * ((fg < 0) ? 0.5f : 1f) * opacity);
+                        fg = -fg;
+                        rotation += (float)Math.PI / 3f;
                     }
 
-                    if (y <= 4) {
-                        innerbounds.Y = 2f;
-                        bounds.Y = 2;
-                        bounds.Height -= 2;
-                    } else if (y >= Height - 4f) {
-                        innerbounds.Y = -2f;
-                        bounds.Height -= 2;
+                    if(odd == fg){
+                        fg = -fg;
                     }
-
-                    iCog = iCog.GetSubtexture(bounds.X, bounds.Y, bounds.Width, bounds.Height, temp);
-                    iCog.DrawCentered(Position + new Vector2(x, y) + innerbounds, Color.White * ((fg < 0) ? 0.5f : 1f));
-                    fg = -fg;
-                    rotation += (float)Math.PI / 3f;
                 }
 
-                if (odd == fg) {
-                    fg = -fg;
+                // Draw box
+                int w = Width / 8;
+                int h = Height / 8;
+                for(int x = 0; x < w; x++){
+                    for(int y = 0; y < h; y++){
+                        int tx = x == 0 ? 0 : (x == w - 1 ? 16 : 8);
+                        int ty = y == 0 ? 0 : (y == h - 1 ? 16 : 8);
+                        if(tx != 8 || ty != 8)
+                            block.GetSubtexture(tx, ty, 8, 8).Draw(position + new Vector2(x * 8, y * 8));
+                    }
                 }
+
+                // Draw lights
+                light.DrawJustified(position + Vector2.UnitX * Width / 2f, new Vector2(0.5f, 0.0f));
+            }
+        }
+
+        protected override Rectangle[] Select() {
+            if (Nodes.Length != 0) {
+                Vector2 node = Nodes[0];
+                return new[] {
+                    Bounds, new Rectangle((int)node.X, (int)node.Y, Width, Height)
+                };
             }
 
-            // Draw box
-            int w = Width / 8;
-            int h = Height / 8;
-            for (int x = 0; x < w; x++) {
-                for (int y = 0; y < h; y++) {
-                    int tx = x == 0 ? 0 : (x == w - 1 ? 16 : 8);
-                    int ty = y == 0 ? 0 : (y == h - 1 ? 16 : 8);
-                    if (tx != 8 || ty != 8)
-                        block.GetSubtexture(tx, ty, 8, 8).Draw(Position + new Vector2(x * 8, y * 8));
-                }
-            }
-
-            // Draw lights
-            light.DrawJustified(Position + Vector2.UnitX * Width / 2f, new Vector2(0.5f, 0.0f));
+            return new[] { Bounds };
         }
 
         public static void AddPlacements() {
