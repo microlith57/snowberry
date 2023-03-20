@@ -93,7 +93,19 @@ namespace Snowberry.Editor.Tools {
                 // add new styleground
                 OnPress = () => {
                     Editor.Instance.ToolPanel.Add(new UIDropdown(Fonts.Regular, PluginInfo.Stylegrounds.Select(k => new UIDropdown.DropdownEntry(k.Key, () => {
-                        Fgs().Add(k.Value.Instantiate<Styleground>());
+                        var newSg = k.Value.Instantiate<Styleground>();
+                        var selected = SelectedButton();
+                        if (selected == null) {
+                            Bgs().Add(newSg);
+                        } else {
+                            var style = Stylegrounds[selected];
+                            if (IsFg(style)) {
+                                Fgs().Insert(SelectedStyleground, newSg);
+                            } else {
+                                Bgs().Insert(SelectedStyleground - Fgs().Count, newSg);
+                            }
+                        }
+
                         RefreshPanel();
                     }) {
                         BG = BothSelectedBtnBg,
