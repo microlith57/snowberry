@@ -101,14 +101,14 @@ namespace Snowberry.Editor {
             Room?.MarkTrackedEntityDirty(this);
         }
 
-        public void SetWidth(int width) {
+        public virtual void SetWidth(int width) {
             Width = width;
             updateSelection = true;
             Room?.MarkTrackedEntityDirty(this);
         }
 
-        public void SetHeight(int heigth) {
-            Height = heigth;
+        public virtual void SetHeight(int height) {
+            Height = height;
             updateSelection = true;
             Room?.MarkTrackedEntityDirty(this);
         }
