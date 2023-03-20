@@ -93,7 +93,8 @@ namespace Snowberry.Editor.Tools {
                 // add new styleground
                 OnPress = () => {
                     Editor.Instance.ToolPanel.Add(new UIDropdown(Fonts.Regular, PluginInfo.Stylegrounds.Select(k => new UIDropdown.DropdownEntry(k.Key, () => {
-                        // ...
+                        Fgs().Add(k.Value.Instantiate<Styleground>());
+                        RefreshPanel();
                     }) {
                         BG = BothSelectedBtnBg,
                         HoveredBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.25f),
@@ -165,13 +166,27 @@ namespace Snowberry.Editor.Tools {
                 var style = Stylegrounds[selected];
                 if (IsFg(style)) {
                     int indx = Fgs().IndexOf(style);
-                    if (indx + by < 0 || indx + by >= Fgs().Count)
+                    if (indx + by < 0)
                         return;
+                    if (indx + by >= Fgs().Count) {
+                        Fgs().Remove(style);
+                        Bgs().Insert(0, style);
+                        RefreshPanel();
+                        return;
+                    }
+
                     Fgs().Remove(style);
                     Fgs().Insert(indx + by, style);
                 } else {
                     int indx = Bgs().IndexOf(style);
-                    if (indx + by < 0 || indx + by >= Bgs().Count)
+                    if (indx + by < 0) {
+                        Bgs().Remove(style);
+                        Fgs().Add(style);
+                        RefreshPanel();
+                        return;
+                    }
+
+                    if (indx + by >= Bgs().Count)
                         return;
                     Bgs().Remove(style);
                     Bgs().Insert(indx + by, style);
@@ -204,13 +219,13 @@ namespace Snowberry.Editor.Tools {
 
             if (SelectedButton() != null) {
                 var styleground = Stylegrounds[SelectedButton()];
-                if (IsFg(styleground) ? Fgs().IndexOf(styleground) > 0 : Bgs().IndexOf(styleground) > 0) {
+                if (!IsFg(styleground) || Fgs().IndexOf(styleground) > 0 ) {
                     MoveUp.ResetFgColors();
                 } else {
                     MoveUp.FG = MoveUp.HoveredFG = MoveUp.PressedFG = Color.DarkSlateGray;
                 }
 
-                if (IsFg(styleground) ? Fgs().IndexOf(styleground) < Fgs().Count - 1 : Bgs().IndexOf(styleground) < Bgs().Count - 1) {
+                if (IsFg(styleground) || Bgs().IndexOf(styleground) < Bgs().Count - 1) {
                     MoveDown.ResetFgColors();
                 } else {
                     MoveDown.FG = MoveDown.HoveredFG = MoveDown.PressedFG = Color.DarkSlateGray;
