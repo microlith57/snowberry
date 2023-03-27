@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Celeste;
 using System.Linq;
 
-namespace Snowberry.Editor.UI.Menus; 
+namespace Snowberry.Editor.UI.Menus;
 
 public class UILevelSelector : UIElement {
     public float LevelRibbonAnim;

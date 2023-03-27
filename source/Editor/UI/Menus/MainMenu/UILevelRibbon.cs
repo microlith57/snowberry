@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using Microsoft.Xna.Framework.Input;
 
-namespace Snowberry.Editor.UI.Menus; 
+namespace Snowberry.Editor.UI.Menus;
 
 public class UILevelRibbon : UIRibbon {
     private readonly UILevelSelector selector;
@@ -109,7 +109,7 @@ public class UILevelRibbon : UIRibbon {
         listLerp = Calc.Approach(listLerp, (selector.LevelRibbonAnim < n).Bit(), Engine.DeltaTime * 4f);
 
         if (Visible) {
-            if (!Editor.Message.Shown && MInput.Mouse.PressedLeftButton && hover) {
+            if (!Editor.Message.Shown && hover && ConsumeLeftClick()) {
                 if (dropdown) {
                     if (!HoveringChildren()) {
                         openLerp = open.Bit();
@@ -120,7 +120,7 @@ public class UILevelRibbon : UIRibbon {
                     pressing = true;
                 }
             }
-            if (MInput.Mouse.ReleasedLeftButton && pressing || Editor.Message.Shown) {
+            if (Editor.Message.Shown || pressing && ConsumeLeftClick(pressed: false, released: true)) {
                 pressing = false;
                 if (hover) {
                     if (MInput.Keyboard.CurrentState[Keys.LeftControl] == KeyState.Down || MInput.Keyboard.CurrentState[Keys.RightControl] == KeyState.Down)
