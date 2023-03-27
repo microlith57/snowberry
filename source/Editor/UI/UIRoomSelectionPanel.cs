@@ -3,9 +3,8 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.UI.Menus;
 using Snowberry.Editor.Tools;
-using System;
 using System.Text.RegularExpressions;
-using static Snowberry.Editor.UI.UIEntitySelection;
+using WindController = Celeste.WindController;
 
 namespace Snowberry.Editor.UI {
     class UIRoomSelectionPanel : UIElement {
@@ -25,6 +24,7 @@ namespace Snowberry.Editor.UI {
             Clear();
             UIElement label;
 
+            var offset = new Vector2(4, 3);
             if (Editor.SelectedRoom == null) {
                 if (!RoomTool.PendingRoom.HasValue) {
                     if (Editor.SelectedFillerIndex != -1) {
@@ -64,7 +64,7 @@ namespace Snowberry.Editor.UI {
                     UILabel newNameInvalid, newNameTaken;
                     UIButton newRoom;
 
-                    AddBelow(UIPluginOptionList.StringOption("name", newName, text => newName = text), new Vector2(4, 3));
+                    AddBelow(UIPluginOptionList.StringOption("name", newName, text => newName = text), offset);
 
                     AddBelow(newRoom = new UIButton("create room", Fonts.Regular, 2, 2) {
                         Position = new Vector2(4, 4),
@@ -124,7 +124,7 @@ namespace Snowberry.Editor.UI {
             UILabel nameInvalid, nameTaken;
             UIButton updateName;
 
-            AddBelow(UIPluginOptionList.StringOption("name", room.Name, text => name = text), new Vector2(4, 3));
+            AddBelow(UIPluginOptionList.StringOption("name", room.Name, text => name = text), offset);
 
             AddBelow(updateName = new UIButton("update name", Fonts.Regular, 2, 2) {
                 Position = new Vector2(4, 4),
@@ -151,33 +151,31 @@ namespace Snowberry.Editor.UI {
 
             AddBelow(new UILabel("music options :"), new Vector2(12, 12));
 
-            AddBelow(UIPluginOptionList.StringOption("music", room.Music, text => room.Music = text), new Vector2(4, 3));
-            AddBelow(UIPluginOptionList.StringOption("alt music", room.AltMusic, text => room.AltMusic = text), new Vector2(4, 3));
-            AddBelow(UIPluginOptionList.StringOption("ambience", room.Ambience, text => room.Ambience = text), new Vector2(4, 3));
+            AddBelow(UIPluginOptionList.StringOption("music", room.Music, text => room.Music = text), offset);
+            AddBelow(UIPluginOptionList.StringOption("alt music", room.AltMusic, text => room.AltMusic = text), offset);
+            AddBelow(UIPluginOptionList.StringOption("ambience", room.Ambience, text => room.Ambience = text), offset);
 
-            AddBelow(UIPluginOptionList.LiteralValueOption<int>("music progress", room.MusicProgress.ToString(), prog => room.MusicProgress = prog), new Vector2(4, 3));
-            AddBelow(UIPluginOptionList.LiteralValueOption<int>("ambience progress", room.AmbienceProgress.ToString(), prog => room.AmbienceProgress = prog), new Vector2(4, 3));
+            AddBelow(UIPluginOptionList.LiteralValueOption<int>("music progress", room.MusicProgress.ToString(), prog => room.MusicProgress = prog), offset);
+            AddBelow(UIPluginOptionList.LiteralValueOption<int>("ambience progress", room.AmbienceProgress.ToString(), prog => room.AmbienceProgress = prog), offset);
 
             AddBelow(new UILabel("music layers :"), new Vector2(12, 3));
-            AddBelow(UIPluginOptionList.BoolOption("layer 1", room.MusicLayers[0], val => room.MusicLayers[0] = val), new Vector2(4, 3));
-            AddBelow(UIPluginOptionList.BoolOption("layer 2", room.MusicLayers[1], val => room.MusicLayers[1] = val), new Vector2(4, 3));
-            AddBelow(UIPluginOptionList.BoolOption("layer 3", room.MusicLayers[2], val => room.MusicLayers[2] = val), new Vector2(4, 3));
-            AddBelow(UIPluginOptionList.BoolOption("layer 4", room.MusicLayers[3], val => room.MusicLayers[3] = val), new Vector2(4, 3));
+            AddBelow(UIPluginOptionList.BoolOption("layer 1", room.MusicLayers[0], val => room.MusicLayers[0] = val), offset);
+            AddBelow(UIPluginOptionList.BoolOption("layer 2", room.MusicLayers[1], val => room.MusicLayers[1] = val), offset);
+            AddBelow(UIPluginOptionList.BoolOption("layer 3", room.MusicLayers[2], val => room.MusicLayers[2] = val), offset);
+            AddBelow(UIPluginOptionList.BoolOption("layer 4", room.MusicLayers[3], val => room.MusicLayers[3] = val), offset);
 
             AddBelow(new UILabel("camera offset :"), new Vector2(12, 0));
             var cameraOffsetX = UIPluginOptionList.LiteralValueOption<float>("x", room.CameraOffset.X.ToString(), val => room.CameraOffset.X = val);
-            AddBelow(cameraOffsetX, new Vector2(4, 3));
+            AddBelow(cameraOffsetX, offset);
             var cameraOffsetY = UIPluginOptionList.LiteralValueOption<float>("y", room.CameraOffset.Y.ToString(), val => room.CameraOffset.Y = val);
             cameraOffsetY.Position = new Vector2(cameraOffsetX.Position.X + cameraOffsetX.Width + 15, cameraOffsetX.Position.Y);
             Add(cameraOffsetY);
 
             AddBelow(new UILabel("other :"), new Vector2(12, 3));
-            AddBelow(UIPluginOptionList.BoolOption("dark", room.Dark, val => room.Dark = val ), new Vector2(4, 3));
-            AddBelow(UIPluginOptionList.BoolOption("underwater", room.Underwater, val => room.Underwater = val), new Vector2(4, 3));
-            AddBelow(UIPluginOptionList.BoolOption("space", room.Space, val => room.Space = val), new Vector2(4, 3));
-            // TODO: value text field
-            AddBelow(UIPluginOptionList.StringOption("wind pattern", room.WindPattern.ToString(),
-                text => room.WindPattern = Enum.TryParse(text, out WindController.Patterns pattern) ? pattern : room.WindPattern), new Vector2(4, 3));
+            AddBelow(UIPluginOptionList.BoolOption("dark", room.Dark, val => room.Dark = val ), offset);
+            AddBelow(UIPluginOptionList.BoolOption("underwater", room.Underwater, val => room.Underwater = val), offset);
+            AddBelow(UIPluginOptionList.BoolOption("space", room.Space, val => room.Space = val), offset);
+            AddBelow(UIPluginOptionList.DropdownOption<WindController.Patterns>("wind pattern", room.WindPattern, it => room.WindPattern = it), offset);
 
             AddBelow(new UIButton("delete", Fonts.Regular, 4, 4) {
                 FG = Color.Red,

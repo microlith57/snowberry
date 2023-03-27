@@ -1,21 +1,20 @@
-﻿using Celeste;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities {
-    [Plugin("booster")]
-    public class Plugin_Booster : Entity {
-        [Option("red")] public bool Red;
-        [Option("ch9_hub_booster")] public bool Ch9Hub;
+namespace Snowberry.Editor.Entities;
 
-        public override void Render() {
-            base.Render();
+[Plugin("booster")]
+public class Plugin_Booster : Entity {
+    [Option("red")] public bool Red;
+    [Option("ch9_hub_booster")] public bool Ch9Hub;
 
-            FromSprite(Red ? "boosterRed" : "booster", "loop")?.DrawOutlineCentered(Position);
-        }
+    public override void Render() {
+        base.Render();
 
-        public static void AddPlacements() {
-            Placements.Create("Booster (Green)", "booster", new Dictionary<string, object>() { { "red", false } });
-            Placements.Create("Booster (Red)", "booster", new Dictionary<string, object>() { { "red", true } });
-        }
+        FromSprite(Red ? "boosterRed" : "booster", "loop")?.DrawOutlineCentered(Position);
+    }
+
+    public static void AddPlacements() {
+        Placements.Create("Booster (Green)", "booster", new Dictionary<string, object>() { { "red", false } });
+        Placements.Create("Booster (Red)", "booster", new Dictionary<string, object>() { { "red", true } });
     }
 }

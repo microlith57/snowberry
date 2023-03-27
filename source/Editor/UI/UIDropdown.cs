@@ -63,6 +63,24 @@ namespace Snowberry.Editor.UI {
             Height += 8;
         }
 
+        public static UIDropdown OfEnum<T>(Font font, Action<T> onSelect) where T : Enum {
+            return OfEnum(font, typeof(T), v => onSelect((T)v));
+        }
+
+        public static UIDropdown OfEnum(Font font, Type t, Action<object> onSelect) {
+            if (!t.IsEnum)
+                throw new InvalidCastException("Cannot use UIDropdown.OfEnum on non-enum type!");
+
+            var values = t
+                .GetEnumValues()
+                .Cast<object>()
+                .Select(v => Convert.ChangeType(v, t))
+                .Select(v => new DropdownEntry(v.ToString(), () => onSelect(v)))
+                .ToArray();
+
+            return new UIDropdown(Fonts.Regular, values);
+        }
+
         public override void Update(Vector2 position = default) {
             base.Update();
             hoverIdx = -1;

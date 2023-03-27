@@ -57,6 +57,11 @@ namespace Snowberry.Editor.UI.Menus {
                     Add(ui = LiteralValueOption<float>(option.Key, value.ToString(), Plugin));
                     ui.Position.Y = l;
                     l += spacing;
+                } else if(option.Value.FieldType.IsEnum) {
+                    UIOption ui;
+                    Add(ui = DropdownOption(option.Key, option.Value.FieldType, value, Plugin));
+                    ui.Position.Y = l;
+                    l += spacing;
                 } else {
                     UIOption ui;
                     Add(ui = StringOption(option.Key, value?.ToString() ?? "", Plugin));
@@ -118,9 +123,33 @@ namespace Snowberry.Editor.UI.Menus {
 
         public static UIOption ColorOption(string name, Color value, Plugin plugin) {
             var colorpicker = new UIColorPicker(100, 80, 16, 12, value) {
-                OnColorChange = color => plugin.Set(name, color),
+                OnColorChange = color => plugin.Set(name, color)
             };
             return new UIOption(name, colorpicker);
+        }
+
+        public static UIOption DropdownOption<T>(string name, T value, Action<T> onChange) where T : Enum {
+            return DropdownOption(name, typeof(T), value, v => onChange((T)v));
+        }
+
+        public static UIOption DropdownOption(string name, Type t, object value, Action<object> onChange) {
+            UIButton button = null;
+            button = new UIButton(value + " \uF036", Fonts.Regular, 2, 2) {
+                OnPress = () => {
+                    var dropdown = UIDropdown.OfEnum(Fonts.Regular, t, it => {
+                        onChange?.Invoke(it);
+                        button.SetText(it + " \uF036");
+                    });
+                    dropdown.Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos();
+                    Editor.Instance.ToolPanel.Add(dropdown);
+                }
+            };
+
+            return new UIOption(name, button);
+        }
+
+        public static UIOption DropdownOption(string name, Type t, object value, Plugin plugin) {
+            return DropdownOption(name, t, value, v => plugin.Set(name, v));
         }
     }
 }
