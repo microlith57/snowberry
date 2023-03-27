@@ -2,7 +2,7 @@
 using Snowberry.Editor.UI.Menus;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 public class UIEntitySelection : UIScrollPane {
     public UIEntitySelection() {
@@ -35,7 +35,7 @@ public class UIEntitySelection : UIScrollPane {
         id.Position.X = name.Position.X - id.Width - 4;
 
         UIPluginOptionList options = new UIPluginOptionList(s.Entity) {
-            Position = new Vector2(1, name.Height + 1),
+            Position = new Vector2(3, name.Height + 3),
         };
 
         UIElement entry = Regroup(id, name, options);

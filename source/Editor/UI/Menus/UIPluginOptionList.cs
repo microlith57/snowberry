@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace Snowberry.Editor.UI.Menus; 
+namespace Snowberry.Editor.UI.Menus;
 
 public class UIPluginOptionList : UIElement {
     public class UIOption : UIElement {
@@ -62,7 +62,7 @@ public class UIPluginOptionList : UIElement {
                 UIOption ui;
                 Add(ui = DropdownOption(option.Key, option.Value.FieldType, value, Plugin));
                 ui.Position.Y = l;
-                l += spacing;
+                l += spacing + 6;
             } else {
                 UIOption ui;
                 Add(ui = StringOption(option.Key, value?.ToString() ?? "", Plugin));

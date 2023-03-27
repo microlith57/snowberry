@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 // Segmented UIButton that hovers and clicks different entries separately
 public class UIDropdown : UIElement {
