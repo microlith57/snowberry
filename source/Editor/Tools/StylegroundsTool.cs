@@ -6,7 +6,7 @@ using Snowberry.Editor.UI.Menus;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Snowberry.Editor.Tools; 
+namespace Snowberry.Editor.Tools;
 
 public class StylegroundsTool : Tool {
     public List<UIButton> StylegroundButtons = new();
@@ -15,7 +15,7 @@ public class StylegroundsTool : Tool {
 
     private UIButton Add, Delete, MoveUp, MoveDown;
 
-    public override UIElement CreatePanel() {
+    public override UIElement CreatePanel(int height) {
         StylegroundButtons.Clear();
         Stylegrounds.Clear();
 
@@ -23,7 +23,8 @@ public class StylegroundsTool : Tool {
             Width = 180,
             Background = Calc.HexToColor("202929") * (185 / 255f),
             GrabsClick = true,
-            GrabsScroll = true
+            GrabsScroll = true,
+            Height = height
         };
         UIScrollPane stylegrounds = new() {
             TopPadding = 15,

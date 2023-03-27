@@ -374,9 +374,8 @@ public class Editor : Scene {
 
         Toolbar.CurrentTool = toolIdx;
         var tool = Tool.Tools[toolIdx];
-        ToolPanel = tool.CreatePanel();
+        ToolPanel = tool.CreatePanel(uiBuffer.Height - Toolbar.Height);
         ToolPanel.Position = new Vector2(uiBuffer.Width - ToolPanel.Width, Toolbar.Height);
-        ToolPanel.Height = uiBuffer.Height - Toolbar.Height;
         ui.Add(ToolPanel);
 
         SelectedEntities = null;

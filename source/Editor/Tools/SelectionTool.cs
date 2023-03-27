@@ -5,7 +5,7 @@ using Monocle;
 using Snowberry.Editor.UI;
 using System;
 
-namespace Snowberry.Editor.Tools; 
+namespace Snowberry.Editor.Tools;
 
 public class SelectionTool : Tool {
     static bool canSelect;
@@ -14,9 +14,10 @@ public class SelectionTool : Tool {
         return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITYSELECT");
     }
 
-    public override UIElement CreatePanel() {
+    public override UIElement CreatePanel(int height) {
         return new UIEntitySelection() {
             Width = 160,
+            Height = height
         };
     }
 

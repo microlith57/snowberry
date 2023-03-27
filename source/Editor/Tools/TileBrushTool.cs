@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Snowberry.Editor.Tools; 
+namespace Snowberry.Editor.Tools;
 
 public class TileBrushTool : Tool {
     public class TilesetData {
@@ -97,15 +97,16 @@ public class TileBrushTool : Tool {
         return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_TILEBRUSH");
     }
 
-    public override UIElement CreatePanel() {
+    public override UIElement CreatePanel(int height) {
         bgTilesetButtons.Clear();
         fgTilesetButtons.Clear();
         modeButtons.Clear();
-        UIElement panel = new UIElement() {
+        UIElement panel = new UIElement {
             Width = 160,
             Background = Calc.HexToColor("202929") * (185 / 255f),
             GrabsClick = true,
-            GrabsScroll = true
+            GrabsScroll = true,
+            Height = height
         };
         UIScrollPane tilesetsPanel = new UIScrollPane() {
             Width = 130,

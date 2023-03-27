@@ -7,7 +7,7 @@ using Snowberry.Editor.UI.Menus;
 using System;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.Tools; 
+namespace Snowberry.Editor.Tools;
 
 public class DecalSelectionTool : Tool {
     static List<Decal> SelectedDecals = new List<Decal>();
@@ -19,11 +19,12 @@ public class DecalSelectionTool : Tool {
         return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_DECALSELECT");
     }
 
-    public override UIElement CreatePanel() {
-        var panel = new UIElement() {
-            Width = 80
+    public override UIElement CreatePanel(int height) {
+        var panel = new UIElement {
+            Width = 80,
+            Height = height
         };
-            
+
         panel.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_UTIL_FOREGROUND"), fg, val => fg = val), Vector2.UnitY * 4);
         panel.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_UTIL_BACKGROUND"), bg, val => bg = val), Vector2.UnitY * 4);
         return panel;

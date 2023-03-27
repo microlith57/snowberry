@@ -4,7 +4,7 @@ using Monocle;
 using Snowberry.Editor.UI;
 using System;
 
-namespace Snowberry.Editor.Tools; 
+namespace Snowberry.Editor.Tools;
 
 public class RoomTool : Tool {
     private Room lastSelected = null;
@@ -19,10 +19,11 @@ public class RoomTool : Tool {
 
     public static Rectangle? PendingRoom = null;
 
-    public override UIElement CreatePanel() {
+    public override UIElement CreatePanel(int height) {
         // room selection panel containing room metadata
-        var ret = new UIRoomSelectionPanel() {
-            Width = 160
+        var ret = new UIRoomSelectionPanel {
+            Width = 160,
+            Height = height
         };
         ret.Refresh();
         return ret;

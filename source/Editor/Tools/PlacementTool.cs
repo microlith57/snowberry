@@ -7,31 +7,73 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.UI;
 
+using Placement = Snowberry.Editor.Placements.Placement;
+
 namespace Snowberry.Editor.Tools;
 
 public class PlacementTool : Tool {
-    Placements.Placement curLeftSelection, curRightSelection;
-    Dictionary<Placements.Placement, UIButton> placementButtons = new();
-    Entity preview;
-    Vector2? lastPress;
-    Placements.Placement lastPlacement;
+    private Placement curLeftSelection, curRightSelection;
+    private Dictionary<Placement, UIButton> placementButtons = new();
+    private Entity preview;
+    private Vector2? lastPress;
+    private Placement lastPlacement;
+    private UISearchBar<Placement> searchBar;
 
-    public override UIElement CreatePanel() {
+    public override UIElement CreatePanel(int height) {
         placementButtons.Clear();
-        var ret = new UIScrollPane {
+
+        UIElement panel = new() {
             Width = 180,
-            TopPadding = 10
+            Background = Calc.HexToColor("202929") * (185 / 255f),
+            GrabsClick = true,
+            GrabsScroll = true,
+            Height = height
         };
+
+        var buttonPane = new UIScrollPane {
+            Width = 180,
+            TopPadding = 10,
+            Background = null,
+            Height = height - 30
+        };
+
         foreach (var item in Placements.All.OrderBy(k => k.Name)) {
             UIButton b;
-            ret.AddBelow(b = new UIButton(item.Name, Fonts.Regular, 4, 4) {
+            buttonPane.AddBelow(b = new UIButton(item.Name, Fonts.Regular, 4, 4) {
                 OnPress = () => curLeftSelection = curLeftSelection != item ? item : null,
                 OnRightPress = () => curRightSelection = curRightSelection != item ? item : null
             });
             placementButtons[item] = b;
         }
 
-        return ret;
+        panel.Add(buttonPane);
+
+        static bool entityMatcher(Placement entry, string term) => entry.Name.ToLower().Contains(term.ToLower());
+        static bool modMatcher(Placement entry, string term) {
+            var split = entry.EntityName.Split('/');
+            return split.Length == 2 && split[0].Contains(term);
+        }
+
+        panel.Add(searchBar = new UISearchBar<Placement>(170, entityMatcher) {
+            Position = new Vector2(5, height - 20),
+            Entries = Placements.All.ToArray(),
+            InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
+            OnInputChange = s => {
+                buttonPane.Scroll = 0;
+                int y = 0;
+                foreach (var b in placementButtons) {
+                    var button = b.Value;
+                    button.Visible = searchBar.Found == null || searchBar.Found.Contains(b.Key);
+                    if (button.Visible) {
+                        button.Position.Y = y;
+                        y += button.Height;
+                    }
+                }
+            }
+        });
+        searchBar.AddSpecialMatcher('@', modMatcher, Calc.HexToColor("1b6dcc"));
+
+        return panel;
     }
 
     public override string GetName() {
@@ -52,7 +94,7 @@ public class PlacementTool : Tool {
 
         bool middlePan = Snowberry.Settings.MiddleClickPan;
 
-        Placements.Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || (middlePan && MInput.Mouse.ReleasedRightButton)) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt)) ? curRightSelection : curLeftSelection;
+        Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || (middlePan && MInput.Mouse.ReleasedRightButton)) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt)) ? curRightSelection : curLeftSelection;
         if ((MInput.Mouse.ReleasedLeftButton || (middlePan && MInput.Mouse.ReleasedRightButton)) && canClick && selection != null && Editor.SelectedRoom != null && Editor.SelectedRoom.Bounds.Contains((int)Editor.Mouse.World.X / 8, (int)Editor.Mouse.World.Y / 8)) {
             Entity toAdd = selection.Build(Editor.SelectedRoom);
             UpdateEntity(toAdd, area);
@@ -97,7 +139,7 @@ public class PlacementTool : Tool {
     private void RefreshPreview(bool changedPlacement) {
         bool middlePan = Snowberry.Settings.MiddleClickPan;
 
-        Placements.Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedRightButton) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt)) ? curRightSelection : curLeftSelection;
+        Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedRightButton) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt)) ? curRightSelection : curLeftSelection;
         if ((preview == null || changedPlacement) && selection != null) {
             preview = selection.Build(Editor.SelectedRoom);
         } else if (selection == null)
