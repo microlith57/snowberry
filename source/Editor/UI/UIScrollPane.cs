@@ -3,17 +3,16 @@ using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 public class UIScrollPane : UIElement {
-    public Color BG = Calc.HexToColor("202929");
+    public Color BG = Calc.HexToColor("202929") * (185 / 255f);
     public int BottomPadding = 0, TopPadding = 0;
     public bool ShowScrollBar = true;
     public bool Vertical = true;
     public float Scroll = 0;
 
     public UIScrollPane() {
-        BG.A = 185;
         Background = BG;
         GrabsScroll = true;
         GrabsClick = true;
@@ -21,6 +20,10 @@ public class UIScrollPane : UIElement {
 
     public override void Render(Vector2 position = default) {
         Rectangle rect = new Rectangle((int)position.X, (int)position.Y, Width, Height);
+        // render the BG ourselves
+        if (Background.HasValue)
+            Draw.Rect(rect, Background.Value);
+
         DrawUtil.WithinScissorRectangle(rect, () => {
             base.Render(position + ScrollOffset());
 
@@ -64,9 +67,9 @@ public class UIScrollPane : UIElement {
         Height = Height == 0 ? Parent?.Height ?? 0 : Height;
     }
 
-    public override Vector2 BoundsOffset() {
-        return ScrollOffset();
-    }
+    public override Vector2 BoundsOffset() => ScrollOffset();
+
+    protected override bool RenderBg() => false;
 
     public void ScrollBy(int dir, float amount) {
         var points = ScrollPoints(13);

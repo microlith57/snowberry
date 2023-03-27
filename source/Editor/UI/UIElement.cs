@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 public class UIElement {
     private readonly List<UIElement> toRemove = new List<UIElement>();
@@ -45,7 +45,7 @@ public class UIElement {
     }
 
     public virtual void Render(Vector2 position = default) {
-        if (Background.HasValue) {
+        if (RenderBg() && Background.HasValue) {
             Rectangle rect = new Rectangle((int)position.X, (int)position.Y, Width, Height);
             Draw.Rect(rect, Background.Value);
         }
@@ -63,6 +63,8 @@ public class UIElement {
     public virtual string Tooltip() => null;
 
     public virtual Vector2 BoundsOffset() => Vector2.Zero;
+
+    protected virtual bool RenderBg() => true;
 
     public void Destroy() {
         foreach (UIElement element in Children)
