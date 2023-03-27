@@ -26,11 +26,14 @@ public class UILevelSelector : UIElement {
             ShowScrollBar = false
         };
 
-        levels = new UILevelRibbon[lvlCount = AreaData.Areas.Count];
+        // TODO: catch other generated levels
+        var filteredAreas = AreaData.Areas.Where(x => x.SID != "Snowberry/Playtest").ToList();
+
+        levels = new UILevelRibbon[lvlCount = filteredAreas.Count];
         int y = 0;
         Width = 0;
         for (int i = 0; i < lvlCount; i++) {
-            AreaData area = AreaData.Areas[i];
+            AreaData area = filteredAreas[i];
             UILevelRibbon lvl;
             levelScrollPane.Add(lvl = new UILevelRibbon(this, area, i) {
                 Position = new Vector2(-10, y),
