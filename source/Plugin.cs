@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Reflection;
 
-namespace Snowberry; 
+namespace Snowberry;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class PluginAttribute : Attribute {
@@ -30,7 +30,10 @@ public abstract class Plugin {
     // overriden by generic plugins
     public virtual void Set(string option, object value) {
         if (Info.Options.TryGetValue(option, out FieldInfo f)) {
-            object v = value is string str ? RawToObject(f.FieldType, str) : value;
+            object v = value is string str ? StrToObject(f.FieldType, str) : Convert.ChangeType(value, f.FieldType);
+            if (f.FieldType == typeof(char)) // TODO: this is kind of ugly; TileEntity is still broken, but less
+                v = value.ToString()[0];
+
             try {
                 f.SetValue(this, v);
             } catch (ArgumentException e) {
@@ -42,11 +45,11 @@ public abstract class Plugin {
 
     public virtual object Get(string option) {
         if (Info.Options.TryGetValue(option, out FieldInfo f))
-            return ObjectToRaw(f.GetValue(this));
+            return ObjectToStr(f.GetValue(this));
         return null;
     }
 
-    protected static object RawToObject(Type targetType, string raw) {
+    protected static object StrToObject(Type targetType, string raw) {
         if (targetType == typeof(Color)) {
             return Monocle.Calc.HexToColor(raw);
         }
@@ -66,7 +69,7 @@ public abstract class Plugin {
         return raw;
     }
 
-    protected static object ObjectToRaw(object obj) {
+    protected static object ObjectToStr(object obj) {
         return obj switch {
             Color color => BitConverter.ToString(new byte[] { color.R, color.G, color.B }).Replace("-", string.Empty),
             Enum => obj.ToString(),
