@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Linq;
 
 namespace Snowberry.Editor.UI;
 
@@ -81,7 +82,7 @@ public class UIScrollPane : UIElement {
     // X,Y = Top, Bottom
     public Vector2 ScrollPoints(int scrollSpeed) {
         UIElement low = null, high = null;
-        foreach (var item in Children) {
+        foreach(var item in Children.Where(item => item.Visible)){
             if (low == null || item.Position.Y > low.Position.Y) low = item;
             if (high == null || item.Position.Y < high.Position.Y) high = item;
         }

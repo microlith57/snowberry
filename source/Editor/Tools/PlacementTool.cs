@@ -1,26 +1,27 @@
-﻿using Celeste;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Snowberry.Editor.Tools; 
+namespace Snowberry.Editor.Tools;
 
 public class PlacementTool : Tool {
-    Placements.Placement curLeftSelection = null, curRightSelection = null;
-    Dictionary<Placements.Placement, UIButton> placementButtons = new Dictionary<Placements.Placement, UIButton>();
-    Entity preview = null;
-    Vector2? lastPress = null;
-    Placements.Placement lastPlacement = null;
+    Placements.Placement curLeftSelection, curRightSelection;
+    Dictionary<Placements.Placement, UIButton> placementButtons = new();
+    Entity preview;
+    Vector2? lastPress;
+    Placements.Placement lastPlacement;
 
     public override UIElement CreatePanel() {
         placementButtons.Clear();
-        var ret = new UIScrollPane();
-        ret.Width = 180;
-        ret.TopPadding = 10;
+        var ret = new UIScrollPane {
+            Width = 180,
+            TopPadding = 10
+        };
         foreach (var item in Placements.All.OrderBy(k => k.Name)) {
             UIButton b;
             ret.AddBelow(b = new UIButton(item.Name, Fonts.Regular, 4, 4) {

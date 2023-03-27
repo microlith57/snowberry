@@ -68,13 +68,14 @@ public class UILevelSelector : UIElement {
                 return count switch {
                     0 => $"{infonone}",
                     1 => $"{infoone}",
-                    _ => $"{count} {infomore}",
+                    _ => $"{count} {infomore}"
                 };
             },
             OnInputChange = s => {
                 if (levels != null)
                     levels[0].Position.Y = 0;
                 LevelRibbonAnim = lvlCount;
+                levelScrollPane.Scroll = 0;
             }
         });
         searchBar.AddSpecialMatcher('@', lvlMatcherByMod, Calc.HexToColor("1b6dcc"));
