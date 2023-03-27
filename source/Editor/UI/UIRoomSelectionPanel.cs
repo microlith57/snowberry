@@ -6,14 +6,13 @@ using Snowberry.Editor.Tools;
 using System.Text.RegularExpressions;
 using WindController = Celeste.WindController;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 class UIRoomSelectionPanel : UIElement {
-    public Color BG = Calc.HexToColor("202929");
+    public Color BG = Calc.HexToColor("202929") * 0.5f;
 
     public UIRoomSelectionPanel() {
-        BG.A = 127;
-        GrabsClick = true;
+        GrabsClick = GrabsScroll = true;
     }
 
     public override void Render(Vector2 position = default) {

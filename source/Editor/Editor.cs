@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using Snowberry.Editor.UI.Menus;
 
-namespace Snowberry.Editor; 
+namespace Snowberry.Editor;
 
 public class Editor : Scene {
     public class BufferCamera {
@@ -337,12 +337,6 @@ public class Editor : Scene {
         Vector2 mouseVec = new Vector2(m.X, m.Y);
         Mouse.Screen = mouseVec / 2;
         Mouse.World = Vector2.Transform(Camera.Buffer == null ? mouseVec : mousePos, Camera.Inverse).Floor();
-
-        if (wheel != 0) {
-            Vector2 offset = Mouse.WorldLast - Mouse.World;
-            Camera.Position += offset;
-            Mouse.World += offset;
-        }
 
         MouseClicked = false;
         ui.Update();
