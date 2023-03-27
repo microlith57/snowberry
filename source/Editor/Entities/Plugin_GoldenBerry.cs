@@ -1,37 +1,37 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor.Entities {
-    [Plugin("goldenBerry")]
-    [Plugin("memorialTextController")]
-    public class Plugin_GoldenBerry : Entity {
-        [Option("winged")] public bool Winged = false;
+namespace Snowberry.Editor.Entities; 
 
-        private bool noDash;
+[Plugin("goldenBerry")]
+[Plugin("memorialTextController")]
+public class Plugin_GoldenBerry : Entity {
+    [Option("winged")] public bool Winged = false;
 
-        public override int MaxNodes => -1;
+    private bool noDash;
 
-        public override void Initialize() {
-            base.Initialize();
-            noDash = Name == "memorialTextController";
-        }
+    public override int MaxNodes => -1;
 
-        public override void Render() {
-            base.Render();
+    public override void Initialize() {
+        base.Initialize();
+        noDash = Name == "memorialTextController";
+    }
 
-            bool seeded = Nodes.Length != 0;
-            string dir = seeded && !noDash ? "ghostgoldberry" : "goldberry";
-            string anim = Winged || noDash ? "flap" : "idle";
-            FromSprite(dir, anim)?.DrawCentered(Position);
+    public override void Render() {
+        base.Render();
 
-            if (seeded)
-                foreach (Vector2 node in Nodes)
-                    FromSprite("strawberrySeed", "idle")?.DrawCentered(node);
-        }
+        bool seeded = Nodes.Length != 0;
+        string dir = seeded && !noDash ? "ghostgoldberry" : "goldberry";
+        string anim = Winged || noDash ? "flap" : "idle";
+        FromSprite(dir, anim)?.DrawCentered(Position);
 
-        public static void AddPlacements() {
-            Placements.Create("Golden Berry", "goldenBerry");
-            Placements.Create("Dashless Golden Berry", "memorialTextController");
-        }
+        if (seeded)
+            foreach (Vector2 node in Nodes)
+                FromSprite("strawberrySeed", "idle")?.DrawCentered(node);
+    }
+
+    public static void AddPlacements() {
+        Placements.Create("Golden Berry", "goldenBerry");
+        Placements.Create("Dashless Golden Berry", "memorialTextController");
     }
 }

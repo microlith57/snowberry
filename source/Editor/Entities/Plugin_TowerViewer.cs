@@ -1,30 +1,30 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities {
-    [Plugin("towerviewer")]
-    public class Plugin_Watchtower : Entity {
-        [Option("onlyY")] public bool OnlyY = false;
-        [Option("summit")] public bool Summit = false;
+namespace Snowberry.Editor.Entities; 
 
-        public override int MaxNodes => -1;
+[Plugin("towerviewer")]
+public class Plugin_Watchtower : Entity {
+    [Option("onlyY")] public bool OnlyY = false;
+    [Option("summit")] public bool Summit = false;
 
-        public override void Render() {
-            base.Render();
+    public override int MaxNodes => -1;
 
-            MTexture tower = FromSprite("lookout", "idle");
-            tower?.DrawJustified(Position, new Vector2(0.5f, 1.0f));
+    public override void Render() {
+        base.Render();
 
-            Vector2 prev = Position;
-            foreach (Vector2 node in Nodes) {
-                tower?.DrawJustified(node, new Vector2(0.5f, 1.0f));
-                Draw.Line(prev, node, Color.White * 0.5f);
-                prev = node;
-            }
+        MTexture tower = FromSprite("lookout", "idle");
+        tower?.DrawJustified(Position, new Vector2(0.5f, 1.0f));
+
+        Vector2 prev = Position;
+        foreach (Vector2 node in Nodes) {
+            tower?.DrawJustified(node, new Vector2(0.5f, 1.0f));
+            Draw.Line(prev, node, Color.White * 0.5f);
+            prev = node;
         }
+    }
 
-        public static void AddPlacements() {
-            Placements.Create("Watchtower", "towerviewer");
-        }
+    public static void AddPlacements() {
+        Placements.Create("Watchtower", "towerviewer");
     }
 }

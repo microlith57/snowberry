@@ -2,39 +2,39 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities {
-    [Plugin("seeker")]
-    public class Plugin_Seeker : Entity {
-        public override int MaxNodes => -1;
+namespace Snowberry.Editor.Entities; 
 
-        public override void Render() {
-            base.Render();
+[Plugin("seeker")]
+public class Plugin_Seeker : Entity {
+    public override int MaxNodes => -1;
 
-            MTexture seeker = FromSprite("seeker", "idle");
-            seeker?.DrawCentered(Position);
+    public override void Render() {
+        base.Render();
 
-            Vector2 prev = Position;
-            foreach (Vector2 node in Nodes) {
-                seeker?.DrawCentered(node);
-                Draw.Line(prev, node, Color.White * 0.5f);
-                prev = node;
-            }
-        }
+        MTexture seeker = FromSprite("seeker", "idle");
+        seeker?.DrawCentered(Position);
 
-        public static void AddPlacements() {
-            Placements.Create("Seeker", "seeker");
+        Vector2 prev = Position;
+        foreach (Vector2 node in Nodes) {
+            seeker?.DrawCentered(node);
+            Draw.Line(prev, node, Color.White * 0.5f);
+            prev = node;
         }
     }
 
-    [Plugin("playerSeeker")]
-    public class Plugin_PlayerSeeker : Entity {
-        public override void Render() {
-            base.Render();
-            GFX.Game["decals/5-temple/statue_e"].DrawCentered(Position);
-        }
+    public static void AddPlacements() {
+        Placements.Create("Seeker", "seeker");
+    }
+}
 
-        public static void AddPlacements() {
-            Placements.Create("Player Seeker", "playerSeeker");
-        }
+[Plugin("playerSeeker")]
+public class Plugin_PlayerSeeker : Entity {
+    public override void Render() {
+        base.Render();
+        GFX.Game["decals/5-temple/statue_e"].DrawCentered(Position);
+    }
+
+    public static void AddPlacements() {
+        Placements.Create("Player Seeker", "playerSeeker");
     }
 }

@@ -2,56 +2,56 @@
 using Monocle;
 using System;
 
-namespace Snowberry.Editor.UI {
-    public class UIValueTextField<T> : UITextField {
-        new public Color Line = Color.Teal;
-        new public Color LineSelected = Color.LimeGreen;
-        public Color ErrLine = Calc.HexToColor("db2323");
-        public Color ErrLineSelected = Calc.HexToColor("ffbb33");
+namespace Snowberry.Editor.UI; 
 
-        public bool Error;
-        private float errLerp;
+public class UIValueTextField<T> : UITextField {
+    new public Color Line = Color.Teal;
+    new public Color LineSelected = Color.LimeGreen;
+    public Color ErrLine = Calc.HexToColor("db2323");
+    public Color ErrLineSelected = Calc.HexToColor("ffbb33");
 
-        public Action<T> OnValidInputChange;
-        new public T Value { get; private set; }
+    public bool Error;
+    private float errLerp;
 
-        private static readonly char[] integerChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-' };
-        private static readonly char[] floatChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', ',', 'e' };
+    public Action<T> OnValidInputChange;
+    new public T Value { get; private set; }
 
-        public UIValueTextField(Font font, int width, string input = "")
-            : base(font, width, input) {
-            AllowedCharacters = Type.GetTypeCode(typeof(T)) switch {
-                TypeCode.Int32 => integerChars,
-                TypeCode.Single => floatChars,
-                _ => null
-            };
+    private static readonly char[] integerChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-' };
+    private static readonly char[] floatChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', ',', 'e' };
 
-            GrabsClick = true;
-        }
+    public UIValueTextField(Font font, int width, string input = "")
+        : base(font, width, input) {
+        AllowedCharacters = Type.GetTypeCode(typeof(T)) switch {
+            TypeCode.Int32 => integerChars,
+            TypeCode.Single => floatChars,
+            _ => null
+        };
 
-        protected override void Initialize() {
-            base.Initialize();
-            errLerp = Error ? 1f : 0f;
-        }
+        GrabsClick = true;
+    }
 
-        public override void Update(Vector2 position = default) {
-            errLerp = Calc.Approach(errLerp, Error ? 1f : 0f, Engine.DeltaTime * 7f);
-            base.Line = Color.Lerp(Line, ErrLine, errLerp);
-            base.LineSelected = Color.Lerp(LineSelected, ErrLineSelected, errLerp);
+    protected override void Initialize() {
+        base.Initialize();
+        errLerp = Error ? 1f : 0f;
+    }
 
-            base.Update(position);
-        }
+    public override void Update(Vector2 position = default) {
+        errLerp = Calc.Approach(errLerp, Error ? 1f : 0f, Engine.DeltaTime * 7f);
+        base.Line = Color.Lerp(Line, ErrLine, errLerp);
+        base.LineSelected = Color.Lerp(LineSelected, ErrLineSelected, errLerp);
 
-        protected override void OnInputUpdate(string input) {
-            base.OnInputUpdate(input);
-            try {
-                Value = (T)Convert.ChangeType(input, typeof(T));
-                OnValidInputChange?.Invoke(Value);
-                Error = false;
-            } catch {
-                Value = default;
-                Error = true;
-            }
+        base.Update(position);
+    }
+
+    protected override void OnInputUpdate(string input) {
+        base.OnInputUpdate(input);
+        try {
+            Value = (T)Convert.ChangeType(input, typeof(T));
+            OnValidInputChange?.Invoke(Value);
+            Error = false;
+        } catch {
+            Value = default;
+            Error = true;
         }
     }
 }

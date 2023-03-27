@@ -1,23 +1,23 @@
 ﻿using Celeste;
 using Monocle;
 
-namespace Snowberry.Editor.Entities {
-    [Plugin("floatingDebris")]
-    public class Plugin_FloatingDebris : Entity {
-        private MTexture debris;
+namespace Snowberry.Editor.Entities; 
 
-        public override void Initialize() {
-            base.Initialize();
-            debris = GFX.Game["scenery/debris"].GetSubtexture(Calc.Random.Next(0, 8) * 8, 0, 8, 8);
-        }
+[Plugin("floatingDebris")]
+public class Plugin_FloatingDebris : Entity {
+    private MTexture debris;
 
-        public override void Render() {
-            base.Render();
-            debris.DrawCentered(Position);
-        }
+    public override void Initialize() {
+        base.Initialize();
+        debris = GFX.Game["scenery/debris"].GetSubtexture(Calc.Random.Next(0, 8) * 8, 0, 8, 8);
+    }
 
-        public static void AddPlacements() {
-            Placements.Create("Floating Debris", "floatingDebris");
-        }
+    public override void Render() {
+        base.Render();
+        debris.DrawCentered(Position);
+    }
+
+    public static void AddPlacements() {
+        Placements.Create("Floating Debris", "floatingDebris");
     }
 }

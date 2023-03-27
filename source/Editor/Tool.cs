@@ -4,22 +4,22 @@ using Snowberry.Editor.Tools;
 using Snowberry.Editor.UI;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor {
-    public abstract class Tool {
-        public static IList<Tool> Tools = new List<Tool>() { new SelectionTool(), new DecalSelectionTool(), new TileBrushTool(), new RoomTool(), new PlacementTool(), new StylegroundsTool() };
+namespace Snowberry.Editor; 
 
-        public static readonly Color LeftSelectedBtnBg = Calc.HexToColor("274292");
-        public static readonly Color RightSelectedBtnBg = Calc.HexToColor("922727");
-        public static readonly Color BothSelectedBtnBg = Calc.HexToColor("7d2792");
+public abstract class Tool {
+    public static IList<Tool> Tools = new List<Tool>() { new SelectionTool(), new DecalSelectionTool(), new TileBrushTool(), new RoomTool(), new PlacementTool(), new StylegroundsTool() };
 
-        public abstract string GetName();
+    public static readonly Color LeftSelectedBtnBg = Calc.HexToColor("274292");
+    public static readonly Color RightSelectedBtnBg = Calc.HexToColor("922727");
+    public static readonly Color BothSelectedBtnBg = Calc.HexToColor("7d2792");
 
-        public abstract UIElement CreatePanel();
+    public abstract string GetName();
 
-        public abstract void Update(bool canClick);
+    public abstract UIElement CreatePanel();
 
-        public virtual void RenderScreenSpace() { }
+    public abstract void Update(bool canClick);
 
-        public virtual void RenderWorldSpace() { }
-    }
+    public virtual void RenderScreenSpace() { }
+
+    public virtual void RenderWorldSpace() { }
 }

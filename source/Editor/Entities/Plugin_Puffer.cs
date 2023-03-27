@@ -1,19 +1,19 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor.Entities {
-    [Plugin("eyebomb")]
-    public class Plugin_Puffer : Entity {
-        [Option("right")] public bool Right;
+namespace Snowberry.Editor.Entities; 
 
-        public override void Render() {
-            base.Render();
+[Plugin("eyebomb")]
+public class Plugin_Puffer : Entity {
+    [Option("right")] public bool Right;
 
-            FromSprite("pufferFish", "idle")?.DrawOutlineCentered(Position, Color.White, new Vector2(Right ? 1 : -1, 1));
-        }
+    public override void Render() {
+        base.Render();
 
-        public static void AddPlacements() {
-            Placements.Create("Puffer", "eyebomb");
-        }
+        FromSprite("pufferFish", "idle")?.DrawOutlineCentered(Position, Color.White, new Vector2(Right ? 1 : -1, 1));
+    }
+
+    public static void AddPlacements() {
+        Placements.Create("Puffer", "eyebomb");
     }
 }

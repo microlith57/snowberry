@@ -3,91 +3,91 @@ using Microsoft.Xna.Framework;
 using Celeste;
 using System.Linq;
 
-namespace Snowberry.Editor.UI.Menus {
-    public class UILevelSelector : UIElement {
-        public float LevelRibbonAnim;
-        private int lvlCount;
+namespace Snowberry.Editor.UI.Menus; 
 
-        private UISearchBar<UILevelRibbon> searchBar;
-        private UILevelRibbon[] levels;
+public class UILevelSelector : UIElement {
+    public float LevelRibbonAnim;
+    private int lvlCount;
 
-        public void Reload() {
-            Clear();
+    private UISearchBar<UILevelRibbon> searchBar;
+    private UILevelRibbon[] levels;
 
-            LevelRibbonAnim = 0f;
+    public void Reload() {
+        Clear();
 
-            UIScrollPane levelScrollPane = new UIScrollPane() {
-                Height = Parent.Height - 30,
-                Position = new Vector2(-16, 22),
-                BG = Color.Transparent,
-                Background = Color.Transparent,
-                ShowScrollBar = false,
-            };
+        LevelRibbonAnim = 0f;
 
-            levels = new UILevelRibbon[lvlCount = AreaData.Areas.Count];
-            int y = 0;
-            Width = 0;
-            for (int i = 0; i < lvlCount; i++) {
-                AreaData area = AreaData.Areas[i];
-                UILevelRibbon lvl;
-                levelScrollPane.Add(lvl = new UILevelRibbon(this, area, i) {
-                    Position = new Vector2(-10, y),
-                    FG = area.TitleTextColor,
-                    BG = area.TitleBaseColor,
-                    BGAccent = area.TitleAccentColor,
-                });
+        UIScrollPane levelScrollPane = new UIScrollPane() {
+            Height = Parent.Height - 30,
+            Position = new Vector2(-16, 22),
+            BG = Color.Transparent,
+            Background = Color.Transparent,
+            ShowScrollBar = false,
+        };
 
-                if (lvl.W > Width)
-                    Width = lvl.W;
-                y += 13;
-
-                levels[i] = lvl;
-            }
-            Add(levelScrollPane);
-            levelScrollPane.Width = Width;
-
-            static bool lvlMatcher(UILevelRibbon entry, string term)
-                => entry.Text.ToLower().Contains(term.ToLower());
-
-            static bool lvlMatcherByMod(UILevelRibbon entry, string term)
-                => entry.Name.ToLower().Contains(term.ToLower());
-
-            string infonone = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCHBAR_NONE");
-            string infoone = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCHBAR_ONE");
-            string infomore = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCHBAR_MORE");
-            Add(searchBar = new UISearchBar<UILevelRibbon>(Width / 2, lvlMatcher) {
-                Position = Vector2.UnitY * 8,
-                Entries = levels,
-                InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
-                SearchInfo = count => {
-                    return count switch {
-                        0 => $"{infonone}",
-                        1 => $"{infoone}",
-                        _ => $"{count} {infomore}",
-                    };
-                },
-                OnInputChange = s => {
-                    if (levels != null)
-                        levels[0].Position.Y = 0;
-                    LevelRibbonAnim = lvlCount;
-                }
+        levels = new UILevelRibbon[lvlCount = AreaData.Areas.Count];
+        int y = 0;
+        Width = 0;
+        for (int i = 0; i < lvlCount; i++) {
+            AreaData area = AreaData.Areas[i];
+            UILevelRibbon lvl;
+            levelScrollPane.Add(lvl = new UILevelRibbon(this, area, i) {
+                Position = new Vector2(-10, y),
+                FG = area.TitleTextColor,
+                BG = area.TitleBaseColor,
+                BGAccent = area.TitleAccentColor,
             });
-            searchBar.AddSpecialMatcher('@', lvlMatcherByMod, Calc.HexToColor("1b6dcc"));
+
+            if (lvl.W > Width)
+                Width = lvl.W;
+            y += 13;
+
+            levels[i] = lvl;
         }
+        Add(levelScrollPane);
+        levelScrollPane.Width = Width;
 
-        public override void Update(Vector2 position = default) {
-            base.Update(position);
+        static bool lvlMatcher(UILevelRibbon entry, string term)
+            => entry.Text.ToLower().Contains(term.ToLower());
 
-            LevelRibbonAnim = Calc.Approach(LevelRibbonAnim, lvlCount, Engine.DeltaTime * 60f);
+        static bool lvlMatcherByMod(UILevelRibbon entry, string term)
+            => entry.Name.ToLower().Contains(term.ToLower());
 
-            if (levels != null) {
-                int y = (int)levels[0].Position.Y;
-                foreach (UILevelRibbon lvl in levels) {
-                    lvl.Visible = searchBar.Found == null || searchBar.Found.Contains(lvl);
-                    if (lvl.Visible) {
-                        lvl.Position.Y = y;
-                        y += 13 + lvl.H;
-                    }
+        string infonone = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCHBAR_NONE");
+        string infoone = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCHBAR_ONE");
+        string infomore = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCHBAR_MORE");
+        Add(searchBar = new UISearchBar<UILevelRibbon>(Width / 2, lvlMatcher) {
+            Position = Vector2.UnitY * 8,
+            Entries = levels,
+            InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
+            SearchInfo = count => {
+                return count switch {
+                    0 => $"{infonone}",
+                    1 => $"{infoone}",
+                    _ => $"{count} {infomore}",
+                };
+            },
+            OnInputChange = s => {
+                if (levels != null)
+                    levels[0].Position.Y = 0;
+                LevelRibbonAnim = lvlCount;
+            }
+        });
+        searchBar.AddSpecialMatcher('@', lvlMatcherByMod, Calc.HexToColor("1b6dcc"));
+    }
+
+    public override void Update(Vector2 position = default) {
+        base.Update(position);
+
+        LevelRibbonAnim = Calc.Approach(LevelRibbonAnim, lvlCount, Engine.DeltaTime * 60f);
+
+        if (levels != null) {
+            int y = (int)levels[0].Position.Y;
+            foreach (UILevelRibbon lvl in levels) {
+                lvl.Visible = searchBar.Found == null || searchBar.Found.Contains(lvl);
+                if (lvl.Visible) {
+                    lvl.Position.Y = y;
+                    y += 13 + lvl.H;
                 }
             }
         }

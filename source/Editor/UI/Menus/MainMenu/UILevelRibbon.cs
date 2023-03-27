@@ -5,195 +5,195 @@ using System;
 using System.Linq;
 using Microsoft.Xna.Framework.Input;
 
-namespace Snowberry.Editor.UI.Menus {
-    public class UILevelRibbon : UIRibbon {
-        private readonly UILevelSelector selector;
+namespace Snowberry.Editor.UI.Menus; 
 
-        private readonly string raw;
-        public readonly string Name;
+public class UILevelRibbon : UIRibbon {
+    private readonly UILevelSelector selector;
 
-        private readonly int w;
-        public int W { get; private set; }
+    private readonly string raw;
+    public readonly string Name;
 
-        private float lerp, listLerp = 1f;
-        private readonly int n;
+    private readonly int w;
+    public int W { get; private set; }
 
-        private bool hover;
+    private float lerp, listLerp = 1f;
+    private readonly int n;
 
-        private readonly bool dropdown;
-        private bool open;
-        private float openLerp;
-        private readonly int h;
-        public int H { get; private set; }
+    private bool hover;
 
-        private bool pressing;
+    private readonly bool dropdown;
+    private bool open;
+    private float openLerp;
+    private readonly int h;
+    public int H { get; private set; }
 
-        private readonly ModeProperties mode;
+    private bool pressing;
 
-        private UILevelRibbon(UILevelSelector selector, ModeProperties mode, int n)
-            : base("", 39) {
-            this.selector = selector;
-            this.n = n;
+    private readonly ModeProperties mode;
 
-            Name = mode.MapData.Area.Mode switch {
-                AreaMode.Normal => "A",
-                AreaMode.BSide => "B",
-                AreaMode.CSide => "C",
-                _ => "X",
-            };
-            raw = mode.MapData.Filename;
-            SetText(Name);
+    private UILevelRibbon(UILevelSelector selector, ModeProperties mode, int n)
+        : base("", 39) {
+        this.selector = selector;
+        this.n = n;
 
-            w = (int)Fonts.Regular.Measure(raw).X;
-            W = Width + w + 5;
+        Name = mode.MapData.Area.Mode switch {
+            AreaMode.Normal => "A",
+            AreaMode.BSide => "B",
+            AreaMode.CSide => "C",
+            _ => "X",
+        };
+        raw = mode.MapData.Filename;
+        SetText(Name);
 
-            this.mode = mode;
-        }
+        w = (int)Fonts.Regular.Measure(raw).X;
+        W = Width + w + 5;
 
-        public UILevelRibbon(UILevelSelector selector, AreaData area, int n)
-            : base("", 26) {
-            this.selector = selector;
-            this.n = n;
+        this.mode = mode;
+    }
 
-            Name = area.Name;
-            raw = Dialog.Has(Name) ? $"» {Name}" : "...";
+    public UILevelRibbon(UILevelSelector selector, AreaData area, int n)
+        : base("", 26) {
+        this.selector = selector;
+        this.n = n;
 
-            ModeProperties[] modes = area.Mode.Where(m => m != null).ToArray();
-            if (dropdown = modes.Length > 1) {
-                h = modes.Length * 13 + 1;
-                for (int i = 0; i < modes.Length; i++) {
-                    ModeProperties m = modes[i];
-                    Add(new UILevelRibbon(selector, m, i + 1) {
-                        Position = new Vector2(-5, 13 * (i + 1)),
-                    });
-                }
-            } else
-                mode = modes[0];
+        Name = area.Name;
+        raw = Dialog.Has(Name) ? $"» {Name}" : "...";
 
-            SetText($"{(dropdown ? "\uF034" : " ")} {Dialog.Clean(Name)}");
+        ModeProperties[] modes = area.Mode.Where(m => m != null).ToArray();
+        if (dropdown = modes.Length > 1) {
+            h = modes.Length * 13 + 1;
+            for (int i = 0; i < modes.Length; i++) {
+                ModeProperties m = modes[i];
+                Add(new UILevelRibbon(selector, m, i + 1) {
+                    Position = new Vector2(-5, 13 * (i + 1)),
+                });
+            }
+        } else
+            mode = modes[0];
 
-            w = (int)Fonts.Regular.Measure(raw).X;
-            W = Width + w + 5;
+        SetText($"{(dropdown ? "\uF034" : " ")} {Dialog.Clean(Name)}");
 
-            RenderChildren = false;
-        }
+        w = (int)Fonts.Regular.Measure(raw).X;
+        W = Width + w + 5;
 
-        protected override void Initialize() {
-            base.Initialize();
-            foreach (UIElement child in Children) {
-                if (child is UILevelRibbon lvl) {
-                    lvl.FG = FG;
-                    lvl.BG = BG;
-                    lvl.BGAccent = BGAccent;
-                }
+        RenderChildren = false;
+    }
+
+    protected override void Initialize() {
+        base.Initialize();
+        foreach (UIElement child in Children) {
+            if (child is UILevelRibbon lvl) {
+                lvl.FG = FG;
+                lvl.BG = BG;
+                lvl.BGAccent = BGAccent;
             }
         }
+    }
 
-        private bool HoveringChildren() {
-            foreach (UIElement child in Children)
-                if (child is UILevelRibbon lvl && lvl.hover)
-                    return true;
-            return false;
-        }
+    private bool HoveringChildren() {
+        foreach (UIElement child in Children)
+            if (child is UILevelRibbon lvl && lvl.hover)
+                return true;
+        return false;
+    }
 
-        public override void Update(Vector2 position = default) {
-            base.Update(position);
+    public override void Update(Vector2 position = default) {
+        base.Update(position);
 
-            int mouseX = (int)Editor.Mouse.Screen.X;
-            int mouseY = (int)Editor.Mouse.Screen.Y;
-            hover = !Editor.Message.Shown && Visible &&
+        int mouseX = (int)Editor.Mouse.Screen.X;
+        int mouseY = (int)Editor.Mouse.Screen.Y;
+        hover = !Editor.Message.Shown && Visible &&
                 new Rectangle((int)position.X + 16, (int)position.Y - 1, Width + w, Height + H + 2).Contains(mouseX, mouseY);
 
-            lerp = Calc.Approach(lerp, (hover || pressing).Bit(), Engine.DeltaTime * 6f);
-            listLerp = Calc.Approach(listLerp, (selector.LevelRibbonAnim < n).Bit(), Engine.DeltaTime * 4f);
+        lerp = Calc.Approach(lerp, (hover || pressing).Bit(), Engine.DeltaTime * 6f);
+        listLerp = Calc.Approach(listLerp, (selector.LevelRibbonAnim < n).Bit(), Engine.DeltaTime * 4f);
 
-            if (Visible) {
-                if (!Editor.Message.Shown && MInput.Mouse.PressedLeftButton && hover) {
-                    if (dropdown) {
-                        if (!HoveringChildren()) {
-                            openLerp = open.Bit();
-                            open = !open;
-                            SetText((open ? '\uF036' : '\uF034') + Text.Substring(1));
-                        }
-                    } else if (Parent is not UILevelRibbon lvl || lvl.open) {
-                        pressing = true;
+        if (Visible) {
+            if (!Editor.Message.Shown && MInput.Mouse.PressedLeftButton && hover) {
+                if (dropdown) {
+                    if (!HoveringChildren()) {
+                        openLerp = open.Bit();
+                        open = !open;
+                        SetText((open ? '\uF036' : '\uF034') + Text.Substring(1));
                     }
+                } else if (Parent is not UILevelRibbon lvl || lvl.open) {
+                    pressing = true;
                 }
-                if (MInput.Mouse.ReleasedLeftButton && pressing || Editor.Message.Shown) {
-                    pressing = false;
-                    if (hover) {
-                        if (MInput.Keyboard.CurrentState[Keys.LeftControl] == KeyState.Down || MInput.Keyboard.CurrentState[Keys.RightControl] == KeyState.Down)
-                            Editor.Open(mode.MapData);
-                        else {
-                            Editor.Message.Clear();
+            }
+            if (MInput.Mouse.ReleasedLeftButton && pressing || Editor.Message.Shown) {
+                pressing = false;
+                if (hover) {
+                    if (MInput.Keyboard.CurrentState[Keys.LeftControl] == KeyState.Down || MInput.Keyboard.CurrentState[Keys.RightControl] == KeyState.Down)
+                        Editor.Open(mode.MapData);
+                    else {
+                        Editor.Message.Clear();
 
-                            Editor.Message.AddElement(ConfirmLoadMessage(), 0.5f, 0.5f, 0.5f, -0.1f);
-                            var buttons = UIMessage.YesAndNoButtons(() => Editor.Open(mode.MapData), () => Editor.Message.Shown = false, 0, 4, 0.5f, 0f);
-                            Editor.Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
+                        Editor.Message.AddElement(ConfirmLoadMessage(), 0.5f, 0.5f, 0.5f, -0.1f);
+                        var buttons = UIMessage.YesAndNoButtons(() => Editor.Open(mode.MapData), () => Editor.Message.Shown = false, 0, 4, 0.5f, 0f);
+                        Editor.Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
 
-                            Editor.Message.Shown = true;
-                        }
+                        Editor.Message.Shown = true;
                     }
                 }
             }
-
-            openLerp = Calc.Approach(openLerp, open.Bit(), Engine.DeltaTime * 2f);
-            float openEase = (open ? Ease.ExpoOut : Ease.ExpoIn)(openLerp);
-            H = (int)(openEase * h);
         }
 
-        public override void Render(Vector2 position = default) {
-            Vector2 from = position;
+        openLerp = Calc.Approach(openLerp, open.Bit(), Engine.DeltaTime * 2f);
+        float openEase = (open ? Ease.ExpoOut : Ease.ExpoIn)(openLerp);
+        H = (int)(openEase * h);
+    }
 
-            float ease = Ease.CubeOut(lerp);
-            float listEase = Ease.ExpoIn(listLerp);
-            position.X += (int)(ease * 16 - Width * listEase + (pressing ? 4 : 0));
+    public override void Render(Vector2 position = default) {
+        Vector2 from = position;
 
-            float sin = Settings.Instance.DisableFlashes || lerp == 0f ? 0f : ((float)Math.Sin(Engine.Scene.TimeActive * 12f) * 0.1f);
-            Fonts.Regular.Draw(raw, position + Vector2.UnitX * (Width + 5), Vector2.One, Color.Lerp(Util.Colors.CloudGray, Util.Colors.White, ease * (0.9f + sin)) * (1 - listEase));
+        float ease = Ease.CubeOut(lerp);
+        float listEase = Ease.ExpoIn(listLerp);
+        position.X += (int)(ease * 16 - Width * listEase + (pressing ? 4 : 0));
 
-            base.Render(position);
+        float sin = Settings.Instance.DisableFlashes || lerp == 0f ? 0f : ((float)Math.Sin(Engine.Scene.TimeActive * 12f) * 0.1f);
+        Fonts.Regular.Draw(raw, position + Vector2.UnitX * (Width + 5), Vector2.One, Color.Lerp(Util.Colors.CloudGray, Util.Colors.White, ease * (0.9f + sin)) * (1 - listEase));
 
-            if (dropdown) {
-                foreach (UIElement child in Children)
-                    if (child is UILevelRibbon lvl)
-                        lvl.Render(from + lvl.Position);
-                Draw.Rect(new Vector2(from.X, position.Y + Height + H + 2), Parent.Width, h - H, Util.Colors.DarkGray);
-                Draw.Rect(new Vector2(from.X, position.Y + Height), 24, H + 2, Util.Colors.DarkGray);
-                Draw.Rect(new Vector2(from.X + 24, position.Y + Height), 1, H + 2, BG);
-            }
+        base.Render(position);
+
+        if (dropdown) {
+            foreach (UIElement child in Children)
+                if (child is UILevelRibbon lvl)
+                    lvl.Render(from + lvl.Position);
+            Draw.Rect(new Vector2(from.X, position.Y + Height + H + 2), Parent.Width, h - H, Util.Colors.DarkGray);
+            Draw.Rect(new Vector2(from.X, position.Y + Height), 24, H + 2, Util.Colors.DarkGray);
+            Draw.Rect(new Vector2(from.X + 24, position.Y + Height), 1, H + 2, BG);
         }
+    }
 
-        private UIElement ConfirmLoadMessage() {
-            UIRibbon ribbon = new UIRibbon(Dialog.Clean(mode.MapData.Data.Name), 8, 8, true, true) {
-                FG = FG,
-                BG = BG,
-                BGAccent = BGAccent,
-            };
-            ribbon.Position = new Vector2(-ribbon.Width / 2, 0);
+    private UIElement ConfirmLoadMessage() {
+        UIRibbon ribbon = new UIRibbon(Dialog.Clean(mode.MapData.Data.Name), 8, 8, true, true) {
+            FG = FG,
+            BG = BG,
+            BGAccent = BGAccent,
+        };
+        ribbon.Position = new Vector2(-ribbon.Width / 2, 0);
 
-            UILabel msg = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_CONFIRM"));
-            msg.Position = new Vector2(-msg.Width / 2, ribbon.Position.Y + ribbon.Height + 4);
+        UILabel msg = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_CONFIRM"));
+        msg.Position = new Vector2(-msg.Width / 2, ribbon.Position.Y + ribbon.Height + 4);
 
-            UILabel warn = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_UNSAVED")) {
-                FG = Util.Colors.CloudLightGray,
-            };
-            warn.Position = new Vector2(-warn.Width / 2, msg.Position.Y + msg.Height);
+        UILabel warn = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_UNSAVED")) {
+            FG = Util.Colors.CloudLightGray,
+        };
+        warn.Position = new Vector2(-warn.Width / 2, msg.Position.Y + msg.Height);
 
-            UILabel tip = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_TIP")) {
-                FG = Util.Colors.CloudLightGray,
-            };
-            tip.Position = new Vector2(-tip.Width / 2, warn.Position.Y + warn.Height);
+        UILabel tip = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_TIP")) {
+            FG = Util.Colors.CloudLightGray,
+        };
+        tip.Position = new Vector2(-tip.Width / 2, warn.Position.Y + warn.Height);
 
-            var element = Regroup(ribbon, msg, warn, tip);
+        var element = Regroup(ribbon, msg, warn, tip);
 
-            Vector2 offset = new Vector2(element.Width / 2f, element.Height);
-            ribbon.Position -= offset;
-            msg.Position -= offset;
-            warn.Position -= offset;
-            tip.Position -= offset;
+        Vector2 offset = new Vector2(element.Width / 2f, element.Height);
+        ribbon.Position -= offset;
+        msg.Position -= offset;
+        warn.Position -= offset;
+        tip.Position -= offset;
 
-            return element;
-        }
+        return element;
     }
 }

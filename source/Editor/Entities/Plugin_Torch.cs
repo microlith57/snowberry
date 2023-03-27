@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities {
-    [Plugin("torch")]
-    public class Plugin_Torch : Entity {
-        [Option("startLit")] public bool Lit;
+namespace Snowberry.Editor.Entities; 
 
-        public override void Render() {
-            base.Render();
+[Plugin("torch")]
+public class Plugin_Torch : Entity {
+    [Option("startLit")] public bool Lit;
 
-            (Lit ? FromSprite("litTorch", "on") : FromSprite("torch", "off"))?.DrawCentered(Position);
-        }
+    public override void Render() {
+        base.Render();
 
-        public static void AddPlacements() {
-            Placements.Create("Torch", "torch", new Dictionary<string, object>() { { "red", false } });
-            Placements.Create("Torch (Lit)", "torch", new Dictionary<string, object>() { { "startLit", true } });
-        }
+        (Lit ? FromSprite("litTorch", "on") : FromSprite("torch", "off"))?.DrawCentered(Position);
+    }
+
+    public static void AddPlacements() {
+        Placements.Create("Torch", "torch", new Dictionary<string, object>() { { "red", false } });
+        Placements.Create("Torch (Lit)", "torch", new Dictionary<string, object>() { { "startLit", true } });
     }
 }

@@ -1,30 +1,30 @@
 ﻿using System.Collections.Generic;
 
-namespace Snowberry.Editor {
-    public class Placements {
-        public class Placement {
-            public string Name, EntityName;
+namespace Snowberry.Editor; 
 
-            public Dictionary<string, object> Defaults;
+public class Placements {
+    public class Placement {
+        public string Name, EntityName;
 
-            public Placement(string name, string entityName, Dictionary<string, object> defaults) {
-                Name = name;
-                EntityName = entityName;
-                Defaults = defaults;
-            }
+        public Dictionary<string, object> Defaults;
 
-            public Entity Build(Room room) {
-                Entity e = Entity.Create(EntityName, room);
-                foreach (var item in Defaults)
-                    e.Set(item.Key, item.Value);
-                return e;
-            }
+        public Placement(string name, string entityName, Dictionary<string, object> defaults) {
+            Name = name;
+            EntityName = entityName;
+            Defaults = defaults;
         }
 
-        public static List<Placement> All = new List<Placement>();
-
-        public static void Create(string placementName, string entityName, Dictionary<string, object> defaults = null) {
-            All.Add(new Placement(placementName, entityName, defaults ?? new Dictionary<string, object>()));
+        public Entity Build(Room room) {
+            Entity e = Entity.Create(EntityName, room);
+            foreach (var item in Defaults)
+                e.Set(item.Key, item.Value);
+            return e;
         }
+    }
+
+    public static List<Placement> All = new List<Placement>();
+
+    public static void Create(string placementName, string entityName, Dictionary<string, object> defaults = null) {
+        All.Add(new Placement(placementName, entityName, defaults ?? new Dictionary<string, object>()));
     }
 }
