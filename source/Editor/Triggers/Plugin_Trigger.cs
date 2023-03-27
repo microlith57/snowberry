@@ -2,7 +2,7 @@
 using Monocle;
 using System.Text.RegularExpressions;
 
-namespace Snowberry.Editor.Triggers; 
+namespace Snowberry.Editor.Triggers;
 
 [Plugin("checkpointBlockerTrigger")]
 [Plugin("goldenBerryCollectTrigger")]
@@ -18,6 +18,8 @@ public class Plugin_Trigger : Entity {
 
     public override int MinWidth => 8;
     public override int MinHeight => 8;
+
+    public override bool IsTrigger => true;
 
     public override void Initialize() {
         base.Initialize();

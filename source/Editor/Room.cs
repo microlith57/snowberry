@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using Snowberry.Editor.Entities;
 
 namespace Snowberry.Editor;
 
@@ -140,10 +141,9 @@ public class Room {
 
         // Entities
         foreach (EntityData entity in data.Entities) {
-            if (Entity.TryCreate(this, entity, out Entity e)) {
-                AddEntity(e);
-            } else
-                Snowberry.Log(LogLevel.Warn, $"Attempted to load unknown entity ('{entity.Name}')");
+            AddEntity(Entity.TryCreate(this, entity, false, out bool success));
+            if (!success)
+                Snowberry.Log(LogLevel.Warn, $"Attempted to load unknown entity ('{entity.Name}'), using placeholder plugin");
         }
 
         // Player Spawnpoints (excluded from LevelData.Entities)
@@ -154,9 +154,8 @@ public class Room {
 
         // Triggers
         foreach (EntityData trigger in data.Triggers) {
-            if (Entity.TryCreate(this, trigger, out Entity t)) {
-                AddEntity(t);
-            } else
+            AddEntity(Entity.TryCreate(this, trigger, true, out bool success));
+            if (!success)
                 Snowberry.Log(LogLevel.Warn, $"Attempted to load unknown trigger ('{trigger.Name}')");
         }
     }
@@ -381,6 +380,10 @@ public class Room {
                     entityElem.Attributes[opt] = val;
             }
 
+            if (entity is UnknownEntity placeholder)
+                foreach (string opt in placeholder.Attrs.Keys)
+                    entityElem.Attributes[opt] = placeholder.Attrs[opt];
+
             foreach (var node in entity.Nodes) {
                 Element n = new Element {
                     Attributes = new Dictionary<string, object> {
@@ -401,27 +404,31 @@ public class Room {
         };
         ret.Children.Add(triggersElement);
 
-        foreach (var tigger in Triggers) {
+        foreach (var trigger in Triggers) {
             Element triggersElem = new Element {
-                Name = tigger.Name,
+                Name = trigger.Name,
                 Children = new List<Element>(),
                 Attributes = new Dictionary<string, object> {
-                    ["x"] = tigger.X - X * 8,
-                    ["y"] = tigger.Y - Y * 8,
-                    ["width"] = tigger.Width,
-                    ["height"] = tigger.Height,
-                    ["originX"] = tigger.Origin.X,
-                    ["originY"] = tigger.Origin.Y
+                    ["x"] = trigger.X - X * 8,
+                    ["y"] = trigger.Y - Y * 8,
+                    ["width"] = trigger.Width,
+                    ["height"] = trigger.Height,
+                    ["originX"] = trigger.Origin.X,
+                    ["originY"] = trigger.Origin.Y
                 }
             };
 
-            foreach (var opt in tigger.Info.Options.Keys) {
-                var val = tigger.Get(opt);
+            foreach (var opt in trigger.Info.Options.Keys) {
+                var val = trigger.Get(opt);
                 if (val != null)
                     triggersElem.Attributes[opt] = val;
             }
 
-            foreach (var node in tigger.Nodes) {
+            if (trigger is UnknownEntity placeholder)
+                foreach (string opt in placeholder.Attrs.Keys)
+                    triggersElem.Attributes[opt] = placeholder.Attrs[opt];
+
+            foreach (var node in trigger.Nodes) {
                 Element n = new Element {
                     Attributes = new Dictionary<string, object> {
                         ["x"] = node.X - X * 8,
@@ -507,7 +514,7 @@ public class Room {
 
     public void AddEntity(Entity e) {
         AllEntities.Add(e);
-        if (e is Plugin_Trigger)
+        if (e.IsTrigger)
             Triggers.Add(e);
         else
             Entities.Add(e);

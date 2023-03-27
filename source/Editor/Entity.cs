@@ -2,8 +2,9 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections.Generic;
+using Snowberry.Editor.Entities;
 
-namespace Snowberry.Editor; 
+namespace Snowberry.Editor;
 
 public abstract class Entity : Plugin {
     public Room Room { get; private set; }
@@ -18,6 +19,7 @@ public abstract class Entity : Plugin {
     public Vector2 Center => Position + new Vector2(Width, Height) / 2f;
     public Vector2 Origin { get; private set; }
     public Rectangle Bounds => new Rectangle(X, Y, Width, Height);
+    public virtual bool IsTrigger => false;
 
     public bool Tracked { get; protected set; }
 
@@ -199,9 +201,23 @@ public abstract class Entity : Plugin {
         return null;
     }
 
-    internal static bool TryCreate(Room room, EntityData entityData, out Entity entity) {
-        entity = Create(room, entityData);
-        return entity != null;
+    internal static Entity TryCreate(Room room, EntityData entityData, bool trigger, out bool success) {
+        Entity entity = Create(room, entityData);
+
+        if (entity == null) {
+            var name = entityData.Name;
+            entity = new UnknownEntity {
+                Room = room,
+                LoadedFromTrigger = trigger,
+                Info = new UnkownPluginInfo(name),
+                Name = name
+            };
+            entity.InitializeData(entityData);
+        }
+
+        success = entity is not UnknownEntity;
+
+        return entity;
     }
 
     #endregion

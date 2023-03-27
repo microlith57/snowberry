@@ -53,12 +53,12 @@ public class Map {
         // load stylegrounds
         if (data.Foreground != null && data.Foreground.Children != null) {
             foreach (var item in data.Foreground.Children) {
-                string name = item.Name.ToLowerInvariant();
+                string name = item.Name;
 
-                if (name.Equals("apply")) {
+                if (name.ToLowerInvariant().Equals("apply")) {
                     if (item.Children != null) {
                         foreach (var child in item.Children) {
-                            Styleground styleground = Styleground.Create(child.Name.ToLower(), this, child, item);
+                            Styleground styleground = Styleground.Create(child.Name, this, child, item);
                             FGStylegrounds.Add(styleground);
                         }
                     }
@@ -71,12 +71,12 @@ public class Map {
 
         if (data.Background != null && data.Background.Children != null) {
             foreach (var item in data.Background.Children) {
-                string name = item.Name.ToLowerInvariant();
+                string name = item.Name;
 
-                if (name.Equals("apply")) {
+                if (name.ToLowerInvariant().Equals("apply")) {
                     if (item.Children != null) {
                         foreach (var child in item.Children) {
-                            Styleground styleground = Styleground.Create(child.Name.ToLower(), this, child, item);
+                            Styleground styleground = Styleground.Create(child.Name, this, child, item);
                             BGStylegrounds.Add(styleground);
                         }
                     }
@@ -302,7 +302,7 @@ public class Map {
                     elem.Attributes[opt] = val;
             }
 
-            if (styleground is Plugin_Other placeholder)
+            if (styleground is UnknownStyleground placeholder)
                 foreach (string opt in placeholder.Attrs.Keys)
                     elem.Attributes[opt] = placeholder.Attrs[opt];
 

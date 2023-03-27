@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using static Celeste.BinaryPacker;
 
-namespace Snowberry.Editor; 
+namespace Snowberry.Editor;
 
 public class Styleground : Plugin {
     public Map Map;
@@ -94,8 +94,8 @@ public class Styleground : Plugin {
         if (exists) {
             styleground = plugin.Instantiate<Styleground>();
         } else {
-            Snowberry.Log(LogLevel.Info, $"Attempted to load unkown styleground ('{name}'), using placeholder plugin.");
-            styleground = new Plugin_Other {
+            Snowberry.Log(LogLevel.Info, $"Attempted to load unknown styleground ('{name}'), using placeholder plugin.");
+            styleground = new UnknownStyleground {
                 Name = name,
                 Info = new UnkownPluginInfo(name)
             };

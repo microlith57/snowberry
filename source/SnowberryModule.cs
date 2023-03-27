@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor; 
+namespace Snowberry;
 
 /// <summary>
 /// The class that you inherit from in order for your mod to be loaded into the editor.
