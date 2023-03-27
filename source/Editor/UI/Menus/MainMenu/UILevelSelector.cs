@@ -17,12 +17,13 @@ public class UILevelSelector : UIElement {
 
         LevelRibbonAnim = 0f;
 
-        UIScrollPane levelScrollPane = new UIScrollPane() {
+        UIScrollPane levelScrollPane = new UIScrollPane {
+            TopPadding = 10,
             Height = Parent.Height - 30,
             Position = new Vector2(-16, 22),
             BG = Color.Transparent,
             Background = Color.Transparent,
-            ShowScrollBar = false,
+            ShowScrollBar = false
         };
 
         levels = new UILevelRibbon[lvlCount = AreaData.Areas.Count];
