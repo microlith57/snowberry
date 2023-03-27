@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Snowberry.Editor.Entities;
 
-namespace Snowberry; 
+namespace Snowberry;
 
 public class PluginInfo {
     internal static readonly Dictionary<string, PluginInfo> Entities = new();
@@ -16,7 +17,7 @@ public class PluginInfo {
     private readonly string name;
     private readonly ConstructorInfo ctor;
 
-    public readonly ReadOnlyDictionary<string, FieldInfo> Options;
+    public readonly Dictionary<string, PluginOption> Options;
 
     public readonly SnowberryModule Module;
 
@@ -25,18 +26,17 @@ public class PluginInfo {
         this.ctor = ctor;
         Module = module;
 
-        Dictionary<string, FieldInfo> options = new();
+        Dictionary<string, PluginOption> options = new();
         foreach (FieldInfo f in t.GetFields()) {
             if (f.GetCustomAttribute<OptionAttribute>() is OptionAttribute option) {
-                if (option.Name == null || option.Name == string.Empty) {
+                if (string.IsNullOrEmpty(option.Name)) {
                     Snowberry.Log(LogLevel.Warn, $"'{f.Name}' ({f.FieldType.Name}) from plugin '{name}' was ignored because it had a null or empty option name!");
-                    continue;
                 } else if (!options.ContainsKey(option.Name))
-                    options.Add(option.Name, f);
+                    options.Add(option.Name, new FieldOption(f, option.Name));
             }
         }
 
-        Options = new ReadOnlyDictionary<string, FieldInfo>(options);
+        Options = new Dictionary<string, PluginOption>(options);
     }
 
     public T Instantiate<T>() where T : Plugin {
@@ -92,6 +92,53 @@ public class PluginInfo {
     }
 }
 
-internal class UnkownPluginInfo : PluginInfo {
-    public UnkownPluginInfo(string name) : base(name, typeof(Plugin), null, CelesteEverest.INSTANCE) { }
+public interface PluginOption {
+    object GetValue(Plugin from);
+    void SetValue(Plugin on, object value);
+    Type FieldType { get; }
+    string Key { get; }
+}
+
+public class FieldOption : PluginOption {
+    private readonly FieldInfo field;
+
+    public FieldOption(FieldInfo field, string key) {
+        this.field = field;
+        Key = key;
+    }
+
+    public object GetValue(Plugin from) => field.GetValue(from);
+
+    public void SetValue(Plugin on, object value) => field.SetValue(on, value);
+
+    public Type FieldType => field.FieldType;
+
+    public string Key { get; }
+}
+
+public class UnknownPluginInfo : PluginInfo {
+    public UnknownPluginInfo(string name, Dictionary<string, object> values = null) : base(name, typeof(Plugin), null, CelesteEverest.INSTANCE) {
+        if (values != null)
+            foreach (var pair in values)
+                Options[pair.Key] = new UnknownEntityAttr(pair.Value.GetType(), pair.Key);
+    }
+}
+
+public class UnknownEntityAttr : PluginOption {
+
+    public UnknownEntityAttr(Type fieldType, string key) {
+        FieldType = fieldType;
+        Key = key;
+    }
+
+    public object GetValue(Plugin from) {
+        return ((UnknownEntity)from).Attrs[Key];
+    }
+
+    public void SetValue(Plugin on, object value) {
+        ((UnknownEntity)on).Attrs[Key] = value;
+    }
+
+    public Type FieldType { get; }
+    public string Key { get; }
 }

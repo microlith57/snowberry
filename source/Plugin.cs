@@ -29,7 +29,7 @@ public abstract class Plugin {
 
     // overriden by generic plugins
     public virtual void Set(string option, object value) {
-        if (Info.Options.TryGetValue(option, out FieldInfo f)) {
+        if (Info.Options.TryGetValue(option, out PluginOption f)) {
             object v = value is string str ? StrToObject(f.FieldType, str) : Convert.ChangeType(value, f.FieldType);
             if (f.FieldType == typeof(char)) // TODO: this is kind of ugly; TileEntity is still broken, but less
                 v = value.ToString()[0];
@@ -44,7 +44,7 @@ public abstract class Plugin {
     }
 
     public virtual object Get(string option) {
-        if (Info.Options.TryGetValue(option, out FieldInfo f))
+        if (Info.Options.TryGetValue(option, out PluginOption f))
             return ObjectToStr(f.GetValue(this));
         return null;
     }

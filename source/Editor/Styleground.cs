@@ -97,7 +97,7 @@ public class Styleground : Plugin {
             Snowberry.Log(LogLevel.Info, $"Attempted to load unknown styleground ('{name}'), using placeholder plugin.");
             styleground = new UnknownStyleground {
                 Name = name,
-                Info = new UnkownPluginInfo(name)
+                Info = new UnknownPluginInfo(name)
             };
         }
 

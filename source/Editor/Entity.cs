@@ -209,7 +209,7 @@ public abstract class Entity : Plugin {
             entity = new UnknownEntity {
                 Room = room,
                 LoadedFromTrigger = trigger,
-                Info = new UnkownPluginInfo(name),
+                Info = new UnknownPluginInfo(name, entityData.Values),
                 Name = name
             };
             entity.InitializeData(entityData);
