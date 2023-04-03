@@ -32,6 +32,8 @@ public abstract class Entity : Plugin {
     // -1 = unlimited nodes
     public virtual int MaxNodes => 0;
 
+    public bool Dirty = false;
+
     private bool nodesChanged;
     private readonly List<Vector2> nodes = new List<Vector2>();
     private Vector2[] nodeArray;
@@ -64,14 +66,14 @@ public abstract class Entity : Plugin {
     public Entity SetPosition(Vector2 position) {
         Position = position;
         updateSelection = true;
-        Room?.MarkTrackedEntityDirty(this);
+        Room?.MarkEntityDirty(this);
         return this;
     }
 
     public void Move(Vector2 amount) {
         Position += amount;
         updateSelection = true;
-        Room?.MarkTrackedEntityDirty(this);
+        Room?.MarkEntityDirty(this);
     }
 
     public void SetNode(int i, Vector2 position) {
@@ -80,7 +82,7 @@ public abstract class Entity : Plugin {
             updateSelection = true;
         }
 
-        Room?.MarkTrackedEntityDirty(this);
+        Room?.MarkEntityDirty(this);
     }
 
     public void MoveNode(int i, Vector2 amount) {
@@ -89,31 +91,31 @@ public abstract class Entity : Plugin {
             updateSelection = nodesChanged = true;
         }
 
-        Room?.MarkTrackedEntityDirty(this);
+        Room?.MarkEntityDirty(this);
     }
 
     public void AddNode(Vector2 position) {
         nodes.Add(position);
         nodesChanged = true;
-        Room?.MarkTrackedEntityDirty(this);
+        Room?.MarkEntityDirty(this);
     }
 
     internal void ResetNodes() {
         nodes.Clear();
         nodesChanged = true;
-        Room?.MarkTrackedEntityDirty(this);
+        Room?.MarkEntityDirty(this);
     }
 
     public virtual void SetWidth(int width) {
         Width = width;
         updateSelection = true;
-        Room?.MarkTrackedEntityDirty(this);
+        Room?.MarkEntityDirty(this);
     }
 
     public virtual void SetHeight(int height) {
         Height = height;
         updateSelection = true;
-        Room?.MarkTrackedEntityDirty(this);
+        Room?.MarkEntityDirty(this);
     }
 
     public virtual void ChangeDefault() { }

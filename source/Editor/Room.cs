@@ -294,6 +294,9 @@ public class Room {
             Draw.Rect(offset, Width * 8, Height * 8, Color.Black * 0.5f);
 
         DirtyTrackedEntities.Clear();
+
+        foreach (var e in Entities)
+            e.Dirty = false;
     }
 
     internal void HQRender() {
@@ -538,9 +541,10 @@ public class Room {
         }
     }
 
-    public void MarkTrackedEntityDirty(Entity e) {
-        if (e.Tracked) {
+    public void MarkEntityDirty(Entity e) {
+        if (e.Tracked)
             DirtyTrackedEntities[e.GetType()] = true;
-        }
+
+        e.Dirty = true;
     }
 }

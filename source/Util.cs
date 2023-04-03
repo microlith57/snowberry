@@ -1,7 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry; 
+namespace Snowberry;
 
 public static class Util {
     public static class Colors {
@@ -19,5 +20,27 @@ public static class Util {
 
     public static int Bit(this bool b) {
         return b ? 1 : 0;
+    }
+
+    public static object Default(Type t) {
+        if (t.IsEnum)
+            return t.GetEnumValues().GetValue(0);
+        if (t == typeof(string))
+            return "";
+        if (t == typeof(int))
+            return 0;
+        if (t == typeof(short))
+            return (short)0;
+        if (t == typeof(byte))
+            return (byte)0;
+        if (t == typeof(long))
+            return (long)0;
+        if (t == typeof(float))
+            return (float)0;
+        if (t == typeof(double))
+            return (double)0;
+        if (t == typeof(bool))
+            return false;
+        return null;
     }
 }

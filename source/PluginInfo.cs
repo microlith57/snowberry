@@ -186,7 +186,7 @@ public class LuaEntityOption : PluginOption {
     }
 
     public object GetValue(Plugin from) {
-        return ((LuaEntity)from).Values[Key];
+        return ((LuaEntity)from).Values.TryGetValue(Key, out object v) ? v : Util.Default(FieldType);
     }
 
     public void SetValue(Plugin on, object value) {

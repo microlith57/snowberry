@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Celeste;
 using Celeste.Mod;
+using Monocle;
 using MonoMod.Utils;
 using NLua;
+using NLua.Exceptions;
 using Snowberry.Editor;
 
 namespace Snowberry;
@@ -28,6 +31,15 @@ public static class LoennPluginLoader {
                     text = reader.ReadToEnd();
                 }
 
+                // `require` searchers are broken, yaaaaaaay
+                text = $"""
+                    local snowberry_orig_require = require
+                    local require = function(name)
+                        return snowberry_orig_require("#Snowberry.LoennPluginLoader").EverestRequire(name)
+                    end
+                    {text}
+                    """;
+
                 object[] pluginTables = Everest.LuaLoader.Context.DoString(text, asset.PathVirtual);
                 foreach (var p in pluginTables) {
                     var pluginTable = p as LuaTable;
@@ -45,7 +57,7 @@ public static class LoennPluginLoader {
                 }
 
                 Snowberry.Log(LogLevel.Warn, $"Failed to load Loenn plugin at \"{asset.PathVirtual}\"");
-                Snowberry.Log(LogLevel.Verbose, $"Reason: {ex}");
+                Snowberry.Log(LogLevel.Warn, $"Reason: {ex}");
             }
         }
 
@@ -83,6 +95,34 @@ public static class LoennPluginLoader {
         }
     }
 
+    public static object EverestRequire(string name) {
+        // name could be "mods", "structs.rectangle", "libraries.jautils", etc
+
+        // if you want something, check Loenn/, then LoennHelpers/
+        // otherwise sorry it doesn't exist
+        try {
+            LuaFunction h = Everest.LuaLoader.Context.DoString($"return function() return require(\"Loenn/{name.Replace(".", "/")}\") end").FirstOrDefault() as LuaFunction;
+            if(h?.Call().FirstOrDefault() is not null) return h;
+        } catch(LuaScriptException e) {
+            if(!e.ToString().Contains("not found:")) {
+                Snowberry.Log(LogLevel.Verbose, $"Failed to load at {name}");
+                Snowberry.Log(LogLevel.Verbose, $"Reason: {e}");
+            }
+        }
+
+        try {
+            LuaFunction h = Everest.LuaLoader.Context.DoString($"return function() return require(\"LoennHelpers/{name.Replace(".", "/")}\") end").FirstOrDefault() as LuaFunction;
+            if(h?.Call().FirstOrDefault() is not null) return h;
+        } catch(LuaScriptException e) {
+            if(!e.ToString().Contains("not found:")) {
+                Snowberry.Log(LogLevel.Verbose, $"Failed to load at {name}");
+                Snowberry.Log(LogLevel.Verbose, $"Reason: {e}");
+            }
+        }
+
+        return "\n\tCould not find Loenn library: " + name;
+    }
+
     internal static void RegisterLoennAsset(ModAsset asset, string path) {
         assets.Add(asset);
     }
@@ -97,5 +137,27 @@ public static class LoennPluginLoader {
         } finally {
             Snowberry.CrawlForLua = false;
         }
+    }
+
+    private static LuaTable EmptyTable() {
+        return Everest.LuaLoader.Context.DoString("return {}").FirstOrDefault() as LuaTable;
+    }
+
+    public static object LuaGetImage(string textureName, string atlasName) {
+        var meta = EmptyTable();
+
+        atlasName ??= "game";
+
+        // Not sure if Loenn uses the same format, but we render these so we can pick whatever format we like
+        meta["image"] = textureName;
+        meta["atlas"] = atlasName;
+
+        Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
+        MTexture texture = atlas[textureName];
+        meta["width"] = meta["realWidth"] = texture.Width;
+        meta["height"] = meta["realHeight"] = texture.Height;
+        meta["offsetX"] = meta["offsetY"] = 0;
+
+        return meta;
     }
 }
