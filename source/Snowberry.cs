@@ -1,6 +1,5 @@
 ﻿using Celeste;
 using Celeste.Mod;
-using Snowberry.Editor;
 using Microsoft.Xna.Framework;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
@@ -9,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Snowberry; 
+namespace Snowberry;
 
 public sealed class Snowberry : EverestModule {
     private static Hook hook_MapData_orig_Load, hook_Session_get_MapData;
@@ -28,6 +27,9 @@ public sealed class Snowberry : EverestModule {
     public override Type SettingsType => typeof(SnowberrySettings);
     public static SnowberrySettings Settings => (SnowberrySettings)Instance._Settings;
 
+    // TODO: kind of dirty to leave it here
+    public static bool CrawlForLua = false;
+
     public override void Load() {
         hook_MapData_orig_Load = new Hook(
             typeof(MapData).GetMethod("orig_Load", BindingFlags.Instance | BindingFlags.NonPublic),
@@ -42,14 +44,16 @@ public sealed class Snowberry : EverestModule {
         On.Celeste.Editor.MapEditor.ctor += UsePlaytestMap;
         On.Celeste.MapData.StartLevel += DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine += DontEnterPlaytestMap;
+        On.Celeste.Mod.ModContent.Add += HoldLuaAssets;
+
         Everest.Events.MainMenu.OnCreateButtons += MainMenu_OnCreateButtons;
-            
     }
 
     public override void LoadContent(bool firstLoad) {
         base.LoadContent(firstLoad);
 
         LoadModules();
+        LoennPluginLoader.LoadPlugins();
 
         Fonts.Load();
     }
@@ -61,6 +65,8 @@ public sealed class Snowberry : EverestModule {
         On.Celeste.Editor.MapEditor.ctor -= UsePlaytestMap;
         On.Celeste.MapData.StartLevel -= DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine -= DontEnterPlaytestMap;
+        On.Celeste.Mod.ModContent.Add -= HoldLuaAssets;
+
         Everest.Events.MainMenu.OnCreateButtons -= MainMenu_OnCreateButtons;
     }
 
@@ -84,7 +90,7 @@ public sealed class Snowberry : EverestModule {
 
         Modules = modules.ToArray();
     }
-        
+
     private void MainMenu_OnCreateButtons(OuiMainMenu menu, System.Collections.Generic.List<MenuButton> buttons)
     {
         MainMenuSmallButton btn = new MainMenuSmallButton("EDITOR_MAINMENU", "menu/editor", menu, Vector2.Zero, Vector2.Zero, () => {
@@ -121,6 +127,10 @@ public sealed class Snowberry : EverestModule {
         Logger.Log(level, "Snowberry", message);
     }
 
+    public static void LogInfo(string message) {
+        Log(LogLevel.Info, message);
+    }
+
     private void UsePlaytestMap(On.Celeste.Editor.MapEditor.orig_ctor orig, Celeste.Editor.MapEditor self, AreaKey area, bool reloadMapData) {
         orig(self, area, reloadMapData);
         var selfData = new DynamicData(self);
@@ -140,21 +150,38 @@ public sealed class Snowberry : EverestModule {
     private LevelData DontCrashOnEmptyPlaytestLevel(On.Celeste.MapData.orig_StartLevel orig, MapData self) {
         // TODO: just add an empty room
         if (self.Area.SID == "Snowberry/Playtest" && self.Levels.Count == 0) {
-            var empty = new BinaryPacker.Element();
-            empty.Children = new List<BinaryPacker.Element>();
-            empty.Attributes = new Dictionary<string, object>();
-            empty.Attributes["name"] = "lvl_empty_map";
+            var empty = new BinaryPacker.Element {
+                Children = new List<BinaryPacker.Element>(),
+                Attributes = new Dictionary<string, object> {
+                    ["name"] = "lvl_empty_map"
+                }
+            };
             return new LevelData(empty);
-        } else
-            return orig(self);
+        }
+
+        return orig(self);
     }
 
     private System.Collections.IEnumerator DontEnterPlaytestMap(On.Celeste.LevelEnter.orig_Routine orig, LevelEnter self) {
         var session = new DynamicData(self).Get<Session>("session");
         if (session.Area.SID == "Snowberry/Playtest" && session != Editor.Editor.PlaytestSession && string.IsNullOrEmpty(LevelEnter.ErrorMessage)) {
             return CantEnterRoutine(self);
-        } else
-            return orig(self);
+        }
+
+        return orig(self);
+    }
+
+    private void HoldLuaAssets(On.Celeste.Mod.ModContent.orig_Add orig, ModContent self, string path, ModAsset asset) {
+        if (!CrawlForLua)
+            orig(self, path, asset);
+        else {
+            if (asset.Type == null)
+                path = Everest.Content.GuessType(path, out asset.Type, out asset.Format);
+            asset.PathVirtual = path;
+
+            if (asset.Type == typeof(AssetTypeLua) && path.StartsWith("Loenn/"))
+                LoennPluginLoader.RegisterLoennAsset(asset, path);
+        }
     }
 
     private System.Collections.IEnumerator CantEnterRoutine(LevelEnter self) {

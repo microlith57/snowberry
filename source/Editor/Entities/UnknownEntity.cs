@@ -16,6 +16,7 @@ public class UnknownEntity : Entity {
 
     public override bool IsTrigger => LoadedFromTrigger;
 
+    // not strictly necessary, but avoids unnecessary overhead
     public override void Set(string option, object value) {
         Attrs[option] = value;
     }

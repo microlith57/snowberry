@@ -103,8 +103,8 @@ public class Styleground : Plugin {
 
         styleground.Map = map;
 
-        if (data != null && data.Attributes != null) {
-            applyData ??= new();
+        if (data?.Attributes != null) {
+            applyData ??= new Element();
             applyData.Attributes ??= new();
 
             foreach (var item in applyData.Attributes)

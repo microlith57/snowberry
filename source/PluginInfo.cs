@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using NLua;
 using Snowberry.Editor.Entities;
 
 namespace Snowberry;
@@ -14,7 +15,7 @@ public class PluginInfo {
     internal static readonly Dictionary<string, PluginInfo> Stylegrounds = new();
     internal static readonly Dictionary<string, PluginInfo> OtherPlugins = new();
 
-    private readonly string name;
+    protected readonly string name;
     private readonly ConstructorInfo ctor;
 
     public readonly Dictionary<string, PluginOption> Options;
@@ -39,7 +40,7 @@ public class PluginInfo {
         Options = new Dictionary<string, PluginOption>(options);
     }
 
-    public T Instantiate<T>() where T : Plugin {
+    public virtual T Instantiate<T>() where T : Plugin {
         T plugin = (T)ctor.Invoke(new object[] { });
         plugin.Info = this;
         plugin.Name = name;
@@ -137,6 +138,59 @@ public class UnknownEntityAttr : PluginOption {
 
     public void SetValue(Plugin on, object value) {
         ((UnknownEntity)on).Attrs[Key] = value;
+    }
+
+    public Type FieldType { get; }
+    public string Key { get; }
+}
+
+public class LoennPluginInfo : PluginInfo {
+
+    protected readonly LuaTable Plugin;
+    protected readonly bool IsTrigger;
+
+    public LoennPluginInfo(string name, LuaTable plugin, bool isTrigger) : base(name, typeof(LuaEntity), null, CelesteEverest.INSTANCE) {
+        Plugin = plugin;
+        IsTrigger = isTrigger;
+
+        // TODO: use fieldInformation
+        if (plugin["placements"] is LuaTable placements) {
+            if (placements.Keys.OfType<string>().Any(k => k.Equals("data"))) {
+                if (placements["data"] is LuaTable data)
+                    foreach (var item in data.Keys.OfType<string>())
+                        Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+            } else if (placements.Keys.Count >= 1 && placements[1] is LuaTable) {
+                for (int i = 1; i < placements.Keys.Count + 1; i++) {
+                    if (placements[i] is not LuaTable ptable)
+                        continue;
+                    if (ptable["data"] is LuaTable data)
+                        foreach (var item in data.Keys.OfType<string>())
+                            Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+                }
+            }
+        }
+    }
+
+    public override T Instantiate<T>() {
+        if(typeof(T).IsAssignableFrom(typeof(LuaEntity)))
+            return new LuaEntity(name, this, Plugin, IsTrigger) as T;
+        return null;
+    }
+}
+
+public class LuaEntityOption : PluginOption {
+    public LuaEntityOption(string key, Type t, string entityName) {
+        // TODO: use entity name to grab tooltip
+        Key = key;
+        FieldType = t;
+    }
+
+    public object GetValue(Plugin from) {
+        return ((LuaEntity)from).Values[Key];
+    }
+
+    public void SetValue(Plugin on, object value) {
+        ((LuaEntity)on).Values[Key] = value;
     }
 
     public Type FieldType { get; }
