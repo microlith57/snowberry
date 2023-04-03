@@ -13,6 +13,7 @@ public class LuaEntity : Entity {
     private bool initialized = false;
 
     // updated on modification
+    Color? color, fillColor, borderColor;
     private string texture;
     private List<SpriteWithPos> sprites;
     private Vector2 justify = Vector2.One * 0.5f;
@@ -32,6 +33,10 @@ public class LuaEntity : Entity {
         base.Render();
 
         if (!initialized || Dirty) {
+            color = CallOrGet<LuaTable>("color") is LuaTable c ? TableColor(c) : null;
+            fillColor = CallOrGet<LuaTable>("fillColor") is LuaTable f ? TableColor(f) : null;
+            borderColor = CallOrGet<LuaTable>("borderColor") is LuaTable b ? TableColor(b) : null;
+
             texture = CallOrGet<string>("texture");
 
             var justifyTable = CallOrGet<LuaTable>("justify");
@@ -45,6 +50,14 @@ public class LuaEntity : Entity {
 
         if(texture != null)
             GFX.Game[texture].DrawJustified(Center, justify);
+
+        if(fillColor is Color fill) {
+            Draw.Rect(Position, Width, Height, fill);
+            if(borderColor is Color border)
+                Draw.HollowRect(Position, Width, Height, border);
+        } else if(color is Color c) {
+            Draw.Rect(Position, Width, Height, c);
+        }
 
         foreach(var sprite in sprites)
             sprite.texture.DrawJustified(Center + sprite.pos, justify, sprite.color, sprite.scale);
@@ -144,7 +157,7 @@ public class LuaEntity : Entity {
     }
 
     private static Color TableColor(LuaTable from) {
-        Color color1 = new Color(Float(from, 1), Float(from, 2), Float(from, 3), Float(from, 4));
+        Color color1 = new Color(Float(from, 1), Float(from, 2), Float(from, 3)) * Float(from, 4);
         from.Dispose();
         return color1;
     }
