@@ -146,15 +146,18 @@ public static class LoennPluginLoader {
     }
 
     public static object LuaGetImage(string textureName, string atlasName) {
-        var meta = EmptyTable();
+        atlasName ??= "Gameplay";
+        Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
 
-        atlasName ??= "game";
+        if (!atlas.Has(textureName))
+            return null;
+
+        var meta = EmptyTable();
 
         // We render these so we can pick whatever format we like
         meta["image"] = textureName;
         meta["atlas"] = atlasName;
 
-        Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
         MTexture texture = atlas[textureName];
         meta["width"] = meta["realWidth"] = texture.Width;
         meta["height"] = meta["realHeight"] = texture.Height;
