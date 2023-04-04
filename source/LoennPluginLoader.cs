@@ -101,9 +101,10 @@ public static class LoennPluginLoader {
         // if you want something, check Loenn/, then LoennHelpers/
         // otherwise sorry it doesn't exist
         try {
-            LuaFunction h = Everest.LuaLoader.Context.DoString($"return function() return require(\"Loenn/{name.Replace(".", "/")}\") end").FirstOrDefault() as LuaFunction;
-            if(h?.Call().FirstOrDefault() is not null) return h;
-        } catch(LuaScriptException e) {
+            var h = Everest.LuaLoader.Context.DoString($"return require(\"Loenn/{name.Replace(".", "/")}\")").FirstOrDefault();
+            if (h != null)
+                return h;
+        } catch (LuaScriptException e) {
             if(!e.ToString().Contains("not found:")) {
                 Snowberry.Log(LogLevel.Verbose, $"Failed to load at {name}");
                 Snowberry.Log(LogLevel.Verbose, $"Reason: {e}");
@@ -111,9 +112,10 @@ public static class LoennPluginLoader {
         }
 
         try {
-            LuaFunction h = Everest.LuaLoader.Context.DoString($"return function() return require(\"LoennHelpers/{name.Replace(".", "/")}\") end").FirstOrDefault() as LuaFunction;
-            if(h?.Call().FirstOrDefault() is not null) return h;
-        } catch(LuaScriptException e) {
+            var h = Everest.LuaLoader.Context.DoString($"return require(\"LoennHelpers/{name.Replace(".", "/")}\")").FirstOrDefault();
+            if (h != null)
+                return h;
+        } catch (LuaScriptException e) {
             if(!e.ToString().Contains("not found:")) {
                 Snowberry.Log(LogLevel.Verbose, $"Failed to load at {name}");
                 Snowberry.Log(LogLevel.Verbose, $"Reason: {e}");
