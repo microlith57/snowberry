@@ -77,8 +77,6 @@ public class LuaEntity : Entity {
         if(CallOrGetAll("sprite") is object[] sprites)
             foreach(var item in sprites) {
                 if(item is LuaTable sprite) {
-                    if(Name.EndsWith("FlagSwitchGate"))
-                        Snowberry.LogInfo($"entity {Name} got a sprite w/ {sprite.Keys} entries");
                     foreach(var k in sprite.Keys) {
                         if(sprite[k] is LuaTable sp && sp["meta"] is LuaTable meta && meta["image"] is string image && meta["atlas"] is string atlasName) {
                             Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
@@ -110,8 +108,6 @@ public class LuaEntity : Entity {
                     sprite.Dispose();
                 }
             }
-        if(Name.EndsWith("FlagSwitchGate"))
-            Snowberry.LogInfo($"entity {Name} has {ret.Count} sprites");
         return ret;
     }
 
