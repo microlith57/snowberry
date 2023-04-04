@@ -181,7 +181,7 @@ public static class LoennPluginLoader {
     }
 
     // invoked via lua
-    public static long lshift(object o, object by) {
+    public static object lshift(object o, object by) {
         return toLong(o) << (int)toLong(by);
     }
 }
