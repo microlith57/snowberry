@@ -95,6 +95,7 @@ public static class LoennPluginLoader {
         }
     }
 
+    // invoked via lua
     public static object EverestRequire(string name) {
         // name could be "mods", "structs.rectangle", "libraries.jautils", etc
 
@@ -145,6 +146,7 @@ public static class LoennPluginLoader {
         return Everest.LuaLoader.Context.DoString("return {}").FirstOrDefault() as LuaTable;
     }
 
+    // invoked via lua
     public static object LuaGetImage(string textureName, string atlasName) {
         atlasName ??= "Gameplay";
         Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
@@ -164,5 +166,22 @@ public static class LoennPluginLoader {
         meta["offsetX"] = meta["offsetY"] = 0;
 
         return meta;
+    }
+
+    private static long toLong(object o) {
+        return o switch {
+            long l => l,
+            int i => i,
+            float f => (long)f,
+            double d => (long)d,
+            short s => s,
+            byte b => b,
+            _ => 0
+        };
+    }
+
+    // invoked via lua
+    public static long lshift(object o, object by) {
+        return toLong(o) << (int)toLong(by);
     }
 }

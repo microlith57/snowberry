@@ -7,6 +7,7 @@ end
 
 local xnaColors = require("consts.xna_colors")
 local rectangles = require("structs.rectangle")
+local bit = require("bit")
 
 local utils = {}
 
@@ -82,6 +83,110 @@ function utils.rotatePoint(point, theta)
     local x, y = point.x, point.y
 
     return math.cos(theta) * x - y * math.sin(theta), math.sin(theta) * x + math.cos(theta) * y
+end
+
+function utils.logn(base, n)
+    return math.log(n) / math.log(base)
+end
+
+function utils.setRandomSeed(v)
+    if type(v) == "number" then
+        math.randomseed(v)
+
+    elseif type(v) == "string" and #v >= 1 then
+        local s = string.byte(v, 1)
+
+        for i = 2, #v do
+            s = s * 256
+            s = s + string.byte(v)
+        end
+
+        math.randomseed(s)
+    end
+end
+
+function utils.distanceSquared(x1, y1, x2, y2)
+    local deltaX = x1 - x2
+    local deltaY = y1 - y2
+
+    return deltaX * deltaX + deltaY * deltaY
+end
+
+function utils.distance(x1, y1, x2, y2)
+    return math.sqrt(utils.distanceSquared(x1, y1, x2, y2))
+end
+
+function utils.getSimpleCoordinateSeed(x, y)
+    return math.abs(bit.lshift(x, math.ceil(utils.logn(2, math.abs(y) + 1)))) + math.abs(y)
+end
+
+function utils.setSimpleCoordinateSeed(x, y)
+    local seed = utils.getSimpleCoordinateSeed(x, y)
+
+    utils.setRandomSeed(seed)
+end
+
+function utils.deepcopy(v, copyMetatables)
+    if type(v) == "table" then
+        local res = {}
+
+        if copyMetatables ~= false then
+            setmetatable(res, getmetatable(v))
+        end
+
+        for key, value in pairs(v) do
+            res[key] = utils.deepcopy(value)
+        end
+
+        return res
+
+    else
+        return v
+    end
+end
+
+function utils.shuffle(t)
+    for i = #t, 2, -1 do
+        local j = math.random(i)
+
+        t[i], t[j] = t[j], t[i]
+    end
+end
+
+-- Shallow mode doesn't check table values recursively
+function utils.equals(lhs, rhs, shallow)
+    if lhs == rhs then
+        return true
+    end
+
+    local lhsType = type(lhs)
+    local rhsType = type(rhs)
+
+    if lhsType ~= rhsType then
+        return false
+    end
+
+    if lhsType == "table" then
+        local equalFunc = shallow and (function(a, b)
+            return a == b
+        end) or utils.equals
+
+        for k, v in pairs(lhs) do
+            if not equalFunc(rhs[k], v) then
+                return false
+            end
+        end
+
+        for k, v in pairs(rhs) do
+            if not equalFunc(lhs[k], v) then
+                return false
+            end
+        end
+
+        return true
+    end
+
+    return false
 end
 
 function utils.clamp(value, min, max)
