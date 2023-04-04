@@ -24,15 +24,17 @@ public static class LoennPluginLoader {
 
         CrawlForLua();
 
-        foreach (var asset in assets.Where(k => k.PathVirtual.StartsWith("Loenn/entities/") || k.PathVirtual.StartsWith("Loenn/triggers/"))) {
-            try {
-                string text;
-                using (var reader = new StreamReader(asset.Stream)) {
-                    text = reader.ReadToEnd();
-                }
+        foreach (var asset in assets) {
+            var path = asset.PathVirtual.Replace('\\', '/');
+            if (path.StartsWith("Loenn/entities/") || path.StartsWith("Loenn/triggers/")) {
+                try {
+                    string text;
+                    using (var reader = new StreamReader(asset.Stream)) {
+                        text = reader.ReadToEnd();
+                    }
 
-                // `require` searchers are broken, yaaaaaaay
-                text = $"""
+                    // `require` searchers are broken, yaaaaaaay
+                    text = $"""
                     local snowberry_orig_require = require
                     local require = function(name)
                         return snowberry_orig_require("#Snowberry.LoennPluginLoader").EverestRequire(name)
@@ -40,24 +42,24 @@ public static class LoennPluginLoader {
                     {text}
                     """;
 
-                object[] pluginTables = Everest.LuaLoader.Context.DoString(text, asset.PathVirtual);
-                foreach (var p in pluginTables) {
-                    var pluginTable = p as LuaTable;
-                    string name = (string)pluginTable["name"];
-                    plugins[name] = pluginTable;
-                    if (asset.PathVirtual.StartsWith("Loenn/triggers/"))
-                        triggers.Add(name);
-                    Snowberry.LogInfo($"Loaded Loenn plugin for \"{pluginTable["name"]}\"");
-                }
-            } catch (Exception e) {
-                string ex = e.ToString();
-                if (ex.Contains("error in error handling")) {
-                    Snowberry.Log(LogLevel.Error, $"Could not load Loenn plugin at \"{asset.PathVirtual}\" because of internal Lua errors. No more Lua entities will be loaded. Try restarting the game.");
-                    break;
-                }
+                    object[] pluginTables = Everest.LuaLoader.Context.DoString(text, path);
+                    foreach (var p in pluginTables) {
+                        var pluginTable = p as LuaTable;
+                        string name = (string)pluginTable["name"];
+                        plugins[name] = pluginTable;
+                        if (path.StartsWith("Loenn/triggers/")) triggers.Add(name);
+                        Snowberry.LogInfo($"Loaded Loenn plugin for \"{pluginTable["name"]}\"");
+                    }
+                } catch (Exception e) {
+                    string ex = e.ToString();
+                    if (ex.Contains("error in error handling")) {
+                        Snowberry.Log(LogLevel.Error, $"Could not load Loenn plugin at \"{path}\" because of internal Lua errors. No more Lua entities will be loaded. Try restarting the game.");
+                        break;
+                    }
 
-                Snowberry.Log(LogLevel.Warn, $"Failed to load Loenn plugin at \"{asset.PathVirtual}\"");
-                Snowberry.Log(LogLevel.Warn, $"Reason: {ex}");
+                    Snowberry.Log(LogLevel.Warn, $"Failed to load Loenn plugin at \"{path}\"");
+                    Snowberry.Log(LogLevel.Warn, $"Reason: {ex}");
+                }
             }
         }
 
