@@ -150,7 +150,7 @@ public static class LoennPluginLoader {
 
         atlasName ??= "game";
 
-        // Not sure if Loenn uses the same format, but we render these so we can pick whatever format we like
+        // We render these so we can pick whatever format we like
         meta["image"] = textureName;
         meta["atlas"] = atlasName;
 

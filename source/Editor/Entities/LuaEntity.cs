@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Celeste;
 using Celeste.Mod;
@@ -59,8 +60,16 @@ public class LuaEntity : Entity {
             Draw.Rect(Position, Width, Height, c);
         }
 
-        foreach(var sprite in sprites)
-            sprite.texture.DrawJustified(Center + sprite.pos, justify, sprite.color, sprite.scale);
+        foreach((MTexture tex, Vector2 pos, Vector2 scale, Color tint, Vector2 justification, float rotation, Vector2 texPos, Vector2 texSize) in sprites) {
+            MTexture draw = tex;
+            if (texPos != Vector2.Zero || texSize != -Vector2.One) {
+                float tWidth = texSize.X < 0 ? tex.Width - texPos.X : texSize.X;
+                float tHeight = texSize.Y < 0 ? tex.Height - texPos.Y : texSize.Y;
+                draw = tex.GetSubtexture((int)texPos.X, (int)texPos.Y, (int)tWidth, (int)tHeight);
+            }
+
+            draw.DrawJustified(Position + pos, justification, tint, scale, rotation);
+        }
     }
 
     private List<SpriteWithPos> Sprites() {
@@ -68,25 +77,41 @@ public class LuaEntity : Entity {
         if(CallOrGetAll("sprite") is object[] sprites)
             foreach(var item in sprites) {
                 if(item is LuaTable sprite) {
+                    if(Name.EndsWith("FlagSwitchGate"))
+                        Snowberry.LogInfo($"entity {Name} got a sprite w/ {sprite.Keys} entries");
                     foreach(var k in sprite.Keys) {
                         if(sprite[k] is LuaTable sp && sp["meta"] is LuaTable meta && meta["image"] is string image && meta["atlas"] is string atlasName) {
                             Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
                             MTexture tex = atlas[image];
-                            int x = X, y = Y;
+                            float x = Float(sp, "x", 0), y = Float(sp, "y", 0);
+                            float jX = Float(sp, "justificationX", 0.5f), jY = Float(sp, "justificationY", 0.5f);
                             float sX = Float(sp, "scaleX"), sY = Float(sp, "scaleY");
-                            Color color = Color.White;
+                            float rotation = Float(sp, "rotation", 0);
+                            Color spColor = Color.White;
 
-                            if(sp["x"] is int spX) { x = spX; }
-                            if(sp["y"] is int spY) { x = spY; }
-                            if(sp["color"] is LuaTable ct) { color = TableColor(ct); }
+                            if(sp["color"] is LuaTable ct) { spColor = TableColor(ct); }
 
-                            ret.Add(new SpriteWithPos(tex, new Vector2(x, y) - Center, new Vector2(sX, sY), color));
+                            float texX = Float(meta, "texX", 0), texY = Float(meta, "texY", 0);
+                            float texW = Float(meta, "texW", -1), texH = Float(meta, "texH", -1);
+
+                            ret.Add(new SpriteWithPos(
+                                tex,
+                                new Vector2(x, y),
+                                new Vector2(sX, sY),
+                                spColor,
+                                new Vector2(jX, jY),
+                                rotation,
+                                new Vector2(texX, texY),
+                                new Vector2(texW, texH)
+                            ));
                             sp.Dispose();
                         }
                     }
                     sprite.Dispose();
                 }
             }
+        if(Name.EndsWith("FlagSwitchGate"))
+            Snowberry.LogInfo($"entity {Name} has {ret.Count} sprites");
         return ret;
     }
 
@@ -103,7 +128,8 @@ public class LuaEntity : Entity {
             case LuaFunction f:
                 try {
                     return f.Call(empty, entity, empty) ?? new[] { orElse };
-                } catch {
+                } catch (Exception e) {
+                    Snowberry.LogInfo($"oh no {e}");
                     return new[] { orElse };
                 }
             case object s:
@@ -162,11 +188,21 @@ public class LuaEntity : Entity {
         return color1;
     }
 
-    private record SpriteWithPos(MTexture texture, Vector2 pos, Vector2 scale, Color color) {
+    private record SpriteWithPos(
+        MTexture Texture,
+        Vector2 Pos,
+        Vector2 Scale,
+        Color Color,
+        Vector2 Justification,
+        float Rotation,
+        Vector2 TexPos,
+        Vector2 TexSize
+    ) {
         // IsExternalInit my ass
-        public readonly MTexture texture = texture;
-        public readonly Vector2 pos = pos;
-        public readonly Vector2 scale = scale;
-        public readonly Color color = color;
+        public readonly MTexture Texture = Texture;
+        public readonly Vector2 Pos = Pos, Scale = Scale, Justification = Justification;
+        public readonly Color Color = Color;
+        public readonly float Rotation = Rotation;
+        public readonly Vector2 TexPos = TexPos, TexSize = TexSize;
     }
 }

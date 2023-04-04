@@ -38,7 +38,14 @@ function drawableNinePatchMt.__index:cacheNinePatchMatrix()
 
             for x = 1, widthInTiles do
                 for y = 1, heightInTiles do
-                    matrix:set(x, y, sprite:getRelativeQuad((x - 1) * tileWidth, (y - 1) * tileHeight, tileWidth, tileHeight, hideOverflow, realSize))
+                    matrix:set(x, y, {
+                        x = (x - 1) * tileWidth,
+                        y = (y - 1) * tileHeight,
+                        width = tileWidth,
+                        height = tileHeight,
+                        hideOverflow = hideOverflow,
+                        realSize = realSize
+                    })
                 end
             end
 
@@ -58,9 +65,10 @@ end
 
 local function getMatrixSprite(atlas, texture, x, y, matrix, quadX, quadY)
     local sprite = drawableSprite.fromTexture(texture, {x = x, y = y, atlas = atlas})
+    local offsets = matrix:get(quadX, quadY)
 
     sprite:setJustification(0.0, 0.0)
-    sprite.quad = matrix:get(quadX, quadY)
+    sprite:useRelativeQuad(offsets.x, offsets.y, offsets.width, offsets.height, offsets.hideOverflow, offsets.realSize)
 
     return sprite
 end

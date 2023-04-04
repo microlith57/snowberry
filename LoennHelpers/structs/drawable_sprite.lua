@@ -6,7 +6,7 @@ end
 -- end snowberry header
 
 local utils = require("utils")
-local loennPluginLoader = require("#Snowberry.LoennPluginLoader")
+local loennPluginLoader = snowberry_orig_require("#Snowberry.LoennPluginLoader")
 
 local drawableSpriteStruct = {}
 
@@ -62,6 +62,13 @@ function drawableSpriteMt.__index:setColor(color)
     return setColor(self, color)
 end
 
+function drawableSpriteMt.__index:setAlpha(alpha)
+    local r, g, b = unpack(self.color or {})
+    local newColor = {r or 1, g or 1, b or 1, alpha}
+
+    return setColor(self, newColor)
+end
+
 -- TODO - Verify that scales are correct
 function drawableSpriteMt.__index:getRectangleRaw()
     local x = self.x
@@ -93,7 +100,7 @@ function drawableSpriteMt.__index:getRectangleRaw()
     local drawWidth = width * math.abs(scaleX)
     local drawHeight = height * math.abs(scaleY)
 
-    --[[if rotation and rotation ~= 0 then
+    if rotation and rotation ~= 0 then
         -- Shorthand for each corner
         -- Remove x and y before rotation, otherwise we rotate around the wrong origin
         local tlx, tly = drawX - x, drawY - y
@@ -110,13 +117,28 @@ function drawableSpriteMt.__index:getRectangleRaw()
         local bestBrx, bestBry = math.max(tlx, trx, blx, brx), math.max(tly, try, bly, bry)
         drawX, drawY = utils.round(x + bestTlx), utils.round(y + bestTly)
         drawWidth, drawHeight = utils.round(bestBrx - bestTlx), utils.round(bestBry - bestTly)
-    end]]--
+    end
 
     return drawX, drawY, drawWidth, drawHeight
 end
 
 function drawableSpriteMt.__index:getRectangle()
     return utils.rectangle(self:getRectangleRaw())
+end
+
+-- getRelativeQuad hopefully not missed
+
+-- x,y in terms of texture
+function drawableSpriteMt.__index:useRelativeQuad(x, y, width, height, hideOverflow, realSize)
+    --local quad, offsetX, offsetY = self:getRelativeQuad(x, y, width, height, hideOverflow, realSize)
+    --
+    --self.quad = quad
+    --self.offsetX = (self.offsetX or 0) + offsetX
+    --self.offsetY = (self.offsetY or 0) + offsetY
+    self.meta.texX = x
+    self.meta.texY = y
+    self.meta.texW = width
+    self.meta.texH = height
 end
 
 function drawableSpriteStruct.fromMeta(meta, data)

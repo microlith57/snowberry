@@ -72,4 +72,91 @@ function utils.getColor(color)
     return {1, 1, 1}
 end
 
+-- Using counter clockwise rotation matrix since the Y axis is mirrored
+function utils.rotate(x, y, theta)
+    return math.cos(theta) * x - y * math.sin(theta), math.sin(theta) * x + math.cos(theta) * y
+end
+
+-- Using counter clockwise rotation matrix since the Y axis is mirrored
+function utils.rotatePoint(point, theta)
+    local x, y = point.x, point.y
+
+    return math.cos(theta) * x - y * math.sin(theta), math.sin(theta) * x + math.cos(theta) * y
+end
+
+function utils.clamp(value, min, max)
+    return math.min(math.max(value, min), max)
+end
+
+function utils.round(n, decimals)
+    if decimals and decimals > 0 then
+        local pow = 10^decimals
+
+        return math.floor(n * pow + 0.5) / pow
+
+    else
+        return math.floor(n + 0.5)
+    end
+end
+
+function utils.getPath(data, path, default, createIfMissing)
+    local target = data
+
+    for i, part in ipairs(path) do
+        local lastPart = i == #path
+        local newTarget = target[part]
+
+        if newTarget ~= nil then
+            target = newTarget
+
+        else
+            if createIfMissing then
+                if not lastPart then
+                    target[part] = {}
+                    target = target[part]
+
+                else
+                    target[part] = default
+                    target = default
+                end
+
+            else
+                return default
+            end
+        end
+    end
+
+    return target
+end
+
+function utils.setPath(data, path, value, createIfMissing)
+    local target = data
+
+    for i, part in ipairs(path) do
+        local lastPart = i == #path
+
+        if lastPart then
+            target[part] = value
+
+        else
+            local newTarget = target[part]
+
+            if newTarget then
+                target = newTarget
+
+            else
+                if createIfMissing then
+                    target[part] = {}
+                    target = target[part]
+
+                else
+                    return false
+                end
+            end
+        end
+    end
+
+    return true
+end
+
 return utils
