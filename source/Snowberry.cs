@@ -91,7 +91,7 @@ public sealed class Snowberry : EverestModule {
         Modules = modules.ToArray();
     }
 
-    private void MainMenu_OnCreateButtons(OuiMainMenu menu, System.Collections.Generic.List<MenuButton> buttons)
+    private void MainMenu_OnCreateButtons(OuiMainMenu menu, List<MenuButton> buttons)
     {
         MainMenuSmallButton btn = new MainMenuSmallButton("EDITOR_MAINMENU", "menu/editor", menu, Vector2.Zero, Vector2.Zero, () => {
             Editor.Editor.OpenFancy(null); //uwu
@@ -99,28 +99,6 @@ public sealed class Snowberry : EverestModule {
         int c = 2;
         if (Celeste.Celeste.PlayMode == Celeste.Celeste.PlayModes.Debug) c++;
         buttons.Insert(c, btn);
-    }
-
-
-    //Currently unused but necessary to determine if Randomizer or other things create a button
-    public static bool TryGetModule(EverestModuleMetadata meta, out EverestModule module)
-    {
-        foreach (EverestModule other in Everest.Modules)
-        {
-            EverestModuleMetadata otherData = other.Metadata;
-            if (otherData.Name != meta.Name)
-                continue;
-
-            Version version = otherData.Version;
-            if (Everest.Loader.VersionSatisfiesDependency(meta.Version, version))
-            {
-                module = other;
-                return true;
-            }
-        }
-
-        module = null;
-        return false;
     }
 
     public static void Log(LogLevel level, string message) {
@@ -141,7 +119,7 @@ public sealed class Snowberry : EverestModule {
                 templates.Add(new Celeste.Editor.LevelTemplate(level));
             }
 
-            foreach (Microsoft.Xna.Framework.Rectangle item in Editor.Editor.PlaytestMapData.Filler) {
+            foreach (Rectangle item in Editor.Editor.PlaytestMapData.Filler) {
                 templates.Add(new Celeste.Editor.LevelTemplate(item.X, item.Y, item.Width, item.Height));
             }
         }
