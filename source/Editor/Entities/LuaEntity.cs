@@ -155,6 +155,8 @@ public class LuaEntity : Entity {
             table["name"] = Name;
             table["width"] = Width;
             table["height"] = Height;
+            table["x"] = X;
+            table["y"] = Y;
         }
 
         return table;
