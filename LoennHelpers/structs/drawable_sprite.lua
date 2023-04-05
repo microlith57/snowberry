@@ -69,6 +69,11 @@ function drawableSpriteMt.__index:setAlpha(alpha)
     return setColor(self, newColor)
 end
 
+-- snowberry added
+function drawableSpriteMt.__index:getDrawableSprite()
+    return self
+end
+
 -- TODO - Verify that scales are correct
 function drawableSpriteMt.__index:getRectangleRaw()
     local x = self.x
