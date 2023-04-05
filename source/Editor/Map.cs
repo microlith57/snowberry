@@ -156,7 +156,11 @@ public class Map {
 
     public void GenerateMapData(MapData data) {
         foreach (var room in Rooms)
-            data.Levels.Add(new LevelData(room.CreateLevelData()));
+            try {
+                data.Levels.Add(new LevelData(room.CreateLevelData()));
+            } catch (InvalidCastException e) {
+                Snowberry.Log(LogLevel.Error, $"Couldn't create room: {e}");
+            }
         foreach (var filler in Fillers)
             data.Filler.Add(filler);
         data.Foreground = GenerateStylegroundsElement(false);

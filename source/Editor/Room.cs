@@ -359,8 +359,7 @@ public class Room {
             Name = "entities",
             Children = new List<Element>()
         };
-        ret.Children = new List<Element>();
-        ret.Children.Add(entitiesElement);
+        ret.Children = new List<Element> { entitiesElement };
 
         foreach (var entity in Entities) {
             Element entityElem = new Element {
@@ -379,7 +378,8 @@ public class Room {
 
             foreach (var opt in entity.Info.Options.Keys) {
                 var val = entity.Get(opt);
-                if (val != null)
+                // check that we don't overwrite any of the above (e.g. from a LuaEntity)
+                if(val != null && !(opt.Equals("id") || opt.Equals("x") || opt.Equals("y") || opt.Equals("width") || opt.Equals("height") || opt.Equals("originX") || opt.Equals("originY")))
                     entityElem.Attributes[opt] = val;
             }
 
@@ -423,7 +423,8 @@ public class Room {
 
             foreach (var opt in trigger.Info.Options.Keys) {
                 var val = trigger.Get(opt);
-                if (val != null)
+                // check that we don't overwrite any of the above (e.g. from a LuaEntity)
+                if(val != null && !(opt.Equals("id") || opt.Equals("x") || opt.Equals("y") || opt.Equals("width") || opt.Equals("height") || opt.Equals("originX") || opt.Equals("originY")))
                     triggersElem.Attributes[opt] = val;
             }
 

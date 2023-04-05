@@ -252,7 +252,7 @@ public class Editor : Scene {
                 PlaytestSession = new Session(Map.From);
                 LevelEnter.Go(PlaytestSession, true);
                 generatePlaytestMapData = false;
-            },
+            }
         };
         ui.AddBelow(test);
 
@@ -466,11 +466,7 @@ public class Editor : Scene {
     }
 
     private static MapData HookSessionGetAreaData(Func<Session, MapData> orig, Session self) {
-        if (self.Area.SID == "Snowberry/Playtest") {
-            return PlaytestMapData;
-        }
-
-        return orig(self);
+        return self.Area.SID == "Snowberry/Playtest" ? PlaytestMapData : orig(self);
     }
 
     internal static void CopyMapMeta(AreaData from, AreaData to) {
