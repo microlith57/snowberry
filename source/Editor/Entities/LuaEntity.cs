@@ -14,7 +14,7 @@ public class LuaEntity : Entity {
     private bool initialized = false;
 
     // updated on modification
-    Color? color, fillColor, borderColor;
+    private Color? color, fillColor, borderColor;
     private string texture;
     private List<SpriteWithPos> sprites;
     private Vector2 justify = Vector2.One * 0.5f;
