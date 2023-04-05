@@ -68,7 +68,7 @@ public class LuaEntity : Entity {
                 draw = tex.GetSubtexture((int)texPos.X, (int)texPos.Y, (int)tWidth, (int)tHeight);
             }
 
-            draw.DrawJustified(Position + pos, justification, tint, scale, rotation);
+            draw.DrawJustified(pos, justification, tint, scale, rotation);
         }
     }
 
