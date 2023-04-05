@@ -40,7 +40,7 @@ public class LuaEntity : Entity {
 
             texture = CallOrGet<string>("texture");
 
-            var justifyTable = CallOrGet<LuaTable>("justify");
+            var justifyTable = CallOrGet<LuaTable>("justification");
             if (justifyTable != null)
                 justify = new Vector2(Float(justifyTable, 1, 0.5f), Float(justifyTable, 2, 0.5f));
 
@@ -50,7 +50,7 @@ public class LuaEntity : Entity {
         }
 
         if(texture != null)
-            GFX.Game[texture].DrawJustified(Center, justify);
+            GFX.Game[texture].DrawJustified(Position, justify);
 
         if(fillColor is Color fill) {
             Draw.Rect(Position, Width, Height, fill);
