@@ -191,8 +191,9 @@ public class LuaEntityOption : PluginOption {
 
     public void SetValue(Plugin on, object value) {
         var onEntity = (LuaEntity)on;
+        var was = onEntity.Values.TryGetValue(Key, out var v) ? v : null;
         onEntity.Values[Key] = value;
-        onEntity.Dirty = true;
+        onEntity.Dirty = was != value;
     }
 
     public Type FieldType { get; }

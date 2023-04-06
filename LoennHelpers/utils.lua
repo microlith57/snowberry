@@ -19,6 +19,10 @@ function utils.point(x, y)
     return rectangles.create(x, y, 1, 1)
 end
 
+function utils.titleCase(name)
+    return name:gsub("(%a)(%a*)", function(a, b) return string.upper(a) .. b end)
+end
+
 function utils.parseHexColor(color)
     color = color:match("^#?([0-9a-fA-F]+)$")
 
@@ -202,6 +206,47 @@ function utils.round(n, decimals)
     else
         return math.floor(n + 0.5)
     end
+end
+
+function utils.filter(predicate, data)
+    local res = {}
+
+    for _, v in ipairs(data) do
+        if predicate(v) then
+            table.insert(res, v)
+        end
+    end
+
+    return res
+end
+
+function utils.contains(value, data)
+    for _, dataValue in pairs(data) do
+        if value == dataValue then
+            return true
+        end
+    end
+
+    return false
+end
+
+function utils.unique(data, hashFunc)
+    hashFunc = hashFunc or function(value) return value end
+
+    local unique = {}
+    local seen = {}
+
+    for _, value in ipairs(data) do
+        local hash = hashFunc(value)
+
+        if not seen[hash] then
+            table.insert(unique, value)
+
+            seen[hash] = true
+        end
+    end
+
+    return unique
 end
 
 function utils.getPath(data, path, default, createIfMissing)

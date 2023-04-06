@@ -114,38 +114,55 @@ public class LuaEntity : Entity {
         if(CallOrGetAll("sprite") is object[] sprites)
             foreach(var item in sprites) {
                 if(item is LuaTable sprite) {
-                    foreach(var k in sprite.Keys) {
-                        if(sprite[k] is LuaTable sp && sp["meta"] is LuaTable meta && meta["image"] is string image && meta["atlas"] is string atlasName) {
-                            Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
-                            MTexture tex = atlas[image];
-                            float x = Float(sp, "x", 0), y = Float(sp, "y", 0);
-                            float jX = Float(sp, "justificationX", 0.5f), jY = Float(sp, "justificationY", 0.5f);
-                            float sX = Float(sp, "scaleX"), sY = Float(sp, "scaleY");
-                            float rotation = Float(sp, "rotation", 0);
-                            Color spColor = Color.White;
+                    foreach(var k in sprite.Keys)
+                        if(sprite[k] is LuaTable sp) {
+                            // normalize ninepatches
+                            if (sp["_type"] is "drawableNinePatch")
+                                if (sp["getDrawableSprite"] is LuaFunction h) {
+                                    sp = h.Call(sp)?.FirstOrDefault() as LuaTable;
+                                    if (sp == null)
+                                        continue;
+                                    foreach (var k2 in sp.Keys)
+                                        CreateSpriteFromTable(sp[k2] as LuaTable, ret);
+                                }
 
-                            if(sp["color"] is LuaTable ct) { spColor = TableColor(ct); }
-
-                            float texX = Float(meta, "texX", 0), texY = Float(meta, "texY", 0);
-                            float texW = Float(meta, "texW", -1), texH = Float(meta, "texH", -1);
-
-                            ret.Add(new SpriteWithPos(
-                                tex,
-                                new Vector2(x, y),
-                                new Vector2(sX, sY),
-                                spColor,
-                                new Vector2(jX, jY),
-                                rotation,
-                                new Vector2(texX, texY),
-                                new Vector2(texW, texH)
-                            ));
-                            sp.Dispose();
+                            CreateSpriteFromTable(sp, ret);
                         }
-                    }
                     sprite.Dispose();
                 }
             }
         return ret;
+    }
+
+    private static void CreateSpriteFromTable(LuaTable sp, List<SpriteWithPos> ret){
+        if(sp?["meta"] is LuaTable meta && meta["image"] is string image && meta["atlas"] is string atlasName){
+            Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
+            MTexture tex = atlas[image];
+            float x = Float(sp, "x", 0), y = Float(sp, "y", 0);
+            float jX = Float(sp, "justificationX", 0.5f), jY = Float(sp, "justificationY", 0.5f);
+            float sX = Float(sp, "scaleX"), sY = Float(sp, "scaleY");
+            float rotation = Float(sp, "rotation", 0);
+            Color spColor = Color.White;
+
+            if(sp["color"] is LuaTable ct)
+                spColor = TableColor(ct);
+
+            float texX = Float(meta, "texX", 0), texY = Float(meta, "texY", 0);
+            float texW = Float(meta, "texW", -1), texH = Float(meta, "texH", -1);
+
+            var swp = new SpriteWithPos(
+                tex,
+                new Vector2(x, y),
+                new Vector2(sX, sY),
+                spColor,
+                new Vector2(jX, jY),
+                rotation,
+                new Vector2(texX, texY),
+                new Vector2(texW, texH)
+            );
+            ret.Add(swp);
+            sp.Dispose();
+        }
     }
 
     private T CallOrGet<T>(string name, T orElse = default) where T : class {
@@ -154,13 +171,17 @@ public class LuaEntity : Entity {
 
     private object[] CallOrGetAll(string name, object orElse = default) {
         using LuaTable entity = WrapEntity();
-        using LuaTable empty = EmptyTable();
+        using LuaTable room = EmptyTable();
+        room["tilesFG"] = EmptyTable();
+        room["tilesBG"] = EmptyTable();
+        room["entities"] = EmptyTable();
+
         if (entity == null)
             return new[] { orElse };
         switch (plugin[name]) {
             case LuaFunction f:
                 try {
-                    return f.Call(empty, entity, empty) ?? new[] { orElse };
+                    return f.Call(room, entity) ?? new[] { orElse };
                 } catch (Exception e) {
                     Snowberry.LogInfo($"oh no {e}");
                     return new[] { orElse };
