@@ -172,8 +172,8 @@ public class LuaEntity : Entity {
     private object[] CallOrGetAll(string name, object orElse = default) {
         using LuaTable entity = WrapEntity();
         using LuaTable room = EmptyTable();
-        room["tilesFG"] = EmptyTable();
-        room["tilesBG"] = EmptyTable();
+        room["tilesFg"] = EmptyTable();
+        room["tilesBg"] = EmptyTable();
         room["entities"] = EmptyTable();
 
         if (entity == null)
