@@ -14,54 +14,50 @@ namespace Snowberry;
 
 public static class LoennPluginLoader {
 
-    private static readonly List<ModAsset> assets = new();
+    private static readonly Dictionary<string, List<ModAsset>> assetsByMod = new();
+    private static readonly Dictionary<string, object[]> reqCache = new();
+    private static string curMod = null;
 
     internal static void LoadPlugins() {
         Snowberry.LogInfo("Trying to load Loenn plugins");
+
+        reqCache.Clear();
 
         Dictionary<string, LuaTable> plugins = new();
         HashSet<string> triggers = new();
 
         CrawlForLua();
 
-        foreach (var asset in assets) {
-            var path = asset.PathVirtual.Replace('\\', '/');
-            if (path.StartsWith("Loenn/entities/") || path.StartsWith("Loenn/triggers/")) {
-                try {
-                    string text;
-                    using (var reader = new StreamReader(asset.Stream)) {
-                        text = reader.ReadToEnd();
-                    }
+        foreach(var modAssets in assetsByMod) {
+            curMod = modAssets.Key;
+            foreach(var asset in modAssets.Value) {
+                var path = asset.PathVirtual.Replace('\\', '/');
+                if(path.StartsWith("Loenn/entities/") || path.StartsWith("Loenn/triggers/")) {
+                    try {
+                        var pluginTables = RunAsset(asset, path);
+                        foreach (var p in pluginTables) {
+                            if (p is LuaTable pluginTable) {
+                                string name = (string)pluginTable["name"];
+                                plugins[name] = pluginTable;
+                                if (path.StartsWith("Loenn/triggers/")) triggers.Add(name);
+                                Snowberry.LogInfo($"Loaded Loenn plugin for \"{pluginTable["name"]}\"");
+                            }
+                        }
+                    } catch (Exception e) {
+                        string ex = e.ToString();
+                        if (ex.Contains("error in error handling")) {
+                            Snowberry.Log(LogLevel.Error, $"Could not load Loenn plugin at \"{path}\" because of internal Lua errors. No more Lua entities will be loaded. Try restarting the game.");
+                            break;
+                        }
 
-                    // `require` searchers are broken, yaaaaaaay
-                    text = $"""
-                    local snowberry_orig_require = require
-                    local require = function(name)
-                        return snowberry_orig_require("#Snowberry.LoennPluginLoader").EverestRequire(name)
-                    end
-                    {text}
-                    """;
-
-                    object[] pluginTables = Everest.LuaLoader.Context.DoString(text, path);
-                    foreach (var p in pluginTables) {
-                        var pluginTable = p as LuaTable;
-                        string name = (string)pluginTable["name"];
-                        plugins[name] = pluginTable;
-                        if (path.StartsWith("Loenn/triggers/")) triggers.Add(name);
-                        Snowberry.LogInfo($"Loaded Loenn plugin for \"{pluginTable["name"]}\"");
+                        Snowberry.Log(LogLevel.Warn, $"Failed to load Loenn plugin at \"{path}\"");
+                        Snowberry.Log(LogLevel.Warn, $"Reason: {ex}");
                     }
-                } catch (Exception e) {
-                    string ex = e.ToString();
-                    if (ex.Contains("error in error handling")) {
-                        Snowberry.Log(LogLevel.Error, $"Could not load Loenn plugin at \"{path}\" because of internal Lua errors. No more Lua entities will be loaded. Try restarting the game.");
-                        break;
-                    }
-
-                    Snowberry.Log(LogLevel.Warn, $"Failed to load Loenn plugin at \"{path}\"");
-                    Snowberry.Log(LogLevel.Warn, $"Reason: {ex}");
                 }
             }
         }
+
+        curMod = null;
 
         Snowberry.LogInfo($"Found {plugins.Count} Loenn plugins");
 
@@ -97,9 +93,27 @@ public static class LoennPluginLoader {
         }
     }
 
+    private static object[] RunAsset(ModAsset asset, string path){
+        string text;
+        using(var reader = new StreamReader(asset.Stream)){
+            text = reader.ReadToEnd();
+        }
+
+        // `require` searchers are broken, yaaaaaaay
+        text = $"""
+                    local snowberry_orig_require = require
+                    local require = function(name)
+                        return snowberry_orig_require("#Snowberry.LoennPluginLoader").EverestRequire(name)
+                    end
+                    {text}
+                    """;
+
+        return Everest.LuaLoader.Context.DoString(text, path);
+    }
+
     // invoked via lua
     public static object EverestRequire(string name) {
-        // name could be "mods", "structs.rectangle", "libraries.jautils", etc
+        // name could be "mods", "structs.rectangle", etc
 
         // if you want something, check Loenn/, then LoennHelpers/
         // otherwise sorry it doesn't exist
@@ -128,12 +142,15 @@ public static class LoennPluginLoader {
         return "\n\tCould not find Loenn library: " + name;
     }
 
-    internal static void RegisterLoennAsset(ModAsset asset, string path) {
-        assets.Add(asset);
+    internal static void RegisterLoennAsset(string mod, ModAsset asset, string path) {
+        if (assetsByMod.TryGetValue(mod, out var value))
+            value.Add(asset);
+        else
+            (assetsByMod[mod] = new List<ModAsset>()).Add(asset);
     }
 
     internal static void CrawlForLua() {
-        assets.Clear();
+        assetsByMod.Clear();
         try {
             Snowberry.CrawlForLua = true;
 
@@ -185,5 +202,28 @@ public static class LoennPluginLoader {
     // invoked via lua
     public static object lshift(object o, object by) {
         return toLong(o) << (int)toLong(by);
+    }
+
+    // invoked via lua
+    public static object RequireFromMods(string filename, string modName) {
+        string curModName = string.IsNullOrEmpty(modName) ? curMod : modName;
+        if (curModName == null || filename == null)
+            return null;
+
+        string target = $"Loenn/{filename.Replace('.', '/')}";
+
+        try {
+            if (reqCache.TryGetValue(target, out var library))
+                return library;
+
+            if (assetsByMod.TryGetValue(curModName, out var libFiles))
+                foreach (var asset in libFiles.Where(asset => asset.PathVirtual.Replace('\\', '/') == target))
+                    return reqCache[target] = RunAsset(asset, target);
+
+            return reqCache[target] = null;
+        } catch (Exception e) {
+            Snowberry.Log(LogLevel.Error, $"Error running Loenn library {modName}/{filename}: {e}");
+            return reqCache[target] = null;
+        }
     }
 }
