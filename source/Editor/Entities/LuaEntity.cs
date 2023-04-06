@@ -26,9 +26,26 @@ public class LuaEntity : Entity {
         Info = info;
         this.plugin = plugin;
         IsTrigger = isTrigger;
+
+        if(CallOrGet<LuaTable>("nodeLimits") is LuaTable limits) {
+            MinNodes = (int)Float(limits, 1, 0);
+            MaxNodes = (int)Float(limits, 2, 0);
+        }
+
+        if(CallOrGet<LuaTable>("minimumSize") is LuaTable minSize) {
+            MinWidth = (int)Float(minSize, 1, 0);
+            MinHeight = (int)Float(minSize, 2, 0);
+        }
     }
 
     public override bool IsTrigger { get; }
+
+    // set on placement
+    // TODO: should react to changes though
+    public override int MinWidth { get; }
+    public override int MinHeight { get; }
+    public override int MinNodes { get; }
+    public override int MaxNodes { get; }
 
     public override void Render() {
         base.Render();
