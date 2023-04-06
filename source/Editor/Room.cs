@@ -2,9 +2,9 @@
 using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Snowberry.Editor.Triggers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Snowberry.Editor.Entities;
@@ -24,8 +24,8 @@ public class Room {
     public int Y => Bounds.Y;
     public int Width => Bounds.Width;
     public int Height => Bounds.Height;
-    public Vector2 Position => new Vector2(X, Y);
-    public Vector2 Size => new Vector2(Width, Height);
+    public Vector2 Position => new(X, Y);
+    public Vector2 Size => new(Width, Height);
 
     public Rectangle ScissorRect { get; private set; }
 
@@ -52,29 +52,19 @@ public class Room {
     private VirtualMap<char> bgTileMap;
     private VirtualMap<MTexture> fgTiles, bgTiles;
 
-    public readonly List<Decal> FgDecals = new List<Decal>();
-    public readonly List<Decal> BgDecals = new List<Decal>();
+    public readonly List<Decal> FgDecals = new();
+    public readonly List<Decal> BgDecals = new();
 
-    public readonly List<Entity> Entities = new List<Entity>();
-    public readonly List<Entity> Triggers = new List<Entity>();
-    public readonly List<Entity> AllEntities = new List<Entity>();
+    public readonly List<Entity> Entities = new();
+    public readonly List<Entity> Triggers = new();
+    public readonly List<Entity> AllEntities = new();
 
-    public readonly Dictionary<Type, List<Entity>> TrackedEntities = new Dictionary<Type, List<Entity>>();
-    public readonly Dictionary<Type, bool> DirtyTrackedEntities = new Dictionary<Type, bool>();
+    public readonly Dictionary<Type, List<Entity>> TrackedEntities = new();
+    public readonly Dictionary<Type, bool> DirtyTrackedEntities = new();
 
-    public int LoadSeed {
-        get {
-            int num = 0;
-            string name = Name;
-            foreach (char c in name) {
-                num += c;
-            }
+    public int LoadSeed => Name.Aggregate(0, (current, c) => current + c);
 
-            return num;
-        }
-    }
-
-    private static readonly Regex tileSplitter = new Regex("\\r\\n|\\n\\r|\\n|\\r");
+    private static readonly Regex tileSplitter = new("\\r\\n|\\n\\r|\\n|\\r");
 
     internal Room(string name, Rectangle bounds) {
         Name = name;
@@ -113,31 +103,25 @@ public class Room {
 
         // BgTiles
         string[] array = tileSplitter.Split(data.Bg);
-        for (int i = 0; i < array.Length; i++) {
-            for (int j = 0; j < array[i].Length; j++) {
+        for (int i = 0; i < array.Length; i++)
+            for (int j = 0; j < array[i].Length; j++)
                 bgTileMap[j, i] = array[i][j];
-            }
-        }
 
         // FgTiles
         string[] array2 = tileSplitter.Split(data.Solids);
-        for (int i = 0; i < array2.Length; i++) {
-            for (int j = 0; j < array2[i].Length; j++) {
+        for (int i = 0; i < array2.Length; i++)
+            for (int j = 0; j < array2[i].Length; j++)
                 fgTileMap[j, i] = array2[i][j];
-            }
-        }
 
         Autotile();
 
         // BgDecals
-        foreach (DecalData decal in data.BgDecals) {
+        foreach (DecalData decal in data.BgDecals)
             BgDecals.Add(new Decal(this, decal));
-        }
 
         // FgDecals
-        foreach (DecalData decal in data.FgDecals) {
+        foreach (DecalData decal in data.FgDecals)
             FgDecals.Add(new Decal(this, decal));
-        }
 
         // Entities
         foreach (EntityData entity in data.Entities) {
@@ -147,10 +131,8 @@ public class Room {
         }
 
         // Player Spawnpoints (excluded from LevelData.Entities)
-        foreach (Vector2 spawn in data.Spawns) {
-            var spawnEntity = Entity.Create("player", this).SetPosition(spawn);
-            AddEntity(spawnEntity);
-        }
+        foreach (Vector2 spawn in data.Spawns)
+            AddEntity(Entity.Create("player", this).SetPosition(spawn));
 
         // Triggers
         foreach (EntityData trigger in data.Triggers) {
@@ -195,8 +177,8 @@ public class Room {
     }
 
     public void Autotile() {
-        fgTiles = GFX.FGAutotiler.GenerateMap(fgTileMap, new Autotiler.Behaviour() { EdgesExtend = true }).TileGrid.Tiles;
-        bgTiles = GFX.BGAutotiler.GenerateMap(bgTileMap, new Autotiler.Behaviour() { EdgesExtend = true }).TileGrid.Tiles;
+        fgTiles = GFX.FGAutotiler.GenerateMap(fgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
+        bgTiles = GFX.BGAutotiler.GenerateMap(bgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
     }
 
     internal List<EntitySelection> GetSelectedEntities(Rectangle rect) {
@@ -204,7 +186,7 @@ public class Room {
 
         foreach (Entity entity in AllEntities) {
             var rects = entity.SelectionRectangles;
-            if (rects != null && rects.Length > 0) {
+            if (rects is { Length: > 0 }) {
                 List<EntitySelection.Selection> selection = new List<EntitySelection.Selection>();
                 bool wasSelected = false;
                 for (int i = 0; i < rects.Length; i++) {
