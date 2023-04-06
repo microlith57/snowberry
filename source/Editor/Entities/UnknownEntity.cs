@@ -7,7 +7,7 @@ namespace Snowberry.Editor.Entities;
 
 // Any entity that doesn't have its own plugin.
 public class UnknownEntity : Entity {
-    private static readonly Color TriggerColor = Calc.HexToColor("0c5f7a");
+    public static readonly Color TriggerColor = Calc.HexToColor("0c5f7a");
 
     public readonly Dictionary<string, object> Attrs = new();
     public bool LoadedFromTrigger = false;

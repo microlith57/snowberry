@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Celeste;
 using Celeste.Mod;
 using Microsoft.Xna.Framework;
@@ -12,6 +13,8 @@ namespace Snowberry.Editor.Entities;
 public class LuaEntity : Entity {
     private readonly LuaTable plugin;
     private bool initialized = false;
+
+    private string triggerText = null;
 
     // updated on modification
     private Color? color, fillColor, borderColor;
@@ -35,20 +38,37 @@ public class LuaEntity : Entity {
         if(CallOrGet<LuaTable>("minimumSize") is LuaTable minSize) {
             MinWidth = (int)Float(minSize, 1, 0);
             MinHeight = (int)Float(minSize, 2, 0);
+
+        }
+
+        if(IsTrigger) {
+            MinWidth = Math.Max(MinWidth, 8);
+            MinHeight = Math.Max(MinHeight, 8);
         }
     }
 
-    public override bool IsTrigger { get; }
+    public sealed override bool IsTrigger { get; }
 
     // set on placement
     // TODO: should react to changes though
-    public override int MinWidth { get; }
-    public override int MinHeight { get; }
-    public override int MinNodes { get; }
-    public override int MaxNodes { get; }
+    public sealed override int MinWidth { get; }
+    public sealed override int MinHeight { get; }
+    public sealed override int MinNodes { get; }
+    public sealed override int MaxNodes { get; }
 
     public override void Render() {
         base.Render();
+
+        if (IsTrigger) {
+            Rectangle rect = new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
+            Draw.Rect(rect, UnknownEntity.TriggerColor * 0.3f);
+            Draw.HollowRect(rect, UnknownEntity.TriggerColor);
+
+            triggerText ??= string.Join(" ", Regex.Split(char.ToUpper(Name[0]) + Name.Substring(1), @"(?=[A-Z])")).Trim();
+
+            Fonts.Pico8.Draw(triggerText, new Vector2(rect.X + rect.Width / 2f, rect.Y + rect.Height / 2f), Vector2.One, Vector2.One * 0.5f, Color.Black);
+            return;
+        }
 
         if (!initialized || Dirty) {
             color = CallOrGet<LuaTable>("color") is LuaTable c ? TableColor(c) : null;
