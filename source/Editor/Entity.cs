@@ -64,29 +64,36 @@ public abstract class Entity : Plugin {
     }
 
     public Entity SetPosition(Vector2 position) {
+        if(position != Position)
+            Room?.MarkEntityDirty(this);
+
         Position = position;
         updateSelection = true;
-        Room?.MarkEntityDirty(this);
         return this;
     }
 
     public void Move(Vector2 amount) {
+        if(amount != Vector2.Zero)
+            Room?.MarkEntityDirty(this);
+
         Position += amount;
         updateSelection = true;
-        Room?.MarkEntityDirty(this);
     }
 
     public void SetNode(int i, Vector2 position) {
         if (i >= 0 && i < Nodes.Length) {
+            if(Nodes[i] != position)
+                Room?.MarkEntityDirty(this);
+
             Nodes[i] = position;
             updateSelection = true;
         }
-
-        Room?.MarkEntityDirty(this);
     }
 
     public void MoveNode(int i, Vector2 amount) {
         if (i >= 0 && i < Nodes.Length) {
+            if(amount != Vector2.Zero)
+                Room?.MarkEntityDirty(this);
             nodes[i] += amount;
             updateSelection = nodesChanged = true;
         }
