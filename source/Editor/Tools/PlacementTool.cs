@@ -63,8 +63,10 @@ public class PlacementTool : Tool {
                 int y = 0;
                 foreach (var b in placementButtons) {
                     var button = b.Value;
-                    button.Visible = searchBar.Found == null || searchBar.Found.Contains(b.Key);
-                    if (button.Visible) {
+                    var active = searchBar.Found == null || searchBar.Found.Contains(b.Key);
+                    button.Visible = active;
+                    button.active = active;
+                    if (active) {
                         button.Position.Y = y;
                         y += button.Height;
                     }
