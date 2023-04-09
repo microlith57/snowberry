@@ -66,17 +66,17 @@ public class Room {
 
     private static readonly Regex tileSplitter = new("\\r\\n|\\n\\r|\\n|\\r");
 
-    internal Room(string name, Rectangle bounds) {
+    internal Room(string name, Rectangle bounds, Map map) {
         Name = name;
         Bounds = bounds;
+        Map = map;
         fgTileMap = new VirtualMap<char>(bounds.Width, bounds.Height, '0');
         bgTileMap = new VirtualMap<char>(bounds.Width, bounds.Height, '0');
         Autotile();
     }
 
     internal Room(LevelData data, Map map)
-        : this(data.Name, data.TileBounds) {
-        Map = map;
+        : this(data.Name, data.TileBounds, map) {
 
         // Music
         Music = data.Music;

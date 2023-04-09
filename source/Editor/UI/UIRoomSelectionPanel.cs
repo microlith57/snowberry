@@ -53,62 +53,62 @@ class UIRoomSelectionPanel : UIElement {
                 }
 
                 return;
-            } else {
-                Add(label = new UILabel("Create room") {
-                    FG = Color.DarkKhaki,
-                    Underline = true
-                });
-                label.Position = Vector2.UnitX * (Width / 2 - label.Width / 2);
-
-                string newName = "";
-                UILabel newNameInvalid, newNameTaken;
-                UIButton newRoom;
-
-                AddBelow(UIPluginOptionList.StringOption("name", newName, text => newName = text), offset);
-
-                AddBelow(newRoom = new UIButton("create room", Fonts.Regular, 2, 2) {
-                    Position = new Vector2(4, 4),
-                });
-                Add(newNameInvalid = new UILabel("invalid name") {
-                    Position = new Vector2(newRoom.Position.X + newRoom.Width + 5, newRoom.Position.Y + 3),
-                    FG = Color.Transparent
-                });
-                Add(newNameTaken = new UILabel("name already used") {
-                    Position = new Vector2(newRoom.Position.X + newRoom.Width + 5, newRoom.Position.Y + 3),
-                    FG = Color.Transparent
-                });
-                newRoom.OnPress = () => {
-                    newNameInvalid.FG = newNameTaken.FG = Color.Transparent;
-                    // validate room name
-                    if (newName.Length <= 0 || Regex.Match(newName, "[0-9a-zA-Z\\-_ ]+").Length != newName.Length)
-                        newNameInvalid.FG = Color.Red;
-                    else if (Editor.Instance.Map.Rooms.Exists(it => it.Name.Equals(newName)))
-                        newNameTaken.FG = Color.Red;
-                    else {
-                        // add room
-                        var b = RoomTool.PendingRoom.Value;
-                        var newRoom = new Room(newName, new Rectangle(b.X / 8, b.Y / 8, b.Width / 8, b.Height / 8));
-                        Editor.Instance.Map.Rooms.Add(newRoom);
-                        Editor.SelectedRoom = newRoom;
-                        RoomTool.PendingRoom = null;
-                        RoomTool.ScheduledRefresh = true;
-                    }
-                };
-
-                AddBelow(new UIButton("create filler", Fonts.Regular, 2, 2) {
-                    Position = new Vector2(4, 4),
-                    OnPress = () => {
-                        var b = RoomTool.PendingRoom.Value;
-                        var newFiller = new Rectangle(b.X / 8, b.Y / 8, b.Width / 8, b.Height / 8);
-                        Editor.Instance.Map.Fillers.Add(newFiller);
-                        Editor.SelectedFillerIndex = Editor.Instance.Map.Fillers.Count - 1;
-                        RoomTool.PendingRoom = null;
-                        RoomTool.ScheduledRefresh = true;
-                    }
-                });
-
-                return;
             }
+
+            Add(label = new UILabel("Create room") {
+                FG = Color.DarkKhaki,
+                Underline = true
+            });
+            label.Position = Vector2.UnitX * (Width / 2 - label.Width / 2);
+
+            string newName = "";
+            UILabel newNameInvalid, newNameTaken;
+            UIButton newRoom;
+
+            AddBelow(UIPluginOptionList.StringOption("name", newName, text => newName = text), offset);
+
+            AddBelow(newRoom = new UIButton("create room", Fonts.Regular, 2, 2) {
+                Position = new Vector2(4, 4),
+            });
+            Add(newNameInvalid = new UILabel("invalid name") {
+                Position = new Vector2(newRoom.Position.X + newRoom.Width + 5, newRoom.Position.Y + 3),
+                FG = Color.Transparent
+            });
+            Add(newNameTaken = new UILabel("name already used") {
+                Position = new Vector2(newRoom.Position.X + newRoom.Width + 5, newRoom.Position.Y + 3),
+                FG = Color.Transparent
+            });
+            newRoom.OnPress = () => {
+                newNameInvalid.FG = newNameTaken.FG = Color.Transparent;
+                // validate room name
+                if (newName.Length <= 0 || Regex.Match(newName, "[0-9a-zA-Z\\-_ ]+").Length != newName.Length)
+                    newNameInvalid.FG = Color.Red;
+                else if (Editor.Instance.Map.Rooms.Exists(it => it.Name.Equals(newName)))
+                    newNameTaken.FG = Color.Red;
+                else {
+                    // add room
+                    var b = RoomTool.PendingRoom.Value;
+                    var newRoom = new Room(newName, new Rectangle(b.X / 8, b.Y / 8, b.Width / 8, b.Height / 8), Editor.Instance.Map);
+                    Editor.Instance.Map.Rooms.Add(newRoom);
+                    Editor.SelectedRoom = newRoom;
+                    RoomTool.PendingRoom = null;
+                    RoomTool.ScheduledRefresh = true;
+                }
+            };
+
+            AddBelow(new UIButton("create filler", Fonts.Regular, 2, 2) {
+                Position = new Vector2(4, 4),
+                OnPress = () => {
+                    var b = RoomTool.PendingRoom.Value;
+                    var newFiller = new Rectangle(b.X / 8, b.Y / 8, b.Width / 8, b.Height / 8);
+                    Editor.Instance.Map.Fillers.Add(newFiller);
+                    Editor.SelectedFillerIndex = Editor.Instance.Map.Fillers.Count - 1;
+                    RoomTool.PendingRoom = null;
+                    RoomTool.ScheduledRefresh = true;
+                }
+            });
+
+            return;
         }
 
         int spacing = Fonts.Regular.LineHeight + 2;
@@ -147,7 +147,6 @@ class UIRoomSelectionPanel : UIElement {
             else
                 room.Name = name;
         };
-
 
         AddBelow(new UILabel("music options :"), new Vector2(12, 12));
 
