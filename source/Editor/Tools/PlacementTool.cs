@@ -23,7 +23,7 @@ public class PlacementTool : Tool {
         placementButtons.Clear();
 
         UIElement panel = new() {
-            Width = 180,
+            Width = 240,
             Background = Calc.HexToColor("202929") * (185 / 255f),
             GrabsClick = true,
             GrabsScroll = true,
@@ -31,7 +31,7 @@ public class PlacementTool : Tool {
         };
 
         var buttonPane = new UIScrollPane {
-            Width = 180,
+            Width = 240,
             TopPadding = 10,
             Background = null,
             Height = height - 30
@@ -54,7 +54,7 @@ public class PlacementTool : Tool {
             return split.Length == 2 && split[0].Contains(term);
         }
 
-        panel.Add(searchBar = new UISearchBar<Placement>(170, entityMatcher) {
+        panel.Add(searchBar = new UISearchBar<Placement>(230, entityMatcher) {
             Position = new Vector2(5, height - 20),
             Entries = Placements.All.ToArray(),
             InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
