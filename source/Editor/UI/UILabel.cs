@@ -2,13 +2,15 @@
 using Monocle;
 using System;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 class UILabel : UIElement {
-    public Func<string> Value { get; private set; }
     private readonly Font font;
+
+    public Func<string> Value { get; private set; }
     public Color FG = Calc.HexToColor("f0f0f0");
     public bool Underline = false, Strikethrough = false;
+    public string LabelTooltip;
 
     public UILabel(Func<string> text) : this(Fonts.Regular, (int)Fonts.Regular.Measure(text()).X, text) { }
 
@@ -31,5 +33,9 @@ class UILabel : UIElement {
             Draw.Rect(position + Vector2.UnitY * Height, Width, 1, FG);
         if (Strikethrough)
             Draw.Rect(position + Vector2.UnitY * (Height / 2), Width, 1, Color.Lerp(FG, Color.Black, 0.25f));
+    }
+
+    public override string Tooltip() {
+        return LabelTooltip;
     }
 }

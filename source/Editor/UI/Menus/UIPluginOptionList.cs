@@ -7,15 +7,14 @@ namespace Snowberry.Editor.UI.Menus;
 public class UIPluginOptionList : UIElement {
     public class UIOption : UIElement {
         public readonly UIElement Input;
-        private readonly string tooltip;
 
         public UIOption(string name, UIElement input, string tooltip = default) {
             Input = input;
-            this.tooltip = tooltip;
 
             UILabel label;
             Add(label = new UILabel($"{name} : ") {
-                FG = Color.Gray
+                FG = Color.Gray,
+                LabelTooltip = tooltip
             });
             int w = label.Width + 1;
 
@@ -27,8 +26,6 @@ public class UIPluginOptionList : UIElement {
             Width = w + (input?.Width ?? 0);
             Height = Math.Max(Fonts.Regular.LineHeight, input?.Height ?? 0);
         }
-
-        public override string Tooltip() => tooltip;
     }
 
     public readonly Plugin Plugin;
