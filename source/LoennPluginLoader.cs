@@ -249,4 +249,19 @@ public static class LoennPluginLoader {
             return reqCache[target] = null;
         }
     }
+
+    // invoked via lua
+    public static LuaTable FindLoadedMod(string modName) {
+        foreach (var module in Everest.Modules) {
+            if (module.Metadata.Name == modName) {
+                var ret = EmptyTable();
+                ret["Name"] = modName;
+                ret["Version"] = module.Metadata.VersionString;
+
+                return ret;
+            }
+        }
+
+        return null;
+    }
 }

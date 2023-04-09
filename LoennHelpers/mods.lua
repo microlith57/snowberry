@@ -12,4 +12,9 @@ function mods.getModSettings()
     return {}
 end
 
+function mods.findLoadedMod(modName)
+    local info = sb_loader.FindLoadedMod(modName)
+    return info
+end
+
 return mods
