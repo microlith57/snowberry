@@ -49,6 +49,10 @@ public abstract class Plugin {
         return null;
     }
 
+    public string GetTooltipFor(string option) {
+        return Info.Options.TryGetValue(option, out PluginOption f)  ? f.Tooltip : null;
+    }
+
     protected static object StrToObject(Type targetType, string raw) {
         if (targetType == typeof(Color)) {
             return Monocle.Calc.HexToColor(raw);

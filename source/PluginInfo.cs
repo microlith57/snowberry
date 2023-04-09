@@ -98,6 +98,7 @@ public interface PluginOption {
     void SetValue(Plugin on, object value);
     Type FieldType { get; }
     string Key { get; }
+    string Tooltip { get; }
 }
 
 public class FieldOption : PluginOption {
@@ -115,6 +116,8 @@ public class FieldOption : PluginOption {
     public Type FieldType => field.FieldType;
 
     public string Key { get; }
+
+    public string Tooltip => null;
 }
 
 public class UnknownPluginInfo : PluginInfo {
@@ -142,6 +145,8 @@ public class UnknownEntityAttr : PluginOption {
 
     public Type FieldType { get; }
     public string Key { get; }
+
+    public string Tooltip => null;
 }
 
 public class LoennPluginInfo : PluginInfo {
@@ -201,9 +206,9 @@ public class LoennPluginInfo : PluginInfo {
 
 public class LuaEntityOption : PluginOption {
     public LuaEntityOption(string key, Type t, string entityName) {
-        // TODO: use entity name to grab tooltip
         Key = key;
         FieldType = t;
+        Tooltip = LoennPluginLoader.LoennText.TryGetValue($"entities.{entityName}.attributes.description.{key}", out var k) ? k.Key : null;
     }
 
     public object GetValue(Plugin from) {
@@ -219,4 +224,5 @@ public class LuaEntityOption : PluginOption {
 
     public Type FieldType { get; }
     public string Key { get; }
+    public string Tooltip { get; }
 }

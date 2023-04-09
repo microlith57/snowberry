@@ -8,12 +8,12 @@ using System.Linq;
 namespace Snowberry.Editor.UI;
 
 public class UIElement {
-    private readonly List<UIElement> toRemove = new List<UIElement>();
-    private readonly List<UIElement> toAdd = new List<UIElement>();
+    private readonly List<UIElement> toRemove = new();
+    private readonly List<UIElement> toAdd = new();
     private bool canModify = true;
 
     public UIElement Parent;
-    public List<UIElement> Children = new List<UIElement>();
+    public List<UIElement> Children = new();
     public bool Visible = true;
     public bool RenderChildren = true;
 
@@ -26,7 +26,7 @@ public class UIElement {
 
     public string Tag = "";
 
-    public Rectangle Bounds => new Rectangle((int)(Position.X + (Parent?.Bounds.X ?? 0) + (Parent?.BoundsOffset().X ?? 0)), (int)(Position.Y + (Parent?.Bounds.Y ?? 0) + (Parent?.BoundsOffset().Y ?? 0)), Width, Height);
+    public Rectangle Bounds => new((int)(Position.X + (Parent?.Bounds.X ?? 0) + (Parent?.BoundsOffset().X ?? 0)), (int)(Position.Y + (Parent?.Bounds.Y ?? 0) + (Parent?.BoundsOffset().Y ?? 0)), Width, Height);
 
     public virtual void Update(Vector2 position = default) {
         canModify = false;
@@ -40,7 +40,7 @@ public class UIElement {
         Children.RemoveAll(e => e == null);
         toRemove.ForEach(a => Children.Remove(a));
         toRemove.Clear();
-        toAdd.ForEach(a => Add(a));
+        toAdd.ForEach(Add);
         toAdd.Clear();
     }
 

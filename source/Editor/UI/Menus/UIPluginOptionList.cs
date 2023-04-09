@@ -1,18 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Linq;
 
 namespace Snowberry.Editor.UI.Menus;
 
 public class UIPluginOptionList : UIElement {
     public class UIOption : UIElement {
         public readonly UIElement Input;
+        private readonly string tooltip;
 
-        public UIOption(string name, UIElement input) {
+        public UIOption(string name, UIElement input, string tooltip = default) {
             Input = input;
+            this.tooltip = tooltip;
 
             UILabel label;
             Add(label = new UILabel($"{name} : ") {
-                FG = Color.Gray,
+                FG = Color.Gray
             });
             int w = label.Width + 1;
 
@@ -24,6 +27,8 @@ public class UIPluginOptionList : UIElement {
             Width = w + (input?.Width ?? 0);
             Height = Math.Max(Fonts.Regular.LineHeight, input?.Height ?? 0);
         }
+
+        public override string Tooltip() => tooltip;
     }
 
     public readonly Plugin Plugin;
@@ -70,54 +75,55 @@ public class UIPluginOptionList : UIElement {
                 l += spacing;
             }
             Height = l;
+            Width = Math.Max(Children.Max(k => k.Width), Width);
         }
     }
 
     public static UIOption StringOption(string name, string value, Action<string> onChange) {
         var checkbox = new UITextField(Fonts.Regular, 80, value) {
-            OnInputChange = str => onChange?.Invoke(str),
+            OnInputChange = str => onChange?.Invoke(str)
         };
         return new UIOption(name, checkbox);
     }
 
     public static UIOption StringOption(string name, string value, Plugin plugin) {
         var checkbox = new UITextField(Fonts.Regular, 80, value) {
-            OnInputChange = str => plugin.Set(name, str),
+            OnInputChange = str => plugin.Set(name, str)
         };
-        return new UIOption(name, checkbox);
+        return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
 
     public static UIOption LiteralValueOption<T>(string name, string value, Action<T> onChange) {
         var checkbox = new UIValueTextField<T>(Fonts.Regular, 80, value) {
-            OnValidInputChange = v => onChange?.Invoke(v),
+            OnValidInputChange = v => onChange?.Invoke(v)
         };
         return new UIOption(name, checkbox);
     }
 
     public static UIOption LiteralValueOption<T>(string name, string value, Plugin plugin) {
         var checkbox = new UIValueTextField<T>(Fonts.Regular, 80, value) {
-            OnValidInputChange = v => plugin.Set(name, v),
+            OnValidInputChange = v => plugin.Set(name, v)
         };
-        return new UIOption(name, checkbox);
+        return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
 
     public static UIOption BoolOption(string name, bool value, Action<bool> onChange) {
         var checkbox = new UICheckBox(-1, value) {
-            OnPress = b => onChange?.Invoke(b),
+            OnPress = b => onChange?.Invoke(b)
         };
         return new UIOption(name, checkbox);
     }
 
     public static UIOption BoolOption(string name, bool value, Plugin plugin) {
         var checkbox = new UICheckBox(-1, value) {
-            OnPress = b => plugin.Set(name, b),
+            OnPress = b => plugin.Set(name, b)
         };
-        return new UIOption(name, checkbox);
+        return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
 
     public static UIOption ColorOption(string name, Color value, Action<Color> onChange) {
         var colorpicker = new UIColorPicker(100, 80, 16, 12, value) {
-            OnColorChange = color => onChange?.Invoke(color),
+            OnColorChange = color => onChange?.Invoke(color)
         };
         return new UIOption(name, colorpicker);
     }
@@ -126,14 +132,14 @@ public class UIPluginOptionList : UIElement {
         var colorpicker = new UIColorPicker(100, 80, 16, 12, value) {
             OnColorChange = color => plugin.Set(name, color)
         };
-        return new UIOption(name, colorpicker);
+        return new UIOption(name, colorpicker, plugin.GetTooltipFor(name));
     }
 
     public static UIOption DropdownOption<T>(string name, T value, Action<T> onChange) where T : Enum {
         return DropdownOption(name, typeof(T), value, v => onChange((T)v));
     }
 
-    public static UIOption DropdownOption(string name, Type t, object value, Action<object> onChange) {
+    public static UIOption DropdownOption(string name, Type t, object value, Action<object> onChange, string tooltip = default) {
         UIButton button = null;
         button = new UIButton(value + " \uF036", Fonts.Regular, 2, 2) {
             OnPress = () => {
@@ -146,10 +152,10 @@ public class UIPluginOptionList : UIElement {
             }
         };
 
-        return new UIOption(name, button);
+        return new UIOption(name, button, tooltip);
     }
 
     public static UIOption DropdownOption(string name, Type t, object value, Plugin plugin) {
-        return DropdownOption(name, t, value, v => plugin.Set(name, v));
+        return DropdownOption(name, t, value, v => plugin.Set(name, v), plugin.GetTooltipFor(name));
     }
 }

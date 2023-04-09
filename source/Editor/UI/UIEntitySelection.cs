@@ -25,17 +25,17 @@ public class UIEntitySelection : UIScrollPane {
     private UIElement AddEntry(EntitySelection s) {
         UIRibbon name = new UIRibbon(s.Entity.Name, 8, 8, true, false) {
             BG = Util.Colors.DarkGray,
-            BGAccent = s.Entity.Info.Module.Color,
+            BGAccent = s.Entity.Info.Module.Color
         };
         name.Position.X += Width - name.Width;
 
         UILabel id = new UILabel($"#{s.Entity.EntityID}") {
-            FG = Util.Colors.White * 0.5f,
+            FG = Util.Colors.White * 0.5f
         };
         id.Position.X = name.Position.X - id.Width - 4;
 
         UIPluginOptionList options = new UIPluginOptionList(s.Entity) {
-            Position = new Vector2(3, name.Height + 3),
+            Position = new Vector2(3, name.Height + 3)
         };
 
         UIElement entry = Regroup(id, name, options);
