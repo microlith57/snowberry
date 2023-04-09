@@ -175,6 +175,10 @@ public class LuaEntity : Entity {
         room["tilesFg"] = EmptyTable();
         room["tilesBg"] = EmptyTable();
         room["entities"] = EmptyTable();
+        room["x"] = Room?.X ?? 0;
+        room["y"] = Room?.Y ?? 0;
+        room["width"] = Room?.Width ?? 0;
+        room["height"] = Room?.Height ?? 0;
 
         if (entity == null)
             return new[] { orElse };

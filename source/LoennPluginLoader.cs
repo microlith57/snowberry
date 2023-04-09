@@ -21,11 +21,14 @@ public static class LoennPluginLoader {
     internal static void LoadPlugins() {
         Snowberry.LogInfo("Loading Selene for Loenn plugins");
         // note: we don't load in live mode because it breaks everything, instead we have to pass files through selene
-        // but we do make it a gloabl because /shrug
+        // but we do make it a global
+        // also setup other globals needed by plugins
         Everest.LuaLoader.Context.DoString("""
             selene = require("Selene/selene/lib/selene/init")
             selene.load(nil, false)
             selene.parser = require("Selene/selene/lib/selene/parser")
+
+            celesteRender = {}
             """);
 
         Snowberry.LogInfo("Trying to load Loenn plugins");

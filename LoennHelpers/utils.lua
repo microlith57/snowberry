@@ -45,6 +45,95 @@ function utils.parseHexColor(color)
     return false, 0, 0, 0
 end
 
+function utils.rgbToHex(r, g, b)
+    local r8 = math.floor(r * 255 + 0.5)
+    local g8 = math.floor(g * 255 + 0.5)
+    local b8 = math.floor(b * 255 + 0.5)
+    local number = r8 * 256^2 + g8 * 256 + b8
+
+    return string.format("%06x", number)
+end
+
+function utils.rgbaToHex(r, g, b, a)
+    local r8 = math.floor(r * 255 + 0.5)
+    local g8 = math.floor(g * 255 + 0.5)
+    local b8 = math.floor(b * 255 + 0.5)
+    local a8 = math.floor(a * 255 + 0.5)
+    local number = r8 * 256^3 + g8 * 256^2 + b8 * 256 + a8
+
+    return string.format("%08x", number)
+end
+
+-- Based on implementation from Love2d wiki
+function utils.hsvToRgb(h, s, v)
+    if s <= 0 then
+        return v, v, v
+    end
+
+    h = h * 6
+
+    local c = v * s
+    local x = (1 - math.abs((h % 2) - 1)) * c
+    local m, r, g, b = v - c, 0, 0, 0
+
+    if h < 1 then
+        r, g, b = c, x, 0
+
+    elseif h < 2 then
+        r, g, b = x, c, 0
+
+    elseif h < 3 then
+        r, g, b = 0, c, x
+
+    elseif h < 4 then
+        r, g, b = 0, x, c
+
+    elseif h < 5 then
+        r, g, b = x, 0, c
+
+    else
+        r, g, b = c, 0, x
+    end
+
+    return r + m, g + m, b + m
+end
+
+-- Based on implementation from internet
+function utils.rgbToHsv(r, g, b)
+    local hue, saturation, value
+
+    local minimumValue = math.min(r, g, b)
+    local maximumValue = math.max(r, g, b)
+    local deltaValue = maximumValue - minimumValue
+
+    if minimumValue == maximumValue then
+        hue = 0
+
+    elseif r == maximumValue then
+        hue = (60 / 360) * (g - b) / deltaValue + 360 / 360
+
+    elseif g == maximumValue then
+        hue = (60 / 360) * (b - r) / deltaValue + 120 / 360
+
+    else
+        hue = (60 / 360) * (r - g) / deltaValue + 240 / 360
+    end
+
+    -- Make sure hue is not negative or above 1
+    hue = (hue + 1) % 1
+
+    if maximumValue == 0 then
+        saturation = 0
+
+    else
+        saturation = deltaValue / maximumValue
+    end
+
+    value = maximumValue
+
+    return hue, saturation, value
+end
+
 function utils.getXNAColor(name)
     name = name:lower()
 
@@ -76,6 +165,19 @@ function utils.getColor(color)
 
     return {1, 1, 1}
 end
+
+function utils.sameColor(color1, color2)
+    if color1 == color2 then
+        return true
+    end
+
+    if color1 and color2 and color1[1] == color2[1] and color1[2] == color2[2] and color1[3] == color2[3] and color1[4] == color2[4] then
+        return true
+    end
+
+    return false
+end
+
 
 -- Using counter clockwise rotation matrix since the Y axis is mirrored
 function utils.rotate(x, y, theta)
