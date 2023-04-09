@@ -20,8 +20,8 @@ public class Map {
     public readonly string Name;
     public readonly AreaKey From;
 
-    public readonly List<Room> Rooms = new List<Room>();
-    public readonly List<Rectangle> Fillers = new List<Rectangle>();
+    public readonly List<Room> Rooms = new();
+    public readonly List<Rectangle> Fillers = new();
 
     public readonly List<Styleground> FGStylegrounds = new();
     public readonly List<Styleground> BGStylegrounds = new();
@@ -50,9 +50,10 @@ public class Map {
         foreach (Rectangle filler in data.Filler)
             Fillers.Add(filler);
 
-        // load stylegrounds
-        if (data.Foreground != null && data.Foreground.Children != null) {
-            foreach (var item in data.Foreground.Children) {
+        // load stylegrounds in reverse, to match saving in reverse
+        // keeps an internal representation where smaller indexes (closer to 0) = closer to foreground
+        if (data.Foreground?.Children != null) {
+            foreach (var item in data.Foreground.Children.AsEnumerable().Reverse()) {
                 string name = item.Name;
 
                 if (name.ToLowerInvariant().Equals("apply")) {
@@ -69,8 +70,8 @@ public class Map {
             }
         }
 
-        if (data.Background != null && data.Background.Children != null) {
-            foreach (var item in data.Background.Children) {
+        if (data.Background?.Children != null) {
+            foreach (var item in data.Background.Children.AsEnumerable().Reverse()) {
                 string name = item.Name;
 
                 if (name.ToLowerInvariant().Equals("apply")) {
@@ -265,13 +266,15 @@ public class Map {
     private Element GenerateStylegroundsElement(bool bg) {
         Element styles = new Element {
             Name = bg ? "Backgrounds" : "Foregrounds",
-            Children = new()
+            Children = new List<Element>()
         };
 
-        foreach (var styleground in bg ? BGStylegrounds : FGStylegrounds) {
-            Element elem = new Element() {
+        // save elements in reverse, to match loading in reverse
+        // keeps an internal representation where smaller indexes (closer to 0) = closer to foreground
+        foreach (var styleground in (bg ? BGStylegrounds : FGStylegrounds).AsEnumerable().Reverse()) {
+            Element elem = new Element {
                 Name = styleground.Name,
-                Attributes = new() {
+                Attributes = new Dictionary<string, object> {
                     ["tag"] = styleground.Tags.Aggregate("", (x, y) => x + ";" + y),
                     ["x"] = styleground.Position.X,
                     ["y"] = styleground.Position.Y,
@@ -279,7 +282,7 @@ public class Map {
                     ["scrolly"] = styleground.Scroll.Y,
                     ["speedx"] = styleground.Speed.X,
                     ["speedy"] = styleground.Speed.Y,
-                    ["color"] = BitConverter.ToString(new byte[] { styleground.Color.R, styleground.Color.G, styleground.Color.B }).Replace("-", string.Empty),
+                    ["color"] = BitConverter.ToString(new[] { styleground.Color.R, styleground.Color.G, styleground.Color.B }).Replace("-", string.Empty),
                     ["alpha"] = styleground.Color.A / 255f,
                     ["flipx"] = styleground.FlipX,
                     ["flipy"] = styleground.FlipY,
