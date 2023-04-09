@@ -70,8 +70,6 @@ public class LuaEntity : Entity {
         }
 
         if (!initialized || Dirty) {
-            Snowberry.LogInfo($"nodes are {string.Join(", ", Nodes.ToArray())}");
-
             color = CallOrGet<LuaTable>("color") is LuaTable c ? TableColor(c) : null;
             fillColor = CallOrGet<LuaTable>("fillColor") is LuaTable f ? TableColor(f) : null;
             borderColor = CallOrGet<LuaTable>("borderColor") is LuaTable b ? TableColor(b) : null;
