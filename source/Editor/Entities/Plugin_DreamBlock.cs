@@ -125,12 +125,12 @@ public class Plugin_DreamBlock : Entity {
     public override void HQRender() {
         base.HQRender();
 
-        if (Nodes.Length != 0)
+        if (Nodes.Count != 0)
             DrawUtil.DottedLine(Center, Nodes[0] + new Vector2(Width, Height) / 2f, Color.White, 4, 2);
     }
 
     protected override Rectangle[] Select() {
-        if (Nodes.Length != 0) {
+        if (Nodes.Count != 0) {
             Vector2 node = Nodes[0];
             return new[] {
                 Bounds, new((int)node.X, (int)node.Y, Width, Height)

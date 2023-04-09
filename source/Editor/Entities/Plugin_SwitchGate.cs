@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("switchGate")]
 public class Plugin_SwitchGate : Entity {
@@ -75,7 +75,7 @@ public class Plugin_SwitchGate : Entity {
     }
 
     protected override Rectangle[] Select() {
-        if (Nodes.Length != 0) {
+        if (Nodes.Count != 0) {
             Vector2 node = Nodes[0];
             return new[] {
                 Bounds, new Rectangle((int)node.X, (int)node.Y, Width, Height)

@@ -38,7 +38,6 @@ public class LuaEntity : Entity {
         if(CallOrGet<LuaTable>("minimumSize") is LuaTable minSize) {
             MinWidth = (int)Float(minSize, 1, 0);
             MinHeight = (int)Float(minSize, 2, 0);
-
         }
 
         if(IsTrigger) {
@@ -71,6 +70,8 @@ public class LuaEntity : Entity {
         }
 
         if (!initialized || Dirty) {
+            Snowberry.LogInfo($"nodes are {string.Join(", ", Nodes.ToArray())}");
+
             color = CallOrGet<LuaTable>("color") is LuaTable c ? TableColor(c) : null;
             fillColor = CallOrGet<LuaTable>("fillColor") is LuaTable f ? TableColor(f) : null;
             borderColor = CallOrGet<LuaTable>("borderColor") is LuaTable b ? TableColor(b) : null;
@@ -170,26 +171,27 @@ public class LuaEntity : Entity {
     }
 
     private object[] CallOrGetAll(string name, object orElse = default) {
-        using LuaTable entity = WrapEntity();
-        using LuaTable room = EmptyTable();
-        room["tilesFg"] = EmptyTable();
-        room["tilesBg"] = EmptyTable();
-        room["entities"] = EmptyTable();
-        room["x"] = Room?.X ?? 0;
-        room["y"] = Room?.Y ?? 0;
-        room["width"] = Room?.Width ?? 0;
-        room["height"] = Room?.Height ?? 0;
-
-        if (entity == null)
-            return new[] { orElse };
         switch (plugin[name]) {
-            case LuaFunction f:
+            case LuaFunction f: {
+                using LuaTable entity = WrapEntity();
+                using LuaTable room = EmptyTable();
+                room["tilesFg"] = EmptyTable();
+                room["tilesBg"] = EmptyTable();
+                room["entities"] = EmptyTable();
+                room["x"] = Room?.X ?? 0;
+                room["y"] = Room?.Y ?? 0;
+                room["width"] = Room?.Width ?? 0;
+                room["height"] = Room?.Height ?? 0;
+
+                if (entity == null)
+                    return new[] { orElse };
                 try {
                     return f.Call(room, entity) ?? new[] { orElse };
                 } catch (Exception e) {
                     Snowberry.LogInfo($"oh no {e}");
                     return new[] { orElse };
                 }
+            }
             case object s:
                 return new[] { s };
             default:
@@ -219,6 +221,16 @@ public class LuaEntity : Entity {
             table["height"] = Height;
             table["x"] = X;
             table["y"] = Y;
+            table["nodes"] = EmptyTable();
+
+            for (var idx = 0; idx < Nodes.Count; idx++) {
+                var node = Nodes[idx];
+                LuaTable nodeTable = EmptyTable();
+                nodeTable["x"] = node.X;
+                nodeTable["y"] = node.Y;
+
+                ((LuaTable)table["nodes"])[idx + 1] = nodeTable;
+            }
         }
 
         return table;

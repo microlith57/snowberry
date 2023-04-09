@@ -2,7 +2,7 @@
 using Monocle;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("lightning")]
 public class Plugin_Lightning : Entity {
@@ -97,18 +97,18 @@ public class Plugin_Lightning : Entity {
         } else
             Draw.HollowRect(Position, Width, Height, ElectricityColors[1]);
 
-        if (Nodes.Length != 0)
+        if (Nodes.Count != 0)
             DrawUtil.DottedLine(Center, Nodes[0] + new Vector2(Width, Height) / 2f, Color.White, 4, 2);
     }
 
     protected bool IsLightningAt(float x, float y) {
         /*if(Room == null)
             return false;
-        
+
         for(int i = 0; i < Room.TrackedEntities[typeof(Plugin_Lightning)].Count; i++)
             if(Room.TrackedEntities[typeof(Plugin_Lightning)][i] is Plugin_Lightning e && e.Bounds.Contains((int)x, (int)y))
                 return true;
-        
+
         return false;*/
 
         // this is faster
@@ -116,7 +116,7 @@ public class Plugin_Lightning : Entity {
     }
 
     protected override Rectangle[] Select() {
-        if (Nodes.Length != 0) {
+        if (Nodes.Count != 0) {
             Vector2 node = Nodes[0];
             return new Rectangle[] {
                 Bounds, new Rectangle((int)node.X, (int)node.Y, Width, Height)

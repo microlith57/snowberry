@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("strawberry")]
 public class Plugin_Strawberry : Entity {
@@ -16,7 +16,7 @@ public class Plugin_Strawberry : Entity {
     public override void Render() {
         base.Render();
 
-        bool seeded = Nodes.Length != 0;
+        bool seeded = Nodes.Count != 0;
         if (Moon) {
             string anim = seeded || Winged ? "moonghostberry" : "moonberry";
             FromSprite(anim, "idle")?.DrawCentered(Position);

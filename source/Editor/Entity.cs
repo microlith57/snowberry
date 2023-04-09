@@ -34,20 +34,7 @@ public abstract class Entity : Plugin {
 
     public bool Dirty = false;
 
-    private bool nodesChanged;
-    private readonly List<Vector2> nodes = new List<Vector2>();
-    private Vector2[] nodeArray;
-
-    public Vector2[] Nodes {
-        get {
-            if (nodeArray == null || nodesChanged) {
-                nodeArray = nodes.ToArray();
-                nodesChanged = false;
-            }
-
-            return nodeArray;
-        }
-    }
+    public readonly List<Vector2> Nodes = new();
 
     private bool updateSelection = true;
     private Rectangle[] selectionRectangles;
@@ -81,7 +68,7 @@ public abstract class Entity : Plugin {
     }
 
     public void SetNode(int i, Vector2 position) {
-        if (i >= 0 && i < Nodes.Length) {
+        if (i >= 0 && i < Nodes.Count) {
             if(Nodes[i] != position)
                 Room?.MarkEntityDirty(this);
 
@@ -91,25 +78,23 @@ public abstract class Entity : Plugin {
     }
 
     public void MoveNode(int i, Vector2 amount) {
-        if (i >= 0 && i < Nodes.Length) {
+        if (i >= 0 && i < Nodes.Count) {
             if(amount != Vector2.Zero)
                 Room?.MarkEntityDirty(this);
-            nodes[i] += amount;
-            updateSelection = nodesChanged = true;
+            Nodes[i] += amount;
+            updateSelection = true;
         }
 
         Room?.MarkEntityDirty(this);
     }
 
     public void AddNode(Vector2 position) {
-        nodes.Add(position);
-        nodesChanged = true;
+        Nodes.Add(position);
         Room?.MarkEntityDirty(this);
     }
 
     internal void ResetNodes() {
-        nodes.Clear();
-        nodesChanged = true;
+        Nodes.Clear();
         Room?.MarkEntityDirty(this);
     }
 
@@ -136,7 +121,7 @@ public abstract class Entity : Plugin {
     protected virtual Rectangle[] Select() {
         List<Rectangle> ret = new List<Rectangle>();
         ret.Add(new Rectangle(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height));
-        foreach (var node in nodes) {
+        foreach (var node in Nodes) {
             ret.Add(new Rectangle((int)node.X - 3, (int)node.Y - 3, 6, 6));
         }
 
@@ -168,9 +153,9 @@ public abstract class Entity : Plugin {
         Origin = entityData.Origin;
         EntityID = entityData.ID;
 
-        nodes.Clear();
+        Nodes.Clear();
         foreach (Vector2 node in entityData.Nodes)
-            nodes.Add(node + offset);
+            Nodes.Add(node + offset);
 
         return InitializeData(entityData.Values);
     }

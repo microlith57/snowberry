@@ -1,7 +1,7 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("goldenBerry")]
 [Plugin("memorialTextController")]
@@ -20,7 +20,7 @@ public class Plugin_GoldenBerry : Entity {
     public override void Render() {
         base.Render();
 
-        bool seeded = Nodes.Length != 0;
+        bool seeded = Nodes.Count != 0;
         string dir = seeded && !noDash ? "ghostgoldberry" : "goldberry";
         string anim = Winged || noDash ? "flap" : "idle";
         FromSprite(dir, anim)?.DrawCentered(Position);

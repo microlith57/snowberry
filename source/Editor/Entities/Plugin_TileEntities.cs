@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 public abstract class Plugin_TileEntityBase : Entity {
     protected virtual float Alpha => 1.0f;
@@ -42,7 +42,7 @@ public class Plugin_IntroCrusher : Plugin_TileEntity {
     public override void Render() {
         base.Render();
 
-        if (Tiles != null && Nodes.Length > 0) {
+        if (Tiles != null && Nodes.Count > 0) {
             Color c = Color.White * 0.25f;
             for (int x = 0; x < Tiles.Columns; x++)
                 for (int y = 0; y < Tiles.Rows; y++)

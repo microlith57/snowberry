@@ -70,7 +70,7 @@ public class RoomTool : Tool {
                     Editor.SelectedRoom.Bounds.Y = (int)(world + offset).Y;
                     foreach (var e in Editor.SelectedRoom.AllEntities) {
                         e.Move(diff * 8);
-                        for (int i = 0; i < e.Nodes.Length; i++) {
+                        for (int i = 0; i < e.Nodes.Count; i++) {
                             e.MoveNode(i, diff * 8);
                         }
                     }

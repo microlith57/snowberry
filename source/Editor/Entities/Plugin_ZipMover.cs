@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using static Celeste.ZipMover;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("zipMover")]
 public class Plugin_ZipMover : Entity {
@@ -127,7 +127,7 @@ public class Plugin_ZipMover : Entity {
     }
 
     protected override Rectangle[] Select() {
-        if (Nodes.Length != 0) {
+        if (Nodes.Count != 0) {
             Vector2 node = Nodes[0];
             return new[] {
                 Bounds, new Rectangle((int)node.X, (int)node.Y, Width, Height)
