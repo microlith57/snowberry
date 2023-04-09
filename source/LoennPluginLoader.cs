@@ -34,8 +34,6 @@ public static class LoennPluginLoader {
 
         Snowberry.LogInfo("Trying to load Loenn plugins");
 
-        reqCache.Clear();
-
         Dictionary<string, LuaTable> plugins = new();
         HashSet<string> triggers = new();
 
@@ -222,9 +220,24 @@ public static class LoennPluginLoader {
         };
     }
 
+    private static double toDouble(object o) {
+        return o switch {
+            long l => l,
+            int i => i,
+            float f => f,
+            double d => d,
+            short s => s,
+            byte b => b,
+            _ => 0
+        };
+    }
+
     // invoked via lua
     public static object lshift(object o, object by) {
         return toLong(o) << (int)toLong(by);
+    }
+    public static double atan2(object l, object r) {
+        return Math.Atan2(toDouble(l), toDouble(r));
     }
 
     // invoked via lua

@@ -18,9 +18,9 @@ public class LuaEntity : Entity {
 
     // updated on modification
     private Color? color, fillColor, borderColor;
-    private string texture;
+    private string texture, nodeTexture;
     private List<SpriteWithPos> sprites;
-    private Vector2 justify = Vector2.One * 0.5f;
+    private Vector2 justify = Vector2.One * 0.5f, nodeJustify = Vector2.One * 0.5f;
 
     public Dictionary<string, object> Values = new();
 
@@ -75,18 +75,26 @@ public class LuaEntity : Entity {
             borderColor = CallOrGet<LuaTable>("borderColor") is LuaTable b ? TableColor(b) : null;
 
             texture = CallOrGet<string>("texture");
+            nodeTexture = CallOrGet<string>("nodeTexture");
 
             var justifyTable = CallOrGet<LuaTable>("justification");
             if (justifyTable != null)
                 justify = new Vector2(Float(justifyTable, 1, 0.5f), Float(justifyTable, 2, 0.5f));
+            var nodeJustifyTable = CallOrGet<LuaTable>("nodeJustification");
+            if (nodeJustifyTable != null)
+                nodeJustify = new Vector2(Float(nodeJustifyTable, 1, 0.5f), Float(nodeJustifyTable, 2, 0.5f));
 
             sprites = Sprites();
 
             initialized = true;
         }
 
-        if(texture != null)
+        if (texture != null)
             GFX.Game[texture].DrawJustified(Position, justify);
+
+        if ((nodeTexture ?? texture) != null)
+            foreach (var node in Nodes)
+                GFX.Game[nodeTexture ?? texture].DrawJustified(node, nodeJustify);
 
         if(fillColor is Color fill) {
             Draw.Rect(Position, Width, Height, fill);
@@ -115,8 +123,8 @@ public class LuaEntity : Entity {
                 if(item is LuaTable sprite) {
                     foreach(var k in sprite.Keys)
                         if(sprite[k] is LuaTable sp) {
-                            // normalize ninepatches
-                            if (sp["_type"] is "drawableNinePatch")
+                            // normalize ninepatches/lines
+                            if (sp["_type"] is "drawableNinePatch" or "drawableLine")
                                 if (sp["getDrawableSprite"] is LuaFunction h) {
                                     sp = h.Call(sp)?.FirstOrDefault() as LuaTable;
                                     if (sp == null)
@@ -137,29 +145,23 @@ public class LuaEntity : Entity {
         if(sp?["meta"] is LuaTable meta && meta["image"] is string image && meta["atlas"] is string atlasName){
             Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
             MTexture tex = atlas[image];
-            float x = Float(sp, "x", 0), y = Float(sp, "y", 0);
-            float jX = Float(sp, "justificationX", 0.5f), jY = Float(sp, "justificationY", 0.5f);
-            float sX = Float(sp, "scaleX"), sY = Float(sp, "scaleY");
+            Vector2 pos = new Vector2(Float(sp, "x", 0), Float(sp, "y", 0));
+            Vector2 just = new Vector2(Float(sp, "justificationX", 0.5f), Float(sp, "justificationY", 0.5f));
+            Vector2 scale = new Vector2(Float(sp, "scaleX"), Float(sp, "scaleY"));
             float rotation = Float(sp, "rotation", 0);
             Color spColor = Color.White;
+
+            // offset is both position and origin
+            Vector2 offset = new Vector2(Float(sp, "offsetX", 0), Float(sp, "offsetY", 0));
+            pos -= offset.Rotate(rotation);
 
             if(sp["color"] is LuaTable ct)
                 spColor = TableColor(ct);
 
-            float texX = Float(meta, "texX", 0), texY = Float(meta, "texY", 0);
-            float texW = Float(meta, "texW", -1), texH = Float(meta, "texH", -1);
+            Vector2 texPos = new Vector2(Float(meta, "texX", 0), Float(meta, "texY", 0));
+            Vector2 texSize = new Vector2(Float(meta, "texW", -1), Float(meta, "texH", -1));
 
-            var swp = new SpriteWithPos(
-                tex,
-                new Vector2(x, y),
-                new Vector2(sX, sY),
-                spColor,
-                new Vector2(jX, jY),
-                rotation,
-                new Vector2(texX, texY),
-                new Vector2(texW, texH)
-            );
-            ret.Add(swp);
+            ret.Add(new SpriteWithPos(tex, pos, scale, spColor, just, rotation, texPos, texSize));
             sp.Dispose();
         }
     }
