@@ -47,13 +47,30 @@ public static class LoennPluginLoader {
                 if(path.StartsWith("Loenn/entities/") || path.StartsWith("Loenn/triggers/")) {
                     try {
                         var pluginTables = RunAsset(asset, path);
+                        bool any = false;
                         foreach (var p in pluginTables) {
                             if (p is LuaTable pluginTable) {
-                                string name = (string)pluginTable["name"];
-                                plugins[name] = pluginTable;
-                                if (path.StartsWith("Loenn/triggers/")) triggers.Add(name);
-                                Snowberry.LogInfo($"Loaded Loenn plugin for \"{pluginTable["name"]}\"");
+                                List<LuaTable> pluginsFromScript = new(){ pluginTable };
+                                // returning multiple plugins at once
+                                if (pluginTable["name"] == null)
+                                    pluginsFromScript = pluginTable.Values.OfType<LuaTable>().ToList();
+
+                                foreach (var table in pluginsFromScript) {
+                                    if (table["name"] is string name) {
+                                        plugins[name] = table;
+                                        if (path.StartsWith("Loenn/triggers/"))
+                                            triggers.Add(name);
+                                        Snowberry.LogInfo($"Loaded Loenn plugin for \"{name}\"");
+                                        any = true;
+                                    } else {
+                                        Snowberry.Log(LogLevel.Warn, $"A nameless entity was found at \"{path}\"");
+                                    }
+                                }
                             }
+                        }
+
+                        if (!any) {
+                            Snowberry.LogInfo($"No plugins were loaded from \"{path}\"");
                         }
                     } catch (Exception e) {
                         string ex = e.ToString();

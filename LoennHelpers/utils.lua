@@ -19,6 +19,37 @@ function utils.point(x, y)
     return rectangles.create(x, y, 1, 1)
 end
 
+function utils.rectangleBounds(rectangles)
+    local tlx, tly = math.huge, math.huge
+    local brx, bry = -math.huge, -math.huge
+
+    for i, rect in ipairs(rectangles) do
+        tlx = math.min(tlx, rect.x)
+        tly = math.min(tly, rect.y)
+
+        brx = math.max(brx, rect.x + rect.width)
+        bry = math.max(bry, rect.y + rect.height)
+    end
+
+    return tlx, tly, brx, bry
+end
+
+function utils.coverRectangles(rectangles)
+    local tlx, tly, brx, bry = utils.rectangleBounds(rectangles)
+
+    return tlx, tly, brx - tlx, bry - tly
+end
+
+-- Does the bounds and covering manually, reduces table construction
+function utils.coverTriangle(x1, y1, x2, y2, x3, y3)
+    local tlx = math.min(x1, x2, x3)
+    local tly = math.min(y1, y2, y3)
+    local brx = math.max(x1, x2, x3)
+    local bry = math.max(y1, y2, y3)
+
+    return tlx, tly, brx - tlx, bry - tly
+end
+
 function utils.titleCase(name)
     return name:gsub("(%a)(%a*)", function(a, b) return string.upper(a) .. b end)
 end
@@ -197,6 +228,89 @@ end
 
 function utils.aabbCheckInline(x1, y1, w1, h1, x2, y2, w2, h2)
     return not (x2 >= x1 + w1 or x2 + w2 <= x1 or y2 >= y1 + h1 or y2 + h2 <= y1)
+end
+
+function utils.onRectangleBorder(point, rect, threshold)
+    return utils.onRectangleBorderInline(point.x, point.y, rect.x, rect.y, rect.width, rect.height, threshold)
+end
+
+function utils.onRectangleBorderInline(px, py, rx, ry, rw, rh, threshold)
+    threshold = threshold or 0
+
+    local onHorizontal = rx - threshold <= px and px <= rx + rw + threshold
+    local onVertical = ry - threshold <= py and py <= ry + rh + threshold
+
+    local onTop = ry - threshold <= py and py <= ry + threshold
+    local onBottom = ry + rh - threshold <= py and py <= ry + rh + threshold
+    local onLeft = rx - threshold <= px and px <= rx + threshold
+    local onRight = rx + rw - threshold <= px and px <= rx + rw + threshold
+
+    local directionHorizontal = 0
+    local directionVertical = 0
+
+    if onHorizontal then
+        directionVertical = (onTop and -1) or (onBottom and 1) or 0
+    end
+
+    if onVertical then
+        directionHorizontal = (onLeft and -1) or (onRight and 1) or 0
+    end
+
+    local horizontalMatch = onHorizontal
+    local verticalMatch = onVertical
+
+    return directionHorizontal ~= 0 or directionVertical ~= 0, directionHorizontal, directionVertical
+end
+
+function utils.intersection(r1, r2)
+    local x = math.max(r1.x, r2.x)
+    local y = math.max(r1.y, r2.y)
+    local width = math.min(r1.x + r1.width, r2.x + r2.width) - x
+    local height = math.min(r1.y + r1.height, r2.y + r2.height) - y
+
+    return width > 0 and height > 0 and utils.rectangle(x, y, width, height) or nil
+end
+
+function utils.intersectionBounds(r1, r2)
+    local tlx = math.max(r1.x, r2.x)
+    local tly = math.max(r1.y, r2.y)
+    local brx = math.min(r1.x + r1.width, r2.x + r2.width)
+    local bry = math.min(r1.y + r1.height, r2.y + r2.height)
+
+    return tlx, tly, brx, bry
+end
+
+function utils.subtractRectangle(r1, r2)
+    local tlx, tly, brx, bry = utils.intersectionBounds(r1, r2)
+
+    if tlx >= brx or tly >= bry  then
+        -- No intersection
+        return {r1}
+    end
+
+    local remaining = {}
+
+    -- Left rectangle
+    if tlx > r1.x then
+        table.insert(remaining, utils.rectangle(r1.x, r1.y, tlx - r1.x, r1.height))
+    end
+
+    -- Right rectangle
+    if brx < r1.x + r1.width then
+        table.insert(remaining, utils.rectangle(brx, r1.y, r1.x + r1.width - brx, r1.height))
+    end
+
+    -- Top rectangle
+    if tly > r1.y then
+        table.insert(remaining, utils.rectangle(tlx, r1.y, brx - tlx, tly - r1.y))
+    end
+
+    -- Bottom rectangle
+    if bry < r1.y + r1.height then
+        table.insert(remaining, utils.rectangle(tlx, bry, brx - tlx, r1.y + r1.height - bry))
+    end
+
+    return remaining
 end
 
 function utils.logn(base, n)
@@ -417,6 +531,32 @@ function utils.setPath(data, path, value, createIfMissing)
     end
 
     return true
+end
+
+-- moved from entities.lua
+function utils.getDrawableRectangle(drawables)
+    if #drawables == 0 and drawables.getRectangle then
+        return drawables:getRectangle()
+    end
+
+    -- TODO - Inline coverRectangles?
+    -- Check if this is expensive enough in larger rooms
+
+    local rectangles = {}
+
+    for i, drawable in ipairs(drawables) do
+        if drawable.getRectangle then
+            rectangles[i] = drawable:getRectangle()
+
+            if drawable.ignoreRest then
+                break
+            end
+        end
+    end
+
+    local x, y, width, height = utils.coverRectangles(rectangles)
+
+    return utils.rectangle(x, y, width, height)
 end
 
 return utils

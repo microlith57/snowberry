@@ -153,7 +153,6 @@ public class LoennPluginInfo : PluginInfo {
         Plugin = plugin;
         IsTrigger = isTrigger;
 
-        // TODO: use fieldInformation
         if (plugin["placements"] is LuaTable placements) {
             if (placements.Keys.OfType<string>().Any(k => k.Equals("data"))) {
                 if (placements["data"] is LuaTable data)
@@ -166,6 +165,28 @@ public class LoennPluginInfo : PluginInfo {
                     if (ptable["data"] is LuaTable data)
                         foreach (var item in data.Keys.OfType<string>())
                             Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+                }
+            }
+        }
+
+        if (plugin["fieldInformation"] is LuaTable fieldInfos) {
+            foreach (var fieldKey in fieldInfos.Keys) {
+                if (fieldKey is string fieldName && fieldInfos[fieldKey] is LuaTable fieldInfo) {
+                    // fieldType: integer, color, boolean, number, string (default)
+                    // minimumValue, maximumValue
+                    // validator, valueTransformer, displayTransformer
+                    // options, editable
+                    // allowXNAColors
+
+                    string fieldTypeName = fieldInfo["fieldType"] as string ?? "string";
+                    Type fieldType = fieldTypeName.ToLowerInvariant() switch {
+                        "number" => typeof(float),
+                        "integer" => typeof(int),
+                        "boolean" => typeof(bool),
+                        _ => typeof(string)
+                    };
+
+                    Options[fieldName] = new LuaEntityOption(fieldName, fieldType, name);
                 }
             }
         }
