@@ -18,6 +18,8 @@ public static class LoennPluginLoader {
     private static readonly Dictionary<string, LuaTable> reqCache = new();
     private static string curMod = null;
 
+    public static Dictionary<string, KeyValuePair<string, string>> LoennText = new();
+
     internal static void LoadPlugins() {
         Snowberry.LogInfo("Loading Selene for Loenn plugins");
         // note: we don't load in live mode because it breaks everything, instead we have to pass files through selene
@@ -81,6 +83,20 @@ public static class LoennPluginLoader {
                         Snowberry.Log(LogLevel.Warn, $"Failed to load Loenn plugin at \"{path}\"");
                         Snowberry.Log(LogLevel.Warn, $"Reason: {ex}");
                     }
+                } else if (path.StartsWith("Loenn/lang/en_gb")) {
+                    string text;
+                    using(var reader = new StreamReader(asset.Stream)) {
+                        text = reader.ReadToEnd();
+                    }
+
+                    foreach(var entry in text.Split('\n').Select(k => k.Split('#')[0])) {
+                        if(!string.IsNullOrWhiteSpace(entry)) {
+                            var split = entry.Split('=');
+                            if(split.Length == 2 && !string.IsNullOrWhiteSpace(split[0]) && !string.IsNullOrWhiteSpace(split[1])) {
+                                LoennText[split[0]] = new KeyValuePair<string, string>(split[1].Trim(), asset.Source.Mod.Name);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -88,6 +104,7 @@ public static class LoennPluginLoader {
         curMod = null;
 
         Snowberry.LogInfo($"Found {plugins.Count} Loenn plugins");
+        Snowberry.Log(LogLevel.Info, $"Loaded {LoennText.Count} dialog entries from language files for Loenn plugins.");
 
         foreach(var plugin in plugins) {
             bool isTrigger = triggers.Contains(plugin.Key);
@@ -102,7 +119,7 @@ public static class LoennPluginLoader {
                             options[item] = data[item];
 
                     string placementName = placements["name"] as string ?? "";
-                    placementName = plugin.Key + " [Loenn]";//LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} ({name.Value})" : "Loenn: " + plugin.Key;
+                    placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} ({name.Value})" : "Loenn: " + plugin.Key;
                     Placements.Create(placementName, plugin.Key, options);
                 } else if (placements.Keys.Count >= 1 && placements[1] is LuaTable) {
                     for (int i = 1; i < placements.Keys.Count + 1; i++) {
@@ -113,7 +130,7 @@ public static class LoennPluginLoader {
                             }
 
                             string placementName = ptable["name"] as string;
-                            placementName = plugin.Key + " [Loenn]";//LoennText.TryGetValue($"entities.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} ({name.Value})" : $"Loenn: {plugin.Key} :: {ptable["name"]}";
+                            placementName = LoennText.TryGetValue($"entities.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} ({name.Value})" : $"Loenn: {plugin.Key} :: {ptable["name"]}";
                             Placements.Create(placementName, plugin.Key, options);
                         }
                     }

@@ -157,7 +157,7 @@ public sealed class Snowberry : EverestModule {
                 path = Everest.Content.GuessType(path, out asset.Type, out asset.Format);
             asset.PathVirtual = path;
 
-            if (asset.Type == typeof(AssetTypeLua) && path.Replace('\\', '/').StartsWith("Loenn/"))
+            if (path.Replace('\\', '/').StartsWith("Loenn/"))
                 LoennPluginLoader.RegisterLoennAsset(self.Name, asset, path);
         }
     }
