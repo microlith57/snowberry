@@ -144,6 +144,8 @@ function drawableSpriteMt.__index:useRelativeQuad(x, y, width, height, hideOverf
     self.meta.texY = y
     self.meta.texW = width
     self.meta.texH = height
+	self.justificationX = 0
+	self.justificationY = 0
 end
 
 function drawableSpriteStruct.fromMeta(meta, data)
