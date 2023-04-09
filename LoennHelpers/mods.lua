@@ -17,4 +17,8 @@ function mods.findLoadedMod(modName)
     return info
 end
 
+function mods.hasLoadedMod(modname)
+	return mods.findLoadedMod(modname) ~= nil
+end
+
 return mods
