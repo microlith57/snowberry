@@ -119,26 +119,34 @@ public class LuaEntity : Entity {
     private List<SpriteWithPos> Sprites() {
         List<SpriteWithPos> ret = new();
         if(CallOrGetAll("sprite") is object[] sprites)
-            foreach(var item in sprites) {
-                if(item is LuaTable sprite) {
-                    foreach(var k in sprite.Keys)
-                        if(sprite[k] is LuaTable sp) {
-                            // normalize ninepatches/lines
-                            if (sp["_type"] is "drawableNinePatch" or "drawableLine")
-                                if (sp["getDrawableSprite"] is LuaFunction h) {
-                                    sp = h.Call(sp)?.FirstOrDefault() as LuaTable;
-                                    if (sp == null)
-                                        continue;
-                                    foreach (var k2 in sp.Keys)
-                                        CreateSpriteFromTable(sp[k2] as LuaTable, ret);
-                                }
-
-                            CreateSpriteFromTable(sp, ret);
-                        }
+            foreach(var item in sprites)
+                if (item is LuaTable sprite) {
+                    // sprites can be returned directly
+                    if (sprite["_type"] != null)
+                        CreateSpriteFromDrawable(sprite, ret);
+                    else
+                        // ... or a table of many
+                        foreach (var k in sprite.Keys)
+                            if (sprite[k] is LuaTable sp)
+                                CreateSpriteFromDrawable(sp, ret);
                     sprite.Dispose();
                 }
-            }
+
         return ret;
+    }
+
+    private static void CreateSpriteFromDrawable(LuaTable sp, List<SpriteWithPos> ret){
+        // normalize ninepatches/lines
+        if(sp["_type"] is "drawableNinePatch" or "drawableLine")
+            if(sp["getDrawableSprite"] is LuaFunction h){
+                sp = h.Call(sp)?.FirstOrDefault() as LuaTable;
+                if(sp == null)
+                    return;
+                foreach(var k2 in sp.Keys)
+                    CreateSpriteFromTable(sp[k2] as LuaTable, ret);
+            }
+
+        CreateSpriteFromTable(sp, ret);
     }
 
     private static void CreateSpriteFromTable(LuaTable sp, List<SpriteWithPos> ret){
