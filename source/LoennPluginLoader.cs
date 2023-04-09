@@ -29,6 +29,7 @@ public static class LoennPluginLoader {
             selene.parser = require("Selene/selene/lib/selene/parser")
 
             celesteRender = {}
+            unpack = table.unpack
             """);
 
         Snowberry.LogInfo("Trying to load Loenn plugins");
