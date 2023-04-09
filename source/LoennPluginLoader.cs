@@ -15,10 +15,19 @@ namespace Snowberry;
 public static class LoennPluginLoader {
 
     private static readonly Dictionary<string, List<ModAsset>> assetsByMod = new();
-    private static readonly Dictionary<string, object[]> reqCache = new();
+    private static readonly Dictionary<string, LuaTable> reqCache = new();
     private static string curMod = null;
 
     internal static void LoadPlugins() {
+        Snowberry.LogInfo("Loading Selene for Loenn plugins");
+        // note: we don't load in live mode because it breaks everything, instead we have to pass files through selene
+        // but we do make it a gloabl because /shrug
+        Everest.LuaLoader.Context.DoString("""
+            selene = require("Selene/selene/lib/selene/init")
+            selene.load(nil, false)
+            selene.parser = require("Selene/selene/lib/selene/parser")
+            """);
+
         Snowberry.LogInfo("Trying to load Loenn plugins");
 
         reqCache.Clear();
@@ -108,26 +117,19 @@ public static class LoennPluginLoader {
                     {text}
                     """;
 
-        return Everest.LuaLoader.Context.DoString(text, path);
+        if (Everest.LuaLoader.Context.GetFunction("selene.parse")?.Call(text)?.FirstOrDefault() is string proc) {
+            return Everest.LuaLoader.Context.DoString(proc, path);
+        }
+
+        Snowberry.Log(LogLevel.Error, $"Failed to parse Selene syntax in {path}");
+        return null;
     }
 
     // invoked via lua
     public static object EverestRequire(string name) {
         // name could be "mods", "structs.rectangle", etc
 
-        // if you want something, check Loenn/, then LoennHelpers/
-        // otherwise sorry it doesn't exist
-        try {
-            var h = Everest.LuaLoader.Context.DoString($"return require(\"Loenn/{name.Replace(".", "/")}\")").FirstOrDefault();
-            if (h != null)
-                return h;
-        } catch (LuaScriptException e) {
-            if(!e.ToString().Contains("not found:")) {
-                Snowberry.Log(LogLevel.Verbose, $"Failed to load at {name}");
-                Snowberry.Log(LogLevel.Verbose, $"Reason: {e}");
-            }
-        }
-
+        // if you want something, check LoennHelpers/
         try {
             var h = Everest.LuaLoader.Context.DoString($"return require(\"LoennHelpers/{name.Replace(".", "/")}\")").FirstOrDefault();
             if (h != null)
@@ -205,7 +207,7 @@ public static class LoennPluginLoader {
     }
 
     // invoked via lua
-    public static object RequireFromMods(string filename, string modName) {
+    public static LuaTable RequireFromMods(string filename, string modName) {
         string curModName = string.IsNullOrEmpty(modName) ? curMod : modName;
         if (curModName == null || filename == null)
             return null;
@@ -218,7 +220,7 @@ public static class LoennPluginLoader {
 
             if (assetsByMod.TryGetValue(curModName, out var libFiles))
                 foreach (var asset in libFiles.Where(asset => asset.PathVirtual.Replace('\\', '/') == target))
-                    return reqCache[target] = RunAsset(asset, target);
+                    return reqCache[target] = RunAsset(asset, target)?.FirstOrDefault() as LuaTable;
 
             return reqCache[target] = null;
         } catch (Exception e) {

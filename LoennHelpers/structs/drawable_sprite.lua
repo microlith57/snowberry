@@ -184,4 +184,6 @@ function drawableSpriteStruct.fromTexture(texture, data)
     end
 end
 
+drawableSpriteStruct.fromInternalTexture = drawableSpriteStruct.fromTexture
+
 return drawableSpriteStruct
