@@ -83,23 +83,12 @@ public class PlacementTool : Tool {
     }
 
     public override void Update(bool canClick) {
-        Rectangle area;
-        if (lastPress != null) {
-            var mpos = (Editor.Mouse.World / 8).Round() * 8;
-            int ax = (int)Math.Min(mpos.X, lastPress.Value.X);
-            int ay = (int)Math.Min(mpos.Y, lastPress.Value.Y);
-            int bx = (int)Math.Max(mpos.X, lastPress.Value.X);
-            int by = (int)Math.Max(mpos.Y, lastPress.Value.Y);
-            area = new Rectangle(ax, ay, bx - ax, by - ay);
-        } else
-            area = Rectangle.Empty;
-
         bool middlePan = Snowberry.Settings.MiddleClickPan;
 
         Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || (middlePan && MInput.Mouse.ReleasedRightButton)) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt)) ? curRightSelection : curLeftSelection;
         if ((MInput.Mouse.ReleasedLeftButton || (middlePan && MInput.Mouse.ReleasedRightButton)) && canClick && selection != null && Editor.SelectedRoom != null && Editor.SelectedRoom.Bounds.Contains((int)Editor.Mouse.World.X / 8, (int)Editor.Mouse.World.Y / 8)) {
             Entity toAdd = selection.Build(Editor.SelectedRoom);
-            UpdateEntity(toAdd, area);
+            UpdateEntity(toAdd);
             // TODO: find lowest unoccupied ID
             int highestID = 0;
             foreach (var item in Editor.Instance.Map.Rooms.SelectMany(k => k.AllEntities)) {
@@ -115,7 +104,7 @@ public class PlacementTool : Tool {
         RefreshPreview(lastPlacement != selection);
         lastPlacement = selection;
         if (preview != null)
-            UpdateEntity(preview, area);
+            UpdateEntity(preview);
 
         if (MInput.Mouse.PressedLeftButton || (middlePan && MInput.Mouse.PressedRightButton))
             lastPress = Editor.Mouse.World;
@@ -148,13 +137,16 @@ public class PlacementTool : Tool {
             preview = null;
     }
 
-    private void UpdateEntity(Entity e, Rectangle area) {
-        UpdateSize(e, area);
-        var mpos = (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl)) ? Editor.Mouse.World : (Editor.Mouse.World / 8).Round() * 8;
-        if (lastPress != null)
-            e.SetPosition(new Vector2(e.Width > 0 ? (area.Left / 8) * 8 : mpos.X, e.Height > 0 ? (area.Top / 8) * 8 : mpos.Y));
-        else
+    private void UpdateEntity(Entity e) {
+        Vector2 mpos = (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl)) ? Editor.Mouse.World : (Editor.Mouse.World / 8).Round() * 8;
+        UpdateSize(e, mpos);
+
+        if (lastPress != null) {
+            Vector2 cPress = (lastPress.Value / 8).Round() * 8;
+            e.SetPosition(new Vector2(Math.Min(mpos.X, cPress.X), Math.Min(mpos.Y, cPress.Y)));
+        } else
             e.SetPosition(mpos);
+
         e.ResetNodes();
         while (e.Nodes.Count < e.MinNodes)
             e.AddNode((e.Nodes.Count > 0 ? e.Nodes.Last() : e.Position) + Vector2.UnitX * 24);
@@ -162,12 +154,25 @@ public class PlacementTool : Tool {
         e.Initialize();
     }
 
-    private void UpdateSize(Entity e, Rectangle area) {
-        if (MInput.Mouse.CheckLeftButton || MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedLeftButton || MInput.Mouse.ReleasedRightButton) {
-            if (e.MinWidth > -1)
-                e.SetWidth(Math.Max((int)Math.Ceiling(area.Width / 8f) * 8, e.MinWidth));
-            if (e.MinHeight > -1)
-                e.SetHeight(Math.Max((int)Math.Ceiling(area.Height / 8f) * 8, e.MinHeight));
+    private void UpdateSize(Entity e, Vector2 mpos) {
+        if (lastPress != null && (MInput.Mouse.CheckLeftButton || MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedLeftButton || MInput.Mouse.ReleasedRightButton)) {
+            Vector2 cPress = (lastPress.Value / 8).Round() * 8;
+            if (e.MinWidth > -1) {
+                //e.SetWidth(Math.Max((int)Math.Ceiling(area.Width / 8f) * 8, e.MinWidth));
+                if (mpos.X < cPress.X) {
+                    e.SetWidth((int)Math.Round((cPress.X - mpos.X) / 8f) * 8 + e.MinWidth);
+                } else {
+                    e.SetWidth(Math.Max((int)Math.Round((mpos.X - cPress.X) / 8f) * 8, e.MinWidth));
+                }
+            }
+            if (e.MinHeight > -1) {
+                //e.SetHeight(Math.Max((int)Math.Ceiling(area.Height / 8f) * 8, e.MinHeight));
+                if (mpos.Y < cPress.Y) {
+                    e.SetHeight((int)Math.Round((cPress.Y - mpos.Y) / 8f) * 8 + e.MinHeight);
+                } else {
+                    e.SetHeight(Math.Max((int)Math.Round((mpos.Y - cPress.Y) / 8f) * 8, e.MinHeight));
+                }
+            }
         } else {
             e.SetWidth(e.MinWidth != -1 ? e.MinWidth : 0);
             e.SetHeight(e.MinWidth != -1 ? e.MinWidth : 0);
