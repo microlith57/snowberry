@@ -158,7 +158,6 @@ public class PlacementTool : Tool {
         if (lastPress != null && (MInput.Mouse.CheckLeftButton || MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedLeftButton || MInput.Mouse.ReleasedRightButton)) {
             Vector2 cPress = (lastPress.Value / 8).Round() * 8;
             if (e.MinWidth > -1) {
-                //e.SetWidth(Math.Max((int)Math.Ceiling(area.Width / 8f) * 8, e.MinWidth));
                 if (mpos.X < cPress.X) {
                     e.SetWidth((int)Math.Round((cPress.X - mpos.X) / 8f) * 8 + e.MinWidth);
                 } else {
@@ -166,7 +165,6 @@ public class PlacementTool : Tool {
                 }
             }
             if (e.MinHeight > -1) {
-                //e.SetHeight(Math.Max((int)Math.Ceiling(area.Height / 8f) * 8, e.MinHeight));
                 if (mpos.Y < cPress.Y) {
                     e.SetHeight((int)Math.Round((cPress.Y - mpos.Y) / 8f) * 8 + e.MinHeight);
                 } else {
