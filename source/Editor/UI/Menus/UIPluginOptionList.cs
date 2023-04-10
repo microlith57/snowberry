@@ -40,6 +40,7 @@ public class UIPluginOptionList : UIElement {
         int spacing = 13;
         foreach (var option in Plugin.Info.Options) {
             object value = option.Value.GetValue(Plugin);
+            // TODO: this is kind of silly
             if (option.Value.FieldType == typeof(bool)) {
                 UIOption ui;
                 Add(ui = BoolOption(option.Key, (bool)value, Plugin));
@@ -55,9 +56,19 @@ public class UIPluginOptionList : UIElement {
                 Add(ui = LiteralValueOption<int>(option.Key, value.ToString(), Plugin));
                 ui.Position.Y = l;
                 l += spacing;
+            } else if (option.Value.FieldType == typeof(long)) {
+                UIOption ui;
+                Add(ui = LiteralValueOption<long>(option.Key, value.ToString(), Plugin));
+                ui.Position.Y = l;
+                l += spacing;
             } else if (option.Value.FieldType == typeof(float)) {
                 UIOption ui;
                 Add(ui = LiteralValueOption<float>(option.Key, value.ToString(), Plugin));
+                ui.Position.Y = l;
+                l += spacing;
+            } else if (option.Value.FieldType == typeof(double)) {
+                UIOption ui;
+                Add(ui = LiteralValueOption<double>(option.Key, value.ToString(), Plugin));
                 ui.Position.Y = l;
                 l += spacing;
             } else if(option.Value.FieldType.IsEnum) {

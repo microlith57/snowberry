@@ -2,7 +2,7 @@
 using Monocle;
 using System;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 public class UIValueTextField<T> : UITextField {
     new public Color Line = Color.Teal;
@@ -14,16 +14,16 @@ public class UIValueTextField<T> : UITextField {
     private float errLerp;
 
     public Action<T> OnValidInputChange;
-    new public T Value { get; private set; }
+    public new T Value { get; private set; }
 
-    private static readonly char[] integerChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-' };
-    private static readonly char[] floatChars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', ',', 'e' };
+    private static readonly char[] integerChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-' };
+    private static readonly char[] floatChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', ',', 'e' };
 
     public UIValueTextField(Font font, int width, string input = "")
         : base(font, width, input) {
         AllowedCharacters = Type.GetTypeCode(typeof(T)) switch {
-            TypeCode.Int32 => integerChars,
-            TypeCode.Single => floatChars,
+            TypeCode.Int32 or TypeCode.Int64 => integerChars,
+            TypeCode.Single or TypeCode.Double => floatChars,
             _ => null
         };
 
