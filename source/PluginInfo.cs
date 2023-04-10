@@ -166,7 +166,7 @@ public class LoennPluginInfo : PluginInfo {
                 if (placements["data"] is LuaTable data)
                     foreach (var item in data.Keys.OfType<string>())
                         if (!Room.IllegalOptionNames.Contains(item)) {
-                            Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+                            Options[item] = new LuaEntityOption(item, data[item].GetType(), name, isTrigger);
                         } else {
                             HasWidth |= item == "width";
                             HasHeight |= item == "height";
@@ -178,7 +178,7 @@ public class LoennPluginInfo : PluginInfo {
                     if (ptable["data"] is LuaTable data)
                         foreach (var item in data.Keys.OfType<string>())
                             if (!Room.IllegalOptionNames.Contains(item)) {
-                                Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+                                Options[item] = new LuaEntityOption(item, data[item].GetType(), name, isTrigger);
                             } else {
                                 HasWidth |= item == "width";
                                 HasHeight |= item == "height";
@@ -205,7 +205,7 @@ public class LoennPluginInfo : PluginInfo {
                             _ => typeof(string)
                         };
 
-                        Options[fieldName] = new LuaEntityOption(fieldName, fieldType, name);
+                        Options[fieldName] = new LuaEntityOption(fieldName, fieldType, name, isTrigger);
                     } else {
                         HasWidth |= fieldName == "width";
                         HasHeight |= fieldName == "height";
@@ -223,10 +223,11 @@ public class LoennPluginInfo : PluginInfo {
 }
 
 public class LuaEntityOption : PluginOption {
-    public LuaEntityOption(string key, Type t, string entityName) {
+    public LuaEntityOption(string key, Type t, string entityName, bool isTrigger) {
         Key = key;
         FieldType = t;
-        Tooltip = LoennPluginLoader.LoennText.TryGetValue($"entities.{entityName}.attributes.description.{key}", out var k) ? k.Key : null;
+        string pfix = isTrigger ? "triggers" : "entities";
+        Tooltip = LoennPluginLoader.LoennText.TryGetValue($"{pfix}.{entityName}.attributes.description.{key}", out var k) ? k.Key : null;
     }
 
     public object GetValue(Plugin from) {
