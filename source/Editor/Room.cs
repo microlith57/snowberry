@@ -64,6 +64,7 @@ public class Room {
 
     public int LoadSeed => Name.Aggregate(0, (current, c) => current + c);
 
+    public static readonly HashSet<string> IllegalOptionNames = new(){ "id", "x", "y", "width", "height", "originX", "originY", "nodes" };
     private static readonly Regex tileSplitter = new("\\r\\n|\\n\\r|\\n|\\r");
 
     internal Room(string name, Rectangle bounds, Map map) {
@@ -361,7 +362,7 @@ public class Room {
             foreach (var opt in entity.Info.Options.Keys) {
                 var val = entity.Get(opt);
                 // check that we don't overwrite any of the above (e.g. from a LuaEntity)
-                if(val != null && !(opt.Equals("id") || opt.Equals("x") || opt.Equals("y") || opt.Equals("width") || opt.Equals("height") || opt.Equals("originX") || opt.Equals("originY")))
+                if(val != null && !IllegalOptionNames.Contains(opt))
                     entityElem.Attributes[opt] = val;
             }
 
@@ -406,7 +407,7 @@ public class Room {
             foreach (var opt in trigger.Info.Options.Keys) {
                 var val = trigger.Get(opt);
                 // check that we don't overwrite any of the above (e.g. from a LuaEntity)
-                if(val != null && !(opt.Equals("id") || opt.Equals("x") || opt.Equals("y") || opt.Equals("width") || opt.Equals("height") || opt.Equals("originX") || opt.Equals("originY")))
+                if(val != null && !IllegalOptionNames.Contains(opt))
                     triggersElem.Attributes[opt] = val;
             }
 

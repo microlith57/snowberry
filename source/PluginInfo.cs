@@ -154,6 +154,9 @@ public class LoennPluginInfo : PluginInfo {
     protected readonly LuaTable Plugin;
     protected readonly bool IsTrigger;
 
+    // these properties aren't saved with the rest (handled by snowberry) but affect resizability
+    public readonly bool HasWidth, HasHeight;
+
     public LoennPluginInfo(string name, LuaTable plugin, bool isTrigger) : base(name, typeof(LuaEntity), null, CelesteEverest.INSTANCE) {
         Plugin = plugin;
         IsTrigger = isTrigger;
@@ -162,14 +165,24 @@ public class LoennPluginInfo : PluginInfo {
             if (placements.Keys.OfType<string>().Any(k => k.Equals("data"))) {
                 if (placements["data"] is LuaTable data)
                     foreach (var item in data.Keys.OfType<string>())
-                        Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+                        if (!Room.IllegalOptionNames.Contains(item)) {
+                            Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+                        } else {
+                            HasWidth |= item == "width";
+                            HasHeight |= item == "height";
+                        }
             } else if (placements.Keys.Count >= 1 && placements[1] is LuaTable) {
                 for (int i = 1; i < placements.Keys.Count + 1; i++) {
                     if (placements[i] is not LuaTable ptable)
                         continue;
                     if (ptable["data"] is LuaTable data)
                         foreach (var item in data.Keys.OfType<string>())
-                            Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+                            if (!Room.IllegalOptionNames.Contains(item)) {
+                                Options[item] = new LuaEntityOption(item, data[item].GetType(), name);
+                            } else {
+                                HasWidth |= item == "width";
+                                HasHeight |= item == "height";
+                            }
                 }
             }
         }
@@ -177,21 +190,26 @@ public class LoennPluginInfo : PluginInfo {
         if (plugin["fieldInformation"] is LuaTable fieldInfos) {
             foreach (var fieldKey in fieldInfos.Keys) {
                 if (fieldKey is string fieldName && fieldInfos[fieldKey] is LuaTable fieldInfo) {
-                    // fieldType: integer, color, boolean, number, string (default)
-                    // minimumValue, maximumValue
-                    // validator, valueTransformer, displayTransformer
-                    // options, editable
-                    // allowXNAColors
+                    if (!Room.IllegalOptionNames.Contains(fieldName)) {
+                        // fieldType: integer, color, boolean, number, string (default)
+                        // minimumValue, maximumValue
+                        // validator, valueTransformer, displayTransformer
+                        // options, editable
+                        // allowXNAColors
 
-                    string fieldTypeName = fieldInfo["fieldType"] as string ?? "string";
-                    Type fieldType = fieldTypeName.ToLowerInvariant() switch {
-                        "number" => typeof(float),
-                        "integer" => typeof(int),
-                        "boolean" => typeof(bool),
-                        _ => typeof(string)
-                    };
+                        string fieldTypeName = fieldInfo["fieldType"] as string ?? "string";
+                        Type fieldType = fieldTypeName.ToLowerInvariant() switch {
+                            "number" => typeof(float),
+                            "integer" => typeof(int),
+                            "boolean" => typeof(bool),
+                            _ => typeof(string)
+                        };
 
-                    Options[fieldName] = new LuaEntityOption(fieldName, fieldType, name);
+                        Options[fieldName] = new LuaEntityOption(fieldName, fieldType, name);
+                    } else {
+                        HasWidth |= fieldName == "width";
+                        HasHeight |= fieldName == "height";
+                    }
                 }
             }
         }

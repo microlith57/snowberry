@@ -35,11 +35,21 @@ public class LuaEntity : Entity {
             MaxNodes = (int)Float(limits, 2, 0);
         }
 
+        MinWidth = MinHeight = -1;
+
+        // default minimums from properties
+        if (info.HasWidth)
+            MinWidth = 8;
+        if (info.HasHeight)
+            MinHeight = 8;
+
+        // explicit minimum size
         if(CallOrGet<LuaTable>("minimumSize") is LuaTable minSize) {
-            MinWidth = (int)Float(minSize, 1, 0);
-            MinHeight = (int)Float(minSize, 2, 0);
+            MinWidth = (int)Float(minSize, 1, 8);
+            MinHeight = (int)Float(minSize, 2, 8);
         }
 
+        // triggers are always resizable
         if(IsTrigger) {
             MinWidth = Math.Max(MinWidth, 8);
             MinHeight = Math.Max(MinHeight, 8);
