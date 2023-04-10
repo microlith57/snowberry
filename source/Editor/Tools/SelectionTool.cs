@@ -15,8 +15,8 @@ public class SelectionTool : Tool {
     }
 
     public override UIElement CreatePanel(int height) {
-        return new UIEntitySelection() {
-            Width = 160,
+        return new UIEntitySelection {
+            Width = 200,
             Height = height
         };
     }
