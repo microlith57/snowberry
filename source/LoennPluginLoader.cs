@@ -32,6 +32,9 @@ public static class LoennPluginLoader {
 
             celesteRender = {}
             unpack = table.unpack
+
+            math = math or {}
+            math.atan2 = math.atan2 or require("#Snowberry.LoennPluginLoader").atan2
             """);
 
         Snowberry.LogInfo("Trying to load Loenn plugins");
