@@ -132,7 +132,7 @@ public abstract class Entity : Plugin {
     public virtual void RenderBefore() { }
     public virtual void HQRender() { }
 
-    private static readonly Sprite carrier = new Sprite(GFX.SpriteBank.Atlas, "strawberry");
+    private static readonly Sprite carrier = new(GFX.SpriteBank.Atlas, "strawberry");
 
     public static MTexture FromSprite(string spriteName, string animName) {
         GFX.SpriteBank.CreateOn(carrier, spriteName);

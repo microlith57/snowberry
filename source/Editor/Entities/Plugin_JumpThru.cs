@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("jumpThru")]
 public class Plugin_JumpThru : Entity {
@@ -35,10 +35,10 @@ public class Plugin_JumpThru : Entity {
     }
 
     public static void AddPlacements() {
-        string[] types = new string[] { "Wood", "Cliffside", "Core", "Dream", "Moon", "Reflection", "Temple" };
+        string[] types = { "Wood", "Cliffside", "Core", "Dream", "Moon", "Reflection", "Temple" };
         foreach (var type in types)
-            Placements.Create($"Jump-thru ({type})", "jumpThru", new Dictionary<string, object>() { { "texture", type.ToLower() } });
+            Placements.Create($"Jump-thru ({type})", "jumpThru", new Dictionary<string, object> { { "texture", type.ToLower() } });
         // they all follow a nice pattern except this one
-        Placements.Create($"Jump-thru (Temple B)", "jumpThru", new Dictionary<string, object>() { { "texture", "templeB" } });
+        Placements.Create($"Jump-thru (Temple B)", "jumpThru", new Dictionary<string, object> { { "texture", "templeB" } });
     }
 }
