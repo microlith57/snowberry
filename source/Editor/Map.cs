@@ -151,7 +151,10 @@ public class Map {
             if (!viewRect.Intersects(rect))
                 continue;
 
-            DrawUtil.WithinScissorRectangle(room.ScissorRect, room.HQRender, camera.ScreenView, nested: false, false);
+            Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Engine.Instance.GraphicsDevice.RasterizerState, null, camera.ScreenView);
+            room.HQRender();
+            Draw.SpriteBatch.End();
+            //DrawUtil.WithinScissorRectangle(room.ScissorRect, room.HQRender, camera.ScreenView, nested: false, false);
         }
     }
 
