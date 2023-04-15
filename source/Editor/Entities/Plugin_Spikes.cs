@@ -4,7 +4,7 @@ using Monocle;
 using System.Collections.Generic;
 using static Celeste.Spikes;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("spikesUp")]
 [Plugin("spikesDown")]
@@ -65,8 +65,8 @@ public class Plugin_Spikes : Entity {
     }
 
     public static void AddPlacements() {
-        string[] directions = new string[] { "Up", "Down", "Left", "Right" };
-        string[] types = new string[] { "Default", "Outline", "Cliffside", "Reflection" };
+        string[] directions = { "Up", "Down", "Left", "Right" };
+        string[] types = { "Default", "Outline", "Cliffside", "Reflection" };
         foreach (var type in types)
             foreach (var dir in directions)
                 Placements.Create($"Spikes ({dir}, {type})", "spikes" + dir, new Dictionary<string, object>() { { "type", type.ToLower() } });
