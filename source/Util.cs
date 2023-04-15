@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -42,5 +44,17 @@ public static class Util {
         if (t == typeof(bool))
             return false;
         return null;
+    }
+
+    public static T[] Extend<T>(this T[] start, IEnumerable<T> e) {
+        var rest = e as T[] ?? e.ToArray();
+        T[] ret = new T[start.Length + rest.Length];
+        start.CopyTo(ret, 0);
+        rest.ToArray().CopyTo(ret, start.Length);
+        return ret;
+    }
+
+    public static T[] Extend<T>(this T first, IEnumerable<T> rest) {
+        return Extend(new []{ first }, rest);
     }
 }

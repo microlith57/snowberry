@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections.Generic;
+using System.Linq;
 using Snowberry.Editor.Entities;
 
 namespace Snowberry.Editor;
@@ -42,7 +43,7 @@ public abstract class Entity : Plugin {
     internal Rectangle[] SelectionRectangles {
         get {
             if (updateSelection) {
-                selectionRectangles = Select();
+                selectionRectangles = Select().ToArray();
                 updateSelection = false;
             }
 
@@ -118,14 +119,26 @@ public abstract class Entity : Plugin {
 
     public virtual void InitializeAfter() { }
 
-    protected virtual Rectangle[] Select() {
-        List<Rectangle> ret = new List<Rectangle>();
-        ret.Add(new Rectangle(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height));
-        foreach (var node in Nodes) {
-            ret.Add(new Rectangle((int)node.X - 3, (int)node.Y - 3, 6, 6));
-        }
+    protected virtual IEnumerable<Rectangle> Select() {
+        List<Rectangle> ret = new List<Rectangle> {
+            new(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height)
+        };
+        ret.AddRange(Nodes.Select(node => new Rectangle((int)node.X - 3, (int)node.Y - 3, 6, 6)));
 
         return ret.ToArray();
+    }
+
+    public static Rectangle RectOnAbsolute(MTexture texture, Vector2 position = default, Vector2 justify = default) {
+        return new Rectangle(
+            (int)(position.X - justify.X * texture.Width),
+            (int)(position.Y - justify.Y * texture.Height),
+            texture.Width,
+            texture.Height
+        );
+    }
+
+    public Rectangle RectOnRelative(MTexture texture, Vector2 position = default, Vector2 justify = default) {
+        return RectOnAbsolute(texture, Position + position, justify);
     }
 
     public virtual void Render() { }

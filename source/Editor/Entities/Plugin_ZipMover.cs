@@ -126,7 +126,7 @@ public class Plugin_ZipMover : Entity {
         }
     }
 
-    protected override Rectangle[] Select() {
+    protected override IEnumerable<Rectangle> Select() {
         if (Nodes.Count != 0) {
             Vector2 node = Nodes[0];
             return new[] {

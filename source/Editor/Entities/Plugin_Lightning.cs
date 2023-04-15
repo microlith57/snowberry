@@ -115,7 +115,7 @@ public class Plugin_Lightning : Entity {
         return Room != null && Room.TrackedEntities.ContainsKey(typeof(Plugin_Lightning)) && Room.TrackedEntities[typeof(Plugin_Lightning)].Exists(e => e is Plugin_Lightning && e.Bounds.Contains((int)x, (int)y));
     }
 
-    protected override Rectangle[] Select() {
+    protected override IEnumerable<Rectangle> Select() {
         if (Nodes.Count != 0) {
             Vector2 node = Nodes[0];
             return new Rectangle[] {

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Collections.Generic;
 
 namespace Snowberry.Editor.Entities;
 
@@ -129,7 +130,7 @@ public class Plugin_DreamBlock : Entity {
             DrawUtil.DottedLine(Center, Nodes[0] + new Vector2(Width, Height) / 2f, Color.White, 4, 2);
     }
 
-    protected override Rectangle[] Select() {
+    protected override IEnumerable<Rectangle> Select() {
         if (Nodes.Count != 0) {
             Vector2 node = Nodes[0];
             return new[] {

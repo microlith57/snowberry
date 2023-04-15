@@ -1,8 +1,9 @@
-﻿using Celeste;
+﻿using System.Collections.Generic;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("tentacles")]
 public class Plugin_Tentacles : Entity {
@@ -20,6 +21,13 @@ public class Plugin_Tentacles : Entity {
             DrawUtil.DottedLine(prev, node, Color.Red * 0.5f, 8, 4);
             prev = node;
         }
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        var sprite = GFX.Game["plugins/Snowberry/tentacles"];
+        yield return RectOnRelative(sprite, justify: new(0.5f));
+        foreach (var node in Nodes)
+            yield return RectOnAbsolute(sprite, position: node, justify: new(0.5f));
     }
 
     public static void AddPlacements() {
