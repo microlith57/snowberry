@@ -51,7 +51,7 @@ public class PlacementTool : Tool {
         static bool entityMatcher(Placement entry, string term) => entry.Name.ToLower().Contains(term.ToLower());
         static bool modMatcher(Placement entry, string term) {
             var split = entry.EntityName.Split('/');
-            return split.Length == 2 && split[0].Contains(term);
+            return (split.Length >= 2 ? split[0] : "Celeste").Contains(term);
         }
 
         panel.Add(searchBar = new UISearchBar<Placement>(230, entityMatcher) {
