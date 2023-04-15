@@ -1,6 +1,6 @@
-﻿using Celeste;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using Monocle;
 
 namespace Snowberry.Editor.Entities;
 
@@ -17,18 +17,27 @@ public class Plugin_Strawberry : Entity {
         base.Render();
 
         bool seeded = Nodes.Count != 0;
-        if (Moon) {
-            string anim = seeded || Winged ? "moonghostberry" : "moonberry";
-            FromSprite(anim, "idle")?.DrawCentered(Position);
-        } else {
-            string dir = seeded ? "ghostberry" : "strawberry";
-            string anim = Winged ? "flap" : "idle";
-            FromSprite(dir, anim)?.DrawCentered(Position);
-        }
+        GetTexture()?.DrawCentered(Position);
 
         if (seeded)
             foreach (Vector2 node in Nodes)
                 FromSprite("strawberrySeed", "idle")?.DrawCentered(node);
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(10, 13), justify: new(0.5f, 0.5f));
+    }
+
+    private MTexture GetTexture() {
+        bool seeded = Nodes.Count != 0;
+        if (Moon) {
+            string anim = seeded || Winged ? "moonghostberry" : "moonberry";
+            return FromSprite(anim, "idle");
+        } else {
+            string dir = seeded ? "ghostberry" : "strawberry";
+            string anim = Winged ? "flap" : "idle";
+            return FromSprite(dir, anim);
+        }
     }
 
     public static void AddPlacements() {

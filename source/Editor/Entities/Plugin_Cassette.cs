@@ -24,10 +24,9 @@ public class Plugin_Cassette : Entity {
     }
 
     protected override IEnumerable<Rectangle> Select() {
-        var sprite = FromSprite("cassette", "idle");
-        yield return RectOnRelative(sprite, justify: new(0.5f));
+        yield return RectOnRelative(new(24, 16), justify: new(0.5f));
         foreach (var node in Nodes)
-            yield return RectOnAbsolute(sprite, position: node, justify: new(0.5f));
+            yield return RectOnAbsolute(new(24, 16), position: node, justify: new(0.5f));
     }
 
     public static void AddPlacements() {

@@ -1,7 +1,8 @@
 ﻿using Celeste;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("refill")]
 public class Plugin_Refill : Entity {
@@ -12,6 +13,10 @@ public class Plugin_Refill : Entity {
         base.Render();
 
         GFX.Game[$"objects/{(TwoDash ? "refillTwo" : "refill")}/idle00"].DrawOutlineCentered(Position);
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(TwoDash ? new(8, 12) :new(10), justify: new(0.5f));
     }
 
     public static void AddPlacements() {

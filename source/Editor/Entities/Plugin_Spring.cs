@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("spring")]
 [Plugin("wallSpringLeft")]
@@ -17,14 +17,14 @@ public class Plugin_Spring : Entity {
             "spring" => Spring.Orientations.Floor,
             "wallSpringLeft" => Spring.Orientations.WallLeft,
             "wallSpringRight" => Spring.Orientations.WallRight,
-            _ => Spring.Orientations.Floor,
+            _ => Spring.Orientations.Floor
         };
     }
 
     public override void Render() {
         base.Render();
 
-        GFX.Game[$"objects/spring/00"].DrawJustified(Position, new Vector2(0.5f, 1), Color.White, 1, Dir switch {
+        GFX.Game["objects/spring/00"].DrawJustified(Position, new Vector2(0.5f, 1), Color.White, 1, Dir switch {
             Spring.Orientations.Floor => 0,
             Spring.Orientations.WallLeft => (float)Math.PI / 2f,
             Spring.Orientations.WallRight => -(float)Math.PI / 2f,

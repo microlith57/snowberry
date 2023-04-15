@@ -4,7 +4,7 @@ using Monocle;
 using System.Collections.Generic;
 using static Celeste.TrackSpinner;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("spinner")]
 public class Plugin_Spinner : Entity {
@@ -72,6 +72,10 @@ public class Plugin_Spinner : Entity {
         }
     }
 
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(14), justify: new(0.5f));
+    }
+
     private void UpdateConnections() {
         if (connectTo == null || Room.DirtyTrackedEntities.ContainsKey(typeof(Plugin_Spinner)) && Room.DirtyTrackedEntities[typeof(Plugin_Spinner)]) {
             connectTo = new List<Entity>();
@@ -84,7 +88,7 @@ public class Plugin_Spinner : Entity {
     }
 
     public static void AddPlacements() {
-        string[] types = new string[] { "Blue", "Red", "Purple", "Rainbow" };
+        string[] types = { "Blue", "Red", "Purple", "Rainbow" };
         foreach (var type in types)
             Placements.Create($"Spinner ({type})", "spinner", new Dictionary<string, object>() { { "color", type } });
     }
@@ -141,6 +145,11 @@ public class Plugin_MovingSpinner : Entity {
         base.ChangeDefault();
         ResetNodes();
         AddNode(Position + new Vector2(16, 0));
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(14), justify: new(0.5f));
+        yield return RectOnAbsolute(new(14), Nodes[0], justify: new(0.5f));
     }
 
     public bool IsVanillaDust() {

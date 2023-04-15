@@ -449,8 +449,7 @@ public class Editor : Scene {
         }
 
         // HQRender
-        if (Map != null)
-            Map.HQRender(Camera);
+        Map?.HQRender(Camera);
 
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
         Draw.SpriteBatch.Draw(uiBuffer, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, Vector2.One * 2, SpriteEffects.None, 0f);

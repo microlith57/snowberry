@@ -128,17 +128,17 @@ public abstract class Entity : Plugin {
         return ret.ToArray();
     }
 
-    public static Rectangle RectOnAbsolute(MTexture texture, Vector2 position = default, Vector2 justify = default) {
+    public static Rectangle RectOnAbsolute(Vector2 size, Vector2 position = default, Vector2 justify = default) {
         return new Rectangle(
-            (int)(position.X - justify.X * texture.Width),
-            (int)(position.Y - justify.Y * texture.Height),
-            texture.Width,
-            texture.Height
+            (int)(position.X - justify.X * size.X),
+            (int)(position.Y - justify.Y * size.Y),
+            (int)size.X,
+            (int)size.Y
         );
     }
 
-    public Rectangle RectOnRelative(MTexture texture, Vector2 position = default, Vector2 justify = default) {
-        return RectOnAbsolute(texture, Position + position, justify);
+    public Rectangle RectOnRelative(Vector2 size, Vector2 position = default, Vector2 justify = default) {
+        return RectOnAbsolute(size, Position + position, justify);
     }
 
     public virtual void Render() { }

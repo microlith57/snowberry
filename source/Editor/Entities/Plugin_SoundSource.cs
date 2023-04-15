@@ -1,4 +1,6 @@
-﻿using Celeste;
+﻿using System.Collections.Generic;
+using Celeste;
+using Microsoft.Xna.Framework;
 
 namespace Snowberry.Editor.Entities;
 
@@ -13,6 +15,10 @@ public class Plugin_SoundSource : Entity {
         base.Render();
 
         GFX.Game["plugins/Snowberry/sound_source"].DrawCentered(Position);
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(24), justify: new(0.5f));
     }
 
     public static void AddPlacements() {

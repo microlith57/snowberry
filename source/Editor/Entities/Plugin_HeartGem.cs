@@ -1,6 +1,8 @@
-﻿using Celeste;
+﻿using System.Collections.Generic;
+using Celeste;
+using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("blackGem")]
 public class Plugin_HeartGem : Entity {
@@ -19,6 +21,10 @@ public class Plugin_HeartGem : Entity {
             _ => "heartgem3",
         };
         FromSprite(Fake ? "heartgem3" : texture, "idle")?.DrawCentered(Position);
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(18), justify: new(0.5f));
     }
 
     public static void AddPlacements() {

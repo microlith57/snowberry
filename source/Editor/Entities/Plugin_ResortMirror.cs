@@ -1,8 +1,9 @@
-﻿using Celeste;
+﻿using System.Collections.Generic;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("resortmirror")]
 public class Plugin_ResortMirror : Entity {
@@ -18,6 +19,10 @@ public class Plugin_ResortMirror : Entity {
         base.Render();
         mirror.DrawJustified(Position, new Vector2(0.5f, 0.75f));
         frame.DrawJustified(Position, new Vector2(0.5f, 1.0f));
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(32, 37), justify: new(0.5f, 1));
     }
 
     public static void AddPlacements() {
