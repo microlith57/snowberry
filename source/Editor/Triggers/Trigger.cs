@@ -12,7 +12,7 @@ namespace Snowberry.Editor.Triggers;
 [Plugin("birdPathTrigger")]
 [Plugin("changeRespawnTrigger")]
 [Plugin("everest/completeAreaTrigger")]
-public class Plugin_Trigger : Entity {
+public class Trigger : Entity {
     protected virtual Color Color { get; } = Calc.HexToColor("0c5f7a");
     protected string Text { get; private set; }
 
