@@ -14,7 +14,7 @@ public class Plugin_Waterfall : Entity {
 
         int height = 0;
         if(Room != null) {
-            int maxHeight = Room.Height - Y / 8;
+            int maxHeight = Room.Height/* - Y / 8*/;
             for (int i = 0; i < maxHeight; i++) {
                 height = i;
 
