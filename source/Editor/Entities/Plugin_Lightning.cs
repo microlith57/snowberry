@@ -36,7 +36,7 @@ public class Plugin_Lightning : Entity {
             int horizLimit = Width / (slice * 2);
             int vertLimit = Height / (slice * 2);
 
-            bool dirty = upperEdges == null || (Room != null && Room.DirtyTrackedEntities.ContainsKey(typeof(Plugin_Lightning)) && Room.DirtyTrackedEntities[typeof(Plugin_Lightning)]);
+            bool dirty = upperEdges == null || (Room != null && Room.IsEntityTypeDirty(typeof(Plugin_Lightning)));
             if (dirty) {
                 upperEdges = new List<bool>(horizLimit);
                 lowerEdges = new List<bool>(horizLimit);

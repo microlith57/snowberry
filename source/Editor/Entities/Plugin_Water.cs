@@ -14,6 +14,10 @@ public class Plugin_Water : Entity {
     public override int MinWidth => 8;
     public override int MinHeight => 8;
 
+    public Plugin_Water() {
+        Tracked = true;
+    }
+
     public override void Render() {
         base.Render();
 

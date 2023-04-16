@@ -531,4 +531,8 @@ public class Room {
 
         e.Dirty = true;
     }
+
+    public bool IsEntityTypeDirty(Type t) {
+        return DirtyTrackedEntities.ContainsKey(t) && DirtyTrackedEntities[t];
+    }
 }
