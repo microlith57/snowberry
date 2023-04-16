@@ -89,7 +89,7 @@ public class Styleground : Plugin {
     }
 
     public static Styleground Create(string name, Map map, Element data, Element applyData = null) {
-        bool exists = PluginInfo.Stylegrounds.TryGetValue(name, out PluginInfo plugin);
+        bool exists = PluginInfo.Stylegrounds.TryGetValue(name.ToLowerInvariant(), out PluginInfo plugin);
         Styleground styleground;
         if (exists) {
             styleground = plugin.Instantiate<Styleground>();
