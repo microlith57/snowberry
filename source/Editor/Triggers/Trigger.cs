@@ -10,7 +10,6 @@ namespace Snowberry.Editor.Triggers;
 [Plugin("stopBoostTrigger")]
 [Plugin("windAttackTrigger")]
 [Plugin("birdPathTrigger")]
-[Plugin("changeRespawnTrigger")]
 [Plugin("everest/completeAreaTrigger")]
 public class Trigger : Entity {
     protected virtual Color Color { get; } = Calc.HexToColor("0c5f7a");
@@ -43,7 +42,6 @@ public class Trigger : Entity {
         Placements.Create("Stop Boost Trigger", "stopBoostTrigger");
         Placements.Create("Wind Attack Trigger", "windAttackTrigger");
         Placements.Create("Bird Path Trigger", "birdPathTrigger");
-        Placements.Create("Change Respawn Trigger", "changeRespawnTrigger");
         Placements.Create("Complete Area Trigger (Everest)", "everest/completeAreaTrigger");
     }
 }
