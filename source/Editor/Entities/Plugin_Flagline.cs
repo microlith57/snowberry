@@ -22,7 +22,9 @@ public class Plugin_Flagline : Entity {
     private readonly EditorFlagline flagline;
 
     public Plugin_Flagline() {
-        flagline = new EditorFlagline(Position, Position, LineColour, PinColour, Colours, 10, 10, 10, 10, 2, 8);
+        flagline = new EditorFlagline(Position, Position, LineColour, PinColour, Colours, 10, 10, 10, 10, 2, 8) {
+            ClothDroopAmount = 0.2f
+        };
     }
 
     public override void Render() {
