@@ -1,10 +1,10 @@
-﻿using Celeste;
+﻿using System.Collections.Generic;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System.Collections.Generic;
 using static Celeste.ClutterBlock;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("redBlocks")]
 [Plugin("yellowBlocks")]
@@ -18,7 +18,7 @@ public class Plugin_ClutterBlock : Entity {
     public override void Initialize() {
         base.Initialize();
 
-        ClutterBlock.Colors color = Name switch {
+        Colors color = Name switch {
             "greenBlocks" => Colors.Green,
             "yellowBlocks" => Colors.Yellow,
             _ => Colors.Red,
@@ -38,7 +38,7 @@ public class Plugin_ClutterBlock : Entity {
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 if (!drawn[x, y]) {
-                    Calc.Shuffle(blocks);
+                    blocks.Shuffle();
 
                     foreach (MTexture block in blocks) {
                         int bw = block.Width / 8;
