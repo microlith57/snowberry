@@ -17,14 +17,18 @@ public class Plugin_Water : Entity {
     public override void Render() {
         base.Render();
 
-        Draw.Rect(Position - Vector2.UnitY * 2, Width, Height, WaterColour * 0.3f);
-        WobbleLine(Position, Width, true);
-        if (HasBottom)
-            WobbleLine(Position + Vector2.UnitY * (Height + 1), Width, false);
+        Draw.Rect(Position, Width, Height, WaterColour * 0.3f);
+        if (Editor.FancyRender) {
+            WobbleLine(Position - Vector2.UnitY, Width, true);
+            if (HasBottom)
+                WobbleLine(Position + Vector2.UnitY * (Height + 1), Width, false);
+        } else {
+            Draw.HollowRect(Position, Width, Height, WaterColour * 0.8f);
+        }
     }
 
     public static void WobbleLine(Vector2 position, float width, bool fillDown) {
-        const float amplitude = 2;
+        const float amplitude = 1;
         Vector2 last = position;
         int lastIdx = (int)(width + 2);
         for (int i = 1; i < lastIdx; i++) {
