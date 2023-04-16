@@ -77,7 +77,7 @@ public class Plugin_Spinner : Entity {
     }
 
     private void UpdateConnections() {
-        if (connectTo == null || Room.DirtyTrackedEntities.ContainsKey(typeof(Plugin_Spinner)) && Room.DirtyTrackedEntities[typeof(Plugin_Spinner)]) {
+        if (connectTo == null || Room.IsEntityTypeDirty(typeof(Plugin_Spinner))) {
             connectTo = new List<Entity>();
             foreach (var item in Room.TrackedEntities[typeof(Plugin_Spinner)]) {
                 if ((item.Position - Position).LengthSquared() < 24 * 24) {
@@ -90,10 +90,10 @@ public class Plugin_Spinner : Entity {
     public static void AddPlacements() {
         string[] types = { "Blue", "Red", "Purple", "Rainbow" };
         foreach (var type in types)
-            Placements.Create($"Spinner ({type})", "spinner", new Dictionary<string, object>() { { "color", type } });
+            Placements.Create($"Spinner ({type})", "spinner", new() { ["color"] = type });
     }
 
-    public CrystalColor? GetColorForVanillaMap() {
+    public static CrystalColor? GetColorForVanillaMap() {
         return Editor.VanillaLevelID switch {
             5 => CrystalColor.Red,
             6 => CrystalColor.Purple,
