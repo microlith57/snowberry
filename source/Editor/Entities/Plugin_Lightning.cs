@@ -116,14 +116,9 @@ public class Plugin_Lightning : Entity {
     }
 
     protected override IEnumerable<Rectangle> Select() {
-        if (Nodes.Count != 0) {
-            Vector2 node = Nodes[0];
-            return new Rectangle[] {
-                Bounds, new Rectangle((int)node.X, (int)node.Y, Width, Height)
-            };
-        } else {
-            return new Rectangle[] { Bounds };
-        }
+        yield return Bounds;
+        if (Nodes.Count != 0)
+            yield return RectOnAbsolute(Size, position: Nodes[0]);
     }
 
     public static void AddPlacements() {

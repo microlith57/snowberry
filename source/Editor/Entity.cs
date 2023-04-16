@@ -17,10 +17,12 @@ public abstract class Entity : Plugin {
     public int Y => (int)Position.Y;
     public int Width { get; private set; }
     public int Height { get; private set; }
-    public Vector2 Center => Position + new Vector2(Width, Height) / 2f;
     public Vector2 Origin { get; private set; }
-    public Rectangle Bounds => new Rectangle(X, Y, Width, Height);
     public virtual bool IsTrigger => false;
+
+    public Rectangle Bounds => new Rectangle(X, Y, Width, Height);
+    public Vector2 Center => Position + new Vector2(Width, Height) / 2f;
+    public Vector2 Size => new(Width, Height);
 
     public bool Tracked { get; protected set; }
 
