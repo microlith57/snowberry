@@ -193,7 +193,7 @@ public class Room {
                 for (int i = 0; i < rects.Length; i++) {
                     Rectangle r = rects[i];
                     if (rect.Intersects(r)) {
-                        selection.Add(new EntitySelection.Selection(r, i - 1));
+                        selection.Add(new EntitySelection.Selection(entity, i - 1));
                         wasSelected = true;
                     }
                 }

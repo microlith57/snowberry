@@ -113,6 +113,11 @@ public abstract class Entity : Plugin {
         Room?.MarkEntityDirty(this);
     }
 
+    public override void Set(string option, object value) {
+        base.Set(option, value);
+        updateSelection = true;
+    }
+
     public virtual void ChangeDefault() { }
 
     public virtual void Initialize() {
