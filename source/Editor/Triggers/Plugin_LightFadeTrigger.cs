@@ -11,7 +11,7 @@ public class Plugin_LightFadeTrigger : Trigger {
 
     public override void Render() {
         base.Render();
-        var str = PositionMode == PositionModes.NoEffect ? $"(light = {To})" : $"(light: {From} -> {To})";
+        var str = (PositionMode == PositionModes.NoEffect || From == To) ? $"(light = {To})" : $"(light: {From} -> {To})";
         Fonts.Pico8.Draw(str, Center + Vector2.UnitY * 6, Vector2.One, new(0.5f), Color.Black);
     }
 

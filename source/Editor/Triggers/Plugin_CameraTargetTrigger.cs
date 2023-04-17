@@ -1,6 +1,4 @@
-﻿using Celeste;
-
-namespace Snowberry.Editor.Triggers;
+﻿namespace Snowberry.Editor.Triggers;
 
 [Plugin("cameraTargetTrigger")]
 public class Plugin_CameraTargetTrigger : Trigger {

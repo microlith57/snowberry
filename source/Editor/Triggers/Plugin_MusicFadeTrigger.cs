@@ -12,7 +12,7 @@ public class Plugin_MusicFadeTrigger : Trigger {
 
     public override void Render() {
         base.Render();
-        var str = $"(\"{Parameter}\": {From} -> {To})";
+        var str = From == To ? $"({Parameter} = {To})" : $"(\"{Parameter}\": {From} -> {To})";
         Fonts.Pico8.Draw(str, Center + Vector2.UnitY * 6, Vector2.One, new(0.5f), Color.Black);
     }
 
