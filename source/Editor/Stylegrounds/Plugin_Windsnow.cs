@@ -9,23 +9,24 @@ namespace Snowberry.Editor.Stylegrounds;
 [Plugin("windsnow")]
 public class Plugin_Windsnow : Styleground {
 
-    public const float LoopWidth = 640;
-    public const float LoopHeight = 360;
+    // room area: 40x23 = 920
+    // 240/920 = ~0.260 wind specks per tile
+    // or 0.6x as many with upwind
 
     public override void Render(Room room) {
         base.Render(room);
 
-        bool vertical = room.WindPattern == Patterns.Up;
-        int count = vertical ? 144 : 240;
+        var previewStrength = PreviewStrength(room.WindPattern);
+        bool vertical = previewStrength.Y != 0;
+        int count = (int)Math.Ceiling(0.260f * room.Width * room.Height * (vertical ? 0.6f : 1));
         float rotation = vertical ? -MathHelper.PiOver2 : 0;
-        Vector2 scale = PreviewStrength(room.WindPattern).Abs() / 100f;
-        scale.X = Math.Max(1, scale.X);
-        scale.Y = Math.Max(1, scale.Y);
+        var scStrength = previewStrength.Abs() / 100;
+        Vector2 scale = vertical ? new Vector2(Math.Max(scStrength.Y, 1), 1) : new Vector2(Math.Max(scStrength.X, 1), 1);
 
         Calc.PushRandom(room.Name.GetHashCode());
         for (int i = 0; i < count; i++) {
             var pos = Calc.Random.Range(Vector2.Zero, room.Size * 8);
-            GFX.Game["particles/snow"].DrawCentered(pos + room.Position * 8, Color.White, scale, rotation);
+            GFX.Game["particles/snow"].DrawCentered(pos + room.Position * 8, Color.White * 0.75f, scale, rotation);
         }
         Calc.PopRandom();
     }
