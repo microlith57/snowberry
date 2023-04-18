@@ -14,7 +14,7 @@ public class Plugin_HeartGem : Entity {
     public override void Render() {
         base.Render();
 
-        string texture = Room.Map.From.Mode switch {
+        string texture = Editor.Instance.Map.From.Mode switch {
             AreaMode.Normal => "heartgem0",
             AreaMode.BSide => "heartgem1",
             AreaMode.CSide => "heartgem2",

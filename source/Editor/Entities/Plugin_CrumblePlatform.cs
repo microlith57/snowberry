@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("crumbleBlock")]
 public class Plugin_CrumblePlatform : Entity {
@@ -15,7 +15,7 @@ public class Plugin_CrumblePlatform : Entity {
         base.Render();
 
         // TODO: custom textures
-        MTexture mTexture2 = GFX.Game["objects/crumbleBlock/" + (string.IsNullOrEmpty(Texture) ? AreaData.Get(Room.Map.From).CrumbleBlock : Texture)];
+        MTexture mTexture2 = GFX.Game["objects/crumbleBlock/" + (string.IsNullOrEmpty(Texture) ? AreaData.Get(Editor.Instance.Map.From).CrumbleBlock : Texture)];
 
         for (int j = 0; (float)j < Width; j += 8) {
             int num2 = (int)((Math.Abs(X) + (float)j) / 8f) % 4;

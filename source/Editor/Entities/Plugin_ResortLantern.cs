@@ -11,7 +11,7 @@ public class Plugin_ResortLantern : Entity {
     public override void Render() {
         base.Render();
 
-        bool flipped = Room.GetFgTile(Position + Vector2.UnitX * 8f) is not '0' and not ' ';
+        bool flipped = Room != null && Room.GetFgTile(Position + Vector2.UnitX * 8f) is not ('0' or ' ');
         MTexture holder = GFX.Game["objects/resortLantern/holder"], lantern = GFX.Game["objects/resortLantern/lantern00"];
         var scale = new Vector2(flipped ? -1 : 1, 1);
         holder.Draw(Position, holder.Center, Color.White, scale);
