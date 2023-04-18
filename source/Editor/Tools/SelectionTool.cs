@@ -59,31 +59,33 @@ public class SelectionTool : Tool {
             Editor.Selection = null;
 
         bool entitiesRemoved = false;
-        if (MInput.Keyboard.Check(Keys.Delete)) {
-            foreach (var item in Editor.SelectedEntities) {
-                entitiesRemoved = true;
-                item.Entity.Room.RemoveEntity(item.Entity);
-            }
+        if (Editor.Instance.CanTypeShortcut()) {
+            if (MInput.Keyboard.Check(Keys.Delete)) {
+                foreach (var item in Editor.SelectedEntities) {
+                    entitiesRemoved = true;
+                    item.Entity.Room.RemoveEntity(item.Entity);
+                }
 
-            Editor.SelectedEntities.Clear();
-        } else if (MInput.Keyboard.Pressed(Keys.N)) {
-            // iterate backwards to allow modifying the list as we go
-            for (var idx = Editor.SelectedEntities.Count - 1; idx >= 0; idx--) {
-                var item = Editor.SelectedEntities[idx];
-                var e = item.Entity;
-                if (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1) {
-                    int oldIdx = item.Selections[0].Index;
-                    int newNodeIdx = oldIdx + 1;
-                    Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
-                    e.AddNode(oldPos + new Vector2(24, 0), newNodeIdx);
-                    Editor.SelectedEntities.Remove(item);
-                    Editor.SelectedEntities.Add(new EntitySelection(e, new() { new(e, newNodeIdx) }));
+                Editor.SelectedEntities.Clear();
+            } else if (MInput.Keyboard.Pressed(Keys.N)) {
+                // iterate backwards to allow modifying the list as we go
+                for (var idx = Editor.SelectedEntities.Count - 1; idx >= 0; idx--) {
+                    var item = Editor.SelectedEntities[idx];
+                    var e = item.Entity;
+                    if (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1) {
+                        int oldIdx = item.Selections[0].Index;
+                        int newNodeIdx = oldIdx + 1;
+                        Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
+                        e.AddNode(oldPos + new Vector2(24, 0), newNodeIdx);
+                        Editor.SelectedEntities.Remove(item);
+                        Editor.SelectedEntities.Add(new EntitySelection(e, new() { new(e, newNodeIdx) }));
+                    }
                 }
             }
         }
 
-        if ((MInput.Mouse.ReleasedLeftButton && canClick) || entitiesRemoved) {
-            if (canSelect && editor.ToolPanel is UIEntitySelection selectionPanel)
+        if ((MInput.Mouse.ReleasedLeftButton && canClick && canSelect) || entitiesRemoved) {
+            if (editor.ToolPanel is UIEntitySelection selectionPanel)
                 selectionPanel.Display(Editor.SelectedEntities);
         }
     }

@@ -124,7 +124,7 @@ public class Editor : Scene {
     public Map Map { get; private set; }
 
     private RenderTarget2D uiBuffer;
-    private readonly UIElement ui = new UIElement();
+    private readonly UIElement ui = new();
     public static UIMessage Message { get; private set; }
 
     internal static Rectangle? Selection;
@@ -280,9 +280,9 @@ public class Editor : Scene {
         else
             MappingUI();
 
-        ui.Add(Message = new UIMessage() {
+        ui.Add(Message = new UIMessage {
             Width = ui.Width,
-            Height = ui.Height,
+            Height = ui.Height
         });
     }
 
@@ -362,7 +362,7 @@ public class Editor : Scene {
             tool.Update(canClick);
 
             // keybinds
-            if (MInput.Keyboard.Pressed(Keys.F)) {
+            if (MInput.Keyboard.Pressed(Keys.F) && CanTypeShortcut()) {
                 FancyRender = !FancyRender;
             }
         }
@@ -457,6 +457,8 @@ public class Editor : Scene {
 
         #endregion
     }
+
+    public bool CanTypeShortcut() => !ui.NestedGrabsKeyboard();
 
     private static void CreatePlaytestMapDataHook(Action<MapData> orig_Load, MapData self) {
         if (!generatePlaytestMapData)

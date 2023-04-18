@@ -5,7 +5,7 @@ using Monocle;
 using System;
 using System.Linq;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 public class UITextField : UIElement {
     public bool Selected { get; private set; }
@@ -31,6 +31,8 @@ public class UITextField : UIElement {
     private static string clipboard;
 
     protected char[] AllowedCharacters;
+
+    public override bool GrabsKeyboard => Selected;
 
     public UITextField(Font font, int width, string input = "") {
         Font = font;
@@ -111,7 +113,6 @@ public class UITextField : UIElement {
             next += step;
 
         return Calc.Clamp(next, 0, Value.Length);
-        ;
     }
 
     public override void Update(Vector2 position = default) {
