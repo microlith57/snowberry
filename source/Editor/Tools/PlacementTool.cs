@@ -143,7 +143,11 @@ public class PlacementTool : Tool {
 
         if (lastPress != null) {
             Vector2 cPress = (lastPress.Value / 8).Round() * 8;
-            e.SetPosition(new Vector2(Math.Min(mpos.X, cPress.X), Math.Min(mpos.Y, cPress.Y)));
+            float newX = mpos.X, newY = mpos.Y;
+            if (e.MinWidth != -1) newX = Math.Min(newX, cPress.X);
+            if (e.MinHeight != -1) newY = Math.Min(newY, cPress.Y);
+
+            e.SetPosition(new Vector2(newX, newY));
         } else
             e.SetPosition(mpos);
 
