@@ -16,6 +16,7 @@ public class PlacementTool : Tool {
     private Dictionary<Placement, UIButton> placementButtons = new();
     private Entity preview;
     private Vector2? lastPress;
+    private bool startedDrag;
     private Placement lastPlacement;
     private UISearchBar<Placement> searchBar;
 
@@ -108,8 +109,10 @@ public class PlacementTool : Tool {
 
         if (MInput.Mouse.PressedLeftButton || (middlePan && MInput.Mouse.PressedRightButton))
             lastPress = Editor.Mouse.World;
-        else if (!MInput.Mouse.CheckLeftButton && !(middlePan && MInput.Mouse.CheckRightButton))
+        else if (!MInput.Mouse.CheckLeftButton && !(middlePan && MInput.Mouse.CheckRightButton)) {
             lastPress = null;
+            startedDrag = false;
+        }
 
         foreach (var item in placementButtons) {
             var button = item.Value;
@@ -138,22 +141,46 @@ public class PlacementTool : Tool {
     }
 
     private void UpdateEntity(Entity e) {
-        Vector2 mpos = (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl)) ? Editor.Mouse.World : (Editor.Mouse.World / 8).Round() * 8;
+        var ctrl = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
+        Vector2 mpos = ctrl ? Editor.Mouse.World : (Editor.Mouse.World / 8).Round() * 8;
         UpdateSize(e, mpos);
 
         if (lastPress != null) {
-            Vector2 cPress = (lastPress.Value / 8).Round() * 8;
+            Vector2 cPress = ctrl ? lastPress.Value : (lastPress.Value / 8).Round() * 8;
+            // moved >=16 pixels -> start dragging nodes
+            if ((mpos - cPress).LengthSquared() >= 16 * 16) {
+                startedDrag = true;
+            }
+
             float newX = mpos.X, newY = mpos.Y;
+            // resizable entities should never move down/right of their original spot
             if (e.MinWidth != -1) newX = Math.Min(newX, cPress.X);
             if (e.MinHeight != -1) newY = Math.Min(newY, cPress.Y);
+            // nodes entities should never move, their node does
+            if (e.MinWidth == -1 && e.MinHeight == -1 && e.MinNodes > 0) {
+                newX = cPress.X;
+                newY = cPress.Y;
+            }
 
             e.SetPosition(new Vector2(newX, newY));
         } else
             e.SetPosition(mpos);
 
         e.ResetNodes();
-        while (e.Nodes.Count < e.MinNodes)
-            e.AddNode((e.Nodes.Count > 0 ? e.Nodes.Last() : e.Position) + Vector2.UnitX * 24);
+        while (e.Nodes.Count < e.MinNodes) {
+            Vector2 ePosition;
+            if (e.MinWidth == -1 && e.MinHeight == -1 && lastPress != null && startedDrag) {
+                Vector2 cPress = ctrl ? lastPress.Value : (lastPress.Value / 8).Round() * 8;
+                // distribute nodes along line
+                float fraction = (e.Nodes.Count + 1) / (float)e.MinNodes;
+                ePosition = cPress + (mpos - cPress) * fraction;
+            } else {
+                ePosition = (e.Nodes.Count > 0 ? e.Nodes.Last() : e.Position) + Vector2.UnitX * 24;
+            }
+
+            e.AddNode(ePosition);
+        }
+
         e.ApplyDefaults();
         e.Initialize();
     }
