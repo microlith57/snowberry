@@ -91,6 +91,8 @@ public class Plugin_Spinner : Entity {
         string[] types = { "Blue", "Red", "Purple", "Rainbow" };
         foreach (var type in types)
             Placements.Create($"Spinner ({type})", "spinner", new() { ["color"] = type });
+
+        Placements.Create("Dust Sprite", "spinner", new() { ["dust"] = true });
     }
 
     public static CrystalColor? GetColorForVanillaMap() {
@@ -111,6 +113,9 @@ public class Plugin_Spinner : Entity {
 public class Plugin_MovingSpinner : Entity {
     [Option("dust")] public bool Dust = false;
     [Option("star")] public bool Star = false;
+
+    public override int MinNodes => 1;
+    public override int MaxNodes => 1;
 
     public override void InitializeAfter() {
         base.InitializeAfter();
@@ -141,12 +146,6 @@ public class Plugin_MovingSpinner : Entity {
         }
     }
 
-    public override void ApplyDefaults() {
-        base.ChangeDefault();
-        ResetNodes();
-        AddNode(Position + new Vector2(16, 0));
-    }
-
     protected override IEnumerable<Rectangle> Select() {
         yield return RectOnRelative(new(14), justify: new(0.5f));
         yield return RectOnAbsolute(new(14), Nodes[0], justify: new(0.5f));
@@ -168,9 +167,15 @@ public class Plugin_TrackSpinner : Plugin_MovingSpinner {
     [Option("speed")] public Speeds Speed = Speeds.Normal;
     [Option("startCenter")] public bool StartAtCenter = false;
 
-    public override void HQRender() {
+    public override void Render() {
         DrawUtil.DottedLine(Position, Nodes[0], Color.White * 0.5f, 8, 4);
-        base.HQRender();
+        base.Render();
+    }
+
+    public static void AddPlacements() {
+        Placements.Create("Moving Blade", "trackSpinner");
+        Placements.Create("Moving Dust", "trackSpinner", new() { ["dust"] = true });
+        Placements.Create("Moving Star", "trackSpinner", new() { ["star"] = true });
     }
 }
 
@@ -178,8 +183,14 @@ public class Plugin_TrackSpinner : Plugin_MovingSpinner {
 public class Plugin_RotateSpinner : Plugin_MovingSpinner {
     [Option("clockwise")] public bool Clockwise = false;
 
-    public override void HQRender() {
+    public override void Render() {
         Draw.Circle(Position, Vector2.Distance(Position, Nodes[0]), Color.White * 0.5f, 20);
-        base.HQRender();
+        base.Render();
+    }
+
+    public static void AddPlacements() {
+        Placements.Create("Rotating Blade", "rotateSpinner");
+        Placements.Create("Rotating Dust", "rotateSpinner", new() { ["dust"] = true });
+        Placements.Create("Rotating Star", "rotateSpinner", new() { ["star"] = true });
     }
 }
