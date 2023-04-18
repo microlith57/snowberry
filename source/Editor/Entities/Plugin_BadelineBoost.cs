@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Snowberry.Editor.Entities;
@@ -31,6 +32,12 @@ public class Plugin_BadelineBoost : Entity {
             DrawUtil.DottedLine(prev, node, Color.Red * 0.5f, 8, 4);
             prev = node;
         }
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(16, 15), justify: new(0.5f));
+        foreach (var node in Nodes)
+            yield return RectOnAbsolute(new(16, 15), position: node, justify: new(0.5f));
     }
 
     public static void AddPlacements() {

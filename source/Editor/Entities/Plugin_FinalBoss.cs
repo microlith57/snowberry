@@ -1,8 +1,9 @@
-﻿using Celeste;
+﻿using System.Collections.Generic;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("finalBoss")]
 public class Plugin_FinalBoss : Entity {
@@ -32,6 +33,12 @@ public class Plugin_FinalBoss : Entity {
             DrawUtil.DottedLine(prev, node, Color.Red * 0.5f, 8, 4);
             prev = node;
         }
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(38, 30), position: new(0, 2), justify: new(0.5f));
+        foreach (var node in Nodes)
+            yield return RectOnAbsolute(new(38, 30), position: node + new Vector2(0, 2), justify: new(0.5f));
     }
 
     public static void AddPlacements() {

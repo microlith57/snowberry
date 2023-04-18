@@ -1,8 +1,9 @@
-﻿using Celeste;
+﻿using System.Collections.Generic;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("darkChaser")]
 public class Plugin_DarkChaser : Entity {
@@ -15,6 +16,10 @@ public class Plugin_DarkChaser : Entity {
 
     public static void AddPlacements() {
         Placements.Create("Badeline Chaser", "darkChaser");
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(13, 17), position: new(2, 0), justify: new(0.5f, 1));
     }
 }
 
