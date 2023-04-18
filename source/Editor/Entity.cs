@@ -91,12 +91,18 @@ public abstract class Entity : Plugin {
         Room?.MarkEntityDirty(this);
     }
 
-    public void AddNode(Vector2 position) {
-        Nodes.Add(position);
+    public void AddNode(Vector2 position, int? idx = null) {
+        if (idx == null)
+            Nodes.Add(position);
+        else
+            Nodes.Insert(idx.Value, position);
+
+        updateSelection = true;
         Room?.MarkEntityDirty(this);
     }
 
     internal void ResetNodes() {
+        updateSelection = true;
         Nodes.Clear();
         Room?.MarkEntityDirty(this);
     }
