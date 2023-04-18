@@ -4,8 +4,6 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.UI;
 using System;
-using System.Collections.Generic;
-using Celeste.Mod;
 
 namespace Snowberry.Editor.Tools;
 
