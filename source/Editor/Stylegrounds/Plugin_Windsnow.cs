@@ -26,7 +26,7 @@ public class Plugin_Windsnow : Styleground {
         Calc.PushRandom(room.Name.GetHashCode());
         for (int i = 0; i < count; i++) {
             var pos = Calc.Random.Range(Vector2.Zero, room.Size * 8);
-            GFX.Game["particles/snow"].DrawCentered(pos + room.Position * 8, Color.White * 0.75f, scale, rotation);
+            GFX.Game["particles/snow"].DrawCentered(pos + room.Position * 8, Color * 0.75f, scale, rotation);
         }
         Calc.PopRandom();
     }
