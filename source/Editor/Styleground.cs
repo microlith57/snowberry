@@ -1,10 +1,8 @@
-﻿using Celeste;
-using Celeste.Mod;
+﻿using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.Stylegrounds;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using static Celeste.BinaryPacker;
 

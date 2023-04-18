@@ -58,7 +58,7 @@ public class Map {
 
                 if (name.ToLowerInvariant().Equals("apply")) {
                     if (item.Children != null) {
-                        foreach (var child in item.Children) {
+                        foreach (var child in item.Children.AsEnumerable().Reverse()) {
                             Styleground styleground = Styleground.Create(child.Name, this, child, item);
                             FGStylegrounds.Add(styleground);
                         }
@@ -76,7 +76,7 @@ public class Map {
 
                 if (name.ToLowerInvariant().Equals("apply")) {
                     if (item.Children != null) {
-                        foreach (var child in item.Children) {
+                        foreach (var child in item.Children.AsEnumerable().Reverse()) {
                             Styleground styleground = Styleground.Create(child.Name, this, child, item);
                             BGStylegrounds.Add(styleground);
                         }
@@ -120,15 +120,15 @@ public class Map {
             }
         }
 
-        foreach (var styleground in BGStylegrounds)
-            foreach (Room room in visibleRooms)
-                if (styleground.IsVisible(room))
-                    DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
+        // render stylegrounds in correct order; 0 = top
+        foreach (var styleground in BGStylegrounds.AsEnumerable().Reverse())
+            foreach (Room room in visibleRooms.Where(styleground.IsVisible))
+                DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
 
         foreach (Room room in visibleRooms)
             DrawUtil.WithinScissorRectangle(room.ScissorRect, () => room.Render(viewRect), camera.Matrix, nested: false);
 
-        foreach (var styleground in FGStylegrounds)
+        foreach (var styleground in FGStylegrounds.AsEnumerable().Reverse())
             foreach (var room in visibleRooms.Where(styleground.IsVisible))
                 DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
 
