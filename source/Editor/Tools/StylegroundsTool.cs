@@ -169,6 +169,7 @@ public class StylegroundsTool : Tool {
             panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, s => styleground.Flag = s), offset);
             panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, s => styleground.NotFlag = s), offset);
             panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, s => styleground.ForceFlag = s), offset);
+            panel.AddBelow(UIPluginOptionList.ColorOption("Colour", styleground.Color, c => styleground.Color = c), offset);
 
             panel.AddBelow(new UIPluginOptionList(styleground), offset * 2);
         }
