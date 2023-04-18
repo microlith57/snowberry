@@ -23,7 +23,7 @@ public class Plugin_Windsnow : Styleground {
         var scStrength = previewStrength.Abs() / 100;
         Vector2 scale = vertical ? new Vector2(Math.Max(scStrength.Y, 1), 1) : new Vector2(Math.Max(scStrength.X, 1), 1);
 
-        Calc.PushRandom(room.Name.GetHashCode());
+        Calc.PushRandom((room.Name + "windsnow").GetHashCode());
         for (int i = 0; i < count; i++) {
             var pos = Calc.Random.Range(Vector2.Zero, room.Size * 8);
             GFX.Game["particles/snow"].DrawCentered(pos + room.Position * 8, Color * 0.75f, scale, rotation);
