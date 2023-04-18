@@ -13,6 +13,8 @@ namespace Snowberry;
 public sealed class Snowberry : EverestModule {
     private static Hook hook_MapData_orig_Load, hook_Session_get_MapData;
 
+    public const string PlaytestSid = "Snowberry/Playtest";
+
     public static Snowberry Instance {
         get;
         private set;
@@ -47,6 +49,7 @@ public sealed class Snowberry : EverestModule {
         On.Celeste.Mod.ModContent.Add += HoldLuaAssets;
 
         Everest.Events.MainMenu.OnCreateButtons += MainMenu_OnCreateButtons;
+        Everest.Events.Level.OnCreatePauseMenuButtons += Level_OnCreatePauseMenuButtons;
     }
 
     public override void LoadContent(bool firstLoad) {
@@ -68,6 +71,7 @@ public sealed class Snowberry : EverestModule {
         On.Celeste.Mod.ModContent.Add -= HoldLuaAssets;
 
         Everest.Events.MainMenu.OnCreateButtons -= MainMenu_OnCreateButtons;
+        Everest.Events.Level.OnCreatePauseMenuButtons -= Level_OnCreatePauseMenuButtons;
     }
 
     private static void LoadModules() {
@@ -76,9 +80,9 @@ public sealed class Snowberry : EverestModule {
         foreach (EverestModule module in Everest.Modules) {
             Assembly asm = module.GetType().Assembly;
             foreach (Type type in asm.GetTypesSafe().Where(t => !t.IsAbstract && typeof(SnowberryModule).IsAssignableFrom(t))) {
-                ConstructorInfo ctor = type.GetConstructor(new Type[] { });
+                ConstructorInfo ctor = type.GetConstructor(new Type[] {});
                 if (ctor != null) {
-                    SnowberryModule editorModule = (SnowberryModule)ctor.Invoke(new object[] { });
+                    SnowberryModule editorModule = (SnowberryModule)ctor.Invoke(new object[] {});
 
                     PluginInfo.GenerateFromAssembly(asm, editorModule);
 
@@ -91,14 +95,40 @@ public sealed class Snowberry : EverestModule {
         Modules = modules.ToArray();
     }
 
-    private void MainMenu_OnCreateButtons(OuiMainMenu menu, List<MenuButton> buttons)
-    {
+    private void MainMenu_OnCreateButtons(OuiMainMenu menu, List<MenuButton> buttons) {
         MainMenuSmallButton btn = new MainMenuSmallButton("EDITOR_MAINMENU", "menu/editor", menu, Vector2.Zero, Vector2.Zero, () => {
             Editor.Editor.OpenFancy(null); //uwu
         });
         int c = 2;
         if (Celeste.Celeste.PlayMode == Celeste.Celeste.PlayModes.Debug) c++;
         buttons.Insert(c, btn);
+    }
+
+    // from Collab Utils 2, adjusted for Snowberry
+    private void Level_OnCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
+        if (level.Session.Area.SID == PlaytestSid) {
+            // find the position just under "Return to Map".
+            int returnToMapIndex = menu.GetItems().FindIndex(item =>
+                item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETURN"));
+
+            // TODO: uncomment once Playtest is inaccessible through level select
+            /*if (returnToMapIndex == -1) {
+                // fall back to the bottom of the menu.
+                returnToMapIndex = menu.GetItems().Count - 1;
+            }*/
+
+            if (returnToMapIndex == -1)
+                return;
+
+            // instantiate the "Return to Lobby" button
+            TextMenu.Button returnToLobbyButton = new TextMenu.Button(Dialog.Clean("SNOWBERRY_RETURN_TO_EDITOR"));
+            returnToLobbyButton.Pressed(() => Editor.Editor.OpenFancy(level.Session.MapData));
+            returnToLobbyButton.ConfirmSfx = "event:/ui/main/message_confirm";
+
+            // replace the "return to map" button with "return to lobby"
+            menu.Remove(menu.Items[returnToMapIndex]);
+            menu.Insert(returnToMapIndex, returnToLobbyButton);
+        }
     }
 
     public static void Log(LogLevel level, string message) {
@@ -127,7 +157,7 @@ public sealed class Snowberry : EverestModule {
 
     private LevelData DontCrashOnEmptyPlaytestLevel(On.Celeste.MapData.orig_StartLevel orig, MapData self) {
         // TODO: just add an empty room
-        if (self.Area.SID == "Snowberry/Playtest" && self.Levels.Count == 0) {
+        if (self.Area.SID == PlaytestSid && self.Levels.Count == 0) {
             var empty = new BinaryPacker.Element {
                 Children = new List<BinaryPacker.Element>(),
                 Attributes = new Dictionary<string, object> {
@@ -142,7 +172,7 @@ public sealed class Snowberry : EverestModule {
 
     private System.Collections.IEnumerator DontEnterPlaytestMap(On.Celeste.LevelEnter.orig_Routine orig, LevelEnter self) {
         var session = new DynamicData(self).Get<Session>("session");
-        if (session.Area.SID == "Snowberry/Playtest" && session != Editor.Editor.PlaytestSession && string.IsNullOrEmpty(LevelEnter.ErrorMessage)) {
+        if (session.Area.SID == PlaytestSid && session != Editor.Editor.PlaytestSession && string.IsNullOrEmpty(LevelEnter.ErrorMessage)) {
             return CantEnterRoutine(self);
         }
 

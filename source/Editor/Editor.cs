@@ -196,13 +196,15 @@ public class Editor : Scene {
             Snowberry.Log(LogLevel.Info, $"Opening level editor using map {data.Area.GetSID()}");
             map = new Map(data);
         }
-        FadeWipe wipe = new FadeWipe(Engine.Scene, false, delegate
-            {
-                Editor e = new Editor(map);
-                e.fadeIn = true;
-                Engine.Scene = e;
-            })
-            { Duration = 0.85f } ;
+
+        var _ = new FadeWipe(Engine.Scene, false, () => {
+            Editor e = new(map) {
+                fadeIn = true
+            };
+            Engine.Scene = e;
+        }) {
+            Duration = data != null ? 0.3f : 0.85f
+        };
     }
 
     private void MenuUI() {
