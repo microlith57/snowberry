@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Monocle;
 
 namespace Snowberry;
 
@@ -106,10 +107,13 @@ public sealed class Snowberry : EverestModule {
 
     // from Collab Utils 2, adjusted for Snowberry
     private void Level_OnCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
+        int buttonIdx(string label) =>
+            menu.GetItems().FindIndex(item =>
+                item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean(label));
+
         if (level.Session.Area.SID == PlaytestSid) {
             // find the position just under "Return to Map".
-            int returnToMapIndex = menu.GetItems().FindIndex(item =>
-                item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean("MENU_PAUSE_RETURN"));
+            var returnToMapIndex = buttonIdx("MENU_PAUSE_RETURN");
 
             // TODO: uncomment once Playtest is inaccessible through level select
             /*if (returnToMapIndex == -1) {
@@ -117,17 +121,38 @@ public sealed class Snowberry : EverestModule {
                 returnToMapIndex = menu.GetItems().Count - 1;
             }*/
 
-            if (returnToMapIndex == -1)
-                return;
+            if (returnToMapIndex != -1) {
+                // instantiate the "Return to Editor" button
+                TextMenu.Button rteBtn = new TextMenu.Button(Dialog.Clean("SNOWBERRY_RETURN_TO_EDITOR"));
+                rteBtn.Pressed(() => Editor.Editor.OpenFancy(level.Session.MapData));
 
-            // instantiate the "Return to Lobby" button
-            TextMenu.Button returnToLobbyButton = new TextMenu.Button(Dialog.Clean("SNOWBERRY_RETURN_TO_EDITOR"));
-            returnToLobbyButton.Pressed(() => Editor.Editor.OpenFancy(level.Session.MapData));
-            returnToLobbyButton.ConfirmSfx = "event:/ui/main/message_confirm";
+                // replace the "Return to Map" button with "Return to Editor"
+                menu.Remove(menu.Items[returnToMapIndex]);
+                menu.Insert(returnToMapIndex, rteBtn);
+            }
 
-            // replace the "return to map" button with "return to lobby"
-            menu.Remove(menu.Items[returnToMapIndex]);
-            menu.Insert(returnToMapIndex, returnToLobbyButton);
+            // find the position just under "Save and Quit".
+            int saveAndQuitIndex = buttonIdx("MENU_PAUSE_SAVEQUIT");
+
+            // TODO: uncomment once Playtest is inaccessible through level select
+            /*if (saveAndQuitIndex == -1) {
+                // fall back to the bottom of the menu.
+                saveAndQuitIndex = menu.GetItems().Count - 1;
+            }*/
+
+            if (saveAndQuitIndex != -1) {
+                // TODO: add confirmation screen w/ "save and quit", "quit without saving", and "cancel"
+
+                // instantiate the "Quit" button
+                TextMenu.Button quitBtn = new TextMenu.Button(Dialog.Clean("SNOWBERRY_QUIT"));
+                quitBtn.Pressed(() => level.DoScreenWipe(false, () => Engine.Scene = new LevelExit(LevelExit.Mode.SaveAndQuit, level.Session, level.HiresSnow), true));
+                // quitBtn.ConfirmSfx = "event:/ui/main/message_confirm";
+
+                // replace the "Save and Quit" button with "Quit"
+                menu.Remove(menu.Items[saveAndQuitIndex]);
+                menu.Insert(saveAndQuitIndex, quitBtn);
+            }
+
         }
     }
 

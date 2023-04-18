@@ -69,3 +69,4 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 # *** Pause Menu ***
 
 	SNOWBERRY_RETURN_TO_EDITOR=					Return to Editor
+	SNOWBERRY_QUIT=								Quit
