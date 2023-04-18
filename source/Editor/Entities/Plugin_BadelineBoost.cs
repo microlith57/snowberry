@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("badelineBoost")]
 public class Plugin_BadelineBoost : Entity {
@@ -10,6 +10,8 @@ public class Plugin_BadelineBoost : Entity {
     [Option("finalCh9Boost")] public bool FinalCh9Boost = false;
     [Option("finalCh9GoldenBoost")] public bool FinalCh9GoldenBoost = false;
     [Option("finalCh9Dialog")] public bool FinalCh9Dialog = false;
+
+    public override int MaxNodes => -1;
 
     public override void Render() {
         base.Render();
