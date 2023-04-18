@@ -273,8 +273,7 @@ public class Room {
                     }
                 }
             }
-        } else
-            Draw.Rect(offset, Width * 8, Height * 8, Color.Black * 0.5f);
+        }
 
         DirtyTrackedEntities.Clear();
 

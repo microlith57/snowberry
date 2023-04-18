@@ -129,9 +129,14 @@ public class Map {
             DrawUtil.WithinScissorRectangle(room.ScissorRect, () => room.Render(viewRect), camera.Matrix, nested: false);
 
         foreach (var styleground in FGStylegrounds)
-            foreach (Room room in visibleRooms)
-                if (styleground.IsVisible(room))
-                    DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
+            foreach (var room in visibleRooms.Where(styleground.IsVisible))
+                DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
+
+        // render gray over non-selected rooms, over FG stylegrounds
+        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, camera.Matrix);
+        foreach (var room in visibleRooms.Where(room => room != Editor.SelectedRoom))
+            Draw.Rect(room.Position * 8, room.Width * 8, room.Height * 8, Color.Black * 0.5f);
+        Draw.SpriteBatch.End();
 
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, camera.Matrix);
         for (int i = 0; i < Fillers.Count; i++) {
