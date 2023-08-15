@@ -9,8 +9,8 @@ namespace Snowberry.Editor.Stylegrounds;
 [Plugin("windsnow")]
 public class Plugin_Windsnow : Styleground {
 
-    // room area: 40x23 = 920
-    // 240/920 = ~0.260 wind specks per tile
+    // wrapping room area: 80x45 = 3600
+    // 240/3600 = 1/15 = ~0.0667 wind specks per tile
     // or 0.6x as many with upwind
 
     public override void Render(Room room) {
@@ -18,7 +18,7 @@ public class Plugin_Windsnow : Styleground {
 
         var previewStrength = PreviewStrength(room.WindPattern);
         bool vertical = previewStrength.Y != 0;
-        int count = (int)Math.Ceiling(0.260f * room.Width * room.Height * (vertical ? 0.6f : 1));
+        int count = (int)Math.Ceiling((1/15f) * room.Width * room.Height * (vertical ? 0.6f : 1));
         float rotation = vertical ? -MathHelper.PiOver2 : 0;
         var scStrength = previewStrength.Abs() / 100;
         Vector2 scale = vertical ? new Vector2(Math.Max(scStrength.Y, 1), 1) : new Vector2(Math.Max(scStrength.X, 1), 1);
