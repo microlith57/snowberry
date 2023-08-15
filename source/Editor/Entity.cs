@@ -132,6 +132,15 @@ public abstract class Entity : Plugin {
 
     public virtual void InitializeAfter() { }
 
+    public virtual void SaveAttrs(BinaryPacker.Element e) {
+        foreach (var opt in Info.Options.Keys) {
+            var val = Get(opt);
+            // check that we don't overwrite any of the above (e.g. from a LuaEntity)
+            if(val != null && !Room.IllegalOptionNames.Contains(opt))
+                e.Attributes[opt] = val;
+        }
+    }
+
     protected virtual IEnumerable<Rectangle> Select() {
         List<Rectangle> ret = new List<Rectangle> {
             new(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height)

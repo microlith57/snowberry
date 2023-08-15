@@ -357,13 +357,7 @@ public class Room {
                     ["originY"] = entity.Origin.Y
                 }
             };
-
-            foreach (var opt in entity.Info.Options.Keys) {
-                var val = entity.Get(opt);
-                // check that we don't overwrite any of the above (e.g. from a LuaEntity)
-                if(val != null && !IllegalOptionNames.Contains(opt))
-                    entityElem.Attributes[opt] = val;
-            }
+            entity.SaveAttrs(entityElem);
 
             if (entity is UnknownEntity placeholder)
                 foreach (string opt in placeholder.Attrs.Keys)
@@ -402,13 +396,7 @@ public class Room {
                     ["originY"] = trigger.Origin.Y
                 }
             };
-
-            foreach (var opt in trigger.Info.Options.Keys) {
-                var val = trigger.Get(opt);
-                // check that we don't overwrite any of the above (e.g. from a LuaEntity)
-                if(val != null && !IllegalOptionNames.Contains(opt))
-                    triggersElem.Attributes[opt] = val;
-            }
+            trigger.SaveAttrs(triggersElem);
 
             if (trigger is UnknownEntity placeholder)
                 foreach (string opt in placeholder.Attrs.Keys)
