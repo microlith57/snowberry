@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Linq;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("memorial")]
 [Plugin("everest/memorial")]
@@ -25,6 +25,6 @@ public class Plugin_Memorial : Entity {
 
     public static void AddPlacements() {
         Placements.Create("Memorial", "memorial");
-        Placements.Create("Memorial (Everest)", "memorial");
+        Placements.Create("Memorial (Everest)", "everest/memorial");
     }
 }
