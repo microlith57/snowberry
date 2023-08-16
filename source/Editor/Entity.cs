@@ -1,4 +1,5 @@
-﻿using Celeste;
+﻿using System;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections.Generic;
@@ -170,9 +171,13 @@ public abstract class Entity : Plugin {
     private static readonly Sprite carrier = new(GFX.SpriteBank.Atlas, "strawberry");
 
     public static MTexture FromSprite(string spriteName, string animName) {
-        GFX.SpriteBank.CreateOn(carrier, spriteName);
-        carrier.Play(animName);
-        return carrier.Texture;
+        try{
+            GFX.SpriteBank.CreateOn(carrier, spriteName);
+            carrier.Play(animName);
+            return carrier.Texture;
+        }catch (Exception){
+            return null;
+        }
     }
 
     #region Entity Instantiating
