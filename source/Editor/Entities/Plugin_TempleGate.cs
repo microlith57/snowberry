@@ -24,7 +24,7 @@ public class Plugin_TempleGate : Entity {
     }
 
     protected override IEnumerable<Rectangle> Select() {
-        yield return RectOnRelative(new(16, Math.Max(Height, 8)), position: new(4, 32), justify: new(0.5f, 0));
+        yield return RectOnRelative(new(17, Height), position: new(5, 0), justify: new(0.5f, 0));
     }
 
     public static void AddPlacements() {
