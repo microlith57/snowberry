@@ -16,7 +16,7 @@ public class Plugin_Refill : Entity {
     }
 
     protected override IEnumerable<Rectangle> Select() {
-        yield return RectOnRelative(TwoDash ? new(8, 12) :new(10), justify: new(0.5f));
+        yield return RectOnRelative(TwoDash ? new(8, 12) : new(10), justify: new(0.5f));
     }
 
     public static void AddPlacements() {
