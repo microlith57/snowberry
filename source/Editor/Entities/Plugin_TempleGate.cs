@@ -19,12 +19,13 @@ public class Plugin_TempleGate : Entity {
 
         Draw.Rect(X - 2, Y - 8, 14, 10, Color.Black);
         MTexture sprite = FromSprite($"templegate_{Sprite}", "idle");
-        sprite?.GetSubtexture(new Rectangle(0, sprite.Height - Height, sprite.Width, Height))
+        int effectiveHeight = Math.Max(Height, 16);
+        sprite?.GetSubtexture(new Rectangle(0, sprite.Height - effectiveHeight, sprite.Width, effectiveHeight))
                .DrawJustified(Position + new Vector2(4, 0), new(0.5f, 0));
     }
 
     protected override IEnumerable<Rectangle> Select() {
-        yield return RectOnRelative(new(17, Height), position: new(5, 0), justify: new(0.5f, 0));
+        yield return RectOnRelative(new(17, Height), position: new(4, 0), justify: new(0.5f, 0));
     }
 
     public static void AddPlacements() {
