@@ -87,7 +87,9 @@ public class Styleground : Plugin {
     }
 
     public static Styleground Create(string name, Map map, Element data, Element applyData = null) {
-        bool exists = PluginInfo.Stylegrounds.TryGetValue(name.ToLowerInvariant(), out PluginInfo plugin);
+        // try both lowercased and exact
+        bool exists = PluginInfo.Stylegrounds.TryGetValue(name.ToLowerInvariant(), out PluginInfo plugin)
+                        || PluginInfo.Stylegrounds.TryGetValue(name, out plugin);
         Styleground styleground;
         if (exists) {
             styleground = plugin.Instantiate<Styleground>();

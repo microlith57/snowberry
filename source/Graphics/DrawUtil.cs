@@ -2,8 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
+using Celeste;
 
-namespace Snowberry; 
+namespace Snowberry;
 
 public static class DrawUtil {
     public static Rectangle GetDrawBounds() {
@@ -27,7 +28,7 @@ public static class DrawUtil {
             Rectangle scissor = Draw.SpriteBatch.GraphicsDevice.ScissorRectangle;
             RasterizerState rasterizerState = Engine.Instance.GraphicsDevice.RasterizerState;
             if (!Engine.Instance.GraphicsDevice.RasterizerState.ScissorTestEnable)
-                Engine.Instance.GraphicsDevice.RasterizerState = new RasterizerState() { ScissorTestEnable = true, CullMode = CullMode.None };
+                Engine.Instance.GraphicsDevice.RasterizerState = new RasterizerState { ScissorTestEnable = true, CullMode = CullMode.None };
             Draw.SpriteBatch.GraphicsDevice.ScissorRectangle = rect.ClampTo(bounds);
 
             Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Engine.Instance.GraphicsDevice.RasterizerState, null, matrix ?? Matrix.Identity);
@@ -50,6 +51,34 @@ public static class DrawUtil {
             Vector2 a = start + dir * Math.Min(x, d);
             Vector2 b = start + dir * Math.Min(x + dot, d);
             Draw.Line(a, b, color);
+        }
+    }
+
+    public static void DrawVerticesWithScissoring<T>(
+        Matrix matrix,
+        T[] vertices,
+        int vertexCount,
+        Effect effect = null,
+        BlendState blendState = null)
+        where T : struct, IVertexType
+    {
+        effect ??= GFX.FxPrimitive;
+        blendState ??= BlendState.AlphaBlend;
+        Vector2 vector2 = Vector2.Zero;
+        ref Vector2 local = ref vector2;
+        Viewport viewport = Engine.Graphics.GraphicsDevice.Viewport;
+        double width = viewport.Width;
+        viewport = Engine.Graphics.GraphicsDevice.Viewport;
+        double height = viewport.Height;
+        local = new Vector2((float)width, (float)height);
+        matrix *= Matrix.CreateScale((float)(1.0 / vector2.X * 2.0), (float)(-(1.0 / vector2.Y) * 2.0), 1f);
+        matrix *= Matrix.CreateTranslation(-1f, 1f, 0.0f);
+        Engine.Instance.GraphicsDevice.RasterizerState = new RasterizerState { ScissorTestEnable = true, CullMode = CullMode.None };
+        Engine.Instance.GraphicsDevice.BlendState = blendState;
+        effect.Parameters["World"].SetValue(matrix);
+        foreach(EffectPass pass in effect.CurrentTechnique.Passes){
+            pass.Apply();
+            Engine.Instance.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertexCount / 3);
         }
     }
 }
