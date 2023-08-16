@@ -11,12 +11,12 @@ public class Plugin_Player : Entity{
 
     public override void Render(){
         base.Render();
-        int xScale = GetSpawnFacing() == Facings.Left ? -1 : 1;
-        FromSprite("player", "sitDown")?.DrawCentered(Position - Vector2.UnitY * 16, Color.White, new Vector2(xScale, 1));
+        Facings? facing = GetSpawnFacing();
+        FromSprite("player", "sitDown")?.DrawCentered(Position + new Vector2(facing == Facings.Left ? -3 : 0, -16), Color.White, new Vector2(facing == Facings.Left ? -1 : 1, 1));
     }
 
     protected override IEnumerable<Rectangle> Select(){
-        yield return RectOnRelative(new(13, 17), position: new(-1, 0), justify: new(0.5f, 1));
+        yield return RectOnRelative(new(13, 17), position: new(-2, 0), justify: new(0.5f, 1));
     }
 
     public static void AddPlacements(){
