@@ -53,7 +53,7 @@ public class Plugin_BossStarfield : Styleground {
 
                 float mapSpeed = Calc.ClampedMap(speed, 0.0f, 1200f, 1f, 64f);
                 float mapSpeedNeg = Calc.ClampedMap(speed, 0.0f, 1200f, 3f, 0.6f);
-                Vector2 direction = new Vector2(-1f, 0.0f);
+                Vector2 direction = room.Width >= room.Height ? new Vector2(-1, 0) : new Vector2(0, -1);
                 Vector2 dirPerp = direction.Perpendicular();
                 position.X = mod(position.X - pos.X * 0.9f, bgWidth + 54) - 32f;
                 position.Y = mod(position.Y - pos.Y * 0.9f, bgHeight + 54) - 32f;
