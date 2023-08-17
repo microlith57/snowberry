@@ -260,7 +260,11 @@ public class Editor : Scene {
 
         UIButton export = new UIButton(editorexport, Fonts.Regular, 6, 6) {
             OnPress = () => {
+                var existing = AreaData.Get("snowberry_map")?.ToKey();
                 BinaryExporter.ExportMap(Map);
+                if(existing != null)
+                    AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () =>
+                        AreaData.Areas[existing.Value.ID].Mode[0].MapData.Reload());
             }
         };
         ui.AddBelow(export);
