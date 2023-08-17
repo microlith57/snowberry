@@ -24,11 +24,11 @@ public abstract class Plugin_TileEntityBase : Entity {
 }
 
 public abstract class Plugin_TileEntity : Plugin_TileEntityBase {
-    [Option("tiletype")] public char TileType = '3';
+    [Option("tiletype")] public Tileset TileType = Tileset.ByKey('3', false);
 
     public override void Initialize() {
         base.Initialize();
-        Tiles = GFX.FGAutotiler.GenerateBox(TileType, Width / 8, Height / 8).TileGrid.Tiles;
+        Tiles = GFX.FGAutotiler.GenerateBox(TileType.Key, Width / 8, Height / 8).TileGrid.Tiles;
     }
 }
 
@@ -117,7 +117,7 @@ public class Plugin_CrumbleWallOnRumble : Plugin_TileEntity {
 
     public override void ChangeDefault() {
         base.ChangeDefault();
-        TileType = 'm';
+        TileType = Tileset.ByKey('m', false);
     }
 
     public static void AddPlacements() {

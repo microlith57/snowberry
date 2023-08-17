@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Color = Microsoft.Xna.Framework.Color;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Snowberry.Editor.UI;
 
@@ -11,6 +14,7 @@ namespace Snowberry.Editor.UI;
 public class UIDropdown : UIElement {
     public class DropdownEntry {
         public string Label;
+        public MTexture Icon;
         public Action OnPress, OnAlternatePress;
         public Color FG = UIButton.DefaultFG;
         public Color BG = UIButton.DefaultBG;
@@ -26,11 +30,11 @@ public class UIDropdown : UIElement {
         }
     }
 
-    private readonly Vector2 spacing = new Vector2(4);
+    private readonly Vector2 spacing = new(4);
     private Font font;
     private float[] lerps;
     private int hoverIdx = -1, pressIdx = -1;
-    private readonly List<DropdownEntry> entries = new List<DropdownEntry>();
+    private readonly List<DropdownEntry> entries = new();
 
     private readonly MTexture
         top,
@@ -54,8 +58,8 @@ public class UIDropdown : UIElement {
         float maxWidth = 6;
         foreach (var entry in entries) {
             var area = font.Measure(entry.Label);
-            maxWidth = Math.Max(maxWidth, area.X) + 3;
-            Height += (int)area.Y;
+            maxWidth = Math.Max(maxWidth, area.X + (entry.Icon != null ? entry.Icon.Width + 3 : 0)) + 3;
+            Height += (int)Math.Max(area.Y, entry.Icon?.Height ?? 0);
         }
 
         Width = (int)maxWidth + 6;
@@ -134,12 +138,18 @@ public class UIDropdown : UIElement {
             var press = (pressIdx == i) ? 1 : 0;
             var bg = ColorForEntry(i);
             float h = font.Measure(entry.Label).Y;
+            float textOffset = 0;
+            if (entry.Icon != null) {
+                h = Math.Max(h, entry.Icon.Height);
+                textOffset = entry.Icon.Width + 3;
+            }
             mid.Draw(new Vector2(ePos.X, ePos.Y + h - 4), Vector2.Zero, bg);
             mid.Draw(new Vector2(ePos.X + Width, ePos.Y + h - 4), Vector2.Zero, bg, new Vector2(-1, 1));
             Draw.Rect(new Vector2(ePos.X, ePos.Y + 4), Width, h + 4, Color.Black);
             Draw.Rect(new Vector2(ePos.X + 1, ePos.Y + 4), Width - 2, h + 4, bg);
             Color fg = Color.Lerp((hoverIdx == i) ? entry.HoveredFG : entry.FG, entry.PressedFG, lerps[i]);
-            font.Draw(entry.Label, ePos + new Vector2(4 + press, 5), Vector2.One, fg);
+            entry.Icon?.Draw(ePos + new Vector2(4 + press, entry.Icon.Height));
+            font.Draw(entry.Label, ePos + new Vector2(4 + press + textOffset, 5), Vector2.One, fg);
         }
 
         // draw bottom

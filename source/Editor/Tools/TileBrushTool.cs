@@ -11,25 +11,6 @@ using System.Linq;
 namespace Snowberry.Editor.Tools;
 
 public class TileBrushTool : Tool {
-    public class TilesetData {
-        public char Key;
-
-        public string Name;
-
-        public bool Bg;
-
-        public TileGrid Tile, Square;
-
-        public TilesetData(char key, string name, bool bg) {
-            Key = key;
-            Name = name;
-            Bg = bg;
-            Autotiler autotiler = Bg ? GFX.BGAutotiler : GFX.FGAutotiler;
-            Tile = autotiler.GenerateBox(Key, 1, 1).TileGrid;
-            Square = autotiler.GenerateBox(Key, 3, 3).TileGrid;
-        }
-    }
-
     public enum TileBrushMode {
         Brush, Rect, HollowRect, Fill, Line, Circle
     }
@@ -48,49 +29,18 @@ public class TileBrushTool : Tool {
     private static TileGrid holoGrid;
     private static bool holoRetile = false;
 
-    public List<TilesetData> FgTilesets = new List<TilesetData>();
-    public List<TilesetData> BgTilesets = new List<TilesetData>();
+    public List<Tileset> FgTilesets;
+    public List<Tileset> BgTilesets;
 
-    private List<UIButton> fgTilesetButtons = new List<UIButton>();
-    private List<UIButton> bgTilesetButtons = new List<UIButton>();
-    private List<UIButton> modeButtons = new List<UIButton>();
+    private List<UIButton> fgTilesetButtons = new();
+    private List<UIButton> bgTilesetButtons = new();
+    private List<UIButton> modeButtons = new();
 
     private static bool isPainting;
 
     public TileBrushTool() {
-        FgTilesets = GetTilesets(false);
-        BgTilesets = GetTilesets(true);
-    }
-
-    public List<TilesetData> GetTilesets(bool bg) {
-        // todo: cleanup?
-        DynamicData autotilerData = new DynamicData(typeof(Autotiler), bg ? GFX.BGAutotiler : GFX.FGAutotiler);
-        DynamicData lookupData = new DynamicData(autotilerData.Get("lookup"));
-        ICollection<char> keys = (ICollection<char>)lookupData.Get("Keys");
-        System.Collections.IEnumerable entries = (System.Collections.IEnumerable)lookupData.Get("Values");
-        var chars = new List<char>();
-        var paths = new List<string>();
-        foreach (var item in keys)
-            chars.Add(item);
-        int i = 0;
-        foreach (var item in entries) {
-            var itemData = new DynamicData(item);
-            var tilesData = new DynamicData(itemData.Get("Center"));
-            string path = GFX.Game.Textures.FirstOrDefault(t => t.Value.Equals(tilesData.Get<List<MTexture>>("Textures")[0].GetParent())).Key ?? "Tileset of " + chars[i];
-            paths.Add(path);
-            i++;
-        }
-
-        List<TilesetData> ret = new List<TilesetData> {
-            // not a "real" tileset
-            new TilesetData('0', "air", bg)
-        };
-        for (int i1 = 0; i1 < chars.Count; i1++) {
-            char item = chars[i1];
-            ret.Add(new TilesetData(item, paths[i1], bg));
-        }
-
-        return ret;
+        FgTilesets = Tileset.GetTilesets(false);
+        BgTilesets = Tileset.GetTilesets(true);
     }
 
     public override string GetName() {
@@ -135,7 +85,7 @@ public class TileBrushTool : Tool {
                 Position = new Vector2(i % 2 == 0 ? 12 : 8 * 3 + 52, (i / 2) * (8 * 3 + 30) + fgLabel.Height + 20)
             };
             button.Height += 10;
-            var label = new UILabel(item.Name.Split('/').Last(), Fonts.Pico8);
+            var label = new UILabel(item.Path.Split('/').Last(), Fonts.Pico8);
             tilesetsPanel.Add(button);
             label.Position += new Vector2(button.Position.X + (button.Width - Fonts.Pico8.Measure(label.Value()).X) / 2, 8 * 3 + 13 + button.Position.Y);
             tilesetsPanel.Add(label);
@@ -166,7 +116,7 @@ public class TileBrushTool : Tool {
                 Position = new Vector2(i % 2 == 0 ? 12 : 8 * 3 + 52, (i / 2) * (8 * 3 + 30) + (bgLabel.Position.Y) + 20)
             };
             button.Height += 10;
-            var label = new UILabel(item.Name.Split('/').Last(), Fonts.Pico8);
+            var label = new UILabel(item.Path.Split('/').Last(), Fonts.Pico8);
             tilesetsPanel.Add(button);
             label.Position += new Vector2(button.Position.X + (button.Width - Fonts.Pico8.Measure(label.Value()).X) / 2, 8 * 3 + 13 + button.Position.Y);
             tilesetsPanel.Add(label);

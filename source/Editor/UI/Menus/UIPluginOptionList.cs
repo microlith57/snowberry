@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Linq;
+using Snowberry.Editor.Tools;
 
 namespace Snowberry.Editor.UI.Menus;
 
@@ -71,7 +72,12 @@ public class UIPluginOptionList : UIElement {
                 Add(ui = LiteralValueOption<double>(option.Key, value.ToString(), Plugin));
                 ui.Position.Y = l;
                 l += spacing;
-            } else if(option.Value.FieldType.IsEnum) {
+            } else if (option.Value.FieldType == typeof(Tileset)) {
+                UIOption ui;
+                Add(ui = TilesetDropdownOption(option.Key, (Tileset)value, Plugin));
+                ui.Position.Y = l;
+                l += spacing + 6;
+            } else if (option.Value.FieldType.IsEnum) {
                 UIOption ui;
                 Add(ui = DropdownOption(option.Key, option.Value.FieldType, value, Plugin));
                 ui.Position.Y = l;
@@ -165,5 +171,27 @@ public class UIPluginOptionList : UIElement {
 
     public static UIOption DropdownOption(string name, Type t, object value, Plugin plugin) {
         return DropdownOption(name, t, value, v => plugin.Set(name, v), plugin.GetTooltipFor(name));
+    }
+
+    public static UIOption TilesetDropdownOption(string name, Tileset value, Plugin plugin) {
+        UIButton button = null;
+        button = new UIButton(value.Name + " \uF036", Fonts.Regular, 2, 2) {
+            OnPress = () => {
+                var dropdown = new UIDropdown(Fonts.Regular, Tileset.GetTilesets(false)
+                    .Select(ts => new UIDropdown.DropdownEntry(ts.Name, () => {
+                        plugin.Set(name, ts.Key);
+                        button.SetText(ts.Name + " \uF036");
+                    }) {
+                        Icon = ts.Tile.Tiles[0, 0]
+                    }).ToArray()) {
+                    Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos()
+                };
+
+                Editor.Instance.ToolPanel.Add(dropdown);
+            }
+        };
+        // TODO: give the button an icon as well
+
+        return new UIOption(name, button, plugin.GetTooltipFor(name));
     }
 }

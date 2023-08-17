@@ -1,7 +1,10 @@
 ﻿using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using System;
+using System.Linq;
 using System.Reflection;
+using Snowberry.Editor;
+using Snowberry.Editor.Tools;
 
 namespace Snowberry;
 
@@ -30,10 +33,13 @@ public abstract class Plugin {
     // overriden by generic plugins
     public virtual void Set(string option, object value) {
         if (Info.Options.TryGetValue(option, out PluginOption f)) {
-            object v = value is string str ? StrToObject(f.FieldType, str) : Convert.ChangeType(value, f.FieldType);
-            if (f.FieldType == typeof(char)) // TODO: this is kind of ugly; TileEntity is still broken, but less
+            object v;
+            if (f.FieldType == typeof(char))
                 v = value.ToString()[0];
-
+            else if (f.FieldType == typeof(Tileset))
+                v = Tileset.ByKey(value.ToString()[0], false);
+            else
+                v = value is string str ? StrToObject(f.FieldType, str) : Convert.ChangeType(value, f.FieldType);
             try {
                 f.SetValue(this, v);
             } catch (ArgumentException e) {
@@ -53,32 +59,31 @@ public abstract class Plugin {
         return Info.Options.TryGetValue(option, out PluginOption f)  ? f.Tooltip : null;
     }
 
-    protected static object StrToObject(Type targetType, string raw) {
-        if (targetType == typeof(Color)) {
-            return Monocle.Calc.HexToColor(raw);
-        }
-
-        if (targetType.IsEnum) {
+    protected static object StrToObject(Type targetType, string raw){
+        if(targetType.IsEnum)
             try {
                 return Enum.Parse(targetType, raw);
             } catch {
                 return null;
             }
-        }
 
-        if (targetType == typeof(char)) {
+        if(targetType == typeof(Color))
+            return Monocle.Calc.HexToColor(raw);
+        if(targetType == typeof(char))
             return raw[0];
-        }
+        if(targetType == typeof(Tileset))
+            return Tileset.ByKey(raw[0], false);
 
         return raw;
     }
 
     protected static object ObjectToStr(object obj) {
         return obj switch {
-            Color color => BitConverter.ToString(new byte[] { color.R, color.G, color.B }).Replace("-", string.Empty),
+            Color color => BitConverter.ToString(new[] { color.R, color.G, color.B }).Replace("-", string.Empty),
             Enum => obj.ToString(),
             char ch => ch.ToString(),
-            _ => obj,
+            Tileset ts => ts.Key.ToString(),
+            _ => obj
         };
     }
 }
