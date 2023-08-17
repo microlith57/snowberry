@@ -1,4 +1,4 @@
-﻿using Celeste;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -10,7 +10,7 @@ public class Plugin_BossStarfield : Styleground {
     // wrapping room area: 48x30.5 = 1464
     // 200/1464 = ~0.1366 lines per tile
 
-    private VertexPositionColor[] verts = new VertexPositionColor[1206];
+    private VertexPositionColor[] verts;
 
     private static readonly Color[] colors = {
         Calc.HexToColor("030c1b"),
@@ -23,6 +23,9 @@ public class Plugin_BossStarfield : Styleground {
         base.Render(room);
 
         Calc.PushRandom((room.Name + "bossstarfield").GetHashCode());
+
+        int count = (int)Math.Ceiling((200 / 1464f) * room.Width * room.Height);
+        verts = new VertexPositionColor[6 * (count + 1)];
 
         Vector2 pos = room.Position * 8;
         Editor.Instance.Camera.Matrix.Decompose(out var scale, out _, out var translation);
@@ -43,17 +46,17 @@ public class Plugin_BossStarfield : Styleground {
             verts[4].Position = pos3 + new Vector3(bgWidth, bgHeight, 0.0f);
             verts[5].Color = color1;
             verts[5].Position = pos3 + new Vector3(-10f, bgHeight, 0.0f);
-            for (int i = 0; i < 200; ++i) {
+            for(int i = 0; i < count; ++i){
                 int idx = (i + 1) * 6;
                 float speed = Calc.Random.Range(500f, 1200f);
-                Vector2 position = new Vector2(Calc.Random.Range(0, 384), Calc.Random.Range(0, 244));
+                Vector2 position = new Vector2(Calc.Random.Range(0, bgWidth + 54), Calc.Random.Range(0, bgHeight + 54));
 
                 float mapSpeed = Calc.ClampedMap(speed, 0.0f, 1200f, 1f, 64f);
                 float mapSpeedNeg = Calc.ClampedMap(speed, 0.0f, 1200f, 3f, 0.6f);
                 Vector2 direction = new Vector2(-1f, 0.0f);
                 Vector2 dirPerp = direction.Perpendicular();
-                position.X = mod(position.X - pos.X * 0.9f, 384f) - 32f;
-                position.Y = mod(position.Y - pos.Y * 0.9f, 244f) - 32f;
+                position.X = mod(position.X - pos.X * 0.9f, bgWidth + 54) - 32f;
+                position.Y = mod(position.Y - pos.Y * 0.9f, bgHeight + 54) - 32f;
                 Vector2 vector2_2 = position - direction * mapSpeed * 0.5f - dirPerp * mapSpeedNeg;
                 Vector2 vector2_3 = position + direction * mapSpeed * 1f - dirPerp * mapSpeedNeg;
                 Vector2 vector2_4 = position + direction * mapSpeed * 0.5f + dirPerp * mapSpeedNeg;
