@@ -1,16 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("towerviewer")]
-public class Plugin_Watchtower : Entity {
+public class Plugin_Watchtower : Entity{
     [Option("onlyY")] public bool OnlyY = false;
     [Option("summit")] public bool Summit = false;
 
     public override int MaxNodes => -1;
 
-    public override void Render() {
+    public override void Render(){
         base.Render();
 
         MTexture tower = FromSprite("lookout", "idle");
@@ -24,7 +25,11 @@ public class Plugin_Watchtower : Entity {
         }
     }
 
-    public static void AddPlacements() {
+    protected override IEnumerable<Rectangle> Select(){
+        yield return RectOnRelative(new(13, 16), position: new(-1, 0), justify: new(0.5f, 1));
+    }
+
+    public static void AddPlacements(){
         Placements.Create("Watchtower", "towerviewer");
     }
 }
