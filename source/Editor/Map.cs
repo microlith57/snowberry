@@ -44,6 +44,7 @@ public class Map {
 
         Editor.CopyMapMeta(targetData, playtestData);
         SetupGraphics(targetData.Meta);
+        Tileset.Load();
 
         foreach (LevelData roomData in data.Levels)
             Rooms.Add(new Room(roomData, this));

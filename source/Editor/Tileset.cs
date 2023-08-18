@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Celeste;
+using Celeste.Mod;
 using Monocle;
 using MonoMod.Utils;
 
 namespace Snowberry.Editor;
 
 public class Tileset {
+
+    public static List<Tileset> FGTilesets;
+    public static List<Tileset> BGTilesets;
 
     public char Key;
     public string Path;
@@ -25,9 +29,13 @@ public class Tileset {
         Square = autotiler.GenerateBox(Key, 3, 3).TileGrid;
     }
 
-    public static List<Tileset> GetTilesets(bool bg) {
-        // todo: cleanup?
-        // TODO: cache
+    public static void Load() {
+        FGTilesets = LoadTilesets(false);
+        BGTilesets = LoadTilesets(true);
+        Snowberry.Log(LogLevel.Info, $"Loaded {FGTilesets.Count} foreground and {BGTilesets.Count} background tilesets.");
+    }
+
+    private static List<Tileset> LoadTilesets(bool bg) {
         DynamicData autotilerData = new DynamicData(typeof(Autotiler), bg ? GFX.BGAutotiler : GFX.FGAutotiler);
         DynamicData lookupData = new DynamicData(autotilerData.Get("lookup"));
         ICollection<char> keys = (ICollection<char>)lookupData.Get("Keys");
@@ -51,6 +59,8 @@ public class Tileset {
 
         return ret;
     }
+
+    public static List<Tileset> GetTilesets(bool bg) => bg ? BGTilesets : FGTilesets;
 
     public static Tileset ByKey(char key, bool bg) {
         return GetTilesets(bg).FirstOrDefault(ts => ts.Key == key) ?? new('0', "air", bg);
