@@ -9,8 +9,8 @@ namespace Snowberry.Editor;
 
 public class Tileset {
 
-    public static List<Tileset> FGTilesets;
-    public static List<Tileset> BGTilesets;
+    public static List<Tileset> FgTilesets;
+    public static List<Tileset> BgTilesets;
 
     public char Key;
     public string Path;
@@ -30,9 +30,9 @@ public class Tileset {
     }
 
     public static void Load() {
-        FGTilesets = LoadTilesets(false);
-        BGTilesets = LoadTilesets(true);
-        Snowberry.Log(LogLevel.Info, $"Loaded {FGTilesets.Count} foreground and {BGTilesets.Count} background tilesets.");
+        FgTilesets = LoadTilesets(false);
+        BgTilesets = LoadTilesets(true);
+        Snowberry.Log(LogLevel.Info, $"Loaded {FgTilesets.Count} foreground and {BgTilesets.Count} background tilesets.");
     }
 
     private static List<Tileset> LoadTilesets(bool bg) {
@@ -60,7 +60,7 @@ public class Tileset {
         return ret;
     }
 
-    public static List<Tileset> GetTilesets(bool bg) => bg ? BGTilesets : FGTilesets;
+    public static List<Tileset> GetTilesets(bool bg) => bg ? BgTilesets : FgTilesets;
 
     public static Tileset ByKey(char key, bool bg) {
         return GetTilesets(bg).FirstOrDefault(ts => ts.Key == key) ?? new('0', "air", bg);

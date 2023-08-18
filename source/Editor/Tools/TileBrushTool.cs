@@ -29,19 +29,14 @@ public class TileBrushTool : Tool {
     private static TileGrid holoGrid;
     private static bool holoRetile = false;
 
-    public List<Tileset> FgTilesets;
-    public List<Tileset> BgTilesets;
+    public List<Tileset> FgTilesets => Tileset.FgTilesets;
+    public List<Tileset> BgTilesets => Tileset.BgTilesets;
 
     private List<UIButton> fgTilesetButtons = new();
     private List<UIButton> bgTilesetButtons = new();
     private List<UIButton> modeButtons = new();
 
     private static bool isPainting;
-
-    public TileBrushTool() {
-        FgTilesets = Tileset.GetTilesets(false);
-        BgTilesets = Tileset.GetTilesets(true);
-    }
 
     public override string GetName() {
         return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_TILEBRUSH");

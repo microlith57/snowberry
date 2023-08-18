@@ -177,7 +177,8 @@ public class UIPluginOptionList : UIElement {
         UIButton button = null;
         button = new UIButton(value.Name + " \uF036", Fonts.Regular, 2, 2) {
             OnPress = () => {
-                var dropdown = new UIDropdown(Fonts.Regular, Tileset.GetTilesets(false)
+                var dropdown = new UIDropdown(Fonts.Regular, Tileset.FgTilesets
+                    .Where(ts => ts.Key != '0')
                     .Select(ts => new UIDropdown.DropdownEntry(ts.Name, () => {
                         plugin.Set(name, ts.Key);
                         button.SetText(ts.Name + " \uF036");
