@@ -26,9 +26,21 @@ public abstract class Plugin_TileEntityBase : Entity {
 public abstract class Plugin_TileEntity : Plugin_TileEntityBase {
     [Option("tiletype")] public Tileset TileType = Tileset.ByKey('3', false);
 
+    private Tileset last;
+
     public override void Initialize() {
         base.Initialize();
         Tiles = GFX.FGAutotiler.GenerateBox(TileType.Key, Width / 8, Height / 8).TileGrid.Tiles;
+        last = TileType;
+    }
+
+    public override void Render() {
+        if (last != TileType) {
+            Tiles = GFX.FGAutotiler.GenerateBox(TileType.Key, Width / 8, Height / 8).TileGrid.Tiles;
+            last = TileType;
+        }
+
+        base.Render();
     }
 }
 
@@ -85,7 +97,7 @@ public class Plugin_FakeWall : Plugin_TileEntity {
 public class Plugin_FakeBlock : Plugin_FakeWall {
     [Option("playTransitionReveal")] public bool PlayTransitionReveal = false;
 
-    public static new void AddPlacements() {
+    public new static void AddPlacements() {
         Placements.Create("Fake Block", "fakeBlock");
         Placements.Create("Exit Block", "exitBlock");
     }
@@ -96,7 +108,7 @@ public class Plugin_ConditionBlock : Plugin_FakeWall {
     [Option("condition")] public string Condition = "Key";
     [Option("conditionID")] public string ConditionID = "1:1";
 
-    public static new void AddPlacements() {
+    public new static void AddPlacements() {
         Placements.Create("Condition Block", "conditionBlock");
     }
 }
