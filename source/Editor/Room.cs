@@ -45,6 +45,7 @@ public class Room {
     public bool Dark;
     public bool Underwater;
     public bool Space;
+    public bool DisableDownTransition;
     public WindController.Patterns WindPattern = WindController.Patterns.None;
 
     // Tiles
@@ -100,6 +101,7 @@ public class Room {
         Dark = data.Dark;
         Underwater = data.Underwater;
         Space = data.Space;
+        DisableDownTransition = data.DisableDownTransition;
         WindPattern = data.WindPattern;
 
         // BgTiles
@@ -329,6 +331,7 @@ public class Room {
                 ["dark"] = Dark,
                 ["underwater"] = Underwater,
                 ["space"] = Space,
+                ["disableDownTransition"] = DisableDownTransition,
                 ["windPattern"] = WindPattern.ToString(),
 
                 ["cameraOffsetX"] = CameraOffset.X,

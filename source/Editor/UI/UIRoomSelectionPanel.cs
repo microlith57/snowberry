@@ -174,6 +174,7 @@ class UIRoomSelectionPanel : UIElement {
         AddBelow(UIPluginOptionList.BoolOption("dark", room.Dark, val => room.Dark = val ), offset);
         AddBelow(UIPluginOptionList.BoolOption("underwater", room.Underwater, val => room.Underwater = val), offset);
         AddBelow(UIPluginOptionList.BoolOption("space", room.Space, val => room.Space = val), offset);
+        AddBelow(UIPluginOptionList.BoolOption("disable down transition", room.DisableDownTransition, val => room.DisableDownTransition = val), offset);
         AddBelow(UIPluginOptionList.DropdownOption<WindController.Patterns>("wind pattern", room.WindPattern, it => room.WindPattern = it), offset);
 
         AddBelow(new UIButton("delete", Fonts.Regular, 4, 4) {
