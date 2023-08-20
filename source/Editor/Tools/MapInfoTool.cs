@@ -27,7 +27,7 @@ public class MapInfoTool : Tool {
             Underline = true
         }, titleOffset);
 
-        ret.AddBelow(UIPluginOptionList.StringOption("icon", map.Meta.Icon, i => map.Meta.Icon = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption("icon", map.Meta.Icon ?? "", i => map.Meta.Icon = i), optionOffset);
         ret.AddBelow(UIPluginOptionList.DropdownOption<Player.IntroTypes>("intro type", map.Meta.IntroType ?? Player.IntroTypes.None, i => map.Meta.IntroType = i), optionOffset);
 
         return ret;
