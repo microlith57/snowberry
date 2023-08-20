@@ -93,12 +93,42 @@ public class Plugin_FakeWall : Plugin_TileEntity {
 }
 
 [Plugin("fakeBlock")]
-[Plugin("exitBlock")]
+//[Plugin("exitBlock")]
 public class Plugin_FakeBlock : Plugin_FakeWall {
     [Option("playTransitionReveal")] public bool PlayTransitionReveal = false;
 
     public new static void AddPlacements() {
         Placements.Create("Fake Block", "fakeBlock");
+    }
+}
+
+[Plugin("exitBlock")]
+// would have made it just another FakeBlock, but it uses `tileType` instead???
+// TODO: allow renaming options in subtypes/redirecting properties instead of this BS
+public class Plugin_ExitBlock : Plugin_TileEntityBase {
+    protected override float Alpha => 0.7f;
+
+    [Option("tileType")] public Tileset TileType = Tileset.ByKey('3', false);
+    [Option("playTransitionReveal")] public bool PlayTransitionReveal = false;
+
+    private Tileset last;
+
+    public override void Initialize() {
+        base.Initialize();
+        Tiles = GFX.FGAutotiler.GenerateBox(TileType.Key, Width / 8, Height / 8).TileGrid.Tiles;
+        last = TileType;
+    }
+
+    public override void Render() {
+        if (last != TileType) {
+            Tiles = GFX.FGAutotiler.GenerateBox(TileType.Key, Width / 8, Height / 8).TileGrid.Tiles;
+            last = TileType;
+        }
+
+        base.Render();
+    }
+
+    public static void AddPlacements() {
         Placements.Create("Exit Block", "exitBlock");
     }
 }
