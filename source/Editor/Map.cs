@@ -19,6 +19,7 @@ using Element = BinaryPacker.Element;
 public class Map {
     public readonly string Name;
     public readonly AreaKey From;
+    public readonly MapMeta Meta;
 
     public readonly List<Room> Rooms = new();
     public readonly List<Rectangle> Fillers = new();
@@ -33,6 +34,7 @@ public class Map {
         //Editor.EmptyMapMeta(playtestData);
         AreaKey playtestKey = playtestData.ToKey();
         From = playtestKey;
+        Meta = new MapMeta();
     }
 
     internal Map(MapData data)
@@ -42,8 +44,10 @@ public class Map {
         AreaKey playtestKey = playtestData.ToKey();
         From = playtestKey;
 
-        Editor.CopyMapMeta(targetData, playtestData);
-        SetupGraphics(targetData.Meta);
+        Editor.CopyAreaData(targetData, playtestData);
+        Snowberry.LogInfo(targetData.Meta?.ToString() ?? "null");
+        Editor.CopyMapMeta(targetData.Meta, Meta);
+        SetupGraphics(Meta);
         Tileset.Load();
 
         foreach (LevelData roomData in data.Levels)
@@ -165,98 +169,83 @@ public class Map {
     }
 
     public void GenerateMapData(MapData data) {
-        foreach (var room in Rooms)
-            try {
+        foreach(var room in Rooms)
+            try{
                 data.Levels.Add(new LevelData(room.CreateLevelData()));
-            } catch (InvalidCastException e) {
+            }catch(InvalidCastException e){
                 Snowberry.Log(LogLevel.Error, $"Couldn't create room: {e}");
             }
-        foreach (var filler in Fillers)
+
+        foreach(var filler in Fillers)
             data.Filler.Add(filler);
         data.Foreground = GenerateStylegroundsElement(false);
         data.Background = GenerateStylegroundsElement(true);
 
         // bounds
-        int num = int.MaxValue;
-        int num2 = int.MaxValue;
-        int num3 = int.MinValue;
-        int num4 = int.MinValue;
-        foreach (LevelData level2 in data.Levels) {
-            if (level2.Bounds.Left < num) {
-                num = level2.Bounds.Left;
-            }
-
-            if (level2.Bounds.Top < num2) {
-                num2 = level2.Bounds.Top;
-            }
-
-            if (level2.Bounds.Right > num3) {
-                num3 = level2.Bounds.Right;
-            }
-
-            if (level2.Bounds.Bottom > num4) {
-                num4 = level2.Bounds.Bottom;
-            }
+        int left = int.MaxValue;
+        int top = int.MaxValue;
+        int right = int.MinValue;
+        int bottom = int.MinValue;
+        foreach(LevelData level in data.Levels){
+            if(level.Bounds.Left < left)
+                left = level.Bounds.Left;
+            if(level.Bounds.Top < top)
+                top = level.Bounds.Top;
+            if(level.Bounds.Right > right)
+                right = level.Bounds.Right;
+            if(level.Bounds.Bottom > bottom)
+                bottom = level.Bounds.Bottom;
         }
 
-        foreach (Rectangle item in data.Filler) {
-            if (item.Left < num) {
-                num = item.Left;
-            }
-
-            if (item.Top < num2) {
-                num2 = item.Top;
-            }
-
-            if (item.Right > num3) {
-                num3 = item.Right;
-            }
-
-            if (item.Bottom > num4) {
-                num4 = item.Bottom;
-            }
+        foreach(Rectangle filler in data.Filler){
+            if(filler.Left < left)
+                left = filler.Left;
+            if(filler.Top < top)
+                top = filler.Top;
+            if(filler.Right > right)
+                right = filler.Right;
+            if(filler.Bottom > bottom)
+                bottom = filler.Bottom;
         }
 
-        int num5 = 64;
-        data.Bounds = new Rectangle(num - num5, num2 - num5, num3 - num + num5 * 2, num4 - num2 + num5 * 2);
+        const int pad = 64;
+        data.Bounds = new Rectangle(left - pad, top - pad, right - left + pad * 2, bottom - top + pad * 2);
     }
 
-    public Element Export() {
-        Element map = new Element {
+    public Element Export(){
+        Element map = new Element{
             Children = new List<Element>()
         };
 
         // children:
         //   levels w/ levels as children
-        Element levels = new Element {
+        Element levels = new Element{
             Name = "levels",
             Children = new List<Element>()
         };
-        foreach (var room in Rooms)
+        foreach(var room in Rooms)
             levels.Children.Add(room.CreateLevelData());
         map.Children.Add(levels);
 
         //   Filler w/ children w/ x,y,w,h
-        Element fillers = new Element {
+        Element fillers = new Element{
             Name = "Filler",
             Children = new List<Element>()
         };
-        foreach (var filler in Fillers) {
-            Element fill = new Element {
-                Attributes = new Dictionary<string, object>() {
+        foreach(var filler in Fillers)
+            fillers.Children.Add(new Element{
+                Attributes = new Dictionary<string, object>{
                     ["x"] = filler.X,
                     ["y"] = filler.Y,
                     ["w"] = filler.Width,
-                    ["h"] = filler.Height,
+                    ["h"] = filler.Height
                 }
-            };
-            fillers.Children.Add(fill);
-        }
+            });
 
         map.Children.Add(fillers);
 
         //   style: w/ optional color, Backgrounds child & Foregrounds child
-        Element style = new Element {
+        Element style = new Element{
             Name = "Style",
             Attributes = new(),
             Children = new()
@@ -269,18 +258,70 @@ public class Map {
         style.Children.Add(bgStyles);
         map.Children.Add(style);
 
+        //   meta
+        Element meta = new Element{
+            Name = "meta",
+            Attributes = new(),
+            Children = new()
+        };
+        meta.SetAttrNn("Parent", Meta.Parent);
+        meta.SetAttrNn("Icon", Meta.Icon);
+        meta.SetAttrNn("Interlude", Meta.Interlude);
+        meta.SetAttrNn("CassetteCheckpointIndex", Meta.CassetteCheckpointIndex);
+        meta.SetAttrNn("TitleBaseColor", Meta.TitleBaseColor);
+        meta.SetAttrNn("TitleAccentColor", Meta.TitleAccentColor);
+        meta.SetAttrNn("TitleTextColor", Meta.TitleTextColor);
+        meta.SetAttrNn("IntroType", Meta.IntroType);
+        meta.SetAttrNn("Dreaming", Meta.Dreaming);
+        meta.SetAttrNn("ColorGrade", Meta.ColorGrade);
+        meta.SetAttrNn("Wipe", Meta.Wipe);
+        meta.SetAttrNn("DarknessAlpha", Meta.DarknessAlpha);
+        meta.SetAttrNn("BloomBase", Meta.BloomBase);
+        meta.SetAttrNn("BloomStrength", Meta.BloomStrength);
+        meta.SetAttrNn("Jumpthru", Meta.Jumpthru);
+        meta.SetAttrNn("CoreMode", Meta.CoreMode);
+        meta.SetAttrNn("CassetteNoteColor", Meta.CassetteNoteColor);
+        meta.SetAttrNn("CassetteSong", Meta.CassetteSong);
+        meta.SetAttrNn("PostcardSoundID", Meta.PostcardSoundID);
+        meta.SetAttrNn("ForegroundTiles", Meta.ForegroundTiles);
+        meta.SetAttrNn("BackgroundTiles", Meta.BackgroundTiles);
+        meta.SetAttrNn("AnimatedTiles", Meta.AnimatedTiles);
+        meta.SetAttrNn("Sprites", Meta.Sprites);
+        meta.SetAttrNn("Portraits", Meta.Portraits);
+        meta.SetAttrNn("OverrideASideMeta", Meta.OverrideASideMeta);
+        if(Meta.CassetteModifier != null){
+            MapMetaCassetteModifier mod = Meta.CassetteModifier;
+            Element cm = new Element{
+                Name = "cassettemodifier",
+                Children = new()
+            };
+
+            cm.SetAttr("TempoMult", mod.TempoMult);
+            cm.SetAttr("LeadBeats", mod.LeadBeats);
+            cm.SetAttr("BeatsPerTick", mod.BeatsPerTick);
+            cm.SetAttr("TicksPerSwap", mod.TicksPerSwap);
+            cm.SetAttr("Blocks", mod.Blocks);
+            cm.SetAttr("BeatsMax", mod.BeatsMax);
+            cm.SetAttr("BeatIndexOffset", mod.BeatIndexOffset);
+            cm.SetAttr("OldBehavior", mod.OldBehavior);
+
+            meta.Children.Add(cm);
+        }
+
+        map.Children.Add(meta);
+
         return map;
     }
 
-    private Element GenerateStylegroundsElement(bool bg) {
-        Element styles = new Element {
+    private Element GenerateStylegroundsElement(bool bg){
+        Element styles = new Element{
             Name = bg ? "Backgrounds" : "Foregrounds",
             Children = new List<Element>()
         };
 
         // save elements in reverse, to match loading in reverse
         // keeps an internal representation where smaller indexes (closer to 0) = closer to foreground
-        foreach (var styleground in (bg ? BGStylegrounds : FGStylegrounds).AsEnumerable().Reverse()) {
+        foreach(var styleground in (bg ? BGStylegrounds : FGStylegrounds).AsEnumerable().Reverse()){
             Element elem = new Element {
                 Name = styleground.Name,
                 Attributes = new Dictionary<string, object> {
@@ -309,16 +350,16 @@ public class Map {
                 }
             };
 
-            if (styleground.DreamingOnly.HasValue)
+            if(styleground.DreamingOnly.HasValue)
                 elem.Attributes["dreaming"] = styleground.DreamingOnly.Value;
 
-            foreach (var opt in styleground.Info.Options.Keys) {
+            foreach(var opt in styleground.Info.Options.Keys){
                 var val = styleground.Get(opt);
                 if (val != null)
                     elem.Attributes[opt] = val;
             }
 
-            if (styleground is UnknownStyleground placeholder)
+            if(styleground is UnknownStyleground placeholder)
                 foreach (string opt in placeholder.Attrs.Keys)
                     elem.Attributes[opt] = placeholder.Attrs[opt];
 
@@ -329,7 +370,7 @@ public class Map {
     }
 
     // Setup autotilers, animated tiles, and the Graphics atlas, based on LevelLoader
-    private void SetupGraphics(MapMeta meta) {
+    private void SetupGraphics(MapMeta meta){
         string text = meta?.BackgroundTiles;
         if (string.IsNullOrEmpty(text)) {
             text = Path.Combine("Graphics", "BackgroundTiles.xml");
@@ -379,9 +420,17 @@ public class Map {
         }
     }
 
-    private XmlDocument getModdedSpritesXml(string path) {
-        // TODO: exclude vanillaa copy/pastes like Everest does
+    private XmlDocument getModdedSpritesXml(string path){
+        // TODO: exclude vanilla copy/pastes like Everest does
         XmlDocument modSpritesXml = Calc.LoadContentXML(path);
         return modSpritesXml;
+    }
+}
+
+internal static class ElementExt{
+
+    internal static void SetAttrNn(this Element e, string attrName, object value) {
+        if(value != null)
+            (e.Attributes ??= new())[attrName] = value;
     }
 }

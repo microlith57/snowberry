@@ -29,9 +29,7 @@ public class RoomTool : Tool {
         return ret;
     }
 
-    public override string GetName() {
-        return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ROOMTOOL");
-    }
+    public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ROOMTOOL");
 
     public override void Update(bool canClick) {
         // refresh the display

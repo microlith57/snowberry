@@ -6,8 +6,17 @@ using System.Collections.Generic;
 
 namespace Snowberry.Editor;
 
-public abstract class Tool {
-    public static IList<Tool> Tools = new List<Tool>() { new SelectionTool(), new DecalSelectionTool(), new TileBrushTool(), new RoomTool(), new PlacementTool(), new StylegroundsTool() };
+public abstract class Tool{
+
+    public static IList<Tool> Tools = new List<Tool> {
+        new SelectionTool(),
+        new DecalSelectionTool(),
+        new TileBrushTool(),
+        new RoomTool(),
+        new PlacementTool(),
+        new StylegroundsTool(),
+        new MapInfoTool()
+    };
 
     public static readonly Color LeftSelectedBtnBg = Calc.HexToColor("274292");
     public static readonly Color RightSelectedBtnBg = Calc.HexToColor("922727");
@@ -19,7 +28,7 @@ public abstract class Tool {
 
     public abstract void Update(bool canClick);
 
-    public virtual void RenderScreenSpace() { }
+    public virtual void RenderScreenSpace(){}
 
-    public virtual void RenderWorldSpace() { }
+    public virtual void RenderWorldSpace(){}
 }

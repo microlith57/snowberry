@@ -7,6 +7,7 @@ using Monocle;
 using Snowberry.Editor.UI;
 using System;
 using System.Collections.Generic;
+using Celeste.Mod.Meta;
 using Snowberry.Editor.UI.Menus;
 
 namespace Snowberry.Editor;
@@ -480,7 +481,7 @@ public class Editor : Scene {
         return self.Area.SID == "Snowberry/Playtest" ? PlaytestMapData : orig(self);
     }
 
-    internal static void CopyMapMeta(AreaData from, AreaData to) {
+    internal static void CopyAreaData(AreaData from, AreaData to) {
         to.ASideAreaDataBackup = from.ASideAreaDataBackup;
         to.BloomBase = from.BloomBase;
         to.BloomStrength = from.BloomStrength;
@@ -513,7 +514,81 @@ public class Editor : Scene {
         VanillaLevelID = from.IsOfficialLevelSet() ? from.ID : -1;
     }
 
-    internal static void EmptyMapMeta(AreaData of) {
-        CopyMapMeta(new AreaData(), of);
+    internal static void CopyMapMeta(MapMeta from, MapMeta to){
+        to.Parent = from.Parent;
+        to.Icon = from.Icon;
+        to.Interlude = from.Interlude;
+        to.CassetteCheckpointIndex = from.CassetteCheckpointIndex;
+        to.TitleBaseColor = from.TitleBaseColor;
+        to.TitleAccentColor = from.TitleAccentColor;
+        to.TitleTextColor = from.TitleTextColor;
+        to.IntroType = from.IntroType;
+        to.Dreaming = from.Dreaming;
+        to.ColorGrade = from.ColorGrade;
+        to.Wipe = from.Wipe;
+        to.DarknessAlpha = from.DarknessAlpha;
+        to.BloomBase = from.BloomBase;
+        to.BloomStrength = from.BloomStrength;
+        to.Jumpthru = from.Jumpthru;
+        to.CoreMode = from.CoreMode;
+        to.CassetteNoteColor = from.CassetteNoteColor;
+        to.CassetteSong = from.CassetteSong;
+        to.PostcardSoundID = from.PostcardSoundID;
+        to.ForegroundTiles = from.ForegroundTiles;
+        to.BackgroundTiles = from.BackgroundTiles;
+        to.AnimatedTiles = from.AnimatedTiles;
+        to.Sprites = from.Sprites;
+        to.Portraits = from.Portraits;
+        to.OverrideASideMeta = from.OverrideASideMeta;
+
+        if(from.CassetteModifier != null)
+            to.CassetteModifier = new MapMetaCassetteModifier{
+                TempoMult = from.CassetteModifier.TempoMult,
+                LeadBeats = from.CassetteModifier.LeadBeats,
+                BeatsPerTick = from.CassetteModifier.BeatsPerTick,
+                TicksPerSwap = from.CassetteModifier.TicksPerSwap,
+                Blocks = from.CassetteModifier.Blocks,
+                BeatsMax = from.CassetteModifier.BeatsMax,
+                BeatIndexOffset = from.CassetteModifier.BeatIndexOffset,
+                OldBehavior = from.CassetteModifier.OldBehavior
+            };
+
+        /*to.Mountain = new MapMetaMountain{
+            MountainModelDirectory = from.Mountain.MountainModelDirectory,
+            MountainTextureDirectory = from.Mountain.MountainTextureDirectory,
+            BackgroundMusic = from.Mountain.BackgroundMusic,
+            BackgroundAmbience = from.Mountain.BackgroundAmbience,
+            BackgroundMusicParams = new Dictionary<string, float>(from.Mountain.BackgroundMusicParams),
+            FogColors = Copy(from.Mountain.FogColors),
+            StarFogColor = from.Mountain.StarFogColor,
+            StarStreamColors = Copy(from.Mountain.StarStreamColors),
+            StarBeltColors1 = Copy(from.Mountain.StarBeltColors1),
+            StarBeltColors2 = Copy(from.Mountain.StarBeltColors2),
+            Idle = Copy(from.Mountain.Idle),
+            Select = Copy(from.Mountain.Select),
+            Zoom = Copy(from.Mountain.Zoom),
+            Cursor = Copy(from.Mountain.Cursor),
+            State = from.Mountain.State,
+            Rotate = from.Mountain.Rotate,
+            ShowCore = from.Mountain.ShowCore,
+            ShowSnow = from.Mountain.ShowSnow
+        };*/ // other non-gameplay attributes don't need to be handled here
     }
+
+    internal static void EmptyMapMeta(AreaData of) {
+        CopyAreaData(new AreaData(), of);
+    }
+
+    /*internal static T[] Copy<T>(T[] a) {
+        T[] ret = new T[a.Length];
+        Array.Copy(a, ret, a.Length);
+        return ret;
+    }
+
+    internal static MapMetaMountainCamera Copy(MapMetaMountainCamera camera) {
+        return new MapMetaMountainCamera {
+            Position = camera.Position,
+            Target = camera.Target
+        };
+    }*/
 }
