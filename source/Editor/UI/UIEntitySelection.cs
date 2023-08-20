@@ -4,14 +4,15 @@ using System.Collections.Generic;
 
 namespace Snowberry.Editor.UI;
 
-public class UIEntitySelection : UIScrollPane {
-    public UIEntitySelection() {
+public class UIEntitySelection : UIScrollPane{
+
+    public UIEntitySelection(){
         GrabsClick = true;
         TopPadding = 10;
     }
 
-    public void Display(List<EntitySelection> selection) {
-        if (selection != null) {
+    public void Display(List<EntitySelection> selection){
+        if(selection != null){
             Clear();
             int y = 0;
             foreach (EntitySelection s in selection) {
@@ -22,7 +23,7 @@ public class UIEntitySelection : UIScrollPane {
         }
     }
 
-    private UIElement AddEntry(EntitySelection s) {
+    private UIElement AddEntry(EntitySelection s){
         UIRibbon name = new UIRibbon(s.Entity.Name, 8, 8, true, false) {
             BG = Util.Colors.DarkGray,
             BGAccent = s.Entity.Info.Module.Color

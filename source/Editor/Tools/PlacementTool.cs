@@ -23,7 +23,7 @@ public class PlacementTool : Tool {
     public override UIElement CreatePanel(int height) {
         placementButtons.Clear();
 
-        UIElement panel = new() {
+        UIElement panel = new(){
             Width = 240,
             Background = Calc.HexToColor("202929") * (185 / 255f),
             GrabsClick = true,
@@ -31,14 +31,14 @@ public class PlacementTool : Tool {
             Height = height
         };
 
-        var buttonPane = new UIScrollPane {
+        var buttonPane = new UIScrollPane{
             Width = 240,
             TopPadding = 10,
             Background = null,
             Height = height - 30
         };
 
-        foreach (var item in Placements.All.OrderBy(k => k.Name)) {
+        foreach(var item in Placements.All.OrderBy(k => k.Name)){
             UIButton b;
             buttonPane.AddBelow(b = new UIButton(item.Name, Fonts.Regular, 4, 4) {
                 OnPress = () => curLeftSelection = curLeftSelection != item ? item : null,

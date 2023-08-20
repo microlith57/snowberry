@@ -184,10 +184,14 @@ public class Room {
         bgTiles = GFX.BGAutotiler.GenerateMap(bgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
     }
 
-    internal List<EntitySelection> GetSelectedEntities(Rectangle rect) {
+    internal List<EntitySelection> GetSelectedEntities(Rectangle rect, bool selectEntities, bool selectTriggers) {
         List<EntitySelection> result = new List<EntitySelection>();
 
         foreach (Entity entity in AllEntities) {
+            if ((!selectTriggers && entity.IsTrigger) || (!selectEntities && !entity.IsTrigger)) {
+                continue;
+            }
+
             var rects = entity.SelectionRectangles;
             if (rects is { Length: > 0 }) {
                 List<EntitySelection.Selection> selection = new List<EntitySelection.Selection>();
