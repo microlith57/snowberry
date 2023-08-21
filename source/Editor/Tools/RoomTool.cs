@@ -158,4 +158,48 @@ public class RoomTool : Tool {
             Draw.HollowRect(PendingRoom.Value.X, PendingRoom.Value.Y, 40 * 8, 23 * 8, Color.Lerp(Color.Orange, Color.White, prog) * 0.6f);
         }
     }
+
+    public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
+        var curRoom = Editor.SelectedRoom;
+        Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
+        // over another room that isn't selected? just the default
+        Room over = Editor.Instance.Map.GetRoomAt(mouse);
+        if (over != null && over != curRoom) {
+            return;
+        }
+        // all the other cursors are centred
+        justify = Vector2.One / 2f;
+        // over empty space? then a plus
+        if (over == null) {
+            cursor = Editor.cursors.GetSubtexture(0, 16, 16, 16);
+            return;
+        }
+        // if nothing is selected then these can be the only two
+        if (curRoom == null)
+            return;
+        // then we must be hovered over the current room
+        // resizing? use the appropriate cursor
+        var fromLeft = Math.Abs(Editor.Mouse.World.X / 8f - curRoom.Position.X) < 1;
+        var fromRight = Math.Abs(Editor.Mouse.World.X / 8f - (curRoom.Position.X + curRoom.Width)) < 1;
+        var fromTop = Math.Abs(Editor.Mouse.World.Y / 8f - curRoom.Position.Y) < 1;
+        var fromBottom = Math.Abs(Editor.Mouse.World.Y / 8f - (curRoom.Position.Y + curRoom.Height)) < 1;
+        if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
+            cursor = Editor.cursors.GetSubtexture(32, 32, 16, 16);
+            return;
+        }
+        if ((fromTop && fromLeft) || (fromBottom && fromRight)) {
+            cursor = Editor.cursors.GetSubtexture(48, 32, 16, 16);
+            return;
+        }
+        if (fromLeft || fromRight) {
+            cursor = Editor.cursors.GetSubtexture(0, 32, 16, 16);
+            return;
+        }
+        if (fromBottom || fromTop) {
+            cursor = Editor.cursors.GetSubtexture(16, 32, 16, 16);
+            return;
+        }
+
+        cursor = Editor.cursors.GetSubtexture(16, 16, 16, 16);
+    }
 }

@@ -46,7 +46,8 @@ public class Map {
 
         Editor.CopyAreaData(targetData, playtestData);
         Snowberry.LogInfo(targetData.Meta?.ToString() ?? "null");
-        Editor.CopyMapMeta(targetData.Meta, Meta);
+        if(targetData.Meta != null)
+            Editor.CopyMapMeta(targetData.Meta, Meta);
         SetupGraphics(Meta);
         Tileset.Load();
 

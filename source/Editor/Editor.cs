@@ -113,7 +113,9 @@ public class Editor : Scene {
 
     public static bool FancyRender = true;
 
-    private static readonly Color bg = Calc.HexToColor("060607");
+    public static readonly MTexture cursors = GFX.Gui["Snowberry/cursors"];
+    public static readonly Color bg = Calc.HexToColor("060607");
+    private readonly MTexture defaultCursor = GFX.Gui["Snowberry/cursors"].GetSubtexture(0, 0, 16, 16);
 
     private bool fadeIn = false;
     public BufferCamera Camera { get; private set; }
@@ -145,7 +147,6 @@ public class Editor : Scene {
     public static AreaKey? From;
 
     private Editor(Map map) {
-        Engine.Instance.IsMouseVisible = true;
         Map = map;
 
         SelectedRoom = null;
@@ -400,6 +401,11 @@ public class Editor : Scene {
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
         ui.Render();
+
+        MTexture curCursor = defaultCursor;
+        Vector2 curJustify = Vector2.Zero;
+        tool?.SuggestCursor(ref curCursor, ref curJustify);
+        curCursor.DrawJustified(Mouse.Screen, curJustify);
 
         // Tooltip rendering
         var tooltip = ui.HoveredTooltip();
