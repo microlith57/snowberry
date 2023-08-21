@@ -30,7 +30,7 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 
     SNOWBERRY_EDITOR_RETURN=                    return to map
     SNOWBERRY_EDITOR_PLAYTEST=                  playtest
-    SNOWBERRY_EDITOR_EXPORT=                    export
+    SNOWBERRY_EDITOR_EXPORT=                    save
 
     SNOWBERRY_EDITOR_TOOL_ENTITYSELECT=         entity select
 
