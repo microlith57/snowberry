@@ -121,7 +121,7 @@ public class RoomTool : Tool {
 
         // room creation
         if (canClick) {
-            if (curRoom == null) {
+            if (curRoom == null && Editor.SelectedFillerIndex == -1) {
                 if (MInput.Mouse.CheckLeftButton) {
                     var lastPress = (Editor.Instance.worldClick / 8).Ceiling() * 8;
                     var mpos = (Editor.Mouse.World / 8).Ceiling() * 8;
@@ -162,9 +162,9 @@ public class RoomTool : Tool {
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
         var curRoom = Editor.SelectedRoom;
         Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
-        // over another room that isn't selected? just the default
+        // over another room/filler that isn't selected? just the default
         Room over = Editor.Instance.Map.GetRoomAt(mouse);
-        if (over != null && over != curRoom) {
+        if ((over != null && over != curRoom) || Editor.Instance.Map.GetFillerIndexAt(mouse) != -1) {
             return;
         }
         // all the other cursors are centred
