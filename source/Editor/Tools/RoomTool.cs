@@ -12,7 +12,7 @@ public class RoomTool : Tool {
     public static bool ScheduledRefresh = false;
 
     private Vector2? lastRoomOffset = null;
-    private static bool resizingX, resizingY;
+    private static bool resizingX, resizingY, fromLeft, fromTop;
     private static int newWidth, newHeight;
     private static Rectangle oldRoomBounds;
     private static bool justSwitched = false;
@@ -33,64 +33,84 @@ public class RoomTool : Tool {
 
     public override void Update(bool canClick) {
         // refresh the display
-        if (lastSelected != Editor.SelectedRoom || lastFillerSelected != Editor.SelectedFillerIndex || ScheduledRefresh) {
+        var curRoom = Editor.SelectedRoom;
+        if (lastSelected != curRoom || lastFillerSelected != Editor.SelectedFillerIndex || ScheduledRefresh) {
             justSwitched = true;
             ScheduledRefresh = false;
-            lastSelected = Editor.SelectedRoom;
+            lastSelected = curRoom;
             lastFillerSelected = Editor.SelectedFillerIndex;
             if (Editor.Instance.ToolPanel is UIRoomSelectionPanel selectionPanel)
                 selectionPanel.Refresh();
-            if (Editor.SelectedRoom != null) {
-                lastRoomOffset = Editor.SelectedRoom.Position - (Editor.Mouse.World / 8);
-                oldRoomBounds = Editor.SelectedRoom.Bounds;
+            if (curRoom != null) {
+                lastRoomOffset = curRoom.Position - (Editor.Mouse.World / 8);
+                oldRoomBounds = curRoom.Bounds;
             }
         }
 
         // move, resize, add rooms
-        if (canClick && Editor.SelectedRoom != null && !justSwitched) {
+        if (canClick && curRoom != null && !justSwitched) {
             if (MInput.Mouse.PressedLeftButton) {
-                lastRoomOffset = Editor.SelectedRoom.Position - (Editor.Mouse.World / 8);
+                lastRoomOffset = curRoom.Position - (Editor.Mouse.World / 8);
                 // check if the mouse is 8 pixels from the room's borders
-                resizingX = resizingY = false;
-                if (Math.Abs(Editor.Mouse.World.X / 8f - (Editor.SelectedRoom.Position.X + Editor.SelectedRoom.Width)) < 1)
-                    resizingX = true;
-                if (Math.Abs(Editor.Mouse.World.Y / 8f - (Editor.SelectedRoom.Position.Y + Editor.SelectedRoom.Height)) < 1)
-                    resizingY = true;
-                oldRoomBounds = Editor.SelectedRoom.Bounds;
+                fromLeft = Math.Abs(Editor.Mouse.World.X / 8f - curRoom.Position.X) < 1;
+                resizingX = Math.Abs(Editor.Mouse.World.X / 8f - (curRoom.Position.X + curRoom.Width)) < 1
+                            || fromLeft;
+                fromTop = Math.Abs(Editor.Mouse.World.Y / 8f - curRoom.Position.Y) < 1;
+                resizingY = Math.Abs(Editor.Mouse.World.Y / 8f - (curRoom.Position.Y + curRoom.Height)) < 1
+                            || fromTop;
+                oldRoomBounds = curRoom.Bounds;
             } else if (MInput.Mouse.CheckLeftButton) {
                 Vector2 world = Editor.Mouse.World / 8;
                 var offset = lastRoomOffset ?? Vector2.Zero;
-                var newX = (int)(world + offset).X;
-                var newY = (int)(world + offset).Y;
-                var diff = new Vector2(newX - Editor.SelectedRoom.Bounds.X, newY - Editor.SelectedRoom.Bounds.Y);
                 if (!resizingX && !resizingY) {
-                    Editor.SelectedRoom.Bounds.X = (int)(world + offset).X;
-                    Editor.SelectedRoom.Bounds.Y = (int)(world + offset).Y;
-                    foreach (var e in Editor.SelectedRoom.AllEntities) {
+                    var newX = (int)(world + offset).X;
+                    var newY = (int)(world + offset).Y;
+                    var diff = new Vector2(newX - curRoom.Bounds.X, newY - curRoom.Bounds.Y);
+                    curRoom.Bounds.X = (int)(world + offset).X;
+                    curRoom.Bounds.Y = (int)(world + offset).Y;
+                    foreach (var e in curRoom.AllEntities) {
                         e.Move(diff * 8);
                         for (int i = 0; i < e.Nodes.Count; i++) {
                             e.MoveNode(i, diff * 8);
                         }
                     }
                 } else {
+                    int dx = 0, dy = 0;
                     if (resizingX) {
-                        newWidth = (int)Math.Ceiling(world.X - Editor.SelectedRoom.Bounds.X);
-                        Editor.SelectedRoom.Bounds.Width = Math.Max(newWidth, 1);
+                        // compare against the opposite edge
+                        newWidth = (int)Math.Ceiling(fromLeft ? oldRoomBounds.Right - world.X : world.X - curRoom.Bounds.Left);
+                        curRoom.Bounds.Width = Math.Max(newWidth, 1);
+                        if (fromLeft) {
+                            int newX = (int)Math.Floor(world.X);
+                            dx = curRoom.Bounds.X - newX;
+                            curRoom.Bounds.X = newX;
+                        }
                     }
 
                     if (resizingY) {
-                        newHeight = (int)Math.Ceiling(world.Y - Editor.SelectedRoom.Bounds.Y);
-                        Editor.SelectedRoom.Bounds.Height = Math.Max(newHeight, 1);
+                        newHeight = (int)Math.Ceiling(fromTop ? oldRoomBounds.Bottom - world.Y : world.Y - curRoom.Bounds.Top);
+                        curRoom.Bounds.Height = Math.Max(newHeight, 1);
+                        if (fromTop) {
+                            int newY = (int)Math.Floor(world.Y);
+                            dy = curRoom.Bounds.Y - newY;
+                            curRoom.Bounds.Y = newY;
+                        }
                     }
+
+                    // TODO: dragging over tiles and then back removes the tiles
+                    //  maybe fix alongside undo/redo/transactions?
+                    if (dx != 0 || dy != 0)
+                        curRoom.MoveTiles(dx, dy);
                 }
             } else {
                 lastRoomOffset = null;
-                if (!oldRoomBounds.Equals(Editor.SelectedRoom.Bounds)) {
-                    oldRoomBounds = Editor.SelectedRoom.Bounds;
+                var newBounds = curRoom.Bounds;
+                if (!oldRoomBounds.Equals(newBounds)) {
+                    oldRoomBounds = newBounds;
                     Editor.SelectedRoom.UpdateBounds();
                 }
 
-                resizingX = resizingY = false;
+                resizingX = resizingY = fromLeft = fromTop = false;
                 newWidth = newHeight = 0;
             }
         }
@@ -101,7 +121,7 @@ public class RoomTool : Tool {
 
         // room creation
         if (canClick) {
-            if (Editor.SelectedRoom == null) {
+            if (curRoom == null) {
                 if (MInput.Mouse.CheckLeftButton) {
                     var lastPress = (Editor.Instance.worldClick / 8).Ceiling() * 8;
                     var mpos = (Editor.Mouse.World / 8).Ceiling() * 8;

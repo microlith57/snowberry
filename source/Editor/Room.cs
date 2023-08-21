@@ -312,6 +312,23 @@ public class Room {
         Autotile();
     }
 
+    public void MoveTiles(int dx, int dy, bool autotile = true) {
+        var newFgTiles = new VirtualMap<char>(Bounds.Width, Bounds.Height, '0');
+        for (int x = 0; x < fgTileMap.Columns; x++)
+            for (int y = 0; y < fgTileMap.Rows; y++)
+                newFgTiles[x + dx, y + dy] = fgTileMap[x, y];
+        fgTileMap = newFgTiles;
+
+        var newBgTiles = new VirtualMap<char>(Bounds.Width, Bounds.Height, '0');
+        for (int x = 0; x < bgTileMap.Columns; x++)
+            for (int y = 0; y < bgTileMap.Rows; y++)
+                newBgTiles[x + dx, y + dy] = bgTileMap[x, y];
+        bgTileMap = newBgTiles;
+
+        if(autotile)
+            Autotile();
+    }
+
     public Element CreateLevelData() {
         Element ret = new Element {
             Attributes = new Dictionary<string, object> {
