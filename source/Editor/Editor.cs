@@ -404,7 +404,8 @@ public class Editor : Scene {
 
         MTexture curCursor = defaultCursor;
         Vector2 curJustify = Vector2.Zero;
-        tool?.SuggestCursor(ref curCursor, ref curJustify);
+        if(ui.CanClickThrough())
+            tool?.SuggestCursor(ref curCursor, ref curJustify);
         curCursor.DrawJustified(Mouse.Screen, curJustify);
 
         // Tooltip rendering
