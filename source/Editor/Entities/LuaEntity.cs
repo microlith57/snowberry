@@ -145,7 +145,7 @@ public class LuaEntity : Entity {
         return ret;
     }
 
-    private static void CreateSpriteFromDrawable(LuaTable sp, List<SpriteWithPos> ret){
+    private void CreateSpriteFromDrawable(LuaTable sp, List<SpriteWithPos> ret){
         // normalize ninepatches/lines
         if(sp["_type"] is "drawableNinePatch" or "drawableLine")
             if(sp["getDrawableSprite"] is LuaFunction h){
@@ -159,7 +159,7 @@ public class LuaEntity : Entity {
         CreateSpriteFromTable(sp, ret);
     }
 
-    private static void CreateSpriteFromTable(LuaTable sp, List<SpriteWithPos> ret){
+    private void CreateSpriteFromTable(LuaTable sp, List<SpriteWithPos> ret){
         if(sp?["meta"] is LuaTable meta && meta["image"] is string image && meta["atlas"] is string atlasName){
             Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
             MTexture tex = atlas[image];
@@ -254,7 +254,7 @@ public class LuaEntity : Entity {
         return table;
     }
 
-    private static float Float<T>(LuaTable from, T index, float def = 1f) {
+    private float Float<T>(LuaTable from, T index, float def = 1f) {
         if(index is int ix) // lua tables prefer longs
             return Float(from, (long)ix, def);
         if(from.Keys.OfType<T>().Any(k => k.Equals(index))) {
@@ -264,7 +264,7 @@ public class LuaEntity : Entity {
                 int i => i,
                 long l => l,
                 double d => (float)d,
-                string s => float.Parse(s),
+                string s => float.TryParse(s, out var result) ? result : throw new FormatException($"The string {s} given for key {index} by {Name} is not a float."),
                 _ => def
             };
         }
@@ -272,7 +272,7 @@ public class LuaEntity : Entity {
         return def;
     }
 
-    private static Color TableColor(LuaTable from) {
+    private Color TableColor(LuaTable from) {
         Color color1 = new Color(Float(from, 1), Float(from, 2), Float(from, 3)) * Float(from, 4);
         from.Dispose();
         return color1;
