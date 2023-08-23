@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.UI;
 using System;
+using System.Linq;
 using Snowberry.Editor.UI.Menus;
 
 namespace Snowberry.Editor.Tools;
@@ -48,16 +49,7 @@ public class SelectionTool : Tool {
         if (MInput.Mouse.CheckLeftButton && canClick) {
             if (MInput.Mouse.PressedLeftButton) {
                 Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
-
-                canSelect = true;
-                if (Editor.SelectedEntities != null) {
-                    foreach (EntitySelection s in Editor.SelectedEntities) {
-                        if (s.Contains(mouse)) {
-                            canSelect = false;
-                            break;
-                        }
-                    }
-                }
+                canSelect = !(Editor.SelectedEntities != null && Editor.SelectedEntities.Any(s => s.Contains(mouse)));
             }
 
             if (canSelect && Editor.SelectedRoom != null) {
@@ -123,5 +115,15 @@ public class SelectionTool : Tool {
                 if (Editor.SelectedEntities == null || !Editor.SelectedEntities.Contains(item))
                     foreach (var s in item.Selections)
                         Draw.Rect(s.Rect, Color.Blue * 0.15f);
+    }
+
+    public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
+        // hovering over a selected entity? movement arrow
+        Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
+
+        if (Editor.SelectedEntities != null && Editor.SelectedEntities.Any(s => s.Contains(mouse))) {
+            justify = Vector2.One / 2f;
+            cursor = Editor.cursors.GetSubtexture(16, 16, 16, 16);
+        }
     }
 }
