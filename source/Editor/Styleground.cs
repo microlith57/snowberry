@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.Stylegrounds;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static Celeste.BinaryPacker;
 
@@ -11,7 +10,7 @@ namespace Snowberry.Editor;
 public class Styleground : Plugin {
     public Map Map;
 
-    public HashSet<string> Tags = new();
+    public string Tags = "";
 
     public Vector2 Position;
 
@@ -117,10 +116,10 @@ public class Styleground : Plugin {
             // its terrible
 
             if (data.HasAttr("tag"))
-                styleground.Tags.Add(data.Attr("tag"));
+                styleground.Tags = data.Attr("tag");
 
             if (applyData != null && applyData.HasAttr("tag"))
-                styleground.Tags.Add(applyData.Attr("tag"));
+                styleground.Tags = applyData.Attr("tag");
 
             if (data.HasAttr("x"))
                 styleground.Position.X = data.AttrFloat("x");

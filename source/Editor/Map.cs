@@ -326,7 +326,7 @@ public class Map {
             Element elem = new Element {
                 Name = styleground.Name,
                 Attributes = new Dictionary<string, object> {
-                    ["tag"] = styleground.Tags.Aggregate("", (x, y) => x + ";" + y),
+                    ["tag"] = styleground.Tags,
                     ["x"] = styleground.Position.X,
                     ["y"] = styleground.Position.Y,
                     ["scrollx"] = styleground.Scroll.X,
