@@ -21,7 +21,7 @@ public abstract class Entity : Plugin {
     public Vector2 Origin { get; private set; }
     public virtual bool IsTrigger => false;
 
-    public Rectangle Bounds => new Rectangle(X, Y, Width, Height);
+    public Rectangle Bounds => new(X, Y, Width, Height);
     public Vector2 Center => Position + new Vector2(Width, Height) / 2f;
     public Vector2 Size => new(Width, Height);
 

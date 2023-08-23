@@ -14,6 +14,10 @@ public class SelectionTool : Tool {
     private static bool selectEntities = true, selectTriggers = true;
     private static UIEntitySelection selectionPanel;
 
+    // entity resizing
+    private static bool resizingX, resizingY, fromLeft, fromTop;
+    private static Rectangle oldEntityBounds;
+
     public override string GetName(){
         return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITYSELECT");
     }
@@ -47,8 +51,9 @@ public class SelectionTool : Tool {
         var editor = Editor.Instance;
 
         if (MInput.Mouse.CheckLeftButton && canClick) {
+            Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
+            Vector2 world = Editor.Mouse.World;
             if (MInput.Mouse.PressedLeftButton) {
-                Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
                 canSelect = !(Editor.SelectedEntities != null && Editor.SelectedEntities.Any(s => s.Contains(mouse)));
             }
 
@@ -61,7 +66,38 @@ public class SelectionTool : Tool {
 
                 Editor.SelectedEntities = Editor.SelectedRoom.GetSelectedEntities(Editor.Selection.Value, selectEntities, selectTriggers);
             } else if (Editor.SelectedEntities != null) {
-                bool noSnap = (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl));
+                // if only one entity is selected near the corners, resize
+                Entity solo = GetSoloEntity();
+                if (solo != null) {
+                    if(MInput.Mouse.PressedLeftButton) {
+                        // TODO: can this be shared between RoomTool & SelectionTool?
+                        fromLeft = Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
+                        resizingX = Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft;
+                        fromTop = Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
+                        resizingY = Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop;
+                        oldEntityBounds = solo.Bounds;
+                    } else if (resizingX || resizingY) {
+                        var wSnapped = (Editor.Mouse.World / 8).Round() * 8;
+                        if (resizingX) {
+                            // compare against the opposite edge
+                            solo.SetWidth(Math.Max((int)Math.Round((fromLeft ? oldEntityBounds.Right - world.X : world.X - solo.X) / 8f) * 8, solo.MinWidth));
+                            if (fromLeft)
+                                solo.SetPosition(new((int)Math.Floor(wSnapped.X), solo.Y));
+                        }
+
+                        if (resizingY) {
+                            solo.SetHeight(Math.Max((int)Math.Round((fromTop ? oldEntityBounds.Bottom - world.Y : world.Y - solo.Y) / 8f) * 8, solo.MinHeight));
+                            if (fromTop)
+                                solo.SetPosition(new(solo.X, (int)Math.Floor(wSnapped.Y)));
+                        }
+
+                        // skip dragging code
+                        goto postResize;
+                    }
+                }
+
+                // otherwise, move
+                bool noSnap = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
                 Vector2 worldSnapped = noSnap ? Editor.Mouse.World : (Editor.Mouse.World / 8).Round() * 8;
                 Vector2 worldLastSnapped = noSnap ? Editor.Mouse.WorldLast : (Editor.Mouse.WorldLast / 8).Round() * 8;
                 Vector2 move = worldSnapped - worldLastSnapped;
@@ -74,6 +110,7 @@ public class SelectionTool : Tool {
         if (Editor.SelectedEntities == null)
             return;
 
+        postResize:
         bool refreshPanel = false;
         if (Editor.Instance.CanTypeShortcut()) {
             if (MInput.Keyboard.Check(Keys.Delete)) {
@@ -118,12 +155,58 @@ public class SelectionTool : Tool {
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
-        // hovering over a selected entity? movement arrow
         Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
 
+        // only have 1 entity selected & at the borders? show resizing tooltips
+        Entity solo = GetSoloEntity();
+        if(solo != null){
+            var fromLeft = Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
+            var fromRight = Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4;
+            var fromTop = Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
+            var fromBottom = Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4;
+            if (fromLeft || fromRight || fromTop || fromBottom) {
+                justify = Vector2.One / 2f;
+
+                if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
+                    cursor = Editor.cursors.GetSubtexture(32, 32, 16, 16);
+                    return;
+                }
+
+                if ((fromTop && fromLeft) || (fromBottom && fromRight)) {
+                    cursor = Editor.cursors.GetSubtexture(48, 32, 16, 16);
+                    return;
+                }
+
+                if (fromLeft || fromRight) {
+                    cursor = Editor.cursors.GetSubtexture(0, 32, 16, 16);
+                    return;
+                }
+
+                if (fromBottom || fromTop) {
+                    cursor = Editor.cursors.GetSubtexture(16, 32, 16, 16);
+                    return;
+                }
+            }
+        }
+
+        // hovering over a selected entity? movement arrow
         if (Editor.SelectedEntities != null && Editor.SelectedEntities.Any(s => s.Contains(mouse))) {
             justify = Vector2.One / 2f;
             cursor = Editor.cursors.GetSubtexture(16, 16, 16, 16);
         }
+    }
+
+    private static Entity GetSoloEntity() {
+        // list patterns would be nice here...
+        if (Editor.SelectedEntities != null && Editor.SelectedEntities.Count == 1) {
+            EntitySelection selection = Editor.SelectedEntities[0];
+            if (selection.Selections.Count == 1) {
+                var rect = selection.Selections[0];
+                if (rect.Index == -1)
+                    return rect.Entity;
+            }
+        }
+
+        return null;
     }
 }
