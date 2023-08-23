@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml;
 
 namespace Snowberry.Editor;
@@ -35,6 +36,9 @@ public class Map {
         AreaKey playtestKey = playtestData.ToKey();
         From = playtestKey;
         Meta = new MapMeta();
+
+        SetupGraphics(Meta);
+        Tileset.Load();
     }
 
     internal Map(MapData data)
@@ -400,7 +404,7 @@ public class Map {
         text = meta?.Sprites;
         if (!string.IsNullOrEmpty(text)) {
             SpriteBank spriteBank = GFX.SpriteBank;
-            foreach (KeyValuePair<string, SpriteData> spriteDatum in new SpriteBank(GFX.Game, getModdedSpritesXml(text)).SpriteData) {
+            foreach (KeyValuePair<string, SpriteData> spriteDatum in new SpriteBank(GFX.Game, GetSanitized(text)).SpriteData) {
                 string key = spriteDatum.Key;
                 SpriteData value = spriteDatum.Value;
                 if (spriteBank.SpriteData.TryGetValue(key, out SpriteData value2)) {
@@ -421,10 +425,11 @@ public class Map {
         }
     }
 
-    private XmlDocument getModdedSpritesXml(string path){
-        // TODO: exclude vanilla copy/pastes like Everest does
-        XmlDocument modSpritesXml = Calc.LoadContentXML(path);
-        return modSpritesXml;
+    private XmlDocument GetSanitized(string path) {
+        var getSanitizedMInfo = typeof(SpriteBank).GetMethod("GetSpriteBankExcludingVanillaCopyPastes", BindingFlags.Static | BindingFlags.NonPublic);
+        return (XmlDocument)getSanitizedMInfo.Invoke(null, new object[] {
+            Calc.orig_LoadContentXML(Path.Combine("Graphics", "Sprites.xml")), Calc.LoadContentXML(path), path
+        });
     }
 }
 
