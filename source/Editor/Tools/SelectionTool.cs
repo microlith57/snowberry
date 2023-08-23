@@ -159,7 +159,7 @@ public class SelectionTool : Tool {
 
         // only have 1 entity selected & at the borders? show resizing tooltips
         Entity solo = GetSoloEntity();
-        if(solo != null){
+        if(solo != null && solo.Bounds.Contains(mouse)){
             var fromLeft = Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
             var fromRight = Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4;
             var fromTop = Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
