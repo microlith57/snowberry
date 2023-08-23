@@ -56,6 +56,10 @@ public class Styleground : Plugin {
     }
 
     public bool IsVisible(Room room) {
+        if (!string.IsNullOrWhiteSpace(Flag)) {
+            return false;
+        }
+
         string roomName = room?.Name ?? "";
 
         if (ExcludeFrom != null && MatchRoomName(ExcludeFrom, roomName)) {
