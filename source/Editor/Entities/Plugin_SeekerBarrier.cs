@@ -3,11 +3,10 @@ using Monocle;
 using System;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("seekerBarrier")]
 public class Plugin_SeekerBarrier : Entity {
-    [Option("moveTime")] public float MoveTime = 1;
 
     private List<bool> upperEdges;
     private List<bool> lowerEdges;
