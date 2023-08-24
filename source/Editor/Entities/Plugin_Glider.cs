@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("glider")]
 public class Plugin_Glider : Entity {
@@ -11,12 +12,16 @@ public class Plugin_Glider : Entity {
 
     public override void Render() {
         base.Render();
-        FromSprite("glider", "idle")?.DrawOutlineCentered(Position);
+        FromSprite("glider", "idle")?.DrawCentered(Position);
         if (Bubble) {
             for (int i = 0; i < 24; i++) {
                 Draw.Point(Position + PlatformAdd(i), PlatformColor(i));
             }
         }
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(28, 17), position: new(1, 3), justify: new(0.5f, 1));
     }
 
     private Vector2 PlatformAdd(int num) {
