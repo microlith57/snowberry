@@ -72,9 +72,9 @@ public class SelectionTool : Tool {
                     if(MInput.Mouse.PressedLeftButton) {
                         // TODO: can this be shared between RoomTool & SelectionTool?
                         fromLeft = Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
-                        resizingX = Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft;
+                        resizingX = solo.MinWidth > -1 && (Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft);
                         fromTop = Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
-                        resizingY = Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop;
+                        resizingY = solo.MinHeight > -1 && (Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop);
                         oldEntityBounds = solo.Bounds;
                     } else if (resizingX || resizingY) {
                         var wSnapped = (Editor.Mouse.World / 8).Round() * 8;
@@ -159,7 +159,7 @@ public class SelectionTool : Tool {
 
         // only have 1 entity selected & at the borders? show resizing tooltips
         Entity solo = GetSoloEntity();
-        if(solo != null && solo.Bounds.Contains(mouse)){
+        if (solo != null && solo.Bounds.Contains(mouse)) {
             var fromLeft = Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
             var fromRight = Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4;
             var fromTop = Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
