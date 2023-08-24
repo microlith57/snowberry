@@ -116,7 +116,9 @@ public class SelectionTool : Tool {
             if (MInput.Keyboard.Check(Keys.Delete)) {
                 foreach (var item in Editor.SelectedEntities) {
                     refreshPanel = true;
-                    item.Entity.Room.RemoveEntity(item.Entity);
+                    var room = item.Entity.Room;
+                    room.MarkEntityDirty(item.Entity);
+                    room.RemoveEntity(item.Entity);
                 }
 
                 Editor.SelectedEntities.Clear();
