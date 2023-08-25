@@ -8,7 +8,6 @@ public class UIEntitySelection : UIScrollPane{
 
     public UIEntitySelection(){
         GrabsClick = true;
-        TopPadding = 10;
     }
 
     public void Display(List<EntitySelection> selection){

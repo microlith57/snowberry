@@ -53,9 +53,9 @@ public class TileBrushTool : Tool {
             GrabsScroll = true,
             Height = height
         };
-        UIScrollPane tilesetsPanel = new UIScrollPane() {
-            Width = 130,
-            TopPadding = 10
+        UIScrollPane tilesetsPanel = new UIScrollPane {
+            Position = new(0, 5),
+            Width = 130
         };
         var fgLabel = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_UTIL_FOREGROUND"));
         fgLabel.Position = new Vector2((tilesetsPanel.Width - fgLabel.Width) / 2, 0);

@@ -28,6 +28,9 @@
     <Reference Include="$(CelestePrefix)\MMHOOK_Celeste.dll">
       <Private>false</Private>
     </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\..\..\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.11.4" PrivateAssets="all" ExcludeAssets="runtime" />
