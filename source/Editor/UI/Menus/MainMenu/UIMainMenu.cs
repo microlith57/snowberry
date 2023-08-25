@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Celeste;
 using System;
 
-namespace Snowberry.Editor.UI.Menus; 
+namespace Snowberry.Editor.UI.Menus;
 
 public class UIMainMenu : UIElement {
     public static UIMainMenu Instance { get; private set; }
@@ -12,12 +12,13 @@ public class UIMainMenu : UIElement {
         Start, Create, Load, Exiting, Settings
     }
     private States state = States.Start;
-    private readonly float[] stateLerp = new float[] { 1f, 0f, 0f, 0f, 0f };
+    private readonly float[] stateLerp = { 1f, 0f, 0f, 0f, 0f };
 
     private readonly UIRibbon authors, version;
     private readonly UIButton settings;
     private readonly UIMainMenuButtons buttons;
     private readonly UILevelSelector levelSelector;
+    private readonly UIElement settingsOptions;
 
     private float fade;
 
@@ -65,7 +66,7 @@ public class UIMainMenu : UIElement {
                     create.SetText(mainmenucreate, stayCentered: true);
                     load.SetText(mainmenuclose, stayCentered: true);
                 }
-            },
+            }
         };
 
         exit = new UIButton(Dialog.Clean("SNOWBERRY_MAINMENU_EXIT"), Fonts.Regular, 10, 4) {
@@ -87,9 +88,11 @@ public class UIMainMenu : UIElement {
 
         settings = new UIButton(Dialog.Clean("SNOWBERRY_MAINMENU_SETTINGS"), Fonts.Regular, 4, 8) {
             OnPress = () => {
-                if (state == States.Start) {
+                if (state is States.Start or States.Load) {
                     state = States.Settings;
-                }
+                    load.SetText(mainmenuload, stayCentered: true);
+                } else if (state is States.Settings)
+                    state = States.Start;
             }
         };
         Add(settings);
@@ -141,7 +144,6 @@ public class UIMainMenu : UIElement {
         float startEase = 1 - Ease.CubeInOut(stateLerp[0]);
         authors.Position.X = (int)Math.Round(startEase * (-authors.Width - 2));
         version.Position.X = (int)Math.Round(startEase * (-version.Width - 2));
-        settings.Position.Y = (int)Math.Round(startEase * (-settings.Height - 16) + 8);
 
         float createEase = Ease.CubeInOut(stateLerp[1]);
         float loadEase = Ease.CubeInOut(stateLerp[2]);
