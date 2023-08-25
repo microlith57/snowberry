@@ -292,7 +292,7 @@ public class Room {
         foreach (Entity trigger in Triggers)
             trigger.HQRender();
         // "See IDs" bind
-        if (MInput.Keyboard.Check(Keys.S) && this == Editor.SelectedRoom && Editor.SelectedEntities != null) {
+        if (Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.S) && this == Editor.SelectedRoom && Editor.SelectedEntities != null) {
             foreach (EntitySelection s in Editor.SelectedEntities) {
                 Rectangle mainRect = s.Entity.SelectionRectangles[0];
                 string str = $"#{s.Entity.EntityID}";
