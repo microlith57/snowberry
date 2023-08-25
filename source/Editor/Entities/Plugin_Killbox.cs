@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Snowberry.Editor.Entities;
@@ -9,12 +10,15 @@ public class Plugin_Killbox : Entity {
     public static readonly Color killboxColour = Calc.HexToColor("CC6666");
 
     public override int MinWidth => 8;
-    public override int MinHeight => 32;
 
     public override void Render() {
         base.Render();
 
-        Draw.Rect(Position, Width, Height, killboxColour * 0.8f);
+        Draw.Rect(Position, Width, 32, killboxColour * 0.8f);
+    }
+
+    protected override IEnumerable<Rectangle> Select() {
+        yield return RectOnRelative(new(Width, 32));
     }
 
     public static void AddPlacements() {
