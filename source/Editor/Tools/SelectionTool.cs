@@ -184,42 +184,38 @@ public class SelectionTool : Tool {
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
         Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
 
-        // only have 1 entity selected & at the borders? show resizing tooltips
-        Entity solo = GetSoloEntity();
-        if (solo != null && solo.Bounds.Contains(mouse)) {
-            var fromLeft = Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
-            var fromRight = Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4;
-            var fromTop = Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
-            var fromBottom = Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4;
-            if (fromLeft || fromRight || fromTop || fromBottom) {
-                justify = Vector2.One / 2f;
-
-                if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
-                    cursor = Editor.cursors.GetSubtexture(32, 32, 16, 16);
-                    return;
-                }
-
-                if ((fromTop && fromLeft) || (fromBottom && fromRight)) {
-                    cursor = Editor.cursors.GetSubtexture(48, 32, 16, 16);
-                    return;
-                }
-
-                if (fromLeft || fromRight) {
-                    cursor = Editor.cursors.GetSubtexture(0, 32, 16, 16);
-                    return;
-                }
-
-                if (fromBottom || fromTop) {
-                    cursor = Editor.cursors.GetSubtexture(16, 32, 16, 16);
-                    return;
-                }
-            }
-        }
-
         // hovering over a selected entity? movement arrow
         if (Editor.SelectedEntities != null && Editor.SelectedEntities.Any(s => s.Contains(mouse))) {
             justify = Vector2.One / 2f;
             cursor = Editor.cursors.GetSubtexture(16, 16, 16, 16);
+
+            // only have 1 entity selected & at the borders? show resizing tooltips
+            Entity solo = GetSoloEntity();
+            if (solo != null) {
+                var fromLeft = solo.MinWidth > -1 && Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
+                var fromRight = solo.MinWidth > -1 && Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4;
+                var fromTop = solo.MinHeight > -1 && Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
+                var fromBottom = solo.MinHeight > -1 && Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4;
+                if (fromLeft || fromRight || fromTop || fromBottom) {
+                    if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
+                        cursor = Editor.cursors.GetSubtexture(32, 32, 16, 16);
+                        return;
+                    }
+
+                    if ((fromTop && fromLeft) || (fromBottom && fromRight)) {
+                        cursor = Editor.cursors.GetSubtexture(48, 32, 16, 16);
+                        return;
+                    }
+
+                    if (fromLeft || fromRight) {
+                        cursor = Editor.cursors.GetSubtexture(0, 32, 16, 16);
+                        return;
+                    }
+
+                    if (fromBottom || fromTop)
+                        cursor = Editor.cursors.GetSubtexture(16, 32, 16, 16);
+                }
+            }
         }
     }
 
