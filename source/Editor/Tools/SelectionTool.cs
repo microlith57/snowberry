@@ -6,6 +6,7 @@ using Snowberry.Editor.UI;
 using System;
 using System.Linq;
 using Snowberry.Editor.UI.Menus;
+using System.Collections.Generic;
 
 namespace Snowberry.Editor.Tools;
 
@@ -18,12 +19,12 @@ public class SelectionTool : Tool {
     private static bool resizingX, resizingY, fromLeft, fromTop;
     private static Rectangle oldEntityBounds;
 
-    public override string GetName(){
+    public override string GetName() {
         return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITYSELECT");
     }
 
     public override UIElement CreatePanel(int height) {
-        UIElement panel = new UIElement{
+        UIElement panel = new UIElement {
             Width = 200,
             Background = Calc.HexToColor("202929") * (185 / 255f),
             GrabsClick = true,
@@ -31,13 +32,13 @@ public class SelectionTool : Tool {
             Height = height
         };
 
-        panel.Add(selectionPanel = new UIEntitySelection{
+        panel.Add(selectionPanel = new UIEntitySelection {
             Width = 200,
             Height = height - 30,
             Background = null
         });
 
-        UIElement filtersPanel = new UIElement{
+        UIElement filtersPanel = new UIElement {
             Position = new Vector2(5, height - 20)
         };
         filtersPanel.AddRight(UIPluginOptionList.BoolOption("entities", selectEntities, s => selectEntities = s));
@@ -49,10 +50,52 @@ public class SelectionTool : Tool {
 
     public override void Update(bool canClick) {
         var editor = Editor.Instance;
+        bool refreshPanel = false;
 
         if (MInput.Mouse.CheckLeftButton && canClick) {
             Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
             Vector2 world = Editor.Mouse.World;
+
+            if (Editor.Mouse.IsDoubleClick) {
+                int ax = (int)Math.Min(Editor.Mouse.World.X, editor.worldClick.X);
+                int ay = (int)Math.Min(Editor.Mouse.World.Y, editor.worldClick.Y);
+                int bx = (int)Math.Max(Editor.Mouse.World.X, editor.worldClick.X);
+                int by = (int)Math.Max(Editor.Mouse.World.Y, editor.worldClick.Y);
+                Editor.Selection = new Rectangle(ax, ay, bx - ax, by - ay);
+
+                Editor.SelectedEntities = Editor.SelectedRoom.GetSelectedEntities(Editor.Selection.Value, selectEntities, selectTriggers);
+
+                HashSet<Type> EntityTypes = new();
+                foreach (var item in Editor.SelectedEntities) {
+                    EntityTypes.Add(item.Entity.GetType());
+                }
+
+                List<EntitySelection> result = new List<EntitySelection>();
+                foreach (var entity in Editor.SelectedRoom.AllEntities) {
+                    if (EntityTypes.Contains(entity.GetType())) {
+
+                        var rects = entity.SelectionRectangles;
+                        if (rects is { Length: > 0 }) {
+                            List<EntitySelection.Selection> selection = new List<EntitySelection.Selection>();
+                            for (int i = 0; i < rects.Length; i++) {
+                                Rectangle r = rects[i];
+                                selection.Add(new EntitySelection.Selection(entity, i - 1));
+                            }
+
+                            result.Add(new EntitySelection(entity, selection));
+                        }
+                    }
+                }
+
+
+                Editor.SelectedEntities = result;
+                if (Editor.SelectedEntities.Count > 1) {
+                    refreshPanel = true;
+                    canSelect = false;
+                }
+                goto postResize;
+            }
+
             if (MInput.Mouse.PressedLeftButton) {
                 canSelect = !(Editor.SelectedEntities != null && Editor.SelectedEntities.Any(s => s.Contains(mouse)));
             }
@@ -63,13 +106,14 @@ public class SelectionTool : Tool {
                 int bx = (int)Math.Max(Editor.Mouse.World.X, editor.worldClick.X);
                 int by = (int)Math.Max(Editor.Mouse.World.Y, editor.worldClick.Y);
                 Editor.Selection = new Rectangle(ax, ay, bx - ax, by - ay);
+                
 
                 Editor.SelectedEntities = Editor.SelectedRoom.GetSelectedEntities(Editor.Selection.Value, selectEntities, selectTriggers);
             } else if (Editor.SelectedEntities != null) {
                 // if only one entity is selected near the corners, resize
                 Entity solo = GetSoloEntity();
                 if (solo != null) {
-                    if(MInput.Mouse.PressedLeftButton) {
+                    if (MInput.Mouse.PressedLeftButton) {
                         // TODO: can this be shared between RoomTool & SelectionTool?
                         fromLeft = Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
                         resizingX = solo.MinWidth > -1 && (Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft);
@@ -111,7 +155,6 @@ public class SelectionTool : Tool {
             return;
 
         postResize:
-        bool refreshPanel = false;
         if (Editor.Instance.CanTypeShortcut()) {
             if (MInput.Keyboard.Check(Keys.Delete)) {
                 foreach (var item in Editor.SelectedEntities) {
