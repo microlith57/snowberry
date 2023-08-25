@@ -114,6 +114,7 @@ public class Editor : Scene {
     // just forward to settings
     // don't expose setter here to make it explicit that changing this == changing user settings
     public static bool FancyRender => Snowberry.Settings.FancyRender;
+    public static bool StylegroundsPreviews => Snowberry.Settings.StylegroundsPreview;
 
     public static readonly MTexture cursors = GFX.Gui["Snowberry/cursors"];
     public static readonly Color bg = Calc.HexToColor("060607");
