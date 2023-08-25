@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Snowberry.Editor.Entities;
 
@@ -11,7 +12,11 @@ public class Plugin_Bumper : Entity {
     public override void Render() {
         base.Render();
 
-        FromSprite("bumper", "idle")?.DrawCentered(Position, Color.White, new Vector2(1, 1));
+        MTexture sprite = FromSprite("bumper", "idle");
+        sprite?.DrawCentered(Position);
+
+        if(Nodes.Count != 0)
+            sprite?.DrawCentered(Nodes[0], Color.White * 0.5f);
     }
 
     public override void HQRender() {
