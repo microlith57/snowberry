@@ -98,6 +98,16 @@ public class UIMainMenu : UIElement {
         Add(settings);
         settings.Position = Vector2.UnitX * (Width - settings.Width) + new Vector2(-8, 8);
 
+        settingsOptions = new UIElement {
+            Position = new(30, 0),
+            Visible = false
+        };
+        Vector2 settingsOffset = new Vector2(0, 15);
+        settingsOptions.Add(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN"), Snowberry.Settings.MiddleClickPan, b => Snowberry.Settings.MiddleClickPan = b).WithTooltip("SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN_SUB"));
+        settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_FANCY_RENDER"), Snowberry.Settings.FancyRender, b => Snowberry.Settings.FancyRender = b).WithTooltip("SNOWBERRY_SETTINGS_FANCY_RENDER_SUB"), settingsOffset);
+        settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_SG_PREVIEW"), Snowberry.Settings.StylegroundsPreview, b => Snowberry.Settings.StylegroundsPreview = b).WithTooltip("SNOWBERRY_SETTINGS_SG_PREVIEW_SUB"), settingsOffset);
+        Add(settingsOptions);
+
         Color rib = Calc.HexToColor("20212e"), acc = Calc.HexToColor("3889d9");
         Add(authors = new UIRibbon(Dialog.Clean("SNOWBERRY_MAINMENU_CREDITS")) {
             Position = new Vector2(0, 8),
@@ -154,6 +164,8 @@ public class UIMainMenu : UIElement {
 
         float settingsEase = Ease.CubeInOut(stateLerp[4]);
         buttons.Position.Y = (int)Math.Round((Height - buttons.Height) / 2 - (Height / 2 + buttons.Height) * settingsEase);
+        settingsOptions.Visible = stateLerp[4] != 0;
+        settingsOptions.Position.Y = 25 + 1000 * (1 - settingsEase);
     }
 
     public override void Render(Vector2 position = default) {
