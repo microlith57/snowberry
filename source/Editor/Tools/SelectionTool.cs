@@ -56,44 +56,20 @@ public class SelectionTool : Tool {
             Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
             Vector2 world = Editor.Mouse.World;
 
+            // double click -> select all of type
             if (Editor.Mouse.IsDoubleClick) {
-                int ax = (int)Math.Min(Editor.Mouse.World.X, editor.worldClick.X);
-                int ay = (int)Math.Min(Editor.Mouse.World.Y, editor.worldClick.Y);
-                int bx = (int)Math.Max(Editor.Mouse.World.X, editor.worldClick.X);
-                int by = (int)Math.Max(Editor.Mouse.World.Y, editor.worldClick.Y);
-                Editor.Selection = new Rectangle(ax, ay, bx - ax, by - ay);
-
-                Editor.SelectedEntities = Editor.SelectedRoom.GetSelectedEntities(Editor.Selection.Value, selectEntities, selectTriggers);
-
-                HashSet<Type> EntityTypes = new();
-                foreach (var item in Editor.SelectedEntities) {
-                    EntityTypes.Add(item.Entity.GetType());
-                }
-
-                List<EntitySelection> result = new List<EntitySelection>();
-                foreach (var entity in Editor.SelectedRoom.AllEntities) {
-                    if (EntityTypes.Contains(entity.GetType())) {
-
-                        var rects = entity.SelectionRectangles;
-                        if (rects is { Length: > 0 }) {
-                            List<EntitySelection.Selection> selection = new List<EntitySelection.Selection>();
-                            for (int i = 0; i < rects.Length; i++) {
-                                Rectangle r = rects[i];
-                                selection.Add(new EntitySelection.Selection(entity, i - 1));
-                            }
-
-                            result.Add(new EntitySelection(entity, selection));
-                        }
-                    }
-                }
-
-
-                Editor.SelectedEntities = result;
-                if (Editor.SelectedEntities.Count > 1) {
-                    refreshPanel = true;
-                    canSelect = false;
-                }
-                goto postResize;
+                // first get everything under the mouse
+                Editor.SelectedEntities = Editor.SelectedRoom.GetSelectedEntities(new Rectangle(mouse.X, mouse.Y, 1, 1), selectEntities, selectTriggers);
+                // then get all types of those entities
+                HashSet<string> entityTypes = new(Editor.SelectedEntities.SelectMany(x => x.Selections).Select(x => x.Entity.Name));
+                // clear the current selection
+                Editor.SelectedEntities = new();
+                // add back all entities of the same type
+                foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => entityTypes.Contains(entity.Name)))
+                    if (entity.SelectionRectangles is { Length: > 0 } rs)
+                        Editor.SelectedEntities.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.Selection(entity, i - 1)).ToList()));
+                // we might have selected and/or deselected something, so refresh the panel
+                refreshPanel = true;
             }
 
             if (MInput.Mouse.PressedLeftButton) {
@@ -106,7 +82,6 @@ public class SelectionTool : Tool {
                 int bx = (int)Math.Max(Editor.Mouse.World.X, editor.worldClick.X);
                 int by = (int)Math.Max(Editor.Mouse.World.Y, editor.worldClick.Y);
                 Editor.Selection = new Rectangle(ax, ay, bx - ax, by - ay);
-                
 
                 Editor.SelectedEntities = Editor.SelectedRoom.GetSelectedEntities(Editor.Selection.Value, selectEntities, selectTriggers);
             } else if (Editor.SelectedEntities != null) {
