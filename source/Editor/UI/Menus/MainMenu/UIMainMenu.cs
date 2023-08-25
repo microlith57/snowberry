@@ -102,10 +102,22 @@ public class UIMainMenu : UIElement {
             Position = new(30, 0),
             Visible = false
         };
-        Vector2 settingsOffset = new Vector2(0, 15);
-        settingsOptions.Add(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN"), Snowberry.Settings.MiddleClickPan, b => Snowberry.Settings.MiddleClickPan = b).WithTooltip("SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN_SUB"));
-        settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_FANCY_RENDER"), Snowberry.Settings.FancyRender, b => Snowberry.Settings.FancyRender = b).WithTooltip("SNOWBERRY_SETTINGS_FANCY_RENDER_SUB"), settingsOffset);
-        settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_SG_PREVIEW"), Snowberry.Settings.StylegroundsPreview, b => Snowberry.Settings.StylegroundsPreview = b).WithTooltip("SNOWBERRY_SETTINGS_SG_PREVIEW_SUB"), settingsOffset);
+        Vector2 settingsOffset = new(0, 25), descOffset = new(5, 3);
+        settingsOptions.Add(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN"), Snowberry.Settings.MiddleClickPan, b => {
+            Snowberry.Settings.MiddleClickPan = b;
+            Snowberry.Instance.SaveSettings();
+        }));
+        settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN_SUB")), descOffset);
+        settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_FANCY_RENDER"), Snowberry.Settings.FancyRender, b => {
+            Snowberry.Settings.FancyRender = b;
+            Snowberry.Instance.SaveSettings();
+        }), settingsOffset);
+        settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_FANCY_RENDER_SUB")), descOffset);
+        settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_SG_PREVIEW"), Snowberry.Settings.StylegroundsPreview, b => {
+            Snowberry.Settings.StylegroundsPreview = b;
+            Snowberry.Instance.SaveSettings();
+        }), settingsOffset);
+        settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_SG_PREVIEW_SUB")), descOffset);
         Add(settingsOptions);
 
         Color rib = Calc.HexToColor("20212e"), acc = Calc.HexToColor("3889d9");

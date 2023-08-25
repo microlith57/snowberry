@@ -374,10 +374,17 @@ public class Editor : Scene {
 
             // keybinds
             if (CanTypeShortcut() && (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl))) {
-                if(MInput.Keyboard.Pressed(Keys.F))
+                bool save = false;
+                if (MInput.Keyboard.Pressed(Keys.F)) {
                     Snowberry.Settings.FancyRender = !Snowberry.Settings.FancyRender;
-                if(MInput.Keyboard.Pressed(Keys.S))
+                    save = true;
+                }
+                if (MInput.Keyboard.Pressed(Keys.P)) {
                     Snowberry.Settings.StylegroundsPreview = !Snowberry.Settings.StylegroundsPreview;
+                    save = true;
+                }
+                if (save)
+                    Snowberry.Instance.SaveSettings();
             }
         }
     }
