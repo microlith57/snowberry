@@ -158,6 +158,13 @@ public class SelectionTool : Tool {
                 if (Editor.SelectedEntities.Count > 0)
                     refreshPanel = true;
                 Editor.SelectedEntities.Clear();
+            } else if (Editor.SelectedRoom != null && (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl)) && MInput.Keyboard.Pressed(Keys.A)) {
+                // select all
+                Editor.SelectedEntities = new();
+                foreach (var entity in Editor.SelectedRoom.AllEntities)
+                    if (entity.SelectionRectangles is { Length: > 0 } rs)
+                        Editor.SelectedEntities.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.Selection(entity, i - 1)).ToList()));
+                refreshPanel = true;
             }
         }
 
