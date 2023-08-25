@@ -107,6 +107,9 @@ public class Editor : Scene {
 
         public static Vector2 World { get; internal set; }
         public static Vector2 WorldLast { get; internal set; }
+
+        public static DateTime LastClick { get; internal set; }
+        public static bool IsDoubleClick => MInput.Mouse.PressedLeftButton && DateTime.Now < Mouse.LastClick.AddMilliseconds(200);
     }
 
     public static Editor Instance { get; private set; }
@@ -386,6 +389,11 @@ public class Editor : Scene {
                 if (save)
                     Snowberry.Instance.SaveSettings();
             }
+        }
+
+        // Double click 
+        if (MInput.Mouse.PressedLeftButton) {
+            Mouse.LastClick = DateTime.Now;
         }
     }
 
