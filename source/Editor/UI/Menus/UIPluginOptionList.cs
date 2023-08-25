@@ -8,16 +8,16 @@ namespace Snowberry.Editor.UI.Menus;
 public class UIPluginOptionList : UIElement {
     public class UIOption : UIElement {
         public readonly UIElement Input;
+        private readonly UILabel Label;
 
         public UIOption(string name, UIElement input, string tooltip = default) {
             Input = input;
 
-            UILabel label;
-            Add(label = new UILabel($"{name} : ") {
+            Add(Label = new UILabel($"{name} : ") {
                 FG = Color.Gray,
                 LabelTooltip = tooltip
             });
-            int w = label.Width + 1;
+            int w = Label.Width + 1;
 
             if (input != null) {
                 Add(input);
@@ -26,6 +26,11 @@ public class UIPluginOptionList : UIElement {
 
             Width = w + (input?.Width ?? 0);
             Height = Math.Max(Fonts.Regular.LineHeight, input?.Height ?? 0);
+        }
+
+        public UIOption WithTooltip(string tooltip) {
+            Label.LabelTooltip = tooltip;
+            return this;
         }
     }
 

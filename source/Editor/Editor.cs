@@ -114,7 +114,10 @@ public class Editor : Scene {
 
     public static Editor Instance { get; private set; }
 
-    public static bool FancyRender = true;
+    // just forward to settings
+    // don't expose setter here to make it explicit that changing this == changing user settings
+    public static bool FancyRender => Snowberry.Settings.FancyRender;
+    public static bool StylegroundsPreviews => Snowberry.Settings.StylegroundsPreview;
 
     public static readonly MTexture cursors = GFX.Gui["Snowberry/cursors"];
     public static readonly Color bg = Calc.HexToColor("060607");
@@ -373,8 +376,11 @@ public class Editor : Scene {
             tool.Update(canClick);
 
             // keybinds
-            if (MInput.Keyboard.Pressed(Keys.F) && CanTypeShortcut()) {
-                FancyRender = !FancyRender;
+            if (CanTypeShortcut() && (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl))) {
+                if(MInput.Keyboard.Pressed(Keys.F))
+                    Snowberry.Settings.FancyRender = !Snowberry.Settings.FancyRender;
+                if(MInput.Keyboard.Pressed(Keys.S))
+                    Snowberry.Settings.StylegroundsPreview = !Snowberry.Settings.StylegroundsPreview;
             }
         }
 

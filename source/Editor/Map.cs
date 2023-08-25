@@ -131,16 +131,18 @@ public class Map {
         }
 
         // render stylegrounds in correct order; 0 = top
-        foreach (var styleground in BGStylegrounds.AsEnumerable().Reverse())
-            foreach (Room room in visibleRooms.Where(styleground.IsVisible))
-                DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
+        if (Editor.StylegroundsPreviews)
+            foreach (var styleground in BGStylegrounds.AsEnumerable().Reverse())
+                foreach (Room room in visibleRooms.Where(styleground.IsVisible))
+                    DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
 
         foreach (Room room in visibleRooms)
             DrawUtil.WithinScissorRectangle(room.ScissorRect, () => room.Render(viewRect), camera.Matrix, nested: false);
 
-        foreach (var styleground in FGStylegrounds.AsEnumerable().Reverse())
-            foreach (var room in visibleRooms.Where(styleground.IsVisible))
-                DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
+        if (Editor.StylegroundsPreviews)
+            foreach (var styleground in FGStylegrounds.AsEnumerable().Reverse())
+                foreach (var room in visibleRooms.Where(styleground.IsVisible))
+                    DrawUtil.WithinScissorRectangle(room.ScissorRect, () => styleground.Render(room), camera.Matrix, nested: false, styleground.Additive);
 
         // render gray over non-selected rooms, over FG stylegrounds
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, camera.Matrix);
