@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using static Celeste.Trigger;
 using static Celeste.Session;
 
 namespace Snowberry.Editor.Triggers;
 
 [Plugin("everest/coreModeTrigger")]
 public class Plugin_CoreModeTrigger : Trigger {
-    [Option("mode")] public Celeste.Session.CoreModes CoreMode = Celeste.Session.CoreModes.None;
+    [Option("mode")] public CoreModes CoreMode = CoreModes.None;
     [Option("playEffects")] public bool PlayEffects = true;
 
     public override void Render() {
