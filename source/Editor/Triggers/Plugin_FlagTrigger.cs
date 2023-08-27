@@ -2,27 +2,29 @@
 
 namespace Snowberry.Editor.Triggers;
 
-[Plugin("minitextboxTrigger")]
-public class Plugin_MiniTextboxTrigger : Trigger {
+[Plugin("everest/flagTrigger")]
+public class Plugin_FlagTrigger : Trigger {
 
+    [Option("flag")] public string Flag = "";
+    [Option("state")] public bool State = false;
     [Option("mode")] public Modes Mode = Modes.OnPlayerEnter;
-    [Option("dialogID")] public string DialogId = "";
     [Option("onlyOnce")] public bool OnlyOnce = false;
     [Option("deathCount")] public int DeathCount = -1;
 
     public override void Render() {
         base.Render();
-        var str = $"\"{DialogId}\"";
+        string prefix = State ? "" : "!";
+        var str = (Flag != "") ? $"({prefix}{Flag})" : "";
         Fonts.Pico8.Draw(str, Center + new Vector2(0, 6), Vector2.One, new(0.5f), Color.Black);
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Mini Textbox Trigger", "minitextboxTrigger");
+        Placements.Create("Flag (Everest)", "everest/flagTrigger");
     }
 
     public enum Modes{
         OnPlayerEnter,
-        OnLevelStart,
-        OnTheoEnter
+        OnPlayerLeave,
+        OnLevelStart
     }
 }
