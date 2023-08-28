@@ -58,13 +58,13 @@ public class EditorNinePatch {
         nineSliceTexture[rows - 1, columns - 1].Draw(pos + new Vector2(width - 8f, height - 8f), Vector2.Zero, color);
 
         for (int i = 1; i < tileWidth - 1; i++) {
-            nineSliceTexture[moduloClamp(i - 1, rows - 1), 0].Draw(pos + new Vector2((float)(i * 8), 0f), Vector2.Zero, color);
-            nineSliceTexture[moduloClamp(i - 1, rows - 1), columns - 1].Draw(pos + new Vector2((float)(i * 8), height - 8f), Vector2.Zero, color);
+            nineSliceTexture[moduloClamp(i - 1, rows - 2), 0].Draw(pos + new Vector2((float)(i * 8), 0f), Vector2.Zero, color);
+            nineSliceTexture[moduloClamp(i - 1, rows - 2), columns - 1].Draw(pos + new Vector2((float)(i * 8), height - 8f), Vector2.Zero, color);
         }
 
         for (int j = 1; j < tileHeight - 1; j++) {
-            nineSliceTexture[0, moduloClamp(j - 1, columns - 1)].Draw(pos + new Vector2(0f, (float)(j * 8)), Vector2.Zero, color);
-            nineSliceTexture[rows - 1, moduloClamp(j - 1, columns - 1)].Draw(pos + new Vector2(width - 8f, (float)(j * 8)), Vector2.Zero, color);
+            nineSliceTexture[0, moduloClamp(j - 1, columns - 2)].Draw(pos + new Vector2(0f, (float)(j * 8)), Vector2.Zero, color);
+            nineSliceTexture[rows - 1, moduloClamp(j - 1, columns - 2)].Draw(pos + new Vector2(width - 8f, (float)(j * 8)), Vector2.Zero, color);
         }
 
         for (int k = 1; k < tileWidth - 1; k++) {
