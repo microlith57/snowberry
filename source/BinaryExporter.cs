@@ -11,13 +11,12 @@ using Element = Celeste.BinaryPacker.Element;
 public class BinaryExporter {
 
     public static void ExportMap(Map map) {
-        var keyToPath = KeyToPath(Editor.Editor.From) ?? "snowberry_map";
-        Snowberry.LogInfo("zxcv: " + keyToPath);
+        var keyToPath = Editor.Editor.From is {} v ? Util.KeyToPath(v) : "snowberry_map.bin";
         Export(map.Export(), keyToPath);
     }
 
     public static void Export(Element e, string filename) {
-        string output = Path.Combine(Celeste.Mod.Everest.Loader.PathMods, filename + ".bin");
+        string output = Path.Combine(Celeste.Mod.Everest.Loader.PathMods, filename);
         Directory.CreateDirectory(Path.GetDirectoryName(output));
 
         var values = new Dictionary<string, short>();
@@ -137,7 +136,4 @@ public class BinaryExporter {
         type = 5;
         result = value;
     }
-
-    public static string KeyToPath(Celeste.AreaKey? key) =>
-        key == null ? null : Celeste.AreaData.Get(key.Value).Mode[(int)key.Value.Mode].Path;
 }
