@@ -29,7 +29,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>..\..\..\System.ValueTuple.dll</HintPath>
+      <HintPath>$(CelestePrefix)\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
