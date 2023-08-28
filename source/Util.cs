@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -45,4 +45,28 @@ public static class Util {
             return false;
         return null;
     }
+
+    // from FileProxy
+    public static string Modize(string path) {
+        string directoryName = Path.GetDirectoryName(path);
+        path = Path.GetFileNameWithoutExtension(path);
+        if (!string.IsNullOrEmpty(directoryName))
+            path = Path.Combine(directoryName, path);
+        if (path.StartsWith(Everest.Content.PathContentOrig))
+            path = path.Substring(Everest.Content.PathContentOrig.Length + 1);
+        path = path.Replace('\\', '/');
+        return path;
+    }
+
+    public static string GetRealPath(string path) {
+        Everest.Content.TryGet(Modize(path), out ModAsset asset);
+        return asset switch {
+            FileSystemModAsset fs => fs.Path,
+            MapBinsInModsModAsset map => map.Path,
+            _ => null
+        };
+    }
+
+    public static string KeyToPath(Celeste.AreaKey key) =>
+        GetRealPath(Path.Combine("Maps", Celeste.AreaData.Get(key).Mode[(int)key.Mode].Path + ".bin"));
 }

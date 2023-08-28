@@ -19,8 +19,10 @@ using Element = BinaryPacker.Element;
 
 public class Map {
     public readonly string Name;
-    public readonly AreaKey From;
     public readonly MapMeta Meta;
+
+    public readonly AreaKey From;
+    public readonly Element FromRaw;
 
     public readonly List<Room> Rooms = new();
     public readonly List<Rectangle> Fillers = new();
@@ -30,11 +32,7 @@ public class Map {
 
     internal Map(string name) {
         Name = name;
-
-        var playtestData = AreaData.Get("Snowberry/Playtest");
-        //Editor.EmptyMapMeta(playtestData);
-        AreaKey playtestKey = playtestData.ToKey();
-        From = playtestKey;
+        From = AreaData.Get("Snowberry/Playtest").ToKey();
         Meta = new MapMeta();
 
         SetupGraphics(Meta);
@@ -43,15 +41,19 @@ public class Map {
 
     internal Map(MapData data)
         : this(data.Filename) {
-        var playtestData = AreaData.Get("Snowberry/Playtest");
-        var targetData = AreaData.Get(data.Area);
+        AreaData playtestData = AreaData.Get("Snowberry/Playtest");
+        AreaData targetData = AreaData.Get(data.Area);
         AreaKey playtestKey = playtestData.ToKey();
-        From = playtestKey;
+        From = playtestKey; // TODO: this looks incorrect?
+
+        FromRaw = BinaryPacker.FromBinary(data.Filepath);
+        // TODO: crashes in vanilla maps, pretty sure it's not actually necessary?
+        //new MapDataFixup(data).Process(FromRaw);
+
+        if (FromRaw.Children?.Find(element => element.Name == "meta") is {} metaElem)
+            Meta = new MapMeta(metaElem);
 
         Editor.CopyAreaData(targetData, playtestData);
-        Snowberry.LogInfo(targetData.Meta?.ToString() ?? "null");
-        if(targetData.Meta != null)
-            Editor.CopyMapMeta(targetData.Meta, Meta);
         SetupGraphics(Meta);
         Tileset.Load();
 
