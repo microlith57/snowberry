@@ -60,7 +60,7 @@ public class UIScrollPane : UIElement {
         Editor.MouseClicked = mouseClicked;
 
         if (hovered)
-            ScrollBy(MInput.Mouse.WheelDelta, 1);
+            ScrollBy(MInput.Mouse.WheelDelta);
 
         // TODO: make optional? or into UIElement behaviour?
         // fit to parent's height if not set, like for the tile brush panel
@@ -71,12 +71,12 @@ public class UIScrollPane : UIElement {
 
     protected override bool RenderBg() => false;
 
-    public void ScrollBy(int dir, float amount) {
-        var points = ScrollPoints(13);
-        if (dir > 0 && points.X < 0)
-            Scroll += amount * 13;
-        else if (dir < 0 && points.Y > Height)
-            Scroll -= amount * 13;
+    public void ScrollBy(float amount) {
+        //var points = ScrollPoints(1);
+        //if ((amount > 0 && points.X < 0) || (amount < 0 && points.Y > Height))
+        var hilo = HighLow();
+        Scroll += amount;
+        Scroll = Clamp(Scroll, Height - hilo.Item2, -hilo.Item1);
     }
 
     // X,Y = Top, Bottom
@@ -88,5 +88,23 @@ public class UIScrollPane : UIElement {
         }
 
         return new Vector2((high != null ? (high.Position.Y + scrollSpeed - TopPadding) : 0) + ScrollOffset().Y, (low != null ? (low.Position.Y + low.Height + scrollSpeed + BottomPadding) : 0) + ScrollOffset().Y);
+    }
+
+    public (float, float) HighLow() {
+        UIElement low = null, high = null;
+        foreach(var item in Children.Where(item => item.Visible)){
+            if (low == null || item.Position.Y > low.Position.Y) low = item;
+            if (high == null || item.Position.Y < high.Position.Y) high = item;
+        }
+
+        return (high != null ? high.Position.Y - TopPadding : 0, low != null ? low.Position.Y + low.Height + BottomPadding : 0);
+    }
+
+    // MathHelper.clamp, but we check constraints the other way around,
+    // so scrollpanes with few elements get stuck to the top instead of bottom
+    public static float Clamp(float value, float min, float max) {
+        value = value < min ? min : value;
+        value = value > max ? max : value;
+        return value;
     }
 }

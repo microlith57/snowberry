@@ -27,7 +27,6 @@ public class StylegroundsTool : Tool {
             Height = height
         };
         UIScrollPane stylegrounds = new() {
-            TopPadding = 15,
             Background = null,
             Width = 180,
             Height = 165,
@@ -38,14 +37,14 @@ public class StylegroundsTool : Tool {
             FG = Color.DarkKhaki,
             Underline = true
         };
-        fgLabel.Position = new Vector2((stylegrounds.Width - fgLabel.Width) / 2, 10);
+        fgLabel.Position = new Vector2((stylegrounds.Width - fgLabel.Width) / 2, 0);
         stylegrounds.Add(fgLabel);
 
         int i = 0;
         foreach (var styleground in Editor.Instance.Map.FGStylegrounds) {
             int copy = i;
             UIButton element = new UIButton(styleground.Title(), Fonts.Regular, 4, 2) {
-                Position = new Vector2(10, i * 20 + 30),
+                Position = new Vector2(10, i * 20 + 20),
                 OnPress = () => {
                     SelectedStyleground = copy;
                     AddStylegroundInfo(panel.NestedChildWithTag<UIElement>("stylegrounds_info"));

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Xna.Framework.Input;
 using Snowberry.Editor.Entities;
 
 namespace Snowberry.Editor;
@@ -272,13 +273,9 @@ public class Room {
         if (this == Editor.SelectedRoom) {
             if (Editor.Selection.HasValue)
                 Draw.Rect(Editor.Selection.Value, Color.Blue * 0.25f);
-            if (Editor.SelectedEntities != null) {
-                foreach (EntitySelection s in Editor.SelectedEntities) {
-                    foreach (EntitySelection.Selection selection in s.Selections) {
-                        Draw.Rect(selection.Rect, Color.Blue * 0.25f);
-                    }
-                }
-            }
+            if (Editor.SelectedEntities != null)
+                foreach (var selection in Editor.SelectedEntities.SelectMany(s => s.Selections))
+                    Draw.Rect(selection.Rect, Color.Blue * 0.25f);
         }
 
         DirtyTrackedEntities.Clear();
@@ -294,6 +291,17 @@ public class Room {
         // Triggers
         foreach (Entity trigger in Triggers)
             trigger.HQRender();
+        // "See IDs" bind
+        if (Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.S) && this == Editor.SelectedRoom && Editor.SelectedEntities != null) {
+            foreach (EntitySelection s in Editor.SelectedEntities) {
+                Rectangle mainRect = s.Entity.SelectionRectangles[0];
+                string str = $"#{s.Entity.EntityID}";
+                Vector2 size = Fonts.Regular.Measure(str) * 0.5f;
+                float opacity = mainRect.Contains((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y) ? 1 : 0.4f;
+                Draw.Rect(new Vector2(mainRect.X, mainRect.Y), size.X + 3, size.Y + 2, Color.Black * opacity);
+                Fonts.Regular.Draw(str,  new(mainRect.X + 1, mainRect.Y + 1), new(0.5f), Color.White);
+            }
+        }
     }
 
     public void UpdateBounds() {

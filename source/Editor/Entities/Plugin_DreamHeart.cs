@@ -10,7 +10,7 @@ public class Plugin_DreamHeart : Entity {
     public override void Render() {
         base.Render();
 
-        FromSprite("heartgem0", "idle")?.DrawCentered(Position, Color.White, new Vector2(1, 1));
+        FromSprite("heartgem0", "idle")?.DrawCentered(Position);
     }
 
     protected override IEnumerable<Rectangle> Select() {

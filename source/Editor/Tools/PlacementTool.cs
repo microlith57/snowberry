@@ -33,7 +33,6 @@ public class PlacementTool : Tool {
 
         var buttonPane = new UIScrollPane{
             Width = 240,
-            TopPadding = 10,
             Background = null,
             Height = height - 30
         };

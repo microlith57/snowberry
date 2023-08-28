@@ -8,13 +8,17 @@ namespace Snowberry;
 
 using Element = Celeste.BinaryPacker.Element;
 
-class BinaryExporter {
+public class BinaryExporter {
+
     public static void ExportMap(Map map) {
-        Export(map.Export(), "snowberry_map");
+        var keyToPath = KeyToPath(Editor.Editor.From) ?? "snowberry_map";
+        Snowberry.LogInfo("zxcv: " + keyToPath);
+        Export(map.Export(), keyToPath);
     }
 
     public static void Export(Element e, string filename) {
         string output = Path.Combine(Celeste.Mod.Everest.Loader.PathMods, filename + ".bin");
+        Directory.CreateDirectory(Path.GetDirectoryName(output));
 
         var values = new Dictionary<string, short>();
         CreateLookupTable(e, values);
@@ -133,4 +137,7 @@ class BinaryExporter {
         type = 5;
         result = value;
     }
+
+    public static string KeyToPath(Celeste.AreaKey? key) =>
+        key == null ? null : Celeste.AreaData.Get(key.Value).Mode[(int)key.Value.Mode].Path;
 }

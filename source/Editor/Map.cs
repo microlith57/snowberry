@@ -43,15 +43,15 @@ public class Map {
 
     internal Map(MapData data)
         : this(data.Filename) {
-        var playtestData = AreaData.Get("Snowberry/Playtest");
-        var targetData = AreaData.Get(data.Area);
+        AreaData playtestData = AreaData.Get("Snowberry/Playtest");
+        AreaData targetData = AreaData.Get(data.Area);
         AreaKey playtestKey = playtestData.ToKey();
         From = playtestKey;
 
         Editor.CopyAreaData(targetData, playtestData);
-        Snowberry.LogInfo(targetData.Meta?.ToString() ?? "null");
         if(targetData.Meta != null)
             Editor.CopyMapMeta(targetData.Meta, Meta);
+        Snowberry.LogInfo("asdfg: " + Meta.Icon + " from " + (targetData.GetMeta()?.Icon ?? "null"));
         SetupGraphics(Meta);
         Tileset.Load();
 

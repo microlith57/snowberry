@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Celeste;
 using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Snowberry.Editor.Entities;
 
@@ -12,7 +13,11 @@ public class Plugin_Bumper : Entity {
     public override void Render() {
         base.Render();
 
-        GFX.Game["objects/Bumper/Idle30"].DrawCentered(Position, Color.White, new Vector2(1, 1));
+        MTexture sprite = GFX.Game["objects/Bumper/Idle30"];
+        sprite?.DrawCentered(Position);
+
+        if(Nodes.Count != 0)
+            sprite?.DrawCentered(Nodes[0], Color.White * 0.5f);
     }
 
     public override void HQRender() {
