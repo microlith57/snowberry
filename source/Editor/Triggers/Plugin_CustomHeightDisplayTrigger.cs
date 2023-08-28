@@ -14,9 +14,18 @@ public class Plugin_CustomHeightDisplayTrigger : Trigger {
     public override void Render() {
         base.Render();
 
-        var postfix = (text.IndexOf("}") != text.Length) ? text.Substring(text.LastIndexOf("}") + 1) : "m";
+        string prefix = "";
+        string postfix = "";
+        bool valid = false;
+        if (text.IndexOf("{x}") != -1) {
+            if (text.LastIndexOf("{") > 0)
+                prefix = text.Substring(0, text.LastIndexOf("{"));
+            if (text.LastIndexOf("}") < text.Length - 1)
+                postfix = text.Substring(text.LastIndexOf("}") + 1);
+            valid = true;
+        }
 
-        var str = (From == Target) ? $"({Target}{postfix})" : $"({From}{postfix} -> {Target}{postfix})";
+        var str = (valid) ? ((From == Target) ? $"({prefix}{Target}{postfix})" : $"({prefix}{From}{postfix} -> {prefix}{Target}{postfix})") : "(Invalid text field!)";
         Fonts.Pico8.Draw(str, Center + Vector2.UnitY * 6, Vector2.One, new(0.5f), Color.Black);
     }
 

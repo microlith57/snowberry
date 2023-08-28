@@ -7,7 +7,7 @@ namespace Snowberry.Editor.Triggers;
 [Plugin("everest/customBirdTutorialTrigger")]
 public class Plugin_CustomBirdTutorialTrigger : Trigger {
 
-    [Option("birdID")] public string BirdID = "";
+    [Option("birdId")] public string BirdID = "";
     [Option("showTutorial")] public bool ShowTutorial = true;
 
     public override void Render() {

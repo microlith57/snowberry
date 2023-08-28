@@ -6,9 +6,9 @@ namespace Snowberry.Editor.Triggers;
 public class Plugin_MiniTextboxTrigger : Trigger {
 
     [Option("mode")] public Modes Mode = Modes.OnPlayerEnter;
-    [Option("dialogID")] public string DialogId = "";
-    [Option("onlyOnce")] public bool OnlyOnce = false;
-    [Option("deathCount")] public int DeathCount = -1;
+    [Option("dialog_id")] public string DialogId = "";
+    [Option("only_once")] public bool OnlyOnce = false;
+    [Option("death_count")] public int DeathCount = -1;
 
     public override void Render() {
         base.Render();

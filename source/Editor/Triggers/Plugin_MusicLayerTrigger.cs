@@ -5,7 +5,7 @@ namespace Snowberry.Editor.Triggers;
 [Plugin("everest/musicLayerTrigger")]
 public class Plugin_MusicLayerTrigger : Trigger {
 
-    [Option("track")] public string Track = "";
+    [Option("layers")] public string Track = "";
     [Option("enable")] public bool Enable = false;
 
     public override void Render() {

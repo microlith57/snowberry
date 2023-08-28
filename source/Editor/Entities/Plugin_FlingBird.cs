@@ -11,7 +11,6 @@ public class Plugin_FlingBird : Entity {
     [Option("waiting")] public bool Waiting = false;
 
     public override int MaxNodes => -1;
-    public bool Selected = false;
 
     public Plugin_FlingBird() {
         Tracked = true;
@@ -21,12 +20,6 @@ public class Plugin_FlingBird : Entity {
         base.Render();
 
         GFX.Game["characters/bird/hover04"].DrawCentered(Position);
-
-        if (Selected) {
-            foreach (var node in Nodes) {
-                GFX.Game["characters/bird/hover04"].DrawCentered(Position, Color.White * 0.5f);
-            }
-        }
     }
 
     public override void HQRender() {
@@ -48,7 +41,6 @@ public class Plugin_FlingBird : Entity {
     }
 
     protected override IEnumerable<Rectangle> Select() {
-        Selected = true;
         yield return RectOnRelative(new(18, 12), position: new(-1f, 2.5f), justify: new(0.5f, 0.5f));
         foreach (var node in Nodes)
             yield return RectOnAbsolute(new(18, 12), position: node, justify: new(0.5f, 0.5f));
@@ -60,8 +52,7 @@ public class Plugin_FlingBird : Entity {
 
     /**
     // Calculate the position of the bird closest to the right of the current bird.
-    protected Vector2 NextBirdPos() {
-        if (Room == null || Room.TrackedEntities[typeof(Plugin_FlingBird)].Count == 0) return Position;
+    protected Vector2? NextBirdPos() {
         float? mindx = null;
         Vector2 closestPos = new Vector2(-1, -1);
 

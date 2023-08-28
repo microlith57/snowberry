@@ -8,8 +8,8 @@ public class Plugin_FlagTrigger : Trigger {
     [Option("flag")] public string Flag = "";
     [Option("state")] public bool State = false;
     [Option("mode")] public Modes Mode = Modes.OnPlayerEnter;
-    [Option("onlyOnce")] public bool OnlyOnce = false;
-    [Option("deathCount")] public int DeathCount = -1;
+    [Option("only_once")] public bool OnlyOnce = false;
+    [Option("death_count")] public int DeathCount = -1;
 
     public override void Render() {
         base.Render();

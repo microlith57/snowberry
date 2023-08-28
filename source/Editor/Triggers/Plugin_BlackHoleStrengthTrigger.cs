@@ -5,7 +5,7 @@ namespace Snowberry.Editor.Triggers;
 
 [Plugin("blackholeStrengthTrigger")]
 public class Plugin_BlackHoleStrengthTrigger : Trigger {
-    [Option("positionMode")] public Celeste.BlackholeBG.Strengths Strength = Celeste.BlackholeBG.Strengths.Mild;
+    [Option("strength")] public Celeste.BlackholeBG.Strengths Strength = Celeste.BlackholeBG.Strengths.Mild;
 
     public override void Render() {
         base.Render();

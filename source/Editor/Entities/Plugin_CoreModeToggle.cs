@@ -15,10 +15,6 @@ public class Plugin_CoreModeToggle : Entity {
 
         string postfix;
         switch (Mode) {
-            case CoreToggleMode.Both: {
-                postfix = "01";
-                break;
-            }
             case CoreToggleMode.OnlyFire: {
                 postfix = "15";
                 break;
@@ -47,6 +43,7 @@ public class Plugin_CoreModeToggle : Entity {
             e.Attributes["onlyFire"] = true;
         if (Mode == CoreToggleMode.OnlyIce)
             e.Attributes["onlyIce"] = true;
+        e.Attributes["persistent"] = Persistent;
     }
     public static void AddPlacements() {
         Placements.Create("Core Mode Toggle", "coreModeToggle");
