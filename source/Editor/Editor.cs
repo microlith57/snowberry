@@ -356,7 +356,7 @@ public class Editor : Scene {
             mousePos /= Camera.Zoom;
 
         // controls
-        bool canClick = ui.CanClickThrough();
+        bool canClick = ui.CanClickThrough() && !Message.Shown;
 
         // panning
         bool middlePan = Snowberry.Settings.MiddleClickPan;
@@ -433,6 +433,7 @@ public class Editor : Scene {
         Draw.SpriteBatch.GraphicsDevice.Clear(bg);
 
         var tool = Map == null ? null : Tool.Tools[Toolbar.CurrentTool];
+        bool canClick = ui.CanClickThrough() && !Message.Shown;
 
         #region UI Rendering
 
@@ -444,7 +445,7 @@ public class Editor : Scene {
 
         MTexture curCursor = defaultCursor;
         Vector2 curJustify = Vector2.Zero;
-        if(ui.CanClickThrough())
+        if(canClick)
             tool?.SuggestCursor(ref curCursor, ref curJustify);
         curCursor.DrawJustified(Mouse.Screen, curJustify);
 
