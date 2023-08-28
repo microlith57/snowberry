@@ -8,13 +8,15 @@ namespace Snowberry;
 
 using Element = Celeste.BinaryPacker.Element;
 
-class BinaryExporter {
-    public static void ExportMap(Map map) {
-        Export(map.Export(), "snowberry_map");
+public class BinaryExporter {
+
+    public static void ExportMap(Map map, string filename = null) {
+        Export(map.Export(), filename ?? (Editor.Editor.From is {} v ? Util.KeyToPath(v) : "untitled_snowberry_map.bin"));
     }
 
     public static void Export(Element e, string filename) {
-        string output = Path.Combine(Celeste.Mod.Everest.Loader.PathMods, filename + ".bin");
+        string output = Path.Combine(Celeste.Mod.Everest.Loader.PathMods, filename);
+        Directory.CreateDirectory(Path.GetDirectoryName(output));
 
         var values = new Dictionary<string, short>();
         CreateLookupTable(e, values);

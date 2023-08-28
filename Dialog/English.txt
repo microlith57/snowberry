@@ -31,6 +31,9 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_EDITOR_RETURN=                    return to map
     SNOWBERRY_EDITOR_PLAYTEST=                  playtest
     SNOWBERRY_EDITOR_EXPORT=                    save
+	
+	SNOWBERRY_EDITOR_EXPORT_NEW=				this map doesn't have a name yet! pick a filename
+	SNOWBERRY_EDITOR_EXPORT_UNSAVEABLE=			this map came from a zip file or vanilla, and can't be saved over. pick a filename to save it your Mods folder
 
     SNOWBERRY_EDITOR_TOOL_ENTITYSELECT=         entity select
 

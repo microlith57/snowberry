@@ -28,7 +28,12 @@ public class MapInfoTool : Tool {
         }, titleOffset);
 
         ret.AddBelow(UIPluginOptionList.StringOption("icon", map.Meta.Icon ?? "", i => map.Meta.Icon = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.DropdownOption<Player.IntroTypes>("intro type", map.Meta.IntroType ?? Player.IntroTypes.None, i => map.Meta.IntroType = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption("cassette song", map.Meta.CassetteSong ?? "", i => map.Meta.CassetteSong = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption<float>("darkness alpha", map.Meta.DarknessAlpha?.ToString() ?? "0.05", i => map.Meta.DarknessAlpha = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption<float>("bloom base", map.Meta.BloomBase?.ToString() ?? "0", i => map.Meta.BloomBase = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption<float>("bloom strength", map.Meta.BloomStrength?.ToString() ?? "1", i => map.Meta.BloomStrength = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.DropdownOption("intro type", map.Meta.IntroType ?? Player.IntroTypes.None, i => map.Meta.IntroType = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.DropdownOption("core mode", map.Meta.CoreMode ?? Session.CoreModes.None, i => map.Meta.CoreMode = i), optionOffset);
 
         return ret;
     }

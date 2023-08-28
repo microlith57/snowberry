@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -12,7 +13,7 @@ public class Plugin_Bumper : Entity {
     public override void Render() {
         base.Render();
 
-        MTexture sprite = FromSprite("bumper", "idle");
+        MTexture sprite = GFX.Game["objects/Bumper/Idle30"];
         sprite?.DrawCentered(Position);
 
         if(Nodes.Count != 0)

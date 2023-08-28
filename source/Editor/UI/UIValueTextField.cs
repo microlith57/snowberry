@@ -5,8 +5,8 @@ using System;
 namespace Snowberry.Editor.UI;
 
 public class UIValueTextField<T> : UITextField {
-    new public Color Line = Color.Teal;
-    new public Color LineSelected = Color.LimeGreen;
+    public new Color Line = Color.Teal;
+    public new Color LineSelected = Color.LimeGreen;
     public Color ErrLine = Calc.HexToColor("db2323");
     public Color ErrLineSelected = Calc.HexToColor("ffbb33");
 
