@@ -16,7 +16,7 @@ public class Plugin_BounceBlock : Entity {
     private MTexture hotCrystal;
     private MTexture coldCrystal;
 
-    [Option("notCoreMode")] public bool notCoreMode;
+    [Option("notCoreMode")] public bool NotCoreMode = false;
 
     public Plugin_BounceBlock() {
         hotPatch = new EditorNinePatch(GFX.Game["objects/bumpblocknew/fire00"]);
@@ -30,7 +30,7 @@ public class Plugin_BounceBlock : Entity {
     }
     public override void Render() {
         base.Render();
-        if (notCoreMode) {
+        if (NotCoreMode) {
             coldPatch.Draw(Position, Width, Height, Color.White);
             coldCrystal.DrawCentered(Position + new Vector2(Width, Height) / 2);
         } else {
@@ -40,6 +40,6 @@ public class Plugin_BounceBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Core Block", "BounceBlock", new() { ["notCoreMode"] = false });
+        Placements.Create("Core Block", "bounceBlock");
     }
 }
