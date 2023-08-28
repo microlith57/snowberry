@@ -1,13 +1,13 @@
-﻿using Celeste;
+﻿using System;
+using System.Collections.Generic;
+using Celeste;
 using Celeste.Mod;
+using Celeste.Mod.Meta;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.UI;
-using System;
-using System.Collections.Generic;
-using Celeste.Mod.Meta;
 using Snowberry.Editor.UI.Menus;
 
 namespace Snowberry.Editor;
@@ -109,7 +109,7 @@ public class Editor : Scene {
         public static Vector2 WorldLast { get; internal set; }
 
         public static DateTime LastClick { get; internal set; }
-        public static bool IsDoubleClick => MInput.Mouse.PressedLeftButton && DateTime.Now < Mouse.LastClick.AddMilliseconds(200);
+        public static bool IsDoubleClick => MInput.Mouse.PressedLeftButton && DateTime.Now < LastClick.AddMilliseconds(200);
     }
 
     public static Editor Instance { get; private set; }
@@ -183,11 +183,9 @@ public class Editor : Scene {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
 
-        Map map = null;
-
-        Snowberry.Log(LogLevel.Info, $"Opening new map in level editor");
+        Snowberry.LogInfo("Opening new map in level editor");
         // Also empties the target's metadata.
-        map = new Map("snowberry map");
+        var map = new Map("snowberry map");
         map.Rooms.ForEach(r => r.AllEntities.ForEach(e => e.InitializeAfter()));
         From = null;
 
@@ -268,10 +266,32 @@ public class Editor : Scene {
 
         UIButton export = new UIButton(editorexport, Fonts.Regular, 6, 6) {
             OnPress = () => {
-                BinaryExporter.ExportMap(Map);
-                if(From != null)
-                    AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () =>
-                        AreaData.Areas[From.Value.ID].Mode[0].MapData.Reload());
+                if (From == null || Util.KeyToPath(From.Value) == null) {
+                    // show a popup asking for a filename to save to
+                    Message.Clear();
+                    // with a useful message
+                    UILabel info = new UILabel(Dialog.Clean(From == null ? "SNOWBERRY_EDITOR_EXPORT_NEW" : "SNOWBERRY_EDITOR_EXPORT_UNSAVEABLE"));
+                    info.Position = new Vector2(-info.Width / 2f, -28);
+                    // TODO: validate that it's a valid filename & doesn't already exist
+                    UITextField newName = new UITextField(Fonts.Regular, 300);
+                    newName.Position = new Vector2(-newName.Width / 2f, -8);
+                    // TODO: this UI code sucks
+                    var element = UIElement.Regroup(info, newName);
+                    Vector2 offset = new Vector2(element.Width / 2f, element.Height);
+                    info.Position -= offset; newName.Position -= offset;
+                    Message.AddElement(element, 0.5f, 0.5f, 0.5f, -0.1f);
+                    var buttons = UIMessage.YesAndNoButtons(() => {
+                        // no point auto-reloading when the map definitely doesn't exist yet
+                        BinaryExporter.ExportMap(Map, newName.Value + ".bin");
+                        Message.Shown = false;
+                    }, () => Message.Shown = false, 0, 4, 0.5f);
+                    Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
+                    Message.Shown = true;
+                } else {
+                    BinaryExporter.ExportMap(Map);
+                    if(From != null)
+                        AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () => AreaData.Areas[From.Value.ID].Mode[0].MapData.Reload());
+                }
             }
         };
         ui.AddBelow(export);

@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using Celeste;
 using System;
 
-namespace Snowberry.Editor.UI.Menus; 
+namespace Snowberry.Editor.UI.Menus;
 
 public class UIMessage : UIElement {
     private class Msg {
@@ -20,11 +20,11 @@ public class UIMessage : UIElement {
         }
 
         public void UpdateElement(int w, int h, float lerp) {
-            Element.Position = Calc.Round(new Vector2(w, h) * Vector2.Lerp(HiddenJustification, DisplayJustification, lerp));
+            Element.Position = (new Vector2(w, h) * Vector2.Lerp(HiddenJustification, DisplayJustification, lerp)).Round();
         }
     }
 
-    private readonly List<Msg> msgs = new List<Msg>();
+    private readonly List<Msg> msgs = new();
 
     private float lerp;
     public bool Shown;
@@ -57,7 +57,7 @@ public class UIMessage : UIElement {
     public override void Render(Vector2 position = default) {
         Draw.Rect(position, Width, Height, Color.Black * lerp * 0.75f);
         base.Render(position);
-    }   
+    }
 
     public static UIElement YesAndNoButtons(Action yesPress = null, Action noPress = null, float ox = 0f, float oy = 0f, float jx = 0f, float jy = 0f) {
         UIButton yes = new UIButton(Dialog.Clean("SNOWBERRY_MAINMENU_YES"), Fonts.Regular, 4, 6) {
@@ -74,7 +74,7 @@ public class UIMessage : UIElement {
             PressedBG = Util.Colors.White,
             PressedFG = Util.Colors.Red,
             HoveredBG = Util.Colors.DarkRed,
-            Position = new Vector2(yes.Position.X + yes.Width + 4, yes.Position.Y), 
+            Position = new Vector2(yes.Position.X + yes.Width + 4, yes.Position.Y),
             OnPress = noPress,
         };
 
