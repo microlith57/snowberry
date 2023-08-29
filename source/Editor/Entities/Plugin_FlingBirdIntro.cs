@@ -5,15 +5,11 @@ using Monocle;
 
 namespace Snowberry.Editor.Entities;
 
-[Plugin("flingBird")]
-public class Plugin_FlingBird : Entity {
-    [Option("waiting")] public bool Waiting = false;
+[Plugin("flingBirdIntro")]
+public class Plugin_FlingBirdIntro : Entity {
+    [Option("crashes")] public bool Crashes = false;
 
     public override int MaxNodes => -1;
-
-    public Plugin_FlingBird() {
-        Tracked = true;
-    }
 
     public override void Render() {
         base.Render();
@@ -35,13 +31,6 @@ public class Plugin_FlingBird : Entity {
                 prev = node;
             }
         }
-
-        if (Room.TrackedEntities[typeof(Plugin_FlingBird)] is { Count: > 1 }) {
-            Vector2 startPos = Nodes.Count == 0 ? Position : Nodes[Nodes.Count - 1];
-            Vector2? next = NextBirdPos();
-            if(next != null)
-                DrawUtil.DottedLine(startPos, next.Value, Color.Blue, 8, 4);
-        }
     }
 
     protected override IEnumerable<Rectangle> Select() {
@@ -51,24 +40,6 @@ public class Plugin_FlingBird : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Fling Bird", "flingBird");
-    }
-
-    protected Vector2? NextBirdPos() {
-        float? minDx = null;
-        Vector2? closestPos = null;
-
-        foreach(var entity in Room.TrackedEntities[typeof(Plugin_FlingBird)]){
-            if(entity == this)
-                continue;
-
-            float dx = entity.Position.X - Position.X;
-            if (dx > 0 && (minDx == null || dx < minDx)) {
-                closestPos = entity.Position;
-                minDx = dx;
-            }
-        }
-
-        return closestPos;
+        Placements.Create("Fling Bird Intro", "flingBirdIntro");
     }
 }
