@@ -393,16 +393,12 @@ public class Map {
 
         GFX.FGAutotiler = new Autotiler(text);
         text = meta?.AnimatedTiles;
-        if (string.IsNullOrEmpty(text)) {
+        if (string.IsNullOrEmpty(text))
             text = Path.Combine("Graphics", "AnimatedTiles.xml");
-        }
-
         GFX.AnimatedTilesBank = new AnimatedTilesBank();
-        foreach (XmlElement item in Calc.LoadContentXML(text)["Data"]) {
-            if (item != null) {
-                GFX.AnimatedTilesBank.Add(item.Attr("name"), item.AttrFloat("delay", 0f), item.AttrVector2("posX", "posY", Vector2.Zero), item.AttrVector2("origX", "origY", Vector2.Zero), GFX.Game.GetAtlasSubtextures(item.Attr("path")));
-            }
-        }
+        foreach (XmlElement item in Calc.LoadContentXML(text).GetElementsByTagName("sprite"))
+            if (item != null)
+                GFX.AnimatedTilesBank.Add(item.Attr("name"), item.AttrFloat("delay", 0.0f), item.AttrVector2("posX", "posY", Vector2.Zero), item.AttrVector2("origX", "origY", Vector2.Zero), GFX.Game.GetAtlasSubtextures(item.Attr("path")));
 
         GFX.SpriteBank = new SpriteBank(GFX.Game, Path.Combine("Graphics", "Sprites.xml"));
         text = meta?.Sprites;
