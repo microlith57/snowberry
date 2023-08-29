@@ -25,11 +25,9 @@ public class Plugin_FlingBirdIntro : Entity {
         base.HQRender();
 
         Vector2 prev = Position;
-        if (Nodes.Count != 0) {
-            foreach (Vector2 node in Nodes) {
-                DrawUtil.DottedLine(prev, node, Color.White * 0.5f, 8, 4);
-                prev = node;
-            }
+        foreach (Vector2 node in Nodes) {
+            DrawUtil.DottedLine(prev, node, Color.White * 0.5f, 8, 4);
+            prev = node;
         }
     }
 

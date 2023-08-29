@@ -26,7 +26,7 @@ public class Plugin_SummitGemManager : Entity {
     protected override IEnumerable<Rectangle> Select() {
         yield return RectOnRelative(new(24), justify: new(0.5f));
         foreach (var node in Nodes)
-            yield return RectOnAbsolute(new(20, 20));
+            yield return RectOnAbsolute(new(20, 20), position: node, justify: new(0.5f));
     }
 
     //This should absolutely not be placeable, as we are sane individuals. - Gamation

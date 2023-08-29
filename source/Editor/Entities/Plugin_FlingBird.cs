@@ -7,6 +7,7 @@ namespace Snowberry.Editor.Entities;
 
 [Plugin("flingBird")]
 public class Plugin_FlingBird : Entity {
+
     [Option("waiting")] public bool Waiting = false;
 
     public override int MaxNodes => -1;
@@ -29,12 +30,11 @@ public class Plugin_FlingBird : Entity {
         base.HQRender();
 
         Vector2 prev = Position;
-        if (Nodes.Count != 0) {
-            foreach (Vector2 node in Nodes) {
-                DrawUtil.DottedLine(prev, node, Color.White * 0.5f, 8, 4);
-                prev = node;
-            }
+        foreach (Vector2 node in Nodes) {
+            DrawUtil.DottedLine(prev, node, Color.White * 0.5f, 8, 4);
+            prev = node;
         }
+
 
         if (Room.TrackedEntities[typeof(Plugin_FlingBird)] is { Count: > 1 }) {
             Vector2 startPos = Nodes.Count == 0 ? Position : Nodes[Nodes.Count - 1];

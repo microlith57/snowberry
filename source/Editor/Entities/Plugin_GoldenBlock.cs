@@ -19,7 +19,6 @@ public class Plugin_GoldBlock : Entity {
         blockTex.Draw(Position, Width, Height, Color.White);
         MTexture centerTex = GFX.Game["collectables/goldberry/idle00"];
         centerTex.DrawCentered(new(Position.X + (Width / 2), Position.Y + (Height / 2)));
-
     }
 
     public static void AddPlacements() {
