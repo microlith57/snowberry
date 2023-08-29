@@ -161,8 +161,12 @@ public class RoomTool : Tool {
             DrawUtil.DrawGuidelines(PendingRoom.Value, color);
         }
 
-        if (Editor.SelectedRoom != null && (resizingX || resizingY || (Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.S))))
+        bool viewRoomSize = Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.S);
+        if (Editor.SelectedRoom != null && (resizingX || resizingY || viewRoomSize))
             DrawUtil.DrawGuidelines(Editor.SelectedRoom.Bounds.Multiply(8), Color.White);
+        else if (Editor.SelectedFillerIndex != -1 && viewRoomSize) {
+            DrawUtil.DrawGuidelines(Editor.Instance.Map.Fillers[Editor.SelectedFillerIndex].Multiply(8), Color.White);
+        }
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
