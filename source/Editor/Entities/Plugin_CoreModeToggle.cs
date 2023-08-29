@@ -32,7 +32,6 @@ public class Plugin_CoreModeToggle : Entity {
     }
 
     protected override IEnumerable<Rectangle> Select() {
-
         float iceModSize = Mode == CoreToggleMode.OnlyIce ? 3 : 0;
         float iceModPos = Mode == CoreToggleMode.OnlyIce ? -8.5f : 0;
         yield return RectOnRelative(new(16, 20 + iceModSize), position: new(0, 5 + iceModPos), justify: new(0.5f, 0.5f));
@@ -45,6 +44,16 @@ public class Plugin_CoreModeToggle : Entity {
             e.Attributes["onlyIce"] = true;
         e.Attributes["persistent"] = Persistent;
     }
+
+    protected override Entity InitializeData(Dictionary<string, object> data) {
+        if (data.TryGetValue("onlyFire", out var onlyFire) && onlyFire is true)
+            Mode = CoreToggleMode.OnlyFire;
+        if (data.TryGetValue("onlyIce", out var onlyIce) && onlyIce is true)
+            Mode = CoreToggleMode.OnlyIce;
+
+        return base.InitializeData(data);
+    }
+
     public static void AddPlacements() {
         Placements.Create("Core Mode Toggle", "coreModeToggle");
     }

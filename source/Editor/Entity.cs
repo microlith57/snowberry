@@ -184,7 +184,7 @@ public abstract class Entity : Plugin {
 
     public virtual void ApplyDefaults() { }
 
-    private Entity InitializeData(EntityData entityData) {
+    protected virtual Entity InitializeData(EntityData entityData) {
         Vector2 offset = Room.Position * 8;
 
         Position = entityData.Position + offset;
@@ -200,7 +200,7 @@ public abstract class Entity : Plugin {
         return InitializeData(entityData.Values);
     }
 
-    private Entity InitializeData(Dictionary<string, object> data) {
+    protected virtual Entity InitializeData(Dictionary<string, object> data) {
         if (data != null)
             foreach (KeyValuePair<string, object> pair in data)
                 Set(pair.Key, pair.Value);
