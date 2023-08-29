@@ -2,18 +2,20 @@
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
+using System.Globalization;
 using Celeste;
+using Celeste.Mod;
 
 namespace Snowberry;
 
 public static class DrawUtil {
+
     public static Rectangle GetDrawBounds() {
         // TODO: cache this maybe
         RenderTargetBinding[] renderTargets = Draw.SpriteBatch.GraphicsDevice.GetRenderTargets();
         if (renderTargets.Length > 0 && renderTargets[0].RenderTarget is RenderTarget2D renderTarget)
             return renderTarget.Bounds;
-        else
-            return new Rectangle(0, 0, Engine.Graphics.PreferredBackBufferWidth, Engine.Graphics.PreferredBackBufferHeight);
+        return new Rectangle(0, 0, Engine.Graphics.PreferredBackBufferWidth, Engine.Graphics.PreferredBackBufferHeight);
     }
 
     public static void WithinScissorRectangle(Rectangle rect, Action action, Matrix? matrix = null, bool nested = true, bool additive = false) {
@@ -80,5 +82,23 @@ public static class DrawUtil {
             pass.Apply();
             Engine.Instance.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertexCount / 3);
         }
+    }
+
+    public static void DrawGuidelines(Rectangle bounds, Color c) {
+        string topTxt = (bounds.Width / 8).ToString();
+        string leftTxt = (bounds.Height / 8).ToString();
+
+        float topGap = Fonts.Regular.Measure(topTxt).X / 2f + 3;
+        float topY = bounds.Top - 5;
+        Draw.Line(new(bounds.Left, topY), new(bounds.Center.X - topGap, topY), c);
+        Draw.Line(new(bounds.Center.X + topGap, topY), new(bounds.Right, topY), c);
+
+        float leftGap = Fonts.Regular.Measure(leftTxt).Y / 2f + 3;
+        float leftX = bounds.Left - 5;
+        Draw.Line(new(leftX, bounds.Top), new(leftX, bounds.Center.Y - leftGap), c);
+        Draw.Line(new(leftX, bounds.Center.Y + leftGap), new(leftX, bounds.Bottom), c);
+
+        Fonts.Regular.Draw(topTxt, new(bounds.Center.X, bounds.Top - 2), new(1), new(0.5f, 1), c);
+        Fonts.Regular.Draw(leftTxt, new(bounds.Left - 2, bounds.Center.Y), new(1), new(1, 0.5f), c);
     }
 }

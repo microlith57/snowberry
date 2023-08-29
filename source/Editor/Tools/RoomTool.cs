@@ -154,9 +154,14 @@ public class RoomTool : Tool {
         base.RenderWorldSpace();
         if (PendingRoom.HasValue) {
             var prog = (float)Math.Abs(Math.Sin(Engine.Scene.TimeActive * 3));
-            Draw.Rect(PendingRoom.Value, Color.Lerp(Color.White, Color.Cyan, prog) * 0.6f);
+            var color = Color.Lerp(Color.White, Color.Cyan, prog) * 0.6f;
+            Draw.Rect(PendingRoom.Value, color);
             Draw.HollowRect(PendingRoom.Value.X, PendingRoom.Value.Y, 40 * 8, 23 * 8, Color.Lerp(Color.Orange, Color.White, prog) * 0.6f);
+            DrawUtil.DrawGuidelines(PendingRoom.Value, color);
         }
+
+        if (Editor.SelectedRoom != null && (resizingX || resizingY))
+            DrawUtil.DrawGuidelines(Editor.SelectedRoom.Bounds.Multiply(8), Color.White);
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {

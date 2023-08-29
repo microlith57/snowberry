@@ -69,4 +69,7 @@ public static class Util {
 
     public static string KeyToPath(Celeste.AreaKey key) =>
         GetRealPath(Path.Combine("Maps", Celeste.AreaData.Get(key).Mode[(int)key.Mode].Path + ".bin"));
+
+    public static Rectangle Multiply(this Rectangle r, int factor) =>
+        new(r.X * factor, r.Y * factor, r.Width * factor, r.Height * factor);
 }
