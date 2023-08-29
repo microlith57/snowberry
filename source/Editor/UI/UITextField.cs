@@ -8,6 +8,12 @@ using System.Linq;
 namespace Snowberry.Editor.UI;
 
 public class UITextField : UIElement {
+
+    public static string Clipboard {
+        get => TextInput.GetClipboardText();
+        set => TextInput.SetClipboardText(value);
+    }
+
     public bool Selected { get; private set; }
     private bool hovering;
     private int charIndex, selection;
@@ -27,8 +33,6 @@ public class UITextField : UIElement {
     public Color FG = Calc.HexToColor("f0f0f0");
 
     private float timeOffset;
-
-    private static string clipboard;
 
     protected char[] AllowedCharacters;
 
@@ -181,15 +185,15 @@ public class UITextField : UIElement {
 
                 if (selection != charIndex && (copy || cut)) {
                     GetSelection(out int a, out int b);
-                    clipboard = Value.Substring(a, b - a);
+                    Clipboard = Value.Substring(a, b - a);
                     if (cut) {
                         InsertString(a, b);
                         selection = charIndex = a;
                     }
-                } else if (MInput.Keyboard.Pressed(Keys.V) && clipboard != null) {
+                } else if (MInput.Keyboard.Pressed(Keys.V) && Clipboard != null) {
                     GetSelection(out int a, out int b);
-                    InsertString(a, b, clipboard);
-                    selection = charIndex = a + clipboard.Length;
+                    InsertString(a, b, Clipboard);
+                    selection = charIndex = a + Clipboard.Length;
                     timeOffset = Engine.Scene.TimeActive;
                 }
             }
