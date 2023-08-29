@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.UI;
 using System;
+using Microsoft.Xna.Framework.Input;
 
 namespace Snowberry.Editor.Tools;
 
@@ -160,7 +161,7 @@ public class RoomTool : Tool {
             DrawUtil.DrawGuidelines(PendingRoom.Value, color);
         }
 
-        if (Editor.SelectedRoom != null && (resizingX || resizingY))
+        if (Editor.SelectedRoom != null && (resizingX || resizingY || (Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.S))))
             DrawUtil.DrawGuidelines(Editor.SelectedRoom.Bounds.Multiply(8), Color.White);
     }
 
