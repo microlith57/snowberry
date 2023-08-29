@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework.Input;
-using Snowberry.Editor.Entities;
 
 namespace Snowberry.Editor;
 
@@ -391,10 +390,6 @@ public class Room {
             };
             entity.SaveAttrs(entityElem);
 
-            if (entity is UnknownEntity placeholder)
-                foreach (string opt in placeholder.Attrs.Keys)
-                    entityElem.Attributes[opt] = placeholder.Attrs[opt];
-
             foreach (var node in entity.Nodes) {
                 Element n = new Element {
                     Attributes = new Dictionary<string, object> {
@@ -429,10 +424,6 @@ public class Room {
                 }
             };
             trigger.SaveAttrs(triggersElem);
-
-            if (trigger is UnknownEntity placeholder)
-                foreach (string opt in placeholder.Attrs.Keys)
-                    triggersElem.Attributes[opt] = placeholder.Attrs[opt];
 
             foreach (var node in trigger.Nodes) {
                 Element n = new Element {

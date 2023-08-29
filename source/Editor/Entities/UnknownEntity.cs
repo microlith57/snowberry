@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -40,5 +41,11 @@ public class UnknownEntity : Entity {
             var rect = new Rectangle(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height);
             Draw.Rect(rect, Color.Red * 0.5f);
         }
+    }
+
+    public override void SaveAttrs(BinaryPacker.Element e) {
+        base.SaveAttrs(e);
+        foreach (string opt in Attrs.Keys)
+            e.Attributes[opt] = Attrs[opt];
     }
 }
