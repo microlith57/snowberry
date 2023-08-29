@@ -35,7 +35,7 @@ public abstract class Plugin_TileEntity : Plugin_TileEntityBase {
     }
 
     public override void Render() {
-        if (last != TileType) {
+        if (last != TileType || Dirty) {
             Tiles = GFX.FGAutotiler.GenerateBox(TileType.Key, Width / 8, Height / 8).TileGrid.Tiles;
             last = TileType;
         }
@@ -71,9 +71,12 @@ public class Plugin_IntroCrusher : Plugin_TileEntity {
 
 [Plugin("finalBossFallingBlock")]
 public class Plugin_BadelineBossFallingBlock : Plugin_TileEntityBase {
-    public override void Initialize() {
-        base.Initialize();
-        Tiles = GFX.FGAutotiler.GenerateBox('g', Width / 8, Height / 8).TileGrid.Tiles;
+
+    public override void Render() {
+        if (Tiles == null || Dirty)
+            Tiles = GFX.FGAutotiler.GenerateBox('g', Width / 8, Height / 8).TileGrid.Tiles;
+
+        base.Render();
     }
 
     public static void AddPlacements() {
@@ -120,7 +123,7 @@ public class Plugin_ExitBlock : Plugin_TileEntityBase {
     }
 
     public override void Render() {
-        if (last != TileType) {
+        if (last != TileType || Dirty) {
             Tiles = GFX.FGAutotiler.GenerateBox(TileType.Key, Width / 8, Height / 8).TileGrid.Tiles;
             last = TileType;
         }
