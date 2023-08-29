@@ -174,11 +174,14 @@ public class SelectionTool : Tool {
 
     public override void RenderWorldSpace() {
         base.RenderWorldSpace();
-        if (Editor.SelectedRoom != null)
+        if (Editor.SelectedRoom != null) {
             foreach (var item in Editor.SelectedRoom.GetSelectedEntities(new Rectangle((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y, 0, 0), selectEntities, selectTriggers))
                 if (Editor.SelectedEntities == null || !Editor.SelectedEntities.Contains(item))
                     foreach (var s in item.Selections)
                         Draw.Rect(s.Rect, Color.Blue * 0.15f);
+            if (MInput.Mouse.CheckLeftButton && !canSelect && (resizingX || resizingY) && GetSoloEntity() is {} nonNull)
+                DrawUtil.DrawGuidelines(nonNull.Bounds, Color.White);
+        }
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {

@@ -85,20 +85,26 @@ public static class DrawUtil {
     }
 
     public static void DrawGuidelines(Rectangle bounds, Color c) {
-        string topTxt = (bounds.Width / 8).ToString();
-        string leftTxt = (bounds.Height / 8).ToString();
+        if (bounds.Width > 0) {
+            string topTxt = (bounds.Width / 8).ToString();
+            float topGap = Fonts.Regular.Measure(topTxt).X / 2f + 3;
+            float topY = bounds.Top - 5;
+            if (topGap * 2 <= bounds.Width - 2) {
+                Draw.Line(new(bounds.Left, topY), new(bounds.Center.X - topGap, topY), c);
+                Draw.Line(new(bounds.Center.X + topGap, topY), new(bounds.Right, topY), c);
+            }
+            Fonts.Regular.Draw(topTxt, new(bounds.Center.X, bounds.Top - 2), new(1), new(0.5f, 1), c);
+        }
 
-        float topGap = Fonts.Regular.Measure(topTxt).X / 2f + 3;
-        float topY = bounds.Top - 5;
-        Draw.Line(new(bounds.Left, topY), new(bounds.Center.X - topGap, topY), c);
-        Draw.Line(new(bounds.Center.X + topGap, topY), new(bounds.Right, topY), c);
-
-        float leftGap = Fonts.Regular.Measure(leftTxt).Y / 2f + 3;
-        float leftX = bounds.Left - 5;
-        Draw.Line(new(leftX, bounds.Top), new(leftX, bounds.Center.Y - leftGap), c);
-        Draw.Line(new(leftX, bounds.Center.Y + leftGap), new(leftX, bounds.Bottom), c);
-
-        Fonts.Regular.Draw(topTxt, new(bounds.Center.X, bounds.Top - 2), new(1), new(0.5f, 1), c);
-        Fonts.Regular.Draw(leftTxt, new(bounds.Left - 2, bounds.Center.Y), new(1), new(1, 0.5f), c);
+        if (bounds.Height > 0) {
+            string leftTxt = (bounds.Height / 8).ToString();
+            float leftGap = Fonts.Regular.Measure(leftTxt).Y / 2f + 3;
+            if (leftGap * 2 <= bounds.Height - 2) {
+                float leftX = bounds.Left - 5;
+                Draw.Line(new(leftX, bounds.Top), new(leftX, bounds.Center.Y - leftGap), c);
+                Draw.Line(new(leftX, bounds.Center.Y + leftGap), new(leftX, bounds.Bottom), c);
+            }
+            Fonts.Regular.Draw(leftTxt, new(bounds.Left - 2, bounds.Center.Y), new(1), new(1, 0.5f), c);
+        }
     }
 }
