@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using Snowberry.Editor.UI.Menus;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Snowberry.Editor.Tools;
 
@@ -158,13 +159,51 @@ public class SelectionTool : Tool {
                 if (Editor.SelectedEntities.Count > 0)
                     refreshPanel = true;
                 Editor.SelectedEntities.Clear();
-            } else if (Editor.SelectedRoom != null && (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl)) && MInput.Keyboard.Pressed(Keys.A)) {
-                // select all
-                Editor.SelectedEntities = new();
-                foreach (var entity in Editor.SelectedRoom.AllEntities)
-                    if (entity.SelectionRectangles is { Length: > 0 } rs)
-                        Editor.SelectedEntities.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.Selection(entity, i - 1)).ToList()));
-                refreshPanel = true;
+            } else if (Editor.SelectedRoom != null && (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl))) {
+                if (MInput.Keyboard.Pressed(Keys.A)) {
+                    // select all
+                    Editor.SelectedEntities = new();
+                    foreach (var entity in Editor.SelectedRoom.AllEntities)
+                        if (entity.SelectionRectangles is { Length: > 0 } rs)
+                            Editor.SelectedEntities.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.Selection(entity, i - 1)).ToList()));
+                    refreshPanel = true;
+                } else if (MInput.Keyboard.Pressed(Keys.C)) {
+                    // copy
+                    StringBuilder clipboard = new StringBuilder("{");
+                    foreach (EntitySelection e in Editor.SelectedEntities) {
+                        var entity = e.Entity;
+                        BinaryPacker.Element elem = new() {
+                            Attributes = new() {
+                                ["_fromLayer"] = entity.IsTrigger ? "triggers" : "entities",
+                                ["_id"] = entity.EntityID,
+                                ["_name"] = entity.Name,
+                                ["_type"] = entity.IsTrigger ? "trigger" : "entity",
+                                ["width"] = entity.Width,
+                                ["height"] = entity.Height,
+                                ["x"] = entity.X,
+                                ["y"] = entity.Y
+                            }
+                        };
+
+                        if (entity.Nodes.Count > 0) {
+                            // here we do a little crime and throw a list in an Element
+                            // this is ok because MarshallToTable understands it, but you generally shouldn't do this!
+                            //  - L
+                            elem.Attributes["nodes"] = entity.Nodes.Select(node =>
+                                new BinaryPacker.Element {
+                                    Attributes = new() {
+                                        ["x"] = node.X,
+                                        ["y"] = node.Y
+                                    }
+                                }).ToList();
+                        }
+
+                        entity.SaveAttrs(elem);
+                        clipboard.Append(Util.MarshallToTable(elem)).Append(",\n");
+                    }
+                    clipboard.Append("}");
+                    UITextField.Clipboard = clipboard.ToString();
+                }
             }
         }
 
