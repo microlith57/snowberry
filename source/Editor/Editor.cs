@@ -121,7 +121,8 @@ public class Editor : Scene {
 
     public static readonly MTexture cursors = GFX.Gui["Snowberry/cursors"];
     public static readonly Color bg = Calc.HexToColor("060607");
-    private readonly MTexture defaultCursor = GFX.Gui["Snowberry/cursors"].GetSubtexture(0, 0, 16, 16);
+    private readonly MTexture defaultCursor = cursors.GetSubtexture(0, 0, 16, 16);
+    private readonly MTexture panningCursor = cursors.GetSubtexture(32, 16, 16, 16);
 
     private bool fadeIn = false;
     public BufferCamera Camera { get; private set; }
@@ -434,6 +435,8 @@ public class Editor : Scene {
 
         var tool = Map == null ? null : Tool.Tools[Toolbar.CurrentTool];
         bool canClick = ui.CanClickThrough() && !Message.Shown;
+        bool middlePan = Snowberry.Settings.MiddleClickPan;
+        var panning = (middlePan && MInput.Mouse.CheckMiddleButton || !middlePan && MInput.Mouse.CheckRightButton) && canClick;
 
         #region UI Rendering
 
@@ -445,7 +448,10 @@ public class Editor : Scene {
 
         MTexture curCursor = defaultCursor;
         Vector2 curJustify = Vector2.Zero;
-        if(canClick)
+        if (panning) {
+            curCursor = panningCursor;
+            curJustify = new(0.5f);
+        } else if(canClick)
             tool?.SuggestCursor(ref curCursor, ref curJustify);
         curCursor.DrawJustified(Mouse.Screen, curJustify);
 
