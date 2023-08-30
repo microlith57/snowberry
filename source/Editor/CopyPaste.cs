@@ -24,7 +24,7 @@ public static class CopyPaste{
         foreach(var attr in e.Attributes){
             sb.Append("\t").Append(attr.Key).Append(" = ");
             if(attr.Value is string s)
-                sb.Append("\"").Append(s).Append("\"");
+                sb.Append("\"").Append(s.Escape()).Append("\"");
             else if(attr.Value.GetType().IsEnum)
                 sb.Append("\"").Append(attr.Value).Append("\"");
             else if(attr.Value is List<BinaryPacker.Element> es)
@@ -52,20 +52,18 @@ public static class CopyPaste{
 
         // for Paste, parsing from a lua-style table
         public List<(EntityData data, bool trigger)> Parse(){
+            rest = rest.Trim();
             if (!(rest.StartsWith("{") && rest.EndsWith("}")))
                 return new();
-            // remove all forms of whitespace
-            // TODO: this is wrong,
-            rest = rest.Where(c => !char.IsWhiteSpace(c)).IntoString();
-            // remove the starting and ending braces, as well as possible trailing comma
+            // remove the starting and ending braces
             rest = rest.Substring(1, rest.Length - 2);
 
             List<(EntityData, bool)> data = new();
             // comma separated list of entities, possibly ending in another comma
             while(rest.Length > 0){
-                if(rest.StartsWith(","))
+                if(startsWith(","))
                     rest = rest.Substring(1); // take off the comma
-                if(!rest.StartsWith("{")){
+                if(!startsWith("{")){
                     if(rest.Length == 0)
                         break; // took off the trailing comma and now we're done
                     throw new ArgumentException($"Failed to paste, invalid character: {rest.First()}"); // encountered something evil
@@ -86,7 +84,7 @@ public static class CopyPaste{
             bool isTrigger = false;
 
             // keep parsing key/values until we reach the end of a table
-            while(!rest.StartsWith("}")){
+            while(!startsWith("}")){
                 var name = parseId();
                 expect("=");
                 // parse nodes differently
@@ -111,10 +109,8 @@ public static class CopyPaste{
                     }else
                         // and just throw ordinary values in the table
                         data.Values[name] = v;
-
                 }
-                if(rest.StartsWith(","))
-                    expect(",");
+                removeIfPresent(",");
             }
 
             // then get rid of the closing brace
@@ -123,6 +119,7 @@ public static class CopyPaste{
         }
 
         private string parseId(){
+            rest = rest.TrimStart();
             if(rest.Length == 0)
                 throw new ArgumentException("Failed to paste, expected an identifier but got nothing");
             if(!isIdStart(rest.First()))
@@ -135,25 +132,45 @@ public static class CopyPaste{
         // EntityData is fine with everything being strings, so we'll handle them like that
         private string parseValue(){
             // either true, false, a number, a string, or nil
-            if(rest.StartsWith("\"")){
+            if(startsWith("\"")){
                 expect("\"");
-                var v = rest.TakeWhile(c => c != '"').IntoString();
-                rest = rest.Substring(v.Length + 1);
-                return v;
+                StringBuilder v = new();
+                bool escaping = false;
+                while(escaping || rest.First() != '"'){
+                    char next = rest.First();
+                    if(escaping){
+                        escaping = false;
+                        if(next == '\\')
+                            v.Append("\\");
+                        else if(next == 'n')
+                            v.Append("\n");
+                        else if(next == 't')
+                            v.Append("\t");
+                        else if(next == '"')
+                            v.Append('"');
+                    }else if(next == '\\')
+                        escaping = true;
+                    else
+                        v.Append(next);
+
+                    rest = rest.Substring(1);
+                }
+                rest = rest.Substring(1);
+                return v.ToString();
             }
 
-            if(rest.StartsWith("-") || char.IsDigit(rest.First())){
+            if(startsWith("-") || char.IsDigit(rest.First())){
                 var v = rest.First() + rest.Skip(1).TakeWhile(char.IsDigit).IntoString();
                 rest = rest.Substring(v.Length);
-                if(char.IsLetter(rest.First()))
+                if(isIdChar(rest.First()))
                     throw new ArgumentException("Failed to paste, found a letter at the end of a numeric value");
                 return v;
             }
 
             string kw;
-            if(rest.StartsWith(kw = "true", StringComparison.InvariantCultureIgnoreCase) || rest.StartsWith(kw = "false", StringComparison.InvariantCultureIgnoreCase) || rest.StartsWith(kw = "nil", StringComparison.InvariantCultureIgnoreCase)){
+            if(startsWithIgnoreCase(kw = "true") || startsWithIgnoreCase(kw = "false") || startsWithIgnoreCase(kw = "nil")){
                 rest = rest.Substring(kw.Length);
-                if(char.IsLetter(rest.First()))
+                if(isIdChar(rest.First()))
                     throw new ArgumentException("Failed to paste, found a letter at the end of a keyword value");
                 return kw;
             }
@@ -165,10 +182,10 @@ public static class CopyPaste{
             // comma separated list of tiny tables
             List<Vector2> values = new();
             expect("{");
-            while(!rest.StartsWith("}")){
+            while(!startsWith("}")){
                 int x = 0, y = 0;
                 expect("{");
-                while(!rest.StartsWith("}")){
+                while(!startsWith("}")){
                     var id = parseId();
                     expect("=");
                     var v = parseValue();
@@ -176,13 +193,11 @@ public static class CopyPaste{
                         x = Convert.ToInt32(v);
                     else if(id == "y")
                         y = Convert.ToInt32(v);
-                    if(rest.StartsWith(","))
-                        expect(",");
+                    removeIfPresent(",");
                 }
                 expect("}");
                 values.Add(new(x, y));
-                if(rest.StartsWith(","))
-                    expect(",");
+                removeIfPresent(",");
             }
             expect("}");
 
@@ -190,9 +205,24 @@ public static class CopyPaste{
         }
 
         private void expect(string c){
-            if(!rest.StartsWith(c))
+            if(!startsWith(c))
                 throw new ArgumentException($"Failed to paste, expected \"{c}\" but got \"{rest.Take(c.Length).IntoString()}\"");
             rest = rest.Substring(c.Length);
+        }
+
+        private void removeIfPresent(string c){
+            if(startsWith(c))
+                rest = rest.Substring(c.Length);
+        }
+
+        private bool startsWith(string c){
+            rest = rest.TrimStart();
+            return rest.StartsWith(c);
+        }
+
+        private bool startsWithIgnoreCase(string c){
+            rest = rest.TrimStart();
+            return rest.StartsWith(c, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static bool isIdStart(char c) => char.IsLetter(c) || c is '_';
@@ -202,4 +232,18 @@ public static class CopyPaste{
 
 internal static class ParseExt{
     public static string IntoString(this IEnumerable<char> chars) => new(chars.ToArray());
+
+    public static string Escape(this string s){
+        StringBuilder escaped = new(s.Length);
+        foreach(char c in s)
+            escaped.Append(c switch{
+                '"' => "\\\"",
+                '\n' => "\\n",
+                '\t' => "\\t",
+                '\\' => "\\\\",
+                _ => c
+            });
+
+        return escaped.ToString();
+    }
 }

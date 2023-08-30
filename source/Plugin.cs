@@ -1,10 +1,7 @@
 ﻿using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using System;
-using System.Linq;
-using System.Reflection;
 using Snowberry.Editor;
-using Snowberry.Editor.Tools;
 
 namespace Snowberry;
 
@@ -49,15 +46,11 @@ public abstract class Plugin {
         }
     }
 
-    public virtual object Get(string option) {
-        if (Info.Options.TryGetValue(option, out PluginOption f))
-            return ObjectToStr(f.GetValue(this));
-        return null;
-    }
+    public virtual object Get(string option) =>
+        Info.Options.TryGetValue(option, out PluginOption f) ? ObjectToStr(f.GetValue(this)) : null;
 
-    public string GetTooltipFor(string option) {
-        return Info.Options.TryGetValue(option, out PluginOption f)  ? f.Tooltip : null;
-    }
+    public string GetTooltipFor(string option) =>
+        Info.Options.TryGetValue(option, out PluginOption f)  ? f.Tooltip : null;
 
     protected static object StrToObject(Type targetType, string raw){
         if(targetType.IsEnum)
