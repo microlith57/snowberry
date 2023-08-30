@@ -199,10 +199,23 @@ public class SelectionTool : Tool {
                         }
 
                         entity.SaveAttrs(elem);
-                        clipboard.Append(Util.MarshallToTable(elem)).Append(",\n");
+                        clipboard.Append(CopyPaste.MarshallToTable(elem)).Append(",\n");
                     }
                     clipboard.Append("}");
-                    UITextField.Clipboard = clipboard.ToString();
+                    CopyPaste.Clipboard = clipboard.ToString();
+                } else if (MInput.Keyboard.Pressed(Keys.V)) {
+                    try {
+                        List<(EntityData data, bool trigger)> entities = CopyPaste.MarshallFromTable(CopyPaste.Clipboard);
+                        foreach (var entity in entities) {
+                            Entity e = Entity.TryCreate(Editor.SelectedRoom, entity.data, entity.trigger, out bool _);
+                            e.SetPosition(Editor.Mouse.World);
+                            Editor.SelectedRoom.AddEntity(e);
+                        }
+                    } catch (ArgumentException ae) {
+                        Snowberry.LogInfo(ae.Message);
+                    } catch (InvalidOperationException) {
+                        Snowberry.LogInfo("Failed to paste (invalid data)");
+                    }
                 }
             }
         }

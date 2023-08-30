@@ -75,30 +75,4 @@ public static class Util {
 
     public static Rectangle Multiply(this Rectangle r, int factor) =>
         new(r.X * factor, r.Y * factor, r.Width * factor, r.Height * factor);
-
-    public static string MarshallToTable(Celeste.BinaryPacker.Element e) {
-        if (e.Attributes == null)
-            return "{}";
-
-        StringBuilder sb = new("{\n");
-        foreach (var attr in e.Attributes) {
-            sb.Append("\t").Append(attr.Key).Append(" = ");
-            if (attr.Value is string s)
-                sb.Append("\"").Append(s).Append("\"");
-            else if (attr.Value.GetType().IsEnum)
-                sb.Append("\"").Append(attr.Value).Append("\"");
-            else if (attr.Value is List<Celeste.BinaryPacker.Element> es)
-                if (es.Count > 0)
-                    sb.Append("{").Append(es.Select(MarshallToTable).Aggregate((l, r) => l + ", " + r)).Append("}");
-                else
-                    sb.Append("{}");
-            else
-                sb.Append(attr.Value);
-            sb.Append(",\n");
-        }
-
-        sb.Append("}");
-
-        return sb.ToString();
-    }
 }

@@ -9,11 +9,6 @@ namespace Snowberry.Editor.UI;
 
 public class UITextField : UIElement {
 
-    public static string Clipboard {
-        get => TextInput.GetClipboardText();
-        set => TextInput.SetClipboardText(value);
-    }
-
     public bool Selected { get; private set; }
     private bool hovering;
     private int charIndex, selection;
@@ -185,15 +180,15 @@ public class UITextField : UIElement {
 
                 if (selection != charIndex && (copy || cut)) {
                     GetSelection(out int a, out int b);
-                    Clipboard = Value.Substring(a, b - a);
+                    CopyPaste.Clipboard = Value.Substring(a, b - a);
                     if (cut) {
                         InsertString(a, b);
                         selection = charIndex = a;
                     }
-                } else if (MInput.Keyboard.Pressed(Keys.V) && Clipboard != null) {
+                } else if (MInput.Keyboard.Pressed(Keys.V) && CopyPaste.Clipboard != null) {
                     GetSelection(out int a, out int b);
-                    InsertString(a, b, Clipboard);
-                    selection = charIndex = a + Clipboard.Length;
+                    InsertString(a, b, CopyPaste.Clipboard);
+                    selection = charIndex = a + CopyPaste.Clipboard.Length;
                     timeOffset = Engine.Scene.TimeActive;
                 }
             }
