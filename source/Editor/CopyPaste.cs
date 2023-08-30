@@ -140,9 +140,13 @@ public static class CopyPaste{
                         data.Width = Convert.ToInt32(v);
                     else if (name == "height")
                         data.Height = Convert.ToInt32(v);
-                    else if (name is "_id" or "_fromLayer" or "x" or "y"){
+                    else if (name is "_id" or "_fromLayer"){
                         // no-op
-                    }else
+                    }else if (name == "x")
+                        data.Position.X = Convert.ToSingle(v);
+                    else if (name == "y")
+                        data.Position.Y = Convert.ToSingle(v);
+                    else
                         // and just throw ordinary values in the table
                         data.Values[name] = v;
                 }

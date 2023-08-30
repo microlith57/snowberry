@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using Snowberry.Editor.UI.Menus;
 using System.Collections.Generic;
-using System.Text;
+using Celeste.Mod;
 
 namespace Snowberry.Editor.Tools;
 
@@ -20,9 +20,7 @@ public class SelectionTool : Tool {
     private static bool resizingX, resizingY, fromLeft, fromTop;
     private static Rectangle oldEntityBounds;
 
-    public override string GetName() {
-        return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITYSELECT");
-    }
+    public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITYSELECT");
 
     public override UIElement CreatePanel(int height) {
         UIElement panel = new UIElement {
@@ -185,10 +183,17 @@ public class SelectionTool : Tool {
                 } else if (MInput.Keyboard.Pressed(Keys.V)) { // Ctrl-V to paste
                     try {
                         List<(EntityData data, bool trigger)> entities = CopyPaste.PasteEntities(CopyPaste.Clipboard);
-                        foreach (var entity in entities) {
-                            Entity e = Entity.TryCreate(Editor.SelectedRoom, entity.data, entity.trigger, out bool _);
-                            e.SetPosition(Editor.Mouse.World);
-                            Editor.SelectedRoom.AddEntity(e);
+                        if (entities.Count != 0) {
+                            // find covering rectangle
+                            Rectangle r = entities.Aggregate(entities[0].data.Bounds(), (current, u) => Rectangle.Union(current, u.data.Bounds()));
+                            foreach (var entity in entities) {
+                                Entity e = Entity.TryCreate(Editor.SelectedRoom, entity.data, entity.trigger, out bool _);
+                                Vector2 offset = Editor.Mouse.World - r.Center.ToVector2() - Editor.SelectedRoom.Position * 8;
+                                e.Move(offset);
+                                for (int i = 0; i < e.Nodes.Count; i++)
+                                    e.MoveNode(i, offset);
+                                Editor.SelectedRoom.AddEntity(e);
+                            }
                         }
                     } catch (ArgumentException ae) {
                         Snowberry.LogInfo(ae.Message);
