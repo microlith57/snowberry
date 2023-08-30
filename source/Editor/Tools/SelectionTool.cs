@@ -132,7 +132,8 @@ public class SelectionTool : Tool {
 
         postResize:
         if (Editor.Instance.CanTypeShortcut()) {
-            if (MInput.Keyboard.Check(Keys.Delete)) {
+            bool ctrl = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
+            if (MInput.Keyboard.Check(Keys.Delete)) { // Del to delete entities
                 foreach (var item in Editor.SelectedEntities) {
                     refreshPanel = true;
                     var room = item.Entity.Room;
@@ -141,7 +142,7 @@ public class SelectionTool : Tool {
                 }
 
                 Editor.SelectedEntities.Clear();
-            } else if (MInput.Keyboard.Pressed(Keys.N)) {
+            } else if (MInput.Keyboard.Pressed(Keys.N)) { // N to create node
                 // iterate backwards to allow modifying the list as we go
                 for (var idx = Editor.SelectedEntities.Count - 1; idx >= 0; idx--) {
                     var item = Editor.SelectedEntities[idx];
@@ -155,21 +156,33 @@ public class SelectionTool : Tool {
                         Editor.SelectedEntities.Add(new EntitySelection(e, new() { new(e, newNodeIdx) }));
                     }
                 }
-            } else if (MInput.Keyboard.Pressed(Keys.Escape)) {
+            } else if (MInput.Keyboard.Pressed(Keys.Escape)) { // Esc to deselect all
                 if (Editor.SelectedEntities.Count > 0)
                     refreshPanel = true;
                 Editor.SelectedEntities.Clear();
-            } else if (Editor.SelectedRoom != null && (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl))) {
-                if (MInput.Keyboard.Pressed(Keys.A)) {
+            } else if (MInput.Keyboard.Pressed(Keys.Up)) { // Up/Down/Left/Right to nudge entities
+                foreach (EntitySelection es in Editor.SelectedEntities)
+                    es.Move(new(0, ctrl ? -1 : -8));
+            } else if (MInput.Keyboard.Pressed(Keys.Down)) {
+                foreach (EntitySelection es in Editor.SelectedEntities)
+                    es.Move(new(0, ctrl ? 1 : 8));
+            } else if (MInput.Keyboard.Pressed(Keys.Left)) {
+                foreach (EntitySelection es in Editor.SelectedEntities)
+                    es.Move(new(ctrl ? -1 : -8, 0));
+            } else if (MInput.Keyboard.Pressed(Keys.Right)) {
+                foreach (EntitySelection es in Editor.SelectedEntities)
+                    es.Move(new(ctrl ? 1 : 8, 0));
+            } else if (Editor.SelectedRoom != null && ctrl) {
+                if (MInput.Keyboard.Pressed(Keys.A)) { // Ctrl-A to select all
                     // select all
                     Editor.SelectedEntities = new();
                     foreach (var entity in Editor.SelectedRoom.AllEntities)
                         if (entity.SelectionRectangles is { Length: > 0 } rs)
                             Editor.SelectedEntities.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.Selection(entity, i - 1)).ToList()));
                     refreshPanel = true;
-                } else if (MInput.Keyboard.Pressed(Keys.C)) {
-                    CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedEntities.Select(x=>x.Entity));
-                } else if (MInput.Keyboard.Pressed(Keys.V)) {
+                } else if (MInput.Keyboard.Pressed(Keys.C)) { // Ctrl-C to copy
+                    CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedEntities.Select(x => x.Entity));
+                } else if (MInput.Keyboard.Pressed(Keys.V)) { // Ctrl-V to paste
                     try {
                         List<(EntityData data, bool trigger)> entities = CopyPaste.PasteEntities(CopyPaste.Clipboard);
                         foreach (var entity in entities) {
