@@ -168,44 +168,10 @@ public class SelectionTool : Tool {
                             Editor.SelectedEntities.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.Selection(entity, i - 1)).ToList()));
                     refreshPanel = true;
                 } else if (MInput.Keyboard.Pressed(Keys.C)) {
-                    // copy
-                    StringBuilder clipboard = new StringBuilder("{");
-                    foreach (EntitySelection e in Editor.SelectedEntities) {
-                        var entity = e.Entity;
-                        BinaryPacker.Element elem = new() {
-                            Attributes = new() {
-                                ["_fromLayer"] = entity.IsTrigger ? "triggers" : "entities",
-                                ["_id"] = entity.EntityID,
-                                ["_name"] = entity.Name,
-                                ["_type"] = entity.IsTrigger ? "trigger" : "entity",
-                                ["width"] = entity.Width,
-                                ["height"] = entity.Height,
-                                ["x"] = entity.X,
-                                ["y"] = entity.Y
-                            }
-                        };
-
-                        if (entity.Nodes.Count > 0) {
-                            // here we do a little crime and throw a list in an Element
-                            // this is ok because MarshallToTable understands it, but you generally shouldn't do this!
-                            //  - L
-                            elem.Attributes["nodes"] = entity.Nodes.Select(node =>
-                                new BinaryPacker.Element {
-                                    Attributes = new() {
-                                        ["x"] = node.X,
-                                        ["y"] = node.Y
-                                    }
-                                }).ToList();
-                        }
-
-                        entity.SaveAttrs(elem);
-                        clipboard.Append(CopyPaste.MarshallToTable(elem)).Append(",\n");
-                    }
-                    clipboard.Append("}");
-                    CopyPaste.Clipboard = clipboard.ToString();
+                    CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedEntities.Select(x=>x.Entity));
                 } else if (MInput.Keyboard.Pressed(Keys.V)) {
                     try {
-                        List<(EntityData data, bool trigger)> entities = CopyPaste.MarshallFromTable(CopyPaste.Clipboard);
+                        List<(EntityData data, bool trigger)> entities = CopyPaste.PasteEntities(CopyPaste.Clipboard);
                         foreach (var entity in entities) {
                             Entity e = Entity.TryCreate(Editor.SelectedRoom, entity.data, entity.trigger, out bool _);
                             e.SetPosition(Editor.Mouse.World);

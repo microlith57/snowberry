@@ -15,8 +15,44 @@ public static class CopyPaste{
         set => TextInput.SetClipboardText(value);
     }
 
+    public static string CopyEntities(IEnumerable<Entity> entities){
+        StringBuilder clipboard = new StringBuilder("{");
+        foreach(Entity entity in entities){
+            BinaryPacker.Element elem = new(){
+                Attributes = new() {
+                    ["_fromLayer"] = entity.IsTrigger ? "triggers" : "entities",
+                    ["_id"] = entity.EntityID,
+                    ["_name"] = entity.Name,
+                    ["_type"] = entity.IsTrigger ? "trigger" : "entity",
+                    ["width"] = entity.Width,
+                    ["height"] = entity.Height,
+                    ["x"] = entity.X,
+                    ["y"] = entity.Y
+                }
+            };
+
+            if(entity.Nodes.Count > 0){
+                // here we do a little crime and throw a list in an Element
+                // this is ok because MarshallToTable understands it, but you generally shouldn't do this!
+                //  - L
+                elem.Attributes["nodes"] = entity.Nodes.Select(node =>
+                    new BinaryPacker.Element{
+                        Attributes = new(){
+                            ["x"] = node.X,
+                            ["y"] = node.Y
+                        }
+                    }).ToList();
+            }
+
+            entity.SaveAttrs(elem);
+            clipboard.Append(MarshallToTable(elem)).Append(",\n");
+        }
+        clipboard.Append("}");
+        return clipboard.ToString();
+    }
+
     // for Copy, straightforwardly printing entity data
-    public static string MarshallToTable(BinaryPacker.Element e){
+    private static string MarshallToTable(BinaryPacker.Element e){
         if(e.Attributes == null)
             return "{}";
 
@@ -42,7 +78,7 @@ public static class CopyPaste{
         return sb.ToString();
     }
 
-    public static List<(EntityData data, bool trigger)> MarshallFromTable(string table) =>
+    public static List<(EntityData data, bool trigger)> PasteEntities(string table) =>
         new TableParser(table).Parse();
 
     private class TableParser{
