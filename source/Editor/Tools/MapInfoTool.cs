@@ -12,7 +12,7 @@ public class MapInfoTool : Tool {
 
     public override UIElement CreatePanel(int height){
         var ret = new UIElement{
-            Width = 160,
+            Width = 220,
             Height = height,
             GrabsClick = true,
             GrabsScroll = true,
