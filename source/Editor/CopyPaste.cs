@@ -80,7 +80,8 @@ public static class CopyPaste{
         private (EntityData data, bool trigger) parseEntity(){
             expect("{");
             EntityData data = new(){
-                Values = new()
+                Values = new(),
+                Nodes = new Vector2[0]
             };
             bool isTrigger = false;
 
@@ -150,7 +151,7 @@ public static class CopyPaste{
             }
 
             string kw;
-            if(rest.StartsWith(kw = "true") || rest.StartsWith(kw = "false") || rest.StartsWith(kw = "nil")){
+            if(rest.StartsWith(kw = "true", StringComparison.InvariantCultureIgnoreCase) || rest.StartsWith(kw = "false", StringComparison.InvariantCultureIgnoreCase) || rest.StartsWith(kw = "nil", StringComparison.InvariantCultureIgnoreCase)){
                 rest = rest.Substring(kw.Length);
                 if(char.IsLetter(rest.First()))
                     throw new ArgumentException("Failed to paste, found a letter at the end of a keyword value");
@@ -196,6 +197,6 @@ public static class CopyPaste{
     }
 }
 
-internal static class ParseExt {
+internal static class ParseExt{
     public static string IntoString(this IEnumerable<char> chars) => new(chars.ToArray());
 }
