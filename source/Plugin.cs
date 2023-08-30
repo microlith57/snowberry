@@ -73,6 +73,8 @@ public abstract class Plugin {
             return raw[0];
         if(targetType == typeof(Tileset))
             return Tileset.ByKey(raw[0], false);
+        if(targetType == typeof(bool))
+            return raw.Equals("true", StringComparison.InvariantCultureIgnoreCase);
 
         return raw;
     }

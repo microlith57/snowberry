@@ -92,7 +92,7 @@ public static class CopyPaste{
                 // parse nodes differently
                 if(name == "nodes")
                     data.Nodes = parseNodes();
-                else {
+                else{
                     // check special names
                     var v = parseValue();
                     if(name == "_type")
@@ -165,7 +165,7 @@ public static class CopyPaste{
             // comma separated list of tiny tables
             List<Vector2> values = new();
             expect("{");
-            while(!rest.StartsWith("}")) {
+            while(!rest.StartsWith("}")){
                 int x = 0, y = 0;
                 expect("{");
                 while(!rest.StartsWith("}")){
@@ -176,12 +176,15 @@ public static class CopyPaste{
                         x = Convert.ToInt32(v);
                     else if(id == "y")
                         y = Convert.ToInt32(v);
+                    if(rest.StartsWith(","))
+                        expect(",");
                 }
                 expect("}");
                 values.Add(new(x, y));
                 if(rest.StartsWith(","))
                     expect(",");
             }
+            expect("}");
 
             return values.ToArray();
         }
