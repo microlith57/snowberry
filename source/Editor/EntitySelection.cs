@@ -6,16 +6,16 @@ namespace Snowberry.Editor;
 
 public class EntitySelection {
     public class Selection {
-        public int Index;
-        public Entity Entity;
+        public readonly int Index;
+        private readonly Entity entity;
 
         public Selection(Entity entity, int i) {
             Index = i;
-            Entity = entity;
+            this.entity = entity;
         }
 
         // -1 = entity itself
-        public Rectangle Rect => Entity.SelectionRectangles[Index + 1];
+        public Rectangle Rect => entity.SelectionRectangles[Index + 1];
     }
 
     public readonly Entity Entity;
@@ -52,6 +52,10 @@ public class EntitySelection {
 
     public void SetHeight(int height) {
         Entity.SetHeight(height);
+    }
+
+    public void RemoveSelf() {
+        Entity.Room.RemoveEntity(Entity);
     }
 
     public override bool Equals(object obj) {

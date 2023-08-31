@@ -77,9 +77,9 @@ public class SelectionTool : Tool {
             // double click -> select all of type
             if (Editor.Mouse.IsDoubleClick) {
                 // first get everything under the mouse
-                Editor.SelectedEntities = Editor.SelectedRoom.GetSelectedEntities(new Rectangle(mouse.X, mouse.Y, 1, 1), selectEntities, selectTriggers);
+                Editor.SelectedEntities = Editor.SelectedRoom.GetSelectedEntities(Editor.Mouse.World.ToRect(), selectEntities, selectTriggers);
                 // then get all types of those entities
-                HashSet<string> entityTypes = new(Editor.SelectedEntities.SelectMany(x => x.Selections).Select(x => x.Entity.Name));
+                HashSet<string> entityTypes = new(Editor.SelectedEntities.Select(x => x.Entity.Name));
                 // clear the current selection
                 Editor.SelectedEntities = new();
                 // add back all entities of the same type
@@ -152,10 +152,8 @@ public class SelectionTool : Tool {
             bool ctrl = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
             if (MInput.Keyboard.Check(Keys.Delete)) { // Del to delete entities
                 foreach (var item in Editor.SelectedEntities) {
+                    item.RemoveSelf();
                     refreshPanel = true;
-                    var room = item.Entity.Room;
-                    room.MarkEntityDirty(item.Entity);
-                    room.RemoveEntity(item.Entity);
                 }
 
                 Editor.SelectedEntities.Clear();
@@ -287,11 +285,8 @@ public class SelectionTool : Tool {
         // list patterns would be nice here...
         if (Editor.SelectedEntities != null && Editor.SelectedEntities.Count == 1) {
             EntitySelection selection = Editor.SelectedEntities[0];
-            if (selection.Selections.Count == 1) {
-                var rect = selection.Selections[0];
-                if (rect.Index == -1)
-                    return rect.Entity;
-            }
+            if (selection.Selections.Count == 1 && selection.Selections[0].Index == -1)
+                return selection.Entity;
         }
 
         return null;
