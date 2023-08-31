@@ -114,7 +114,7 @@ public class SelectionTool : Tool {
                         resizingY = solo.MinHeight > -1 && (Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop);
                         oldEntityBounds = solo.Bounds;
                     } else if (resizingX || resizingY) {
-                        var wSnapped = (Editor.Mouse.World / 8).Round() * 8;
+                        var wSnapped = Editor.Mouse.World.RoundTo(8);
                         if (resizingX) {
                             // compare against the opposite edge
                             solo.SetWidth(Math.Max((int)Math.Round((fromLeft ? oldEntityBounds.Right - world.X : world.X - solo.X) / 8f) * 8, solo.MinWidth));
@@ -135,8 +135,8 @@ public class SelectionTool : Tool {
 
                 // otherwise, move
                 bool noSnap = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
-                Vector2 worldSnapped = noSnap ? Editor.Mouse.World : (Editor.Mouse.World / 8).Round() * 8;
-                Vector2 worldLastSnapped = noSnap ? Editor.Mouse.WorldLast : (Editor.Mouse.WorldLast / 8).Round() * 8;
+                Vector2 worldSnapped = noSnap ? Editor.Mouse.World : Editor.Mouse.World.RoundTo(8);
+                Vector2 worldLastSnapped = noSnap ? Editor.Mouse.WorldLast : Editor.Mouse.WorldLast.RoundTo(8);
                 Vector2 move = worldSnapped - worldLastSnapped;
                 foreach (EntitySelection s in Editor.SelectedEntities)
                     s.Move(move);
@@ -293,8 +293,8 @@ public class SelectionTool : Tool {
     }
 
     private static void AdjustPastedEntities() {
-        Rectangle cover = CoveringRect(toPaste.Select(e => e.Bounds).Concat(toPaste.SelectMany(e => e.Nodes.Select(n => new Rectangle((int)n.X, (int)n.Y, 0, 0)))).ToList());
-        Vector2 offset = Editor.Mouse.World - cover.Center.ToVector2();
+        Rectangle cover = CoveringRect(toPaste.Select(e => e.Bounds).Concat(toPaste.SelectMany(e => e.Nodes.Select(Util.ToRect))).ToList());
+        Vector2 offset = (Editor.Mouse.World - cover.Center.ToVector2()).RoundTo(8);
         foreach(Entity e in toPaste){
             e.Move(offset);
             for (int i = 0; i < e.Nodes.Count; i++)

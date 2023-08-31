@@ -140,11 +140,11 @@ public class PlacementTool : Tool {
 
     private void UpdateEntity(Entity e) {
         var ctrl = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
-        Vector2 mpos = ctrl ? Editor.Mouse.World : (Editor.Mouse.World / 8).Round() * 8;
+        Vector2 mpos = ctrl ? Editor.Mouse.World : Editor.Mouse.World.RoundTo(8);
         UpdateSize(e, mpos);
 
         if (lastPress != null) {
-            Vector2 cPress = ctrl ? lastPress.Value : (lastPress.Value / 8).Round() * 8;
+            Vector2 cPress = ctrl ? lastPress.Value : lastPress.Value.RoundTo(8);
             // moved >=16 pixels -> start dragging nodes
             if ((mpos - cPress).LengthSquared() >= 16 * 16) {
                 startedDrag = true;
@@ -168,7 +168,7 @@ public class PlacementTool : Tool {
         while (e.Nodes.Count < e.MinNodes) {
             Vector2 ePosition;
             if (e.MinWidth == -1 && e.MinHeight == -1 && lastPress != null && startedDrag) {
-                Vector2 cPress = ctrl ? lastPress.Value : (lastPress.Value / 8).Round() * 8;
+                Vector2 cPress = ctrl ? lastPress.Value : lastPress.Value.RoundTo(8);
                 // distribute nodes along line
                 float fraction = (e.Nodes.Count + 1) / (float)e.MinNodes;
                 ePosition = cPress + (mpos - cPress) * fraction;
@@ -185,7 +185,7 @@ public class PlacementTool : Tool {
 
     private void UpdateSize(Entity e, Vector2 mpos) {
         if (lastPress != null && (MInput.Mouse.CheckLeftButton || MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedLeftButton || MInput.Mouse.ReleasedRightButton)) {
-            Vector2 cPress = (lastPress.Value / 8).Round() * 8;
+            Vector2 cPress = lastPress.Value.RoundTo(8);
             if (e.MinWidth > -1) {
                 if (mpos.X < cPress.X) {
                     e.SetWidth((int)Math.Round((cPress.X - mpos.X) / 8f) * 8 + e.MinWidth);

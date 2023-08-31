@@ -73,4 +73,13 @@ public static class Util {
 
     public static Rectangle Multiply(this Rectangle r, int factor) =>
         new(r.X * factor, r.Y * factor, r.Width * factor, r.Height * factor);
+
+    public static Point ToPoint(this Vector2 v) =>
+        new((int)v.X, (int)v.Y);
+
+    public static Rectangle ToRect(this Vector2 v) =>
+        new((int)v.X, (int)v.Y, 0, 0);
+
+    public static Vector2 RoundTo(this Vector2 v, float interval) =>
+        (v / interval).Round() * interval;
 }
