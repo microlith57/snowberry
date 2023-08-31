@@ -195,7 +195,7 @@ public class SelectionTool : Tool {
                 if (MInput.Keyboard.Pressed(Keys.A)) { // Ctrl-A to select all
                     // select all
                     Editor.SelectedEntities = new();
-                    foreach (var entity in Editor.SelectedRoom.AllEntities)
+                    foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => (selectEntities && !entity.IsTrigger) || (selectTriggers && entity.IsTrigger)))
                         if (entity.SelectionRectangles is { Length: > 0 } rs)
                             Editor.SelectedEntities.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.Selection(entity, i - 1)).ToList()));
                     refreshPanel = true;
