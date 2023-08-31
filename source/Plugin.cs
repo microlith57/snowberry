@@ -69,7 +69,7 @@ public abstract class Plugin {
         if(targetType == typeof(bool))
             return raw.Equals("true", StringComparison.InvariantCultureIgnoreCase);
 
-        return raw;
+        return Convert.ChangeType(raw, targetType);
     }
 
     protected static object ObjectToStr(object obj) {
