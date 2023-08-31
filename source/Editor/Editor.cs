@@ -137,10 +137,10 @@ public class Editor : Scene {
     private readonly UIElement ui = new();
     public static UIMessage Message { get; private set; }
 
-    internal static Rectangle? Selection;
+    internal static Rectangle? SelectionInProgress;
     internal static Room SelectedRoom;
     internal static int SelectedFillerIndex = -1;
-    internal static List<EntitySelection> SelectedEntities;
+    internal static List<Selection> SelectedObjects;
 
     public UIToolbar Toolbar;
     public UIElement ToolPanel;
@@ -427,7 +427,7 @@ public class Editor : Scene {
         ToolPanel.Position = new Vector2(uiBuffer.Width - ToolPanel.Width, Toolbar.Height);
         ui.Add(ToolPanel);
 
-        SelectedEntities = null;
+        SelectedObjects = null;
     }
 
     public override void Render() {

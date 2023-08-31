@@ -184,30 +184,46 @@ public class Room {
         bgTiles = GFX.BGAutotiler.GenerateMap(bgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
     }
 
-    internal List<EntitySelection> GetSelectedEntities(Rectangle rect, bool selectEntities, bool selectTriggers) {
-        List<EntitySelection> result = new List<EntitySelection>();
+    internal List<Selection> GetSelectedObjects(Rectangle rect, bool entities, bool triggers, bool fgDecals, bool bgDecals) {
+        List<Selection> result = new List<Selection>();
 
-        foreach (Entity entity in AllEntities) {
-            if ((!selectTriggers && entity.IsTrigger) || (!selectEntities && !entity.IsTrigger)) {
-                continue;
-            }
+        if (entities || triggers)
+            foreach (Entity entity in AllEntities) {
+                if ((!triggers && entity.IsTrigger) || (!entities && !entity.IsTrigger))
+                    continue;
 
-            var rects = entity.SelectionRectangles;
-            if (rects is { Length: > 0 }) {
-                List<EntitySelection.Selection> selection = new List<EntitySelection.Selection>();
-                bool wasSelected = false;
-                for (int i = 0; i < rects.Length; i++) {
-                    Rectangle r = rects[i];
-                    if (rect.Intersects(r)) {
-                        selection.Add(new EntitySelection.Selection(entity, i - 1));
-                        wasSelected = true;
+                var rects = entity.SelectionRectangles;
+                if (rects is { Length: > 0 }) {
+                    List<EntitySelection.SelectionRect> selection = new List<EntitySelection.SelectionRect>();
+                    bool wasSelected = false;
+                    for (int i = 0; i < rects.Length; i++) {
+                        Rectangle r = rects[i];
+                        if (rect.Intersects(r)) {
+                            selection.Add(new EntitySelection.SelectionRect(entity, i - 1));
+                            wasSelected = true;
+                        }
                     }
-                }
 
-                if (wasSelected)
-                    result.Add(new EntitySelection(entity, selection));
+                    if (wasSelected)
+                        result.Add(new EntitySelection(entity, selection));
+                }
             }
-        }
+
+        if(fgDecals)
+            result.AddRange(
+                from fgDecal
+                in FgDecals
+                where fgDecal.Bounds.Intersects(rect)
+                select new DecalSelection(fgDecal, true)
+            );
+
+        if(bgDecals)
+            result.AddRange(
+                from bgDecal
+                in BgDecals
+                where bgDecal.Bounds.Intersects(rect)
+                select new DecalSelection(bgDecal, false)
+            );
 
         return result;
     }
@@ -270,11 +286,11 @@ public class Room {
             trigger.Render();
 
         if (this == Editor.SelectedRoom) {
-            if (Editor.Selection.HasValue)
-                Draw.Rect(Editor.Selection.Value, Color.Blue * 0.25f);
-            if (Editor.SelectedEntities != null)
-                foreach (var selection in Editor.SelectedEntities.SelectMany(s => s.Selections))
-                    Draw.Rect(selection.Rect, Color.Blue * 0.25f);
+            if (Editor.SelectionInProgress.HasValue)
+                Draw.Rect(Editor.SelectionInProgress.Value, Color.Blue * 0.25f);
+            if (Editor.SelectedObjects != null)
+                foreach (var rect in Editor.SelectedObjects.SelectMany(s => s.Rectangles()))
+                    Draw.Rect(rect, Color.Blue * 0.25f);
         }
 
         DirtyTrackedEntities.Clear();
@@ -291,8 +307,8 @@ public class Room {
         foreach (Entity trigger in Triggers)
             trigger.HQRender();
         // "See IDs" bind
-        if (Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.S) && this == Editor.SelectedRoom && Editor.SelectedEntities != null) {
-            foreach (EntitySelection s in Editor.SelectedEntities) {
+        if (Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.S) && this == Editor.SelectedRoom && Editor.SelectedObjects != null) {
+            foreach (EntitySelection s in Editor.SelectedObjects.OfType<EntitySelection>()) {
                 Rectangle mainRect = s.Entity.SelectionRectangles[0];
                 string str = $"#{s.Entity.EntityID}";
                 Vector2 size = Fonts.Regular.Measure(str) * 0.5f;

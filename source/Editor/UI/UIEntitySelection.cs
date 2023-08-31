@@ -10,11 +10,11 @@ public class UIEntitySelection : UIScrollPane{
         GrabsClick = true;
     }
 
-    public void Display(List<EntitySelection> selection){
+    public void Display(List<Selection> selection){
         if(selection != null){
             Clear();
             int y = 0;
-            foreach (EntitySelection s in selection) {
+            foreach (Selection s in selection) {
                 UIElement entry = AddEntry(s);
                 entry.Position.Y = y;
                 y += entry.Height + 8;
@@ -22,23 +22,28 @@ public class UIEntitySelection : UIScrollPane{
         }
     }
 
-    private UIElement AddEntry(EntitySelection s){
-        UIRibbon name = new UIRibbon(s.Entity.Name, 8, 8, true, false) {
+    private UIElement AddEntry(Selection s){
+        UIRibbon name = new UIRibbon(s.Name(), 8, 8, true, false) {
             BG = Util.Colors.DarkGray,
-            BGAccent = s.Entity.Info.Module.Color
+            BGAccent = Util.Colors.White
         };
         name.Position.X += Width - name.Width;
+        UIElement entry = name;
 
-        UILabel id = new UILabel($"#{s.Entity.EntityID}") {
-            FG = Util.Colors.White * 0.5f
-        };
-        id.Position.X = name.Position.X - id.Width - 4;
+        if(s is EntitySelection es) {
+            name.BGAccent = es.Entity.Info.Module.Color;
 
-        UIPluginOptionList options = new UIPluginOptionList(s.Entity) {
-            Position = new Vector2(3, name.Height + 3)
-        };
+            UILabel id = new UILabel($"#{es.Entity.EntityID}") {
+                FG = Util.Colors.White * 0.5f
+            };
+            id.Position.X = name.Position.X - id.Width - 4;
 
-        UIElement entry = Regroup(id, name, options);
+            UIPluginOptionList options = new UIPluginOptionList(es.Entity) {
+                Position = new Vector2(3, name.Height + 3)
+            };
+
+            entry = Regroup(id, name, options);
+        }
         Add(entry);
         return entry;
     }

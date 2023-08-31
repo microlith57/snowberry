@@ -10,7 +10,6 @@ public abstract class Tool{
 
     public static IList<Tool> Tools = new List<Tool> {
         new SelectionTool(),
-        new DecalSelectionTool(),
         new TileBrushTool(),
         new RoomTool(),
         new PlacementTool(),

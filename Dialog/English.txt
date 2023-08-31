@@ -35,9 +35,7 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_EDITOR_EXPORT_NEW=				this map doesn't have a name yet! pick a filename
 	SNOWBERRY_EDITOR_EXPORT_UNSAVEABLE=			this map came from a zip file or vanilla, and can't be saved over. pick a filename to save it your Mods folder
 
-    SNOWBERRY_EDITOR_TOOL_ENTITYSELECT=         entity select
-
-    SNOWBERRY_EDITOR_TOOL_DECALSELECT=          decal select
+    SNOWBERRY_EDITOR_TOOL_SELECT=  	            select
 
     SNOWBERRY_EDITOR_TOOL_TILEBRUSH=            tile brush
 
