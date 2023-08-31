@@ -20,6 +20,10 @@ public class SelectionTool : Tool {
     private static bool resizingX, resizingY, fromLeft, fromTop;
     private static Rectangle oldEntityBounds;
 
+    // paste preview
+    private static bool pasting = false;
+    private static List<Entity> toPaste;
+
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITYSELECT");
 
     public override UIElement CreatePanel(int height) {
@@ -50,6 +54,19 @@ public class SelectionTool : Tool {
     public override void Update(bool canClick) {
         var editor = Editor.Instance;
         bool refreshPanel = false;
+
+        if (pasting) {
+            AdjustPastedEntities();
+
+            if(MInput.Keyboard.Released(Keys.V)) {
+                if (Editor.SelectedRoom != null)
+                    foreach (Entity e in toPaste)
+                        Editor.SelectedRoom.AddEntity(e);
+
+                pasting = false;
+                toPaste.Clear();
+            }
+        }
 
         if (MInput.Mouse.CheckLeftButton && canClick) {
             Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
@@ -154,10 +171,12 @@ public class SelectionTool : Tool {
                         Editor.SelectedEntities.Add(new EntitySelection(e, new() { new(e, newNodeIdx) }));
                     }
                 }
-            } else if (MInput.Keyboard.Pressed(Keys.Escape)) { // Esc to deselect all
+            } else if (MInput.Keyboard.Pressed(Keys.Escape)) { // Esc to deselect all & cancel paste
                 if (Editor.SelectedEntities.Count > 0)
                     refreshPanel = true;
                 Editor.SelectedEntities.Clear();
+                pasting = false;
+                toPaste = null;
             } else if (MInput.Keyboard.Pressed(Keys.Up)) { // Up/Down/Left/Right to nudge entities
                 foreach (EntitySelection es in Editor.SelectedEntities)
                     es.Move(new(0, ctrl ? -1 : -8));
@@ -184,16 +203,11 @@ public class SelectionTool : Tool {
                     try {
                         List<(EntityData data, bool trigger)> entities = CopyPaste.PasteEntities(CopyPaste.Clipboard);
                         if (entities.Count != 0) {
-                            // find covering rectangle
-                            Rectangle r = entities.Aggregate(entities[0].data.Bounds(), (current, u) => Rectangle.Union(current, u.data.Bounds()));
-                            foreach (var entity in entities) {
-                                Entity e = Entity.TryCreate(Editor.SelectedRoom, entity.data, entity.trigger, out bool _);
-                                Vector2 offset = Editor.Mouse.World - r.Center.ToVector2() - Editor.SelectedRoom.Position * 8;
-                                e.Move(offset);
-                                for (int i = 0; i < e.Nodes.Count; i++)
-                                    e.MoveNode(i, offset);
-                                Editor.SelectedRoom.AddEntity(e);
-                            }
+                            pasting = true;
+                            toPaste = new(entities.Count);
+                            foreach (var entity in entities)
+                                toPaste.Add(Entity.TryCreate(Editor.SelectedRoom, entity.data, entity.trigger, out bool _));
+                            AdjustPastedEntities();
                         }
                     } catch (ArgumentException ae) {
                         Snowberry.LogInfo(ae.Message);
@@ -217,6 +231,10 @@ public class SelectionTool : Tool {
                         Draw.Rect(s.Rect, Color.Blue * 0.15f);
             if (MInput.Mouse.CheckLeftButton && !canSelect && (resizingX || resizingY) && GetSoloEntity() is {} nonNull)
                 DrawUtil.DrawGuidelines(nonNull.Bounds, Color.White);
+
+            if (pasting)
+                foreach (Entity e in toPaste)
+                    e.Render();
         }
     }
 
@@ -271,4 +289,17 @@ public class SelectionTool : Tool {
 
         return null;
     }
+
+    private static void AdjustPastedEntities() {
+        Rectangle cover = CoveringRect(toPaste.Select(e => e.Bounds).Concat(toPaste.SelectMany(e => e.Nodes.Select(n => new Rectangle((int)n.X, (int)n.Y, 0, 0)))).ToList());
+        Vector2 offset = Editor.Mouse.World - cover.Center.ToVector2();
+        foreach(Entity e in toPaste){
+            e.Move(offset);
+            for (int i = 0; i < e.Nodes.Count; i++)
+                e.MoveNode(i, offset);
+        }
+    }
+
+    private static Rectangle CoveringRect(IReadOnlyList<Rectangle> rects) =>
+        rects.Aggregate(rects[0], Rectangle.Union);
 }

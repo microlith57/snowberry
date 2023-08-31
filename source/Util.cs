@@ -73,12 +73,4 @@ public static class Util {
 
     public static Rectangle Multiply(this Rectangle r, int factor) =>
         new(r.X * factor, r.Y * factor, r.Width * factor, r.Height * factor);
-
-    public static Rectangle Bounds(this Celeste.EntityData data) =>
-        data.Nodes.Aggregate(
-            // position and size
-            (Rectangle)new((int)data.Position.X, (int)data.Position.Y, data.Width, data.Height),
-            // simplifying assumption: all nodes have 0 width/height
-            // which would be incorrect for e.g. zip movers, but correct for e.g. rumble triggers, and can only be done case-by-case
-            (current, node) => Rectangle.Union(current, new((int)node.X, (int)node.Y, 0, 0)));
 }
