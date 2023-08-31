@@ -58,10 +58,12 @@ public class SelectionTool : Tool {
         if (pasting) {
             AdjustPastedEntities();
 
-            if(MInput.Keyboard.Released(Keys.V)) {
+            if (MInput.Keyboard.Released(Keys.V)) {
                 if (Editor.SelectedRoom != null)
-                    foreach (Entity e in toPaste)
+                    foreach (Entity e in toPaste) {
+                        e.EntityID = PlacementTool.AllocateId();
                         Editor.SelectedRoom.AddEntity(e);
+                    }
 
                 pasting = false;
                 toPaste.Clear();

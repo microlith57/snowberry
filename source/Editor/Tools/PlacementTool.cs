@@ -89,15 +89,8 @@ public class PlacementTool : Tool {
         if ((MInput.Mouse.ReleasedLeftButton || (middlePan && MInput.Mouse.ReleasedRightButton)) && canClick && selection != null && Editor.SelectedRoom != null) {
             Entity toAdd = selection.Build(Editor.SelectedRoom);
             UpdateEntity(toAdd);
-            // TODO: find lowest unoccupied ID
-            int highestID = 0;
-            foreach (var item in Editor.Instance.Map.Rooms.SelectMany(k => k.AllEntities)) {
-                if (item.EntityID > highestID)
-                    highestID = item.EntityID;
-            }
-
             if (toAdd.Name != "player")
-                toAdd.EntityID = highestID + 1;
+                toAdd.EntityID = AllocateId();
             Editor.SelectedRoom.AddEntity(toAdd);
         }
 
@@ -128,6 +121,12 @@ public class PlacementTool : Tool {
             }
         }
     }
+
+    public static int AllocateId() =>
+        // TODO: find lowest unoccupied ID
+        Editor.Instance.Map.Rooms.SelectMany(k => k.AllEntities)
+            .Select(item => item.EntityID)
+            .Concat(new[]{ 0 }).Max() + 1;
 
     private void RefreshPreview(bool changedPlacement) {
         bool middlePan = Snowberry.Settings.MiddleClickPan;
