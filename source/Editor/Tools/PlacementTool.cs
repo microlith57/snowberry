@@ -202,7 +202,7 @@ public class PlacementTool : Tool {
             }
         } else {
             e.SetWidth(e.MinWidth != -1 ? e.MinWidth : 0);
-            e.SetHeight(e.MinWidth != -1 ? e.MinWidth : 0);
+            e.SetHeight(e.MinHeight != -1 ? e.MinHeight : 0);
         }
     }
 
