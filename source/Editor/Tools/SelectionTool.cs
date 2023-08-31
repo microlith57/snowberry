@@ -201,6 +201,12 @@ public class SelectionTool : Tool {
                     foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => (selectEntities && !entity.IsTrigger) || (selectTriggers && entity.IsTrigger)))
                         if (entity.SelectionRectangles is { Length: > 0 } rs)
                             Editor.SelectedObjects.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.SelectionRect(entity, i - 1)).ToList()));
+                    if (selectFgDecals)
+                        foreach (Decal d in Editor.SelectedRoom.FgDecals)
+                            Editor.SelectedObjects.Add(new DecalSelection(d, true));
+                    if (selectBgDecals)
+                        foreach (Decal d in Editor.SelectedRoom.BgDecals)
+                            Editor.SelectedObjects.Add(new DecalSelection(d, false));
                     refreshPanel = true;
                 } else if (MInput.Keyboard.Pressed(Keys.C)) { // Ctrl-C to copy
                     CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity));
