@@ -227,12 +227,17 @@ public class SelectionTool : Tool {
     public override void RenderWorldSpace() {
         base.RenderWorldSpace();
         if (Editor.SelectedRoom != null) {
-            foreach (var item in Editor.SelectedRoom.GetSelectedEntities(new Rectangle((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y, 0, 0), selectEntities, selectTriggers))
+            foreach (var item in Editor.SelectedRoom.GetSelectedEntities(Editor.Mouse.World.ToRect(), selectEntities, selectTriggers))
                 if (Editor.SelectedEntities == null || !Editor.SelectedEntities.Contains(item))
                     foreach (var s in item.Selections)
                         Draw.Rect(s.Rect, Color.Blue * 0.15f);
+
             if (MInput.Mouse.CheckLeftButton && !canSelect && (resizingX || resizingY) && GetSoloEntity() is {} nonNull)
                 DrawUtil.DrawGuidelines(nonNull.Bounds, Color.White);
+
+            if (Editor.SelectedEntities != null && Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.D))
+                foreach (EntitySelection es in Editor.SelectedEntities)
+                    DrawUtil.DrawGuidelines(es.Entity.Bounds, Color.White);
 
             if (pasting)
                 foreach (Entity e in toPaste)

@@ -211,6 +211,8 @@ public class PlacementTool : Tool {
         if (preview != null) {
             Calc.PushRandom(preview.GetHashCode());
             preview.Render();
+            if (lastPress != null)
+                DrawUtil.DrawGuidelines(preview.Bounds, Color.White);
             Calc.PopRandom();
         }
     }

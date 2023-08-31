@@ -161,7 +161,7 @@ public class RoomTool : Tool {
             DrawUtil.DrawGuidelines(PendingRoom.Value, color);
         }
 
-        bool viewRoomSize = Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.S);
+        bool viewRoomSize = Editor.Instance.CanTypeShortcut() && MInput.Keyboard.Check(Keys.D);
         if (Editor.SelectedRoom != null && (resizingX || resizingY || viewRoomSize))
             DrawUtil.DrawGuidelines(Editor.SelectedRoom.Bounds.Multiply(8), Color.White);
         else if (Editor.SelectedFillerIndex != -1 && viewRoomSize) {
