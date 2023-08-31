@@ -14,7 +14,7 @@ namespace Snowberry.Editor.Tools;
 public class SelectionTool : Tool {
     private static bool canSelect;
     private static bool selectEntities = true, selectTriggers = true, selectFgDecals = false, selectBgDecals = false;
-    private static UIEntitySelection selectionPanel;
+    private static UISelectionPane selectionPanel;
 
     // entity resizing
     private static bool resizingX, resizingY, fromLeft, fromTop;
@@ -35,7 +35,7 @@ public class SelectionTool : Tool {
             Height = height
         };
 
-        panel.Add(selectionPanel = new UIEntitySelection {
+        panel.Add(selectionPanel = new UISelectionPane {
             Width = 210,
             Height = height - 30,
             Background = null

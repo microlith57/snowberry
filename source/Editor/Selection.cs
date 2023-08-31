@@ -9,6 +9,8 @@ public abstract class Selection {
     // e.g. entity type or decal path, should be unique
     public abstract string Name();
 
+    public abstract Color Accent();
+
     public abstract bool Contains(Point p);
 
     public abstract void Move(Vector2 amount);
@@ -42,6 +44,8 @@ public class EntitySelection : Selection {
     }
 
     public override string Name() => Entity.Name;
+
+    public override Color Accent() => Entity.Info.Module.Color;
 
     public override bool Contains(Point p) =>
         Selections.Any(s => s.Rect.Contains(p));
@@ -87,6 +91,8 @@ public class DecalSelection : Selection {
     }
 
     public override string Name() => Decal.Texture;
+
+    public override Color Accent() => Color.White;
 
     public override bool Contains(Point p) => Decal.Bounds.Contains(p);
 
