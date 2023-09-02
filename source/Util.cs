@@ -88,4 +88,10 @@ public static class Util {
 
     public static Vector2 RoundTo(this Vector2 v, float interval) =>
         (v / interval).Round() * interval;
+
+    public static string Substitute(this string s, params object[] values) {
+        for (int i = 0; i < values.Length; i++)
+            s = s.Replace($"{{{i}}}", values[i].ToString());
+        return s;
+    }
 }

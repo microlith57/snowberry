@@ -213,6 +213,21 @@ public class UIElement {
         return new Vector2(Bounds.X, Bounds.Y);
     }
 
+    public void CalculateBounds() {
+        // based on the bounds of children
+        if (Children.Count > 0) {
+            int right = int.MinValue, bottom = int.MinValue;
+
+            foreach (var bounds in Children.Select(el => el.Bounds)) {
+                if (bounds.Right > right) right = bounds.Right;
+                if (bounds.Bottom > bottom) bottom = bounds.Bottom;
+            }
+
+            Width = right;
+            Height = bottom;
+        }
+    }
+
     public static UIElement Regroup(params UIElement[] elems) {
         UIElement group = new UIElement();
         RegroupIn(group, elems);
@@ -220,7 +235,7 @@ public class UIElement {
     }
 
     public static void RegroupIn<T>(T group, params UIElement[] elems) where T : UIElement {
-        if (elems != null && elems.Length > 0) {
+        if (elems is { Length: > 0 }) {
             int ax = int.MaxValue, ay = int.MaxValue;
             int bx = int.MinValue, by = int.MinValue;
 

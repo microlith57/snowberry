@@ -98,29 +98,29 @@ public class UIPluginOptionList : UIElement {
         }
     }
 
-    public static UIOption StringOption(string name, string value, Action<string> onChange) {
-        var checkbox = new UITextField(Fonts.Regular, 80, value) {
+    public static UIOption StringOption(string name, string value, Action<string> onChange, int width = 80) {
+        var checkbox = new UITextField(Fonts.Regular, width, value) {
             OnInputChange = str => onChange?.Invoke(str)
         };
         return new UIOption(name, checkbox);
     }
 
-    public static UIOption StringOption(string name, string value, Plugin plugin) {
-        var checkbox = new UITextField(Fonts.Regular, 80, value) {
+    public static UIOption StringOption(string name, string value, Plugin plugin, int width = 80) {
+        var checkbox = new UITextField(Fonts.Regular, width, value) {
             OnInputChange = str => plugin.Set(name, str)
         };
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
 
-    public static UIOption LiteralValueOption<T>(string name, string value, Action<T> onChange) {
-        var checkbox = new UIValueTextField<T>(Fonts.Regular, 80, value) {
+    public static UIOption LiteralValueOption<T>(string name, string value, Action<T> onChange, int width = 80) {
+        var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value) {
             OnValidInputChange = v => onChange?.Invoke(v)
         };
         return new UIOption(name, checkbox);
     }
 
-    public static UIOption LiteralValueOption<T>(string name, string value, Plugin plugin) {
-        var checkbox = new UIValueTextField<T>(Fonts.Regular, 80, value) {
+    public static UIOption LiteralValueOption<T>(string name, string value, Plugin plugin, int width = 80) {
+        var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value) {
             OnValidInputChange = v => plugin.Set(name, v)
         };
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));

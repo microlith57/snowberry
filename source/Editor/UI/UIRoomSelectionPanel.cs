@@ -1,4 +1,5 @@
-﻿using Celeste;
+﻿using System.Globalization;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.UI.Menus;
@@ -28,13 +29,13 @@ class UIRoomSelectionPanel : UIElement {
         if (Editor.SelectedRoom == null) {
             if (!RoomTool.PendingRoom.HasValue) {
                 if (Editor.SelectedFillerIndex != -1) {
-                    Add(label = new UILabel("Selected filler: " + Editor.SelectedFillerIndex) {
+                    Add(label = new UILabel(Dialog.Get("SNOWBERRY_EDITOR_ROOM_FILL_SELECTED_TITLE").Substitute(Editor.SelectedFillerIndex)) {
                         FG = Color.DarkKhaki,
                         Underline = true
                     });
                     label.Position = Vector2.UnitX * (Width / 2 - label.Width / 2);
 
-                    AddBelow(new UIButton("delete", Fonts.Regular, 4, 4) {
+                    AddBelow(new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_DELETE"), Fonts.Regular, 4, 4) {
                         FG = Color.Red,
                         HoveredFG = Color.Crimson,
                         PressedFG = Color.DarkRed,
@@ -45,7 +46,7 @@ class UIRoomSelectionPanel : UIElement {
                         }
                     }, new Vector2(4, 12));
                 } else {
-                    Add(label = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ROOMTOOL_NONE")) {
+                    Add(label = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_NONE_TITLE")) {
                         FG = Color.DarkKhaki,
                         Underline = true
                     });
@@ -55,7 +56,7 @@ class UIRoomSelectionPanel : UIElement {
                 return;
             }
 
-            Add(label = new UILabel("Create room") {
+            Add(label = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_CREATE_TITLE")) {
                 FG = Color.DarkKhaki,
                 Underline = true
             });
@@ -65,16 +66,16 @@ class UIRoomSelectionPanel : UIElement {
             UILabel newNameInvalid, newNameTaken;
             UIButton newRoom;
 
-            AddBelow(UIPluginOptionList.StringOption("name", newName, text => newName = text), offset);
+            AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_NAME"), newName, text => newName = text), offset);
 
-            AddBelow(newRoom = new UIButton("create room", Fonts.Regular, 2, 2) {
+            AddBelow(newRoom = new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_CREATE_ROOM"), Fonts.Regular, 2, 2) {
                 Position = new Vector2(4, 4),
             });
-            Add(newNameInvalid = new UILabel("invalid name") {
+            Add(newNameInvalid = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_INVALID_NAME")) {
                 Position = new Vector2(newRoom.Position.X + newRoom.Width + 5, newRoom.Position.Y + 3),
                 FG = Color.Transparent
             });
-            Add(newNameTaken = new UILabel("name already used") {
+            Add(newNameTaken = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_USED_NAME")) {
                 Position = new Vector2(newRoom.Position.X + newRoom.Width + 5, newRoom.Position.Y + 3),
                 FG = Color.Transparent
             });
@@ -96,7 +97,7 @@ class UIRoomSelectionPanel : UIElement {
                 }
             };
 
-            AddBelow(new UIButton("create filler", Fonts.Regular, 2, 2) {
+            AddBelow(new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_CREATE_FILLER"), Fonts.Regular, 2, 2) {
                 Position = new Vector2(4, 4),
                 OnPress = () => {
                     var b = RoomTool.PendingRoom.Value;
@@ -114,7 +115,7 @@ class UIRoomSelectionPanel : UIElement {
         int spacing = Fonts.Regular.LineHeight + 2;
         Room room = Editor.SelectedRoom;
 
-        Add(label = new UILabel("Selected room:") {
+        Add(label = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_SELECTED_TITLE")) {
             FG = Color.DarkKhaki,
             Underline = true
         });
@@ -124,16 +125,16 @@ class UIRoomSelectionPanel : UIElement {
         UILabel nameInvalid, nameTaken;
         UIButton updateName;
 
-        AddBelow(UIPluginOptionList.StringOption("name", room.Name, text => name = text), offset);
+        AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_NAME"), room.Name, text => name = text), offset);
 
-        AddBelow(updateName = new UIButton("update name", Fonts.Regular, 2, 2) {
+        AddBelow(updateName = new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_UPDATE_NAME"), Fonts.Regular, 2, 2) {
             Position = new Vector2(4, 4),
         });
-        Add(nameInvalid = new UILabel("invalid name") {
+        Add(nameInvalid = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_INVALID_NAME")) {
             Position = new Vector2(updateName.Position.X + updateName.Width + 5, updateName.Position.Y + 3),
             FG = Color.Transparent
         });
-        Add(nameTaken = new UILabel("name already used") {
+        Add(nameTaken = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_USED_NAME")) {
             Position = new Vector2(updateName.Position.X + updateName.Width + 5, updateName.Position.Y + 3),
             FG = Color.Transparent
         });
@@ -148,36 +149,40 @@ class UIRoomSelectionPanel : UIElement {
                 room.Name = name;
         };
 
-        AddBelow(new UILabel("music options :"), new Vector2(12, 12));
+        AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_MUSIC")), new Vector2(12, 12));
 
-        AddBelow(UIPluginOptionList.StringOption("music", room.Music, text => room.Music = text), offset);
-        AddBelow(UIPluginOptionList.StringOption("alt music", room.AltMusic, text => room.AltMusic = text), offset);
-        AddBelow(UIPluginOptionList.StringOption("ambience", room.Ambience, text => room.Ambience = text), offset);
+        AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_MUSIC"), room.Music, text => room.Music = text), offset);
+        AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_ALT_MUSIC"), room.AltMusic, text => room.AltMusic = text), offset);
+        AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_AMBIENCE"), room.Ambience, text => room.Ambience = text), offset);
 
-        AddBelow(UIPluginOptionList.LiteralValueOption<int>("music progress", room.MusicProgress.ToString(), prog => room.MusicProgress = prog), offset);
-        AddBelow(UIPluginOptionList.LiteralValueOption<int>("ambience progress", room.AmbienceProgress.ToString(), prog => room.AmbienceProgress = prog), offset);
+        AddBelow(UIPluginOptionList.LiteralValueOption<int>(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_MUSIC_PROG"), room.MusicProgress.ToString(), prog => room.MusicProgress = prog), offset);
+        AddBelow(UIPluginOptionList.LiteralValueOption<int>(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_AMBIENCE_PROG"), room.AmbienceProgress.ToString(), prog => room.AmbienceProgress = prog), offset);
 
-        AddBelow(new UILabel("music layers :"), new Vector2(12, 3));
-        AddBelow(UIPluginOptionList.BoolOption("layer 1", room.MusicLayers[0], val => room.MusicLayers[0] = val), offset);
-        AddBelow(UIPluginOptionList.BoolOption("layer 2", room.MusicLayers[1], val => room.MusicLayers[1] = val), offset);
-        AddBelow(UIPluginOptionList.BoolOption("layer 3", room.MusicLayers[2], val => room.MusicLayers[2] = val), offset);
-        AddBelow(UIPluginOptionList.BoolOption("layer 4", room.MusicLayers[3], val => room.MusicLayers[3] = val), offset);
+        Vector2 titleOffset = new Vector2(12, 8);
+        AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_MUSIC_LAYERS")), titleOffset);
+        UIElement layers = new();
+        for (int i = 0; i < 4; i++) {
+            var c = i;
+            layers.AddRight(UIPluginOptionList.BoolOption((c + 1).ToString(), room.MusicLayers[c], val => room.MusicLayers[c] = val), new(6, 0));
+        }
+        layers.CalculateBounds();
+        AddBelow(layers, offset - new Vector2(6, 0)); // the first checkbox is incorrectly offset right
 
-        AddBelow(new UILabel("camera offset :"), new Vector2(12, 0));
-        var cameraOffsetX = UIPluginOptionList.LiteralValueOption<float>("x", room.CameraOffset.X.ToString(), val => room.CameraOffset.X = val);
-        AddBelow(cameraOffsetX, offset);
-        var cameraOffsetY = UIPluginOptionList.LiteralValueOption<float>("y", room.CameraOffset.Y.ToString(), val => room.CameraOffset.Y = val);
-        cameraOffsetY.Position = new Vector2(cameraOffsetX.Position.X + cameraOffsetX.Width + 15, cameraOffsetX.Position.Y);
-        Add(cameraOffsetY);
+        AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_CAMERA_OFFSET")), titleOffset);
+        UIElement coords = new();
+        coords.AddRight(UIPluginOptionList.LiteralValueOption<float>("x", room.CameraOffset.X.ToString(CultureInfo.InvariantCulture), val => room.CameraOffset.X = val, width: 40), new(4, 0));
+        coords.AddRight(UIPluginOptionList.LiteralValueOption<float>("y", room.CameraOffset.Y.ToString(CultureInfo.InvariantCulture), val => room.CameraOffset.Y = val, width: 40), new(15, 0));
+        coords.CalculateBounds();
+        AddBelow(coords);
 
-        AddBelow(new UILabel("other :"), new Vector2(12, 3));
-        AddBelow(UIPluginOptionList.BoolOption("dark", room.Dark, val => room.Dark = val ), offset);
-        AddBelow(UIPluginOptionList.BoolOption("underwater", room.Underwater, val => room.Underwater = val), offset);
-        AddBelow(UIPluginOptionList.BoolOption("space", room.Space, val => room.Space = val), offset);
-        AddBelow(UIPluginOptionList.BoolOption("disable down transition", room.DisableDownTransition, val => room.DisableDownTransition = val), offset);
-        AddBelow(UIPluginOptionList.DropdownOption<WindController.Patterns>("wind pattern", room.WindPattern, it => room.WindPattern = it), offset);
+        AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_OTHER")), titleOffset);
+        AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_DARK"), room.Dark, val => room.Dark = val ), offset);
+        AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_UNDERWATER"), room.Underwater, val => room.Underwater = val), offset);
+        AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_SPACE"), room.Space, val => room.Space = val), offset);
+        AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_DDS"), room.DisableDownTransition, val => room.DisableDownTransition = val), offset);
+        AddBelow(UIPluginOptionList.DropdownOption<WindController.Patterns>(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_WIND"), room.WindPattern, it => room.WindPattern = it), offset);
 
-        AddBelow(new UIButton("delete", Fonts.Regular, 4, 4) {
+        AddBelow(new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_DELETE"), Fonts.Regular, 4, 4) {
             FG = Color.Red,
             HoveredFG = Color.Crimson,
             PressedFG = Color.DarkRed,
@@ -187,9 +192,5 @@ class UIRoomSelectionPanel : UIElement {
                 RoomTool.ScheduledRefresh = true;
             }
         }, new Vector2(4, 12));
-    }
-
-    public override void Update(Vector2 position = default) {
-        base.Update(position);
     }
 }
