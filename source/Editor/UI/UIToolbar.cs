@@ -24,6 +24,7 @@ public class UIToolbar : UIElement {
     public UIToolbar(Editor editor) {
         CurrentTool = 0;
         BG.A = 185;
+        GrabsClick = true;
 
         for (int i = 0; i < Tool.Tools.Count; i++) {
             Tool tool = Tool.Tools[i];
