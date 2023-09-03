@@ -3,7 +3,7 @@ using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 public class UIButton : UIElement {
     private readonly Vector2 space, minSize;
@@ -131,6 +131,12 @@ public class UIButton : UIElement {
                     Pressed();
                     pressed = false;
                 }
+            }
+
+            if (MInput.Mouse.ReleasedLeftButton || MInput.Mouse.ReleasedRightButton) {
+                // we only actually activate if the mouse was released on this button + it's visible,
+                // but we still need to make it visually unpress if it's dragged off and released
+                pressed = false;
             }
 
             lerp = Calc.Approach(lerp, pressed ? 1f : 0f, Engine.DeltaTime * 20f);

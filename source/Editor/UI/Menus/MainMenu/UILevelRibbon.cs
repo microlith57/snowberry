@@ -136,6 +136,11 @@ public class UILevelRibbon : UIRibbon {
                     }
                 }
             }
+            if (MInput.Mouse.ReleasedLeftButton) {
+                // we only actually activate if the mouse was released on this button + it's visible,
+                // but we still need to make it visually unpress if it's dragged off and released
+                pressing = false;
+            }
         }
 
         openLerp = Calc.Approach(openLerp, open.Bit(), Engine.DeltaTime * 2f);
