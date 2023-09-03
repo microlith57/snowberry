@@ -251,7 +251,7 @@ public class Editor : Scene {
         string editorplaytest = Dialog.Clean("SNOWBERRY_EDITOR_PLAYTEST");
         string editorexport = Dialog.Clean("SNOWBERRY_EDITOR_EXPORT");
 
-        UIButton play = new UIButton(actionbar_icons.GetSubtexture(0, 0, 16, 16), 3, 3) {
+        UIButton play = new UIKeyboundButton(actionbar_icons.GetSubtexture(0, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 Audio.SetMusic(null);
                 Audio.SetAmbience(null);
@@ -263,11 +263,13 @@ public class Editor : Scene {
                 PlaytestSession = new Session(Map.From);
                 LevelEnter.Go(PlaytestSession, true);
                 generatePlaytestMapData = false;
-            }
+            },
+            Ctrl = true,
+            Key = Keys.P
         };
         ActionBar.AddRight(play, new(10, 4));
 
-        UIButton save = new UIButton(actionbar_icons.GetSubtexture(16, 0, 16, 16), 3, 3) {
+        UIButton save = new UIKeyboundButton(actionbar_icons.GetSubtexture(16, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 if (From == null || Util.KeyToPath(From.Value) == null) {
                     // show a popup asking for a filename to save to
@@ -295,15 +297,20 @@ public class Editor : Scene {
                     if(From != null)
                         AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () => AreaData.Areas[From.Value.ID].Mode[0].MapData.Reload());
                 }
-            }
+            },
+            Ctrl = true,
+            Key = Keys.S
         };
         ActionBar.AddRight(save, new(6, 4));
 
-        UIButton exit = new UIButton(actionbar_icons.GetSubtexture(32, 0, 16, 16), 3, 3) {
+        UIButton exit = new UIKeyboundButton(actionbar_icons.GetSubtexture(32, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 // TODO: show an "are you sure" message
                 Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
-            }
+            },
+            Ctrl = true,
+            Alt = true,
+            Key = Keys.Q
         };
         ActionBar.AddRight(exit, new(6, 4));
 

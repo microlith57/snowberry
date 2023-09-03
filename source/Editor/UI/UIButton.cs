@@ -26,7 +26,7 @@ public class UIButton : UIElement {
     public Color HoveredBG = Calc.HexToColor("18181c");
 
     private float lerp;
-    private bool pressed, hovering;
+    protected bool pressed, hovering;
 
     private readonly MTexture
         top,
