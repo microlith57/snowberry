@@ -124,6 +124,8 @@ public class Editor : Scene {
     private readonly MTexture defaultCursor = cursors.GetSubtexture(0, 0, 16, 16);
     private readonly MTexture panningCursor = cursors.GetSubtexture(32, 16, 16, 16);
 
+    public static readonly MTexture actionbar_icons = GFX.Gui["Snowberry/actionbar_icons"];
+
     private bool fadeIn = false;
     public BufferCamera Camera { get; private set; }
 
@@ -144,6 +146,7 @@ public class Editor : Scene {
 
     public UIToolbar Toolbar;
     public UIElement ToolPanel;
+    public UIElement ActionBar;
 
     // TODO: potentially replace with just setting the MapData of Playtest
     private static bool generatePlaytestMapData = false;
@@ -223,33 +226,32 @@ public class Editor : Scene {
         ui.Add(Toolbar);
         Toolbar.Width = uiBuffer.Width;
 
-        var nameLabel = new UILabel($"Map: {From?.SID ?? "(new map)"} (ID: {From?.ID ?? -1}, Mode: {From?.Mode ?? AreaMode.Normal})");
-        ui.AddBelow(nameLabel);
-        nameLabel.Position += new Vector2(10, 10);
+        ActionBar = new() {
+            Background = Calc.HexToColor("202929") * 0.4f,
+            GrabsClick = true,
+            Height = 33
+        };
+        ui.AddBelow(ActionBar);
 
-        var roomLabel = new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}");
-        ui.AddBelow(roomLabel);
-        roomLabel.Position += new Vector2(10, 10);
+        ActionBar.AddRight(new UILabel($"{From?.SID ?? "(new map)"}"), new Vector2(10, 12));
+
+        if(From != null){
+            ActionBar.AddRight(new UILabel(From.Value.Mode switch {
+                AreaMode.Normal => "A-Side",
+                AreaMode.BSide => "B-Side",
+                AreaMode.CSide => "C-Side",
+                _ => "???"
+            }) {
+                Underline = true,
+                FG = Color.Gold
+            }, new Vector2(10, 11));
+        }
 
         string editorreturn = Dialog.Clean("SNOWBERRY_EDITOR_RETURN");
         string editorplaytest = Dialog.Clean("SNOWBERRY_EDITOR_PLAYTEST");
         string editorexport = Dialog.Clean("SNOWBERRY_EDITOR_EXPORT");
 
-        if (From.HasValue) {
-            UIButton rtm = new UIButton(editorreturn, Fonts.Regular, 6, 6) {
-                OnPress = () => {
-                    Audio.SetMusic(null);
-                    Audio.SetAmbience(null);
-
-                    SaveData.InitializeDebugMode();
-
-                    LevelEnter.Go(new Session(From.Value), true);
-                }
-            };
-            ui.AddBelow(rtm);
-        }
-
-        UIButton test = new UIButton(editorplaytest, Fonts.Regular, 6, 6) {
+        UIButton play = new UIButton(actionbar_icons.GetSubtexture(0, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 Audio.SetMusic(null);
                 Audio.SetAmbience(null);
@@ -263,9 +265,9 @@ public class Editor : Scene {
                 generatePlaytestMapData = false;
             }
         };
-        ui.AddBelow(test);
+        ActionBar.AddRight(play, new(10, 4));
 
-        UIButton export = new UIButton(editorexport, Fonts.Regular, 6, 6) {
+        UIButton save = new UIButton(actionbar_icons.GetSubtexture(16, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 if (From == null || Util.KeyToPath(From.Value) == null) {
                     // show a popup asking for a filename to save to
@@ -295,7 +297,18 @@ public class Editor : Scene {
                 }
             }
         };
-        ui.AddBelow(export);
+        ActionBar.AddRight(save, new(6, 4));
+
+        UIButton exit = new UIButton(actionbar_icons.GetSubtexture(32, 0, 16, 16), 3, 3) {
+            OnPress = () => {
+                // TODO: show an "are you sure" message
+                Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
+            }
+        };
+        ActionBar.AddRight(exit, new(6, 4));
+
+        var roomLabel = new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}");
+        ui.AddBelow(roomLabel, new(10));
 
         SwitchTool(0);
     }
@@ -426,6 +439,8 @@ public class Editor : Scene {
         ToolPanel = tool.CreatePanel(uiBuffer.Height - Toolbar.Height);
         ToolPanel.Position = new Vector2(uiBuffer.Width - ToolPanel.Width, Toolbar.Height);
         ui.Add(ToolPanel);
+
+        ActionBar.Width = uiBuffer.Width - ToolPanel.Width;
 
         SelectedObjects = null;
     }
