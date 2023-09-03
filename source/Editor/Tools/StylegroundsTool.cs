@@ -160,8 +160,7 @@ public class StylegroundsTool : Tool {
         panel.Clear();
         var selected = SelectedButton();
         // might not have any stylegrounds
-        if(selected != null && Stylegrounds.ContainsKey(selected)){
-            var styleground = Stylegrounds[selected];
+        if(selected != null && Stylegrounds.TryGetValue(selected, out var styleground)){
             var offset = Vector2.UnitY * 4;
             panel.Add(UIPluginOptionList.StringOption("Only In", styleground.OnlyIn, s => styleground.OnlyIn = s));
             panel.AddBelow(UIPluginOptionList.StringOption("Not In", styleground.ExcludeFrom, s => styleground.ExcludeFrom = s), offset);

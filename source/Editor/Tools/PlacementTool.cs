@@ -58,7 +58,7 @@ public class PlacementTool : Tool {
             Position = new Vector2(5, height - 20),
             Entries = Placements.All.ToArray(),
             InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
-            OnInputChange = s => {
+            OnInputChange = _ => {
                 buttonPane.Scroll = 0;
                 int y = 0;
                 foreach (var b in placementButtons) {

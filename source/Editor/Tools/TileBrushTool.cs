@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using MonoMod.Utils;
 using Snowberry.Editor.UI;
 using System;
 using System.Collections.Generic;
@@ -286,8 +285,6 @@ public class TileBrushTool : Tool {
                                 SetHoloTile(fg, set ? tileset : 0, x2, y2, !set);
                             }
 
-                        break;
-                    default:
                         break;
                 }
 
