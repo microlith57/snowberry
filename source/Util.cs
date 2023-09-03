@@ -94,4 +94,7 @@ public static class Util {
             s = s.Replace($"{{{i}}}", values[i].ToString());
         return s;
     }
+
+    public static string IntoString(this Color c) =>
+        BitConverter.ToString(new[] { c.R, c.G, c.B }).Replace("-", string.Empty);
 }

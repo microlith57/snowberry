@@ -2,7 +2,7 @@
 using Monocle;
 using System;
 
-namespace Snowberry.Editor.UI; 
+namespace Snowberry.Editor.UI;
 
 public class UIColorPicker : UIElement {
     private readonly int wheelWidth;
@@ -39,7 +39,7 @@ public class UIColorPicker : UIElement {
 
     public void SetColor(Color c) {
         Value = c;
-        hexTextField.UpdateInput($"#{BitConverter.ToString(new byte[] { Value.R, Value.G, Value.B }).Replace("-", string.Empty).ToLower()}");
+        hexTextField.UpdateInput($"#{Value.IntoString().ToLower()}");
     }
 
     public override void Update(Vector2 position = default) {

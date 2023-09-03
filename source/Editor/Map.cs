@@ -341,7 +341,7 @@ public class Map {
                     ["scrolly"] = styleground.Scroll.Y,
                     ["speedx"] = styleground.Speed.X,
                     ["speedy"] = styleground.Speed.Y,
-                    ["color"] = BitConverter.ToString(new[] { styleground.Color.R, styleground.Color.G, styleground.Color.B }).Replace("-", string.Empty),
+                    ["color"] = styleground.Color.IntoString(),
                     ["alpha"] = styleground.Color.A / 255f,
                     ["flipx"] = styleground.FlipX,
                     ["flipy"] = styleground.FlipY,

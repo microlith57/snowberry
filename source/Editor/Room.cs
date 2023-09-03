@@ -231,8 +231,8 @@ public class Room {
     internal void CalculateScissorRect(Editor.BufferCamera camera) {
         Vector2 offset = Position * 8;
 
-        Vector2 zero = Calc.Round(Vector2.Transform(offset, camera.Matrix));
-        Vector2 size = Calc.Round(Vector2.Transform(offset + new Vector2(Width * 8, Height * 8), camera.Matrix) - zero);
+        Vector2 zero = Vector2.Transform(offset, camera.Matrix).Round();
+        Vector2 size = (Vector2.Transform(offset + new Vector2(Width * 8, Height * 8), camera.Matrix) - zero).Round();
         ScissorRect = new Rectangle(
             (int)zero.X, (int)zero.Y,
             (int)size.X, (int)size.Y);
@@ -462,7 +462,9 @@ public class Room {
                     ["y"] = decal.Position.Y,
                     ["scaleX"] = decal.Scale.X,
                     ["scaleY"] = decal.Scale.Y,
-                    ["texture"] = decal.Texture
+                    ["texture"] = decal.Texture,
+                    ["color"] = decal.Color.IntoString(),
+                    ["rotation"] = decal.Rotation
                 }
             });
         }
@@ -479,31 +481,33 @@ public class Room {
                     ["y"] = decal.Position.Y,
                     ["scaleX"] = decal.Scale.X,
                     ["scaleY"] = decal.Scale.Y,
-                    ["texture"] = decal.Texture
+                    ["texture"] = decal.Texture,
+                    ["color"] = decal.Color.IntoString(),
+                    ["rotation"] = decal.Rotation
                 }
             });
         }
 
-        StringBuilder fgTiles = new StringBuilder();
+        StringBuilder fgTilesTxt = new StringBuilder();
         for (int y = 0; y < fgTileMap.Rows; y++) {
             for (int x = 0; x < fgTileMap.Columns; x++)
-                fgTiles.Append(fgTileMap[x, y]);
+                fgTilesTxt.Append(fgTileMap[x, y]);
 
-            fgTiles.Append("\n");
+            fgTilesTxt.Append("\n");
         }
 
-        StringBuilder bgTiles = new StringBuilder();
+        StringBuilder bgTilesTxt = new StringBuilder();
         for (int y = 0; y < bgTileMap.Rows; y++) {
             for (int x = 0; x < bgTileMap.Columns; x++)
-                bgTiles.Append(bgTileMap[x, y]);
+                bgTilesTxt.Append(bgTileMap[x, y]);
 
-            bgTiles.Append("\n");
+            bgTilesTxt.Append("\n");
         }
 
         Element fgSolidsElem = new Element {
             Name = "solids",
             Attributes = new Dictionary<string, object> {
-                ["innerText"] = fgTiles.ToString()
+                ["innerText"] = fgTilesTxt.ToString()
             }
         };
         ret.Children.Add(fgSolidsElem);
@@ -511,7 +515,7 @@ public class Room {
         Element bgSolidsElem = new Element {
             Name = "bg",
             Attributes = new Dictionary<string, object> {
-                ["innerText"] = bgTiles.ToString()
+                ["innerText"] = bgTilesTxt.ToString()
             }
         };
         ret.Children.Add(bgSolidsElem);
