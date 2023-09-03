@@ -406,15 +406,13 @@ public class Room {
             };
             entity.SaveAttrs(entityElem);
 
-            foreach (var node in entity.Nodes) {
-                Element n = new Element {
+            foreach (var node in entity.Nodes)
+                entityElem.Children.Add(new Element {
                     Attributes = new Dictionary<string, object> {
                         ["x"] = node.X - X * 8,
                         ["y"] = node.Y - Y * 8
                     }
-                };
-                entityElem.Children.Add(n);
-            }
+                });
 
             entitiesElement.Children.Add(entityElem);
         }
@@ -441,25 +439,24 @@ public class Room {
             };
             trigger.SaveAttrs(triggersElem);
 
-            foreach (var node in trigger.Nodes) {
-                Element n = new Element {
+            foreach (var node in trigger.Nodes)
+                triggersElem.Children.Add(new Element {
                     Attributes = new Dictionary<string, object> {
                         ["x"] = node.X - X * 8,
                         ["y"] = node.Y - Y * 8
                     }
-                };
-                triggersElem.Children.Add(n);
-            }
+                });
 
             triggersElement.Children.Add(triggersElem);
         }
 
-        Element fgDecalsElem = new Element();
-        fgDecalsElem.Name = "fgdecals";
-        fgDecalsElem.Children = new List<Element>();
+        Element fgDecalsElem = new Element {
+            Name = "fgdecals",
+            Children = new List<Element>()
+        };
         ret.Children.Add(fgDecalsElem);
         foreach (var decal in FgDecals) {
-            Element decalElem = new Element {
+            fgDecalsElem.Children.Add(new Element {
                 Attributes = new Dictionary<string, object> {
                     ["x"] = decal.Position.X,
                     ["y"] = decal.Position.Y,
@@ -467,16 +464,16 @@ public class Room {
                     ["scaleY"] = decal.Scale.Y,
                     ["texture"] = decal.Texture
                 }
-            };
-            fgDecalsElem.Children.Add(decalElem);
+            });
         }
 
-        Element bgDecalsElem = new Element();
-        bgDecalsElem.Name = "bgdecals";
-        bgDecalsElem.Children = new List<Element>();
+        Element bgDecalsElem = new Element {
+            Name = "bgdecals",
+            Children = new List<Element>()
+        };
         ret.Children.Add(bgDecalsElem);
         foreach (var decal in BgDecals) {
-            Element decalElem = new Element {
+            bgDecalsElem.Children.Add(new Element {
                 Attributes = new Dictionary<string, object> {
                     ["x"] = decal.Position.X,
                     ["y"] = decal.Position.Y,
@@ -484,24 +481,21 @@ public class Room {
                     ["scaleY"] = decal.Scale.Y,
                     ["texture"] = decal.Texture
                 }
-            };
-            bgDecalsElem.Children.Add(decalElem);
+            });
         }
 
         StringBuilder fgTiles = new StringBuilder();
         for (int y = 0; y < fgTileMap.Rows; y++) {
-            for (int x = 0; x < fgTileMap.Columns; x++) {
+            for (int x = 0; x < fgTileMap.Columns; x++)
                 fgTiles.Append(fgTileMap[x, y]);
-            }
 
             fgTiles.Append("\n");
         }
 
         StringBuilder bgTiles = new StringBuilder();
         for (int y = 0; y < bgTileMap.Rows; y++) {
-            for (int x = 0; x < bgTileMap.Columns; x++) {
+            for (int x = 0; x < bgTileMap.Columns; x++)
                 bgTiles.Append(bgTileMap[x, y]);
-            }
 
             bgTiles.Append("\n");
         }
