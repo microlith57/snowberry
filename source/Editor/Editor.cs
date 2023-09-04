@@ -124,7 +124,7 @@ public class Editor : Scene {
     private readonly MTexture defaultCursor = cursors.GetSubtexture(0, 0, 16, 16);
     private readonly MTexture panningCursor = cursors.GetSubtexture(32, 16, 16, 16);
 
-    public static readonly MTexture actionbar_icons = GFX.Gui["Snowberry/actionbar_icons"];
+    public static readonly MTexture actionbarIcons = GFX.Gui["Snowberry/actionbar_icons"];
 
     private bool fadeIn = false;
     public BufferCamera Camera { get; private set; }
@@ -146,7 +146,7 @@ public class Editor : Scene {
 
     public UIToolbar Toolbar;
     public UIElement ToolPanel;
-    public UIElement ActionBar;
+    public UIElement ActionBar, ToolActionGroup;
 
     // TODO: potentially replace with just setting the MapData of Playtest
     private static bool generatePlaytestMapData = false;
@@ -251,7 +251,7 @@ public class Editor : Scene {
         string editorplaytest = Dialog.Clean("SNOWBERRY_EDITOR_PLAYTEST");
         string editorexport = Dialog.Clean("SNOWBERRY_EDITOR_EXPORT");
 
-        UIButton play = new UIKeyboundButton(actionbar_icons.GetSubtexture(0, 0, 16, 16), 3, 3) {
+        UIButton play = new UIKeyboundButton(actionbarIcons.GetSubtexture(0, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 Audio.SetMusic(null);
                 Audio.SetAmbience(null);
@@ -269,7 +269,7 @@ public class Editor : Scene {
         };
         ActionBar.AddRight(play, new(10, 4));
 
-        UIButton save = new UIKeyboundButton(actionbar_icons.GetSubtexture(16, 0, 16, 16), 3, 3) {
+        UIButton save = new UIKeyboundButton(actionbarIcons.GetSubtexture(16, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 if (From == null || Util.KeyToPath(From.Value) == null) {
                     // show a popup asking for a filename to save to
@@ -303,7 +303,7 @@ public class Editor : Scene {
         };
         ActionBar.AddRight(save, new(6, 4));
 
-        UIButton exit = new UIKeyboundButton(actionbar_icons.GetSubtexture(32, 0, 16, 16), 3, 3) {
+        UIButton exit = new UIKeyboundButton(actionbarIcons.GetSubtexture(32, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 // TODO: show an "are you sure" message
                 Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
@@ -447,7 +447,19 @@ public class Editor : Scene {
         ToolPanel.Position = new Vector2(uiBuffer.Width - ToolPanel.Width, Toolbar.Height);
         ui.Add(ToolPanel);
 
+        ToolActionGroup?.RemoveSelf();
+        ToolActionGroup = null;
         ActionBar.Width = uiBuffer.Width - ToolPanel.Width;
+        var toolActionGroup = tool.CreateActionBar();
+        if (toolActionGroup != null) {
+            toolActionGroup.Position = new(5, 0);
+            ToolActionGroup = new();
+            ToolActionGroup.AddRight(new UILabel("|") {
+                Position = new(5, 11)
+            });
+            ToolActionGroup.AddRight(toolActionGroup);
+            ActionBar.AddRight(ToolActionGroup);
+        }
 
         SelectedObjects = null;
     }

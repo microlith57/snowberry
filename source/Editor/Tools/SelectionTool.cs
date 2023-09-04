@@ -41,17 +41,32 @@ public class SelectionTool : Tool {
             Background = null
         });
 
-        UIElement filtersPanel = new UIElement {
-            Position = new Vector2(5, height - 20)
-        };
-        Vector2 offset = new Vector2(8, 0);
-        filtersPanel.AddRight(UIPluginOptionList.BoolOption("entities", selectEntities, s => selectEntities = s));
-        filtersPanel.AddRight(UIPluginOptionList.BoolOption("triggers", selectTriggers, s => selectTriggers = s), offset);
-        filtersPanel.AddRight(UIPluginOptionList.BoolOption("fg", selectFgDecals, s => selectFgDecals = s), offset);
-        filtersPanel.AddRight(UIPluginOptionList.BoolOption("bg", selectBgDecals, s => selectBgDecals = s), offset);
-        panel.Add(filtersPanel);
-
         return panel;
+    }
+
+    public override UIElement CreateActionBar() {
+        UIElement filtersPanel = new UIElement();
+        Vector2 offset = new Vector2(6, 4);
+        filtersPanel.AddRight(CreateToggleButton(0, 32, Keys.E, () => selectEntities, s => selectEntities = s), new(0, 4));
+        filtersPanel.AddRight(CreateToggleButton(32, 32, Keys.T, () => selectTriggers, s => selectTriggers = s), offset);
+        filtersPanel.AddRight(CreateToggleButton(0, 48, Keys.F, () => selectFgDecals, s => selectFgDecals = s), offset);
+        filtersPanel.AddRight(CreateToggleButton(32, 48, Keys.B, () => selectBgDecals, s => selectBgDecals = s), offset);
+        return filtersPanel;
+    }
+
+    private static UIButton CreateToggleButton(int icoX, int icoY, Keys toggleBind, Func<bool> value, Action<bool> onPress) {
+        MTexture active = Editor.actionbarIcons.GetSubtexture(icoX, icoY, 16, 16);
+        MTexture inactive = Editor.actionbarIcons.GetSubtexture(icoX + 16, icoY, 16, 16);
+        UIKeyboundButton button = null; // to allow referring to it in OnPress
+        button = new UIKeyboundButton(value() ? active : inactive, 3, 3) {
+            OnPress = () => {
+                onPress(!value());
+                button.SetIcon(value() ? active : inactive);
+            },
+            Shift = true,
+            Key = toggleBind
+        };
+        return button;
     }
 
     public override void Update(bool canClick) {
