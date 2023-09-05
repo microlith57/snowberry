@@ -259,17 +259,12 @@ public class Room {
             decal.Render(offset);
 
         // Entities
-        foreach (Entity entity in Entities) {
-            Calc.PushRandom(entity.GetHashCode());
+        Calc.PushRandom(GetHashCode());
+        foreach (Entity entity in Entities)
             entity.RenderBefore();
-            Calc.PopRandom();
-        }
-
-        foreach (Entity entity in Entities) {
-            Calc.PushRandom(entity.GetHashCode());
+        foreach (Entity entity in Entities)
             entity.Render();
-            Calc.PopRandom();
-        }
+        Calc.PopRandom();
 
         // FgTiles
         for (int x = startX; x < endX; x++)
