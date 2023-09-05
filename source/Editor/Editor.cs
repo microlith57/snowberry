@@ -453,11 +453,13 @@ public class Editor : Scene {
         var toolActionGroup = tool.CreateActionBar();
         if (toolActionGroup != null) {
             toolActionGroup.Position = new(5, 0);
+            toolActionGroup.CalculateBounds(); // required for sub-elements to get any tooltips
             ToolActionGroup = new();
             ToolActionGroup.AddRight(new UILabel("|") {
                 Position = new(5, 11)
             });
             ToolActionGroup.AddRight(toolActionGroup);
+            ToolActionGroup.CalculateBounds(); // same
             ActionBar.AddRight(ToolActionGroup);
         }
 
