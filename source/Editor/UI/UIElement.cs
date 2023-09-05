@@ -134,18 +134,15 @@ public class UIElement {
     }
 
     public T HoveredChildProperty<T>(Func<UIElement, T> getter, T ignore = default) {
-        if (!Equals(getter(this), ignore)) {
+        if (!Equals(getter(this), ignore))
             return getter(this);
-        }
 
-        foreach (var child in Children) {
-            if (child.Bounds.Contains((int)Editor.Mouse.Screen.X, (int)Editor.Mouse.Screen.Y)) {
+        foreach (var child in Children)
+            if (child.Bounds.Contains(Editor.Mouse.Screen.ToPoint())) {
                 var p = child.HoveredChildProperty(getter, ignore);
-                if (!Equals(p, ignore)) {
+                if (!Equals(p, ignore))
                     return p;
-                }
             }
-        }
 
         return ignore;
     }
@@ -172,46 +169,30 @@ public class UIElement {
     }
 
     protected bool ConsumeLeftClick(bool pressed = true, bool held = false, bool released = false) {
-        if ((!pressed || MInput.Mouse.PressedLeftButton) && (!held || MInput.Mouse.CheckLeftButton) && (!released || MInput.Mouse.ReleasedLeftButton)) {
+        if ((!pressed || MInput.Mouse.PressedLeftButton) && (!held || MInput.Mouse.CheckLeftButton) && (!released || MInput.Mouse.ReleasedLeftButton))
             return ConsumeClick();
-        }
 
         return false;
     }
 
     protected bool ConsumeAltClick(bool pressed = true, bool held = false, bool released = false) {
         if (Snowberry.Settings.MiddleClickPan) {
-            if ((!pressed || MInput.Mouse.PressedRightButton) && (!held || MInput.Mouse.CheckRightButton) && (!released || MInput.Mouse.ReleasedRightButton)) {
+            if ((!pressed || MInput.Mouse.PressedRightButton) && (!held || MInput.Mouse.CheckRightButton) && (!released || MInput.Mouse.ReleasedRightButton))
                 return ConsumeClick();
-            }
 
             return false;
-        } else {
-            return (MInput.Keyboard.Check(Keys.LeftAlt) || MInput.Keyboard.Check(Keys.RightAlt)) && ConsumeLeftClick(pressed, held, released);
-        }
-    }
-
-    public T ChildWithTag<T>(string tag) where T : UIElement {
-        return (T)Children.Where(child => string.Equals(child.Tag, tag)).FirstOrDefault(child => child is T);
-    }
-
-    public T NestedChildWithTag<T>(string tag) where T : UIElement {
-        var immediate = ChildWithTag<T>(tag);
-        if (immediate != null)
-            return immediate;
-
-        foreach (var child in Children) {
-            var ret = child.NestedChildWithTag<T>(tag);
-            if (ret != null)
-                return ret;
         }
 
-        return null;
+        return (MInput.Keyboard.Check(Keys.LeftAlt) || MInput.Keyboard.Check(Keys.RightAlt)) && ConsumeLeftClick(pressed, held, released);
     }
 
-    public Vector2 GetBoundsPos() {
-        return new Vector2(Bounds.X, Bounds.Y);
-    }
+    public T ChildWithTag<T>(string tag) where T : UIElement =>
+        Children.OfType<T>().FirstOrDefault(child => string.Equals(child.Tag, tag));
+
+    public T NestedChildWithTag<T>(string tag) where T : UIElement =>
+        ChildWithTag<T>(tag) ?? Children.Select(child => child.NestedChildWithTag<T>(tag)).FirstOrDefault(ret => ret != null);
+
+    public Vector2 GetBoundsPos() => new(Bounds.X, Bounds.Y);
 
     public void CalculateBounds() {
         // based on the bounds of children

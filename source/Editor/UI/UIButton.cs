@@ -25,6 +25,8 @@ public class UIButton : UIElement {
     public Color HoveredFG = Calc.HexToColor("f0f0f0");
     public Color HoveredBG = Calc.HexToColor("18181c");
 
+    public String ButtonTooltip;
+
     private float lerp;
     protected bool pressed, hovering;
 
@@ -88,7 +90,7 @@ public class UIButton : UIElement {
         SetSize((int)size.X + 6, (int)size.Y + 3);
 
         if (stayCentered)
-            Position = Calc.Round(mid - new Vector2(Width, Height) / 2f);
+            Position = (mid - new Vector2(Width, Height) / 2f).Round();
     }
 
     public void SetIcon(MTexture icon) {
@@ -180,4 +182,6 @@ public class UIButton : UIElement {
                 Draw.Rect(at + new Vector2(-2, textArea.Y / 2 + 1), textArea.X + 4, 1, Color.Lerp(FG, Color.Black, 0.25f));
         } else icon?.Invoke(at, fg);
     }
+
+    public override string Tooltip() => ButtonTooltip;
 }

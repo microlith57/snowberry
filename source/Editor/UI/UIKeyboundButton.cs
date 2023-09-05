@@ -5,10 +5,14 @@ using Monocle;
 
 namespace Snowberry.Editor.UI;
 
-public class UIKeyboundButton : UIButton{
+public class UIKeyboundButton : UIButton {
+
+    public Action OnKbPress;
 
     public bool Ctrl, Alt, Shift;
     public Keys Key;
+
+    private bool pressedByKb = false;
 
     public UIKeyboundButton(int width, int height, int spaceX = 0, int spaceY = 0, int minWidth = 6, int minHeight = 8) : base(width, height, spaceX, spaceY, minWidth, minHeight){}
     public UIKeyboundButton(string text, Font font, int spaceX = 0, int spaceY = 0, int minWidth = 6, int minHeight = 8) : base(text, font, spaceX, spaceY, minWidth, minHeight){}
@@ -23,12 +27,19 @@ public class UIKeyboundButton : UIButton{
         && (!Shift || MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift))) {
             // when you first press the button, run on-press action
             if(MInput.Keyboard.Pressed(Key))
-                Pressed();
+                (OnKbPress ?? OnPress)?.Invoke();
             // as long as its held, appear visually held
-            if(MInput.Keyboard.Check(Key))
+            if(MInput.Keyboard.Check(Key)){
                 pressed = true;
-            if(MInput.Keyboard.Released(Key))
+                pressedByKb = true;
+            }
+            if(MInput.Keyboard.Released(Key)){
                 pressed = false;
+                pressedByKb = false;
+            }
+        }else if(pressedByKb){
+            pressed = false;
+            pressedByKb = false;
         }
     }
 }

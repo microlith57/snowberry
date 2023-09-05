@@ -35,7 +35,5 @@ class UILabel : UIElement {
             Draw.Rect(position + Vector2.UnitY * (Height / 2), Width, 1, Color.Lerp(FG, Color.Black, 0.25f));
     }
 
-    public override string Tooltip() {
-        return LabelTooltip;
-    }
+    public override string Tooltip() => LabelTooltip;
 }

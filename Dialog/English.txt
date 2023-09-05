@@ -50,6 +50,17 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_EDITOR_UTIL_FOREGROUND=           foreground
     SNOWBERRY_EDITOR_UTIL_BACKGROUND=           background
 
+# *** Selection Tool ***
+	SNOWBERRY_EDITOR_SELECT_ENTITIES_TT=        select entities (shift-E)
+	SNOWBERRY_EDITOR_SELECT_TRIGGERS_TT=        select triggers (shift-T)
+	SNOWBERRY_EDITOR_SELECT_FG_DECALS_TT=       select FG decals (shift-F)
+	SNOWBERRY_EDITOR_SELECT_BG_DECALS_TT=       select BG decals (shift-B)
+	
+	SNOWBERRY_EDITOR_SELECT_COPY_TT=            copy (ctrl-C)
+	SNOWBERRY_EDITOR_SELECT_PASTE_TT=           paste (ctrl-V)
+	SNOWBERRY_EDITOR_SELECT_CUT_TT=             cut (ctrl-X)
+	SNOWBERRY_EDITOR_SELECT_DELETE_TT=          delete (del)
+
 # *** Room Tool ***
 
     SNOWBERRY_EDITOR_ROOM_NONE_TITLE=           no room selected
