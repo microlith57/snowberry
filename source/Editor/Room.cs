@@ -287,7 +287,9 @@ public class Room {
                 foreach (var rect in Editor.SelectedObjects.SelectMany(s => s.Rectangles()))
                     Draw.Rect(rect, Color.Blue * 0.25f);
         }
+    }
 
+    internal void PostRender() {
         DirtyTrackedEntities.Clear();
 
         foreach (var e in Entities)
@@ -527,8 +529,9 @@ public class Room {
         if (e.Tracked) {
             Type tracking = e.GetType();
             if (!TrackedEntities.ContainsKey(tracking))
-                TrackedEntities[tracking] = new List<Entity>();
+                TrackedEntities[tracking] = new();
             TrackedEntities[tracking].Add(e);
+            DirtyTrackedEntities[tracking] = true;
         }
     }
 

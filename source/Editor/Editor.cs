@@ -531,6 +531,7 @@ public class Editor : Scene {
             Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Camera.Matrix);
             tool.RenderWorldSpace();
             Draw.SpriteBatch.End();
+            Map.PostRender();
         }
 
         #endregion

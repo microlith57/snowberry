@@ -162,6 +162,11 @@ public class Map {
         Draw.SpriteBatch.End();
     }
 
+    internal void PostRender() {
+        foreach (var room in Rooms)
+            room.PostRender();
+    }
+
     internal void HQRender(Editor.BufferCamera camera) {
         Rectangle viewRect = camera.ViewRect;
 
