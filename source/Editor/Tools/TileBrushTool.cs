@@ -144,7 +144,7 @@ public class TileBrushTool : Tool {
     }
 
     public override void Update(bool canClick) {
-        bool clear = MInput.Keyboard.Check(Keys.X);
+        bool clear = MInput.Keyboard.Check(Keys.Escape);
 
         if (Editor.SelectedRoom == null)
             holoFgTileMap = holoBgTileMap = null;
