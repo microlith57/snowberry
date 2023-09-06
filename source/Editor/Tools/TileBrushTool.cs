@@ -160,7 +160,7 @@ public class TileBrushTool : Tool {
         }
 
         bool middlePan = Snowberry.Settings.MiddleClickPan;
-        bool left = (MInput.Mouse.CheckLeftButton || (middlePan && MInput.Mouse.ReleasedLeftButton)) && (middlePan || !MInput.Keyboard.Check(Keys.LeftAlt));
+        bool left = (MInput.Mouse.CheckLeftButton || (middlePan && MInput.Mouse.ReleasedLeftButton)) && (middlePan || !MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt));
         bool fg = left ? LeftFg : RightFg;
         int tileset = left ? CurLeftTileset : CurRightTileset;
         bool retile = false;
@@ -386,7 +386,7 @@ public class TileBrushTool : Tool {
         justify = new(0, 1);
 
         bool middlePan = Snowberry.Settings.MiddleClickPan;
-        bool isUsingAlt = (middlePan && MInput.Mouse.CheckRightButton) || (!middlePan && MInput.Keyboard.Check(Keys.LeftAlt));
+        bool isUsingAlt = (middlePan && MInput.Mouse.CheckRightButton) || (!middlePan && MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt));
         TileBrushMode displayed = isUsingAlt ? RightMode : LeftMode;
         int xOffset = LeftMode == RightMode ? 48 : (isUsingAlt ? 32 : 16);
         cursor = brushes.GetSubtexture(xOffset, (int)displayed * 16, 16, 16);

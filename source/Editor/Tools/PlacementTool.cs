@@ -85,7 +85,7 @@ public class PlacementTool : Tool {
     public override void Update(bool canClick) {
         bool middlePan = Snowberry.Settings.MiddleClickPan;
 
-        Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || (middlePan && MInput.Mouse.ReleasedRightButton)) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt)) ? curRightSelection : curLeftSelection;
+        Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || (middlePan && MInput.Mouse.ReleasedRightButton)) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt)) ? curRightSelection : curLeftSelection;
         if ((MInput.Mouse.ReleasedLeftButton || (middlePan && MInput.Mouse.ReleasedRightButton)) && canClick && selection != null && Editor.SelectedRoom != null) {
             Entity toAdd = selection.Build(Editor.SelectedRoom);
             UpdateEntity(toAdd);
@@ -131,7 +131,7 @@ public class PlacementTool : Tool {
     private void RefreshPreview(bool changedPlacement) {
         bool middlePan = Snowberry.Settings.MiddleClickPan;
 
-        Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedRightButton) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt)) ? curRightSelection : curLeftSelection;
+        Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedRightButton) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt)) ? curRightSelection : curLeftSelection;
         if ((preview == null || changedPlacement) && selection != null) {
             preview = selection.Build(Editor.SelectedRoom);
         } else if (selection == null)
@@ -139,7 +139,7 @@ public class PlacementTool : Tool {
     }
 
     private void UpdateEntity(Entity e) {
-        var ctrl = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
+        var ctrl = MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl);
         Vector2 mpos = ctrl ? Editor.Mouse.World : Editor.Mouse.World.RoundTo(8);
         UpdateSize(e, mpos);
 
