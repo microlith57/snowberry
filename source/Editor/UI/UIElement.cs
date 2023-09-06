@@ -121,6 +121,7 @@ public class UIElement {
     }
 
     public void RemoveSelf() {
+        Destroy();
         Parent?.Remove(this);
     }
 

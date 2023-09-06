@@ -438,8 +438,7 @@ public class Editor : Scene {
     }
 
     public void SwitchTool(int toolIdx) {
-        ToolPanel?.Destroy();
-        ui.Remove(ToolPanel);
+        ToolPanel?.RemoveSelf();
 
         Toolbar.CurrentTool = toolIdx;
         var tool = Tool.Tools[toolIdx];
@@ -449,6 +448,7 @@ public class Editor : Scene {
 
         ToolActionGroup?.RemoveSelf();
         ToolActionGroup = null;
+        ActionBar.Update(); // get rid of the old action group immediately
         ActionBar.Width = uiBuffer.Width - ToolPanel.Width;
         var toolActionGroup = tool.CreateActionBar();
         if (toolActionGroup != null) {

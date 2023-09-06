@@ -10,6 +10,7 @@ using System.Linq;
 namespace Snowberry.Editor.Tools;
 
 public class TileBrushTool : Tool {
+
     public enum TileBrushMode {
         Brush, Rect, HollowRect, Fill, Line, Circle
     }
@@ -36,6 +37,8 @@ public class TileBrushTool : Tool {
     private List<UIButton> modeButtons = new();
 
     private static bool isPainting;
+
+    public static readonly MTexture brushes = GFX.Gui["Snowberry/brushes"];
 
     public override string GetName() {
         return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_TILEBRUSH");
@@ -120,24 +123,24 @@ public class TileBrushTool : Tool {
             bgTilesetButtons.Add(button);
         }
 
-        UIElement brushTypes = new UIElement() {
-            Width = 30
-        };
-        foreach (var mode in Enum.GetValues(typeof(TileBrushMode))) {
-            var t = mode.ToString();
-            var button = new UIButton(t.Substring(0, 1), Fonts.Regular, 6, 6) {
-                OnPress = () => LeftMode = (TileBrushMode)mode,
-                OnRightPress = () => RightMode = (TileBrushMode)mode
-            };
-            brushTypes.AddBelow(button, Vector2.One * 5);
-            modeButtons.Add(button);
-        }
-
-        panel.Add(brushTypes);
-        tilesetsPanel.Position.X = brushTypes.Width + 5;
+        tilesetsPanel.Position.X = 5;
         tilesetsPanel.Background = null;
         panel.Add(tilesetsPanel);
         return panel;
+    }
+
+    public override UIElement CreateActionBar() {
+        UIElement brushTypes = new();
+        foreach (var mode in Enum.GetValues(typeof(TileBrushMode))) {
+            var button = new UIButton(brushes.GetSubtexture(0, 16 * (int)mode, 16, 16), 3, 3) {
+                OnPress = () => LeftMode = (TileBrushMode)mode,
+                OnRightPress = () => RightMode = (TileBrushMode)mode
+            };
+            brushTypes.AddRight(button, Vector2.One * 5);
+            modeButtons.Add(button);
+        }
+        brushTypes.CalculateBounds();
+        return brushTypes;
     }
 
     public override void Update(bool canClick) {
@@ -373,5 +376,15 @@ public class TileBrushTool : Tool {
             for (int y = 0; y < tile.Tiles.Rows; y++)
                 if (tile.Tiles[x, y] != null)
                     tile.Tiles[x, y].Draw(position + new Vector2(x, y) * 8, Vector2.Zero, color);
+    }
+
+    public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
+        justify = new(0, 1);
+
+        bool middlePan = Snowberry.Settings.MiddleClickPan;
+        bool isUsingAlt = (middlePan && MInput.Mouse.CheckRightButton) || (!middlePan && MInput.Keyboard.Check(Keys.LeftAlt));
+        TileBrushMode displayed = isUsingAlt ? RightMode : LeftMode;
+        int xOffset = LeftMode == RightMode ? 48 : (isUsingAlt ? 32 : 16);
+        cursor = brushes.GetSubtexture(xOffset, (int)displayed * 16, 16, 16);
     }
 }
