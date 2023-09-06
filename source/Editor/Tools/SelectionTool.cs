@@ -6,6 +6,7 @@ using Snowberry.Editor.UI;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Celeste.Mod;
 
 namespace Snowberry.Editor.Tools;
@@ -271,9 +272,12 @@ public class SelectionTool : Tool {
                 foreach (EntitySelection es in Editor.SelectedObjects.OfType<EntitySelection>())
                     DrawUtil.DrawGuidelines(es.Entity.Bounds, Color.White);
 
-            if (pasting)
+            if (pasting) {
+                Calc.PushRandom(RuntimeHelpers.GetHashCode(toPaste));
                 foreach (Entity e in toPaste)
                     e.Render();
+                Calc.PopRandom();
+            }
         }
     }
 
