@@ -20,7 +20,7 @@ public class SelectionTool : Tool {
     private static Rectangle oldEntityBounds;
 
     // paste preview
-    private static bool pasting = false, wasClickPaste = false;
+    private static bool pasting = false;
     private static List<Entity> toPaste;
 
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_SELECT");
@@ -49,56 +49,6 @@ public class SelectionTool : Tool {
         p.AddRight(CreateToggleButton(32, 32, Keys.T, "TRIGGERS", () => selectTriggers, s => selectTriggers = s), offset);
         p.AddRight(CreateToggleButton(0, 48, Keys.F, "FG_DECALS", () => selectFgDecals, s => selectFgDecals = s), offset);
         p.AddRight(CreateToggleButton(32, 48, Keys.B, "BG_DECALS", () => selectBgDecals, s => selectBgDecals = s), offset);
-        p.AddRight(new UILabel("|") {
-            Position = new(5, 11)
-        });
-        p.AddRight(new UIKeyboundButton(Editor.actionbarIcons.GetSubtexture(0, 16, 16, 16), 3, 3) {
-            OnPress = () => {
-                if (Editor.SelectedObjects != null)
-                    CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity));
-            },
-            Ctrl = true,
-            Key = Keys.C,
-            ButtonTooltip = Dialog.Clean("SNOWBERRY_EDITOR_SELECT_COPY_TT")
-        }, offset);
-        p.AddRight(new UIKeyboundButton(Editor.actionbarIcons.GetSubtexture(16, 16, 16, 16), 3, 3) {
-            OnPress = () => {
-                if (Editor.SelectedRoom == null)
-                    return;
-                BeginPaste();
-                wasClickPaste = true;
-            },
-            OnKbPress = BeginPaste,
-            Ctrl = true,
-            Key = Keys.V,
-            ButtonTooltip = Dialog.Clean("SNOWBERRY_EDITOR_SELECT_PASTE_TT")
-        }, offset);
-        p.AddRight(new UIKeyboundButton(Editor.actionbarIcons.GetSubtexture(32, 16, 16, 16), 3, 3) {
-            OnPress = () => {
-                if (Editor.SelectedObjects == null)
-                    return;
-                CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity));
-                foreach (var item in Editor.SelectedObjects)
-                    item.RemoveSelf();
-                Editor.SelectedObjects.Clear();
-                selectionPanel?.Display(new());
-            },
-            Ctrl = true,
-            Key = Keys.X,
-            ButtonTooltip = Dialog.Clean("SNOWBERRY_EDITOR_SELECT_CUT_TT")
-        }, offset);
-        p.AddRight(new UIKeyboundButton(Editor.actionbarIcons.GetSubtexture(48, 16, 16, 16), 3, 3) {
-            OnPress = () => {
-                if (Editor.SelectedObjects == null)
-                    return;
-                foreach (var item in Editor.SelectedObjects)
-                    item.RemoveSelf();
-                Editor.SelectedObjects.Clear();
-                selectionPanel?.Display(new());
-            },
-            Key = Keys.Delete,
-            ButtonTooltip = Dialog.Clean("SNOWBERRY_EDITOR_SELECT_DELETE_TT")
-        }, offset);
         return p;
     }
 
@@ -125,14 +75,14 @@ public class SelectionTool : Tool {
         if (pasting) {
             AdjustPastedEntities();
 
-            if (((wasClickPaste && canClick && MInput.Mouse.ReleasedLeftButton) || (!wasClickPaste && MInput.Keyboard.Released(Keys.V)))) {
+            if (MInput.Keyboard.Released(Keys.V)) {
                 if (Editor.SelectedRoom != null)
                     foreach (Entity e in toPaste) {
                         e.EntityID = PlacementTool.AllocateId();
                         Editor.SelectedRoom.AddEntity(e);
                     }
 
-                pasting = wasClickPaste = false;
+                pasting = false;
                 toPaste.Clear();
             }
         }
@@ -217,7 +167,14 @@ public class SelectionTool : Tool {
         postResize:
         if (Editor.Instance.CanTypeShortcut()) {
             bool ctrl = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
-            if (MInput.Keyboard.Pressed(Keys.N)) { // N to create node
+            if (MInput.Keyboard.Check(Keys.Delete)) { // Del to delete entities
+                foreach (var item in Editor.SelectedObjects) {
+                    item.RemoveSelf();
+                    refreshPanel = true;
+                }
+
+                Editor.SelectedObjects.Clear();
+            } else if (MInput.Keyboard.Pressed(Keys.N)) { // N to create node
                 // iterate backwards to allow modifying the list as we go
                 for (var idx = Editor.SelectedObjects.Count - 1; idx >= 0; idx--) {
                     var item = Editor.SelectedObjects[idx];
@@ -265,6 +222,32 @@ public class SelectionTool : Tool {
                         foreach (Decal d in Editor.SelectedRoom.BgDecals)
                             Editor.SelectedObjects.Add(new DecalSelection(d, false));
                     refreshPanel = true;
+                } else if (MInput.Keyboard.Pressed(Keys.C, Keys.X)) { // Ctrl-C to copy
+                    CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity));
+
+                    if (MInput.Keyboard.Pressed(Keys.X)) {
+                        foreach (var item in Editor.SelectedObjects) {
+                            item.RemoveSelf();
+                            refreshPanel = true;
+                        }
+
+                        Editor.SelectedObjects.Clear();
+                    }
+                } else if (MInput.Keyboard.Pressed(Keys.V)) { // Ctrl-V to paste
+                    try {
+                        List<(EntityData data, bool trigger)> entities = CopyPaste.PasteEntities(CopyPaste.Clipboard);
+                        if (entities.Count != 0) {
+                            pasting = true;
+                            toPaste = new(entities.Count);
+                            foreach (var entity in entities)
+                                toPaste.Add(Entity.TryCreate(Editor.SelectedRoom, entity.data, entity.trigger, out bool _));
+                            AdjustPastedEntities();
+                        }
+                    } catch (ArgumentException ae) {
+                        Snowberry.LogInfo(ae.Message);
+                    } catch (InvalidOperationException) {
+                        Snowberry.LogInfo("Failed to paste (invalid data)");
+                    }
                 }
             }
         }
@@ -355,24 +338,4 @@ public class SelectionTool : Tool {
 
     private static Rectangle CoveringRect(IReadOnlyList<Rectangle> rects) =>
         rects.Aggregate(rects[0], Rectangle.Union);
-
-    private static void BeginPaste() {
-        if (Editor.SelectedRoom == null)
-            return;
-        try {
-            wasClickPaste = false;
-            List<(EntityData data, bool trigger)> entities = CopyPaste.PasteEntities(CopyPaste.Clipboard);
-            if(entities.Count != 0){
-                pasting = true;
-                toPaste = new(entities.Count);
-                foreach(var entity in entities)
-                    toPaste.Add(Entity.TryCreate(Editor.SelectedRoom, entity.data, entity.trigger, out bool _));
-                AdjustPastedEntities();
-            }
-        } catch(ArgumentException ae){
-            Snowberry.LogInfo(ae.Message);
-        } catch(InvalidOperationException){
-            Snowberry.LogInfo("Failed to paste (invalid data)");
-        }
-    }
 }
