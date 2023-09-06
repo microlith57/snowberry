@@ -6,6 +6,9 @@ using Snowberry.Editor.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Color = Microsoft.Xna.Framework.Color;
+using Point = Microsoft.Xna.Framework.Point;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Snowberry.Editor.Tools;
 
@@ -32,9 +35,9 @@ public class TileBrushTool : Tool {
     public List<Tileset> FgTilesets => Tileset.FgTilesets;
     public List<Tileset> BgTilesets => Tileset.BgTilesets;
 
-    private List<UIButton> fgTilesetButtons = new();
-    private List<UIButton> bgTilesetButtons = new();
-    private List<UIButton> modeButtons = new();
+    private readonly List<UIButton> fgTilesetButtons = new();
+    private readonly List<UIButton> bgTilesetButtons = new();
+    private readonly List<UIButton> modeButtons = new();
 
     private static bool isPainting;
 
@@ -47,7 +50,6 @@ public class TileBrushTool : Tool {
     public override UIElement CreatePanel(int height) {
         bgTilesetButtons.Clear();
         fgTilesetButtons.Clear();
-        modeButtons.Clear();
         UIElement panel = new UIElement {
             Width = 160,
             Background = Calc.HexToColor("202929") * (185 / 255f),
@@ -131,12 +133,13 @@ public class TileBrushTool : Tool {
 
     public override UIElement CreateActionBar() {
         UIElement brushTypes = new();
+        modeButtons.Clear();
         foreach (var mode in Enum.GetValues(typeof(TileBrushMode))) {
             var button = new UIButton(brushes.GetSubtexture(0, 16 * (int)mode, 16, 16), 3, 3) {
                 OnPress = () => LeftMode = (TileBrushMode)mode,
                 OnRightPress = () => RightMode = (TileBrushMode)mode
             };
-            brushTypes.AddRight(button, Vector2.One * 5);
+            brushTypes.AddRight(button, modeButtons.Count == 0 ? new(0, 4) : new(6, 4));
             modeButtons.Add(button);
         }
         brushTypes.CalculateBounds();
