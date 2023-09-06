@@ -137,7 +137,8 @@ public class TileBrushTool : Tool {
         foreach (var mode in Enum.GetValues(typeof(TileBrushMode))) {
             var button = new UIButton(brushes.GetSubtexture(0, 16 * (int)mode, 16, 16), 3, 3) {
                 OnPress = () => LeftMode = (TileBrushMode)mode,
-                OnRightPress = () => RightMode = (TileBrushMode)mode
+                OnRightPress = () => RightMode = (TileBrushMode)mode,
+                ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_TILE_BRUSH_{mode.ToString().ToUpperInvariant()}_TT")
             };
             brushTypes.AddRight(button, modeButtons.Count == 0 ? new(0, 4) : new(6, 4));
             modeButtons.Add(button);
