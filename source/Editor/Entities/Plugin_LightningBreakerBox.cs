@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace Snowberry.Editor.Entities;
 
-[Plugin("lightningBreakerBox")]
+[Plugin("lightningBlock")]
 public class Plugin_LightningBreakerBox : Entity {
     [Option("flipX")] public bool FlipX = false;
     [Option("musicProgress")] public int MusicProgress = -1;
@@ -24,6 +24,6 @@ public class Plugin_LightningBreakerBox : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Lightning Breaker Box", "lightningBreakerBox");
+        Placements.Create("Lightning Breaker Box", "lightningBlock");
     }
 }
