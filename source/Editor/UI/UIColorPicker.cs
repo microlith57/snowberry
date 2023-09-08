@@ -45,8 +45,8 @@ public class UIColorPicker : UIElement {
     public override void Update(Vector2 position = default) {
         base.Update(position);
 
-        int mouseX = (int)Editor.Mouse.Screen.X;
-        int mouseY = (int)Editor.Mouse.Screen.Y;
+        int mouseX = (int)Mouse.Screen.X;
+        int mouseY = (int)Mouse.Screen.Y;
         Rectangle svRect = new Rectangle((int)position.X + 1, (int)position.Y + 1, svWidth - 2, svHeight - 2);
         Rectangle wheelRect = new Rectangle((int)position.X + svWidth + 1, (int)position.Y + 1, wheelWidth - 2, svHeight - 2);
 

@@ -309,7 +309,7 @@ public class Room {
                 Rectangle mainRect = s.Entity.SelectionRectangles[0];
                 string str = $"#{s.Entity.EntityID}";
                 Vector2 size = Fonts.Regular.Measure(str) * 0.5f;
-                float opacity = mainRect.Contains((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y) ? 1 : 0.4f;
+                float opacity = mainRect.Contains((int)Mouse.World.X, (int)Mouse.World.Y) ? 1 : 0.4f;
                 Draw.Rect(new Vector2(mainRect.X, mainRect.Y), size.X + 3, size.Y + 2, Color.Black * opacity);
                 Fonts.Regular.Draw(str,  new(mainRect.X + 1, mainRect.Y + 1), new(0.5f), Color.White);
             }
@@ -405,7 +405,8 @@ public class Room {
 
             foreach (var node in entity.Nodes)
                 entityElem.Children.Add(new Element {
-                    Attributes = new Dictionary<string, object> {
+                    Name = "node", // for loenn compatibility
+                    Attributes = new() {
                         ["x"] = node.X - X * 8,
                         ["y"] = node.Y - Y * 8
                     }
@@ -438,6 +439,7 @@ public class Room {
 
             foreach (var node in trigger.Nodes)
                 triggersElem.Children.Add(new Element {
+                    Name = "node", // for loenn compatibility
                     Attributes = new Dictionary<string, object> {
                         ["x"] = node.X - X * 8,
                         ["y"] = node.Y - Y * 8

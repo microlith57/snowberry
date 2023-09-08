@@ -11,28 +11,34 @@ class UILabel : UIElement {
     public Color FG = Calc.HexToColor("f0f0f0");
     public bool Underline = false, Strikethrough = false;
     public string LabelTooltip;
+    public float Scale = 1;
 
-    public UILabel(Func<string> text) : this(Fonts.Regular, (int)Fonts.Regular.Measure(text()).X, text) { }
+    public UILabel(Func<string> text) : this(Fonts.Regular, (int)Fonts.Regular.Measure(text()).X, text, 1) { }
 
-    public UILabel(string text) : this(Fonts.Regular, (int)Fonts.Regular.Measure(text).X, () => text) { }
+    public UILabel(string text) : this(Fonts.Regular, (int)Fonts.Regular.Measure(text).X, () => text, 1) { }
 
-    public UILabel(string text, Font font) : this(font, (int)font.Measure(text).X, () => text) { }
+    public UILabel(string text, Font font) : this(font, (int)font.Measure(text).X, () => text, 1) { }
 
-    public UILabel(Font font, int width, Func<string> input) {
+    public UILabel(string text, float scale) : this(Fonts.Regular, (int)(Fonts.Regular.Measure(text).X * scale), () => text, scale) { }
+
+    public UILabel(string text, Font font, float scale) : this(font, (int)(font.Measure(text).X * scale), () => text, scale) { }
+
+    public UILabel(Font font, int width, Func<string> input, float scale) {
         this.font = font;
         Width = Math.Max(1, width);
         Height = font.LineHeight;
         Value = input;
+        Scale = scale;
     }
 
     public override void Render(Vector2 position = default) {
         base.Render(position);
 
-        font.Draw(Value(), position, Vector2.One, FG);
+        font.Draw(Value(), position, new(Scale), FG);
         if (Underline)
-            Draw.Rect(position + Vector2.UnitY * Height, Width, 1, FG);
+            Draw.Rect(position + Vector2.UnitY * Height * Scale, Width, Scale, FG);
         if (Strikethrough)
-            Draw.Rect(position + Vector2.UnitY * (Height / 2), Width, 1, Color.Lerp(FG, Color.Black, 0.25f));
+            Draw.Rect(position + Vector2.UnitY * (Height / 2) * Scale, Width, Scale, Color.Lerp(FG, Color.Black, 0.25f));
     }
 
     public override string Tooltip() => LabelTooltip;

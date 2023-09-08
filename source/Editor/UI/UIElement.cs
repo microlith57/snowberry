@@ -139,7 +139,7 @@ public class UIElement {
             return getter(this);
 
         foreach (var child in Children)
-            if (child.Bounds.Contains(Editor.Mouse.Screen.ToPoint())) {
+            if (child.Bounds.Contains(Mouse.Screen.ToPoint())) {
                 var p = child.HoveredChildProperty(getter, ignore);
                 if (!Equals(p, ignore))
                     return p;

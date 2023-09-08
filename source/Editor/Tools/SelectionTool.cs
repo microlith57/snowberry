@@ -89,13 +89,13 @@ public class SelectionTool : Tool {
         }
 
         if (MInput.Mouse.CheckLeftButton && canClick) {
-            Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
-            Vector2 world = Editor.Mouse.World;
+            Point mouse = new Point((int)Mouse.World.X, (int)Mouse.World.Y);
+            Vector2 world = Mouse.World;
 
             // double click -> select all of type
-            if (Editor.SelectedRoom != null && Editor.Mouse.IsDoubleClick) {
+            if (Editor.SelectedRoom != null && Mouse.IsDoubleClick) {
                 // first get everything under the mouse
-                Editor.SelectedObjects = Editor.SelectedRoom.GetSelectedObjects(Editor.Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals);
+                Editor.SelectedObjects = Editor.SelectedRoom.GetSelectedObjects(Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals);
                 // then get all types of those entities
                 HashSet<string> entityTypes = new(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity.Name));
                 // clear the current selection
@@ -113,10 +113,10 @@ public class SelectionTool : Tool {
             }
 
             if (canSelect && Editor.SelectedRoom != null) {
-                int ax = (int)Math.Min(Editor.Mouse.World.X, editor.worldClick.X);
-                int ay = (int)Math.Min(Editor.Mouse.World.Y, editor.worldClick.Y);
-                int bx = (int)Math.Max(Editor.Mouse.World.X, editor.worldClick.X);
-                int by = (int)Math.Max(Editor.Mouse.World.Y, editor.worldClick.Y);
+                int ax = (int)Math.Min(Mouse.World.X, editor.worldClick.X);
+                int ay = (int)Math.Min(Mouse.World.Y, editor.worldClick.Y);
+                int bx = (int)Math.Max(Mouse.World.X, editor.worldClick.X);
+                int by = (int)Math.Max(Mouse.World.Y, editor.worldClick.Y);
                 Editor.SelectionInProgress = new Rectangle(ax, ay, bx - ax, by - ay);
 
                 Editor.SelectedObjects = Editor.SelectedRoom.GetSelectedObjects(Editor.SelectionInProgress.Value, selectEntities, selectTriggers, selectFgDecals, selectBgDecals);
@@ -126,13 +126,13 @@ public class SelectionTool : Tool {
                 if (solo != null) {
                     if (MInput.Mouse.PressedLeftButton) {
                         // TODO: can this be shared between RoomTool & SelectionTool?
-                        fromLeft = Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
-                        resizingX = solo.MinWidth > -1 && (Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft);
-                        fromTop = Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
-                        resizingY = solo.MinHeight > -1 && (Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop);
+                        fromLeft = Math.Abs(Mouse.World.X - solo.Position.X) <= 4;
+                        resizingX = solo.MinWidth > -1 && (Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft);
+                        fromTop = Math.Abs(Mouse.World.Y - solo.Position.Y) <= 4;
+                        resizingY = solo.MinHeight > -1 && (Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop);
                         oldEntityBounds = solo.Bounds;
                     } else if (resizingX || resizingY) {
-                        var wSnapped = Editor.Mouse.World.RoundTo(8);
+                        var wSnapped = Mouse.World.RoundTo(8);
                         if (resizingX) {
                             // compare against the opposite edge
                             solo.SetWidth(Math.Max((int)Math.Round((fromLeft ? oldEntityBounds.Right - world.X : world.X - solo.X) / 8f) * 8, solo.MinWidth));
@@ -153,8 +153,8 @@ public class SelectionTool : Tool {
 
                 // otherwise, move
                 bool noSnap = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
-                Vector2 worldSnapped = noSnap ? Editor.Mouse.World : Editor.Mouse.World.RoundTo(8);
-                Vector2 worldLastSnapped = noSnap ? Editor.Mouse.WorldLast : Editor.Mouse.WorldLast.RoundTo(8);
+                Vector2 worldSnapped = noSnap ? Mouse.World : Mouse.World.RoundTo(8);
+                Vector2 worldLastSnapped = noSnap ? Mouse.WorldLast : Mouse.WorldLast.RoundTo(8);
                 Vector2 move = worldSnapped - worldLastSnapped;
                 foreach (Selection s in Editor.SelectedObjects)
                     s.Move(move);
@@ -260,7 +260,7 @@ public class SelectionTool : Tool {
     public override void RenderWorldSpace() {
         base.RenderWorldSpace();
         if (Editor.SelectedRoom != null) {
-            foreach (var item in Editor.SelectedRoom.GetSelectedObjects(Editor.Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals))
+            foreach (var item in Editor.SelectedRoom.GetSelectedObjects(Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals))
                 if (Editor.SelectedObjects == null || !Editor.SelectedObjects.Contains(item))
                     foreach (var s in item.Rectangles())
                         Draw.Rect(s, Color.Blue * 0.15f);
@@ -282,7 +282,7 @@ public class SelectionTool : Tool {
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
-        Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
+        Point mouse = new Point((int)Mouse.World.X, (int)Mouse.World.Y);
 
         // hovering over a selected entity? movement arrow
         if (Editor.SelectedObjects != null && Editor.SelectedObjects.Any(s => s.Contains(mouse))) {
@@ -292,10 +292,10 @@ public class SelectionTool : Tool {
             // only have 1 entity selected & at the borders? show resizing tooltips
             Entity solo = GetSoloEntity();
             if (solo != null) {
-                var fromLeft = solo.MinWidth > -1 && Math.Abs(Editor.Mouse.World.X - solo.Position.X) <= 4;
-                var fromRight = solo.MinWidth > -1 && Math.Abs(Editor.Mouse.World.X - (solo.Position.X + solo.Width)) <= 4;
-                var fromTop = solo.MinHeight > -1 && Math.Abs(Editor.Mouse.World.Y - solo.Position.Y) <= 4;
-                var fromBottom = solo.MinHeight > -1 && Math.Abs(Editor.Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4;
+                var fromLeft = solo.MinWidth > -1 && Math.Abs(Mouse.World.X - solo.Position.X) <= 4;
+                var fromRight = solo.MinWidth > -1 && Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= 4;
+                var fromTop = solo.MinHeight > -1 && Math.Abs(Mouse.World.Y - solo.Position.Y) <= 4;
+                var fromBottom = solo.MinHeight > -1 && Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4;
                 if (fromLeft || fromRight || fromTop || fromBottom) {
                     if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
                         cursor = Editor.cursors.GetSubtexture(32, 32, 16, 16);
@@ -332,7 +332,7 @@ public class SelectionTool : Tool {
 
     private static void AdjustPastedEntities() {
         Rectangle cover = CoveringRect(toPaste.Select(e => e.Bounds).Concat(toPaste.SelectMany(e => e.Nodes.Select(Util.ToRect))).ToList());
-        Vector2 offset = (Editor.Mouse.World - cover.Center.ToVector2()).RoundTo(8);
+        Vector2 offset = (Mouse.World - cover.Center.ToVector2()).RoundTo(8);
         foreach(Entity e in toPaste){
             e.Move(offset);
             for (int i = 0; i < e.Nodes.Count; i++)

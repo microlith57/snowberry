@@ -101,17 +101,6 @@ public class Editor : Scene {
         }
     }
 
-    public static class Mouse {
-        public static Vector2 Screen { get; internal set; }
-        public static Vector2 ScreenLast { get; internal set; }
-
-        public static Vector2 World { get; internal set; }
-        public static Vector2 WorldLast { get; internal set; }
-
-        public static DateTime LastClick { get; internal set; }
-        public static bool IsDoubleClick => MInput.Mouse.PressedLeftButton && DateTime.Now < LastClick.AddMilliseconds(200);
-    }
-
     public static Editor Instance { get; private set; }
 
     // just forward to settings
@@ -121,8 +110,8 @@ public class Editor : Scene {
 
     public static readonly MTexture cursors = GFX.Gui["Snowberry/cursors"];
     public static readonly Color bg = Calc.HexToColor("060607");
-    private readonly MTexture defaultCursor = cursors.GetSubtexture(0, 0, 16, 16);
-    private readonly MTexture panningCursor = cursors.GetSubtexture(32, 16, 16, 16);
+    public static readonly MTexture defaultCursor = cursors.GetSubtexture(0, 0, 16, 16);
+    public static readonly MTexture panningCursor = cursors.GetSubtexture(32, 16, 16, 16);
 
     public static readonly MTexture actionbarIcons = GFX.Gui["Snowberry/actionbar_icons"];
 
@@ -432,9 +421,8 @@ public class Editor : Scene {
         }
 
         // Double click
-        if (MInput.Mouse.PressedLeftButton) {
+        if (MInput.Mouse.PressedLeftButton)
             Mouse.LastClick = DateTime.Now;
-        }
     }
 
     public void SwitchTool(int toolIdx) {

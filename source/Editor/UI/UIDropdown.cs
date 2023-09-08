@@ -88,8 +88,8 @@ public class UIDropdown : UIElement {
         base.Update();
         hoverIdx = -1;
 
-        int mouseX = (int)Editor.Mouse.Screen.X;
-        int mouseY = (int)Editor.Mouse.Screen.Y;
+        int mouseX = (int)Mouse.Screen.X;
+        int mouseY = (int)Mouse.Screen.Y;
         for (int i = 0; i < entries.Count; i++) {
             if (new Rectangle((int)position.X + 1, (int)(position.Y + YPosFor(i)) + 1 + 4, Width - 2, (int)font.Measure(entries[i].Label).Y + 4).Contains(mouseX, mouseY)) {
                 hoverIdx = i;

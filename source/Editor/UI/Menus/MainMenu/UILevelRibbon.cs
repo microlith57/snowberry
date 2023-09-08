@@ -59,7 +59,7 @@ public class UILevelRibbon : UIRibbon {
         Name = area.Name;
         raw = Dialog.Has(Name) ? $"» {Name}" : "...";
 
-        ModeProperties[] modes = area.Mode.Where(m => m != null).ToArray();
+        ModeProperties[] modes = area.Mode.Where(m => m?.MapData != null).ToArray();
         if (dropdown = modes.Length > 1) {
             h = modes.Length * 13 + 1;
             for (int i = 0; i < modes.Length; i++) {
@@ -100,8 +100,8 @@ public class UILevelRibbon : UIRibbon {
     public override void Update(Vector2 position = default) {
         base.Update(position);
 
-        int mouseX = (int)Editor.Mouse.Screen.X;
-        int mouseY = (int)Editor.Mouse.Screen.Y;
+        int mouseX = (int)Mouse.Screen.X;
+        int mouseY = (int)Mouse.Screen.Y;
         hover = !Editor.Message.Shown && Visible &&
                 new Rectangle((int)position.X + 16, (int)position.Y - 1, Width + w, Height + H + 2).Contains(mouseX, mouseY);
 

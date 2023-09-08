@@ -170,7 +170,7 @@ public class TileBrushTool : Tool {
             if (mode != TileBrushMode.Eyedropper) {
                 isPainting = true;
             } else if(Editor.SelectedRoom != null) {
-                Vector2 tilePos = new((float)Math.Floor(Editor.Mouse.World.X / 8) * 8, (float)Math.Floor(Editor.Mouse.World.Y / 8) * 8);
+                Vector2 tilePos = new((float)Math.Floor(Mouse.World.X / 8) * 8, (float)Math.Floor(Mouse.World.Y / 8) * 8);
                 bool lookBg = MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift);
                 char at = Editor.SelectedRoom.GetTile(!lookBg, tilePos);
                 if (left) {
@@ -200,7 +200,7 @@ public class TileBrushTool : Tool {
             holoBgTileMap = null;
             holoGrid = null;
         } else if ((MInput.Mouse.CheckLeftButton || (middlePan && MInput.Mouse.CheckRightButton)) && Editor.SelectedRoom != null) {
-            var tilePos = new Vector2((float)Math.Floor(Editor.Mouse.World.X / 8 - Editor.SelectedRoom.Position.X), (float)Math.Floor(Editor.Mouse.World.Y / 8 - Editor.SelectedRoom.Position.Y));
+            var tilePos = new Vector2((float)Math.Floor(Mouse.World.X / 8 - Editor.SelectedRoom.Position.X), (float)Math.Floor(Mouse.World.Y / 8 - Editor.SelectedRoom.Position.Y));
             int x = (int)tilePos.X;
             int y = (int)tilePos.Y;
             if (Editor.SelectedRoom.Bounds.Contains((int)(x + Editor.SelectedRoom.Position.X), (int)(y + Editor.SelectedRoom.Position.Y))) {
@@ -375,7 +375,7 @@ public class TileBrushTool : Tool {
 
         bool middlePan = Snowberry.Settings.MiddleClickPan;
         bool isUsingAlt = (middlePan && MInput.Mouse.CheckRightButton) || (!middlePan && MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt));
-        Vector2 tilePos = new((float)Math.Floor(Editor.Mouse.World.X / 8) * 8, (float)Math.Floor(Editor.Mouse.World.Y / 8) * 8);
+        Vector2 tilePos = new((float)Math.Floor(Mouse.World.X / 8) * 8, (float)Math.Floor(Mouse.World.Y / 8) * 8);
 
         if (isPainting && Editor.SelectedRoom != null) {
             var fg = MInput.Mouse.CheckLeftButton ? LeftFg : RightFg;
@@ -397,13 +397,13 @@ public class TileBrushTool : Tool {
     public override void RenderScreenSpace() {
         bool middlePan = Snowberry.Settings.MiddleClickPan;
         bool isUsingAlt = (middlePan && MInput.Mouse.CheckRightButton) || (!middlePan && MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt));
-        Vector2 tilePos = new((float)Math.Floor(Editor.Mouse.World.X / 8) * 8, (float)Math.Floor(Editor.Mouse.World.Y / 8) * 8);
+        Vector2 tilePos = new((float)Math.Floor(Mouse.World.X / 8) * 8, (float)Math.Floor(Mouse.World.Y / 8) * 8);
 
         if ((isUsingAlt ? RightMode : LeftMode) == TileBrushMode.Eyedropper && Editor.SelectedRoom != null) {
             bool lookBg = MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift);
             char at = Editor.SelectedRoom.GetTile(!lookBg, tilePos);
             Tileset t = Tileset.ByKey(at, lookBg);
-            RenderTileGrid(Editor.Mouse.Screen + new Vector2(16, -16), t.Tile, Color.White, 2);
+            RenderTileGrid(Mouse.Screen + new Vector2(16, -16), t.Tile, Color.White, 2);
         }
     }
 

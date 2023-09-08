@@ -43,7 +43,7 @@ public class RoomTool : Tool {
             if (Editor.Instance.ToolPanel is UIRoomSelectionPanel selectionPanel)
                 selectionPanel.Refresh();
             if (curRoom != null) {
-                lastRoomOffset = curRoom.Position - (Editor.Mouse.World / 8);
+                lastRoomOffset = curRoom.Position - (Mouse.World / 8);
                 oldRoomBounds = curRoom.Bounds;
             }
         }
@@ -51,17 +51,17 @@ public class RoomTool : Tool {
         // move, resize, add rooms
         if (canClick && curRoom != null && !justSwitched) {
             if (MInput.Mouse.PressedLeftButton) {
-                lastRoomOffset = curRoom.Position - (Editor.Mouse.World / 8);
+                lastRoomOffset = curRoom.Position - (Mouse.World / 8);
                 // check if the mouse is 8 pixels from the room's borders
-                fromLeft = Math.Abs(Editor.Mouse.World.X / 8f - curRoom.Position.X) < 1;
-                resizingX = Math.Abs(Editor.Mouse.World.X / 8f - (curRoom.Position.X + curRoom.Width)) < 1
+                fromLeft = Math.Abs(Mouse.World.X / 8f - curRoom.Position.X) < 1;
+                resizingX = Math.Abs(Mouse.World.X / 8f - (curRoom.Position.X + curRoom.Width)) < 1
                             || fromLeft;
-                fromTop = Math.Abs(Editor.Mouse.World.Y / 8f - curRoom.Position.Y) < 1;
-                resizingY = Math.Abs(Editor.Mouse.World.Y / 8f - (curRoom.Position.Y + curRoom.Height)) < 1
+                fromTop = Math.Abs(Mouse.World.Y / 8f - curRoom.Position.Y) < 1;
+                resizingY = Math.Abs(Mouse.World.Y / 8f - (curRoom.Position.Y + curRoom.Height)) < 1
                             || fromTop;
                 oldRoomBounds = curRoom.Bounds;
             } else if (MInput.Mouse.CheckLeftButton) {
-                Vector2 world = Editor.Mouse.World / 8;
+                Vector2 world = Mouse.World / 8;
                 var offset = lastRoomOffset ?? Vector2.Zero;
                 if (!resizingX && !resizingY) {
                     var newX = (int)(world + offset).X;
@@ -125,7 +125,7 @@ public class RoomTool : Tool {
             if (curRoom == null && Editor.SelectedFillerIndex == -1) {
                 if (MInput.Mouse.CheckLeftButton) {
                     var lastPress = (Editor.Instance.worldClick / 8).Ceiling() * 8;
-                    var mpos = (Editor.Mouse.World / 8).Ceiling() * 8;
+                    var mpos = (Mouse.World / 8).Ceiling() * 8;
                     int ax = (int)Math.Min(mpos.X, lastPress.X);
                     int ay = (int)Math.Min(mpos.Y, lastPress.Y);
                     int bx = (int)Math.Max(mpos.X, lastPress.X);
@@ -171,7 +171,7 @@ public class RoomTool : Tool {
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
         var curRoom = Editor.SelectedRoom;
-        Point mouse = new Point((int)Editor.Mouse.World.X, (int)Editor.Mouse.World.Y);
+        Point mouse = new Point((int)Mouse.World.X, (int)Mouse.World.Y);
         // over another room/filler that isn't selected? just the default
         Room over = Editor.Instance.Map.GetRoomAt(mouse);
         if ((over != null && over != curRoom) || Editor.Instance.Map.GetFillerIndexAt(mouse) != -1) {
@@ -189,10 +189,10 @@ public class RoomTool : Tool {
             return;
         // then we must be hovered over the current room
         // resizing? use the appropriate cursor
-        var fromLeft = Math.Abs(Editor.Mouse.World.X / 8f - curRoom.Position.X) < 1;
-        var fromRight = Math.Abs(Editor.Mouse.World.X / 8f - (curRoom.Position.X + curRoom.Width)) < 1;
-        var fromTop = Math.Abs(Editor.Mouse.World.Y / 8f - curRoom.Position.Y) < 1;
-        var fromBottom = Math.Abs(Editor.Mouse.World.Y / 8f - (curRoom.Position.Y + curRoom.Height)) < 1;
+        var fromLeft = Math.Abs(Mouse.World.X / 8f - curRoom.Position.X) < 1;
+        var fromRight = Math.Abs(Mouse.World.X / 8f - (curRoom.Position.X + curRoom.Width)) < 1;
+        var fromTop = Math.Abs(Mouse.World.Y / 8f - curRoom.Position.Y) < 1;
+        var fromBottom = Math.Abs(Mouse.World.Y / 8f - (curRoom.Position.Y + curRoom.Height)) < 1;
         if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
             cursor = Editor.cursors.GetSubtexture(32, 32, 16, 16);
             return;

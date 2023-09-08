@@ -100,7 +100,7 @@ public class PlacementTool : Tool {
             UpdateEntity(preview);
 
         if (MInput.Mouse.PressedLeftButton || (middlePan && MInput.Mouse.PressedRightButton))
-            lastPress = Editor.Mouse.World;
+            lastPress = Mouse.World;
         else if (!MInput.Mouse.CheckLeftButton && !(middlePan && MInput.Mouse.CheckRightButton)) {
             lastPress = null;
             startedDrag = false;
@@ -140,7 +140,7 @@ public class PlacementTool : Tool {
 
     private void UpdateEntity(Entity e) {
         var ctrl = MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl);
-        Vector2 mpos = ctrl ? Editor.Mouse.World : Editor.Mouse.World.RoundTo(8);
+        Vector2 mpos = ctrl ? Mouse.World : Mouse.World.RoundTo(8);
         UpdateSize(e, mpos);
 
         if (lastPress != null) {
