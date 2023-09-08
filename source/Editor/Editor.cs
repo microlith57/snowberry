@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Celeste;
 using Celeste.Mod;
 using Celeste.Mod.Meta;
@@ -7,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
+using Snowberry.Editor.Entities;
 using Snowberry.Editor.UI;
 using Snowberry.Editor.UI.Menus;
 
@@ -250,6 +252,12 @@ public class Editor : Scene {
                 generatePlaytestMapData = true;
                 PlaytestMapData = new MapData(Map.From);
                 PlaytestSession = new Session(Map.From);
+                if (SelectedRoom != null) {
+                    PlaytestSession.RespawnPoint = SelectedRoom.Entities.OfType<Plugin_Player>().FirstOrDefault()?.Position;
+                    PlaytestSession.Level = SelectedRoom.Name;
+                    PlaytestSession.StartedFromBeginning = false;
+                }
+
                 LevelEnter.Go(PlaytestSession, true);
                 generatePlaytestMapData = false;
             },
@@ -405,13 +413,13 @@ public class Editor : Scene {
             tool.Update(canClick);
 
             // keybinds
-            if (CanTypeShortcut() && (MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl))) {
+            if (CanTypeShortcut() && (MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl))) {
                 bool save = false;
                 if (MInput.Keyboard.Pressed(Keys.F)) {
                     Snowberry.Settings.FancyRender = !Snowberry.Settings.FancyRender;
                     save = true;
                 }
-                if (MInput.Keyboard.Pressed(Keys.P)) {
+                if (MInput.Keyboard.Pressed(Keys.L)) {
                     Snowberry.Settings.StylegroundsPreview = !Snowberry.Settings.StylegroundsPreview;
                     save = true;
                 }
