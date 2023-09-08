@@ -56,16 +56,20 @@ public class Map {
         // TODO: crashes in vanilla maps, pretty sure it's not actually necessary?
         //new MapDataFixup(data).Process(FromRaw);
 
-        if (FromRaw.Children?.Find(element => element.Name == "meta") is {} metaElem)
+        if (FromRaw.Children?.Find(element => element.Name == "meta") is {} metaElem) {
             Meta = new MapMeta(metaElem);
-        if (Meta.Modes.Length < 3) {
-            var tmp = Meta.Modes; // thank you C#, very cool
-            Array.Resize(ref tmp, 3);
-            Meta.Modes = tmp;
+            if (Meta.Modes.Length < 3) {
+                var tmp = Meta.Modes; // thank you C#, very cool
+                Array.Resize(ref tmp, 3);
+                Meta.Modes = tmp;
+            }
+            for (int i = 0; i < Meta.Modes.Length; i++)
+                Meta.Modes[i] ??= new();
+            if (metaElem.Children?.Find(element => element.Name == "mode") is {} modeElem)
+                // handled separately in MapData by everest
+                Meta.Modes[0].Parse(modeElem);
+            Meta.Modes[0].SeekerSlowdown ??= true; // see above
         }
-        for (int i = 0; i < Meta.Modes.Length; i++)
-            Meta.Modes[i] ??= new();
-        Meta.Modes[0].SeekerSlowdown ??= true; // see above
 
         Editor.CopyAreaData(targetData, playtestData);
         SetupGraphics(Meta);
