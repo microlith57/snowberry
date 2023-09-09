@@ -104,7 +104,7 @@ public class Editor : UIScene {
         }
     }
 
-    public static Editor Instance { get; private set; }
+    public static new Editor Instance { get; private set; }
 
     // just forward to settings
     // don't expose setter here to make it explicit that changing this == changing user settings
@@ -113,7 +113,6 @@ public class Editor : UIScene {
 
     public static readonly MTexture panningCursor = CursorsAtlas.GetSubtexture(32, 16, 16, 16);
 
-    private bool fadeIn = false;
     public BufferCamera Camera { get; private set; }
 
     public Vector2 mousePos, lastMousePos;
@@ -188,10 +187,7 @@ public class Editor : UIScene {
         }
 
         var _ = new FadeWipe(Engine.Scene, false, () => {
-            Editor e = new(map) {
-                fadeIn = true
-            };
-            Engine.Scene = e;
+            Engine.Scene = new Editor(map);
         }) {
             Duration = data != null ? 0.3f : 0.85f
         };
