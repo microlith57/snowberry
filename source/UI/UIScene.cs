@@ -31,6 +31,8 @@ public abstract class UIScene : Scene {
         UI.Width = UIBuffer.Width;
         UI.Height = UIBuffer.Height;
 
+        BeginContent();
+
         UI.Add(Message = new UIMessage {
             Width = UI.Width,
             Height = UI.Height
@@ -108,6 +110,7 @@ public abstract class UIScene : Scene {
         #endregion
     }
 
+    protected virtual void BeginContent() {}
     protected virtual void RenderContent() {}
     protected virtual void UpdateContent() {}
     protected virtual Vector2 CalculateMouseWorld(MouseState m) => new Vector2(m.X, m.Y) / 2;

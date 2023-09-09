@@ -18,9 +18,7 @@ public class Surgery : UIScene {
         this.elem = elem;
     }
 
-    public override void Begin() {
-        base.Begin();
-
+    protected override void BeginContent() {
         SurgeryUi();
     }
 

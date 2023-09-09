@@ -209,10 +209,9 @@ public class Editor : UIScene {
         ActionBar = new() {
             Background = Calc.HexToColor("202929") * 0.4f,
             GrabsClick = true,
-            Height = 33,
-            Position = new(0, Toolbar.Height)
+            Height = 33
         };
-        UI.Add(ActionBar);
+        UI.AddBelow(ActionBar);
 
         ActionBar.AddRight(new UILabel($"{From?.SID ?? "(new map)"}"), new Vector2(10, 12));
 
@@ -306,17 +305,12 @@ public class Editor : UIScene {
         };
         ActionBar.AddRight(exit, new(6, 4));
 
-        var roomLabel = new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}") {
-            Position = ActionBar.Position + new Vector2(10, ActionBar.Height + 10)
-        };
-        UI.Add(roomLabel);
+        UI.AddBelow(new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}"), new(10));
 
         SwitchTool(0);
     }
 
-    public override void Begin() {
-        base.Begin();
-
+    protected override void BeginContent() {
         Camera = new BufferCamera();
 
         if (Map == null)
