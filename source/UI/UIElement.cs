@@ -16,6 +16,7 @@ public class UIElement {
     public List<UIElement> Children = new();
     public bool Visible = true;
     public bool RenderChildren = true;
+    public bool Destroyed = false;
 
     public Vector2 Position;
     public int Width, Height;
@@ -24,7 +25,7 @@ public class UIElement {
     public bool GrabsScroll = false;
     public bool GrabsClick = false;
 
-    public string Tag = "";
+    public object Tag = "";
 
     public Rectangle Bounds => new((int)(Position.X + (Parent?.Bounds.X ?? 0) + (Parent?.BoundsOffset().X ?? 0)), (int)(Position.Y + (Parent?.Bounds.Y ?? 0) + (Parent?.BoundsOffset().Y ?? 0)), Width, Height);
 
@@ -75,7 +76,9 @@ public class UIElement {
 
     protected virtual void Initialize() { }
 
-    protected virtual void OnDestroy() { }
+    protected virtual void OnDestroy() {
+        Destroyed = true;
+    }
 
     public virtual string Tooltip() => null;
 
@@ -146,9 +149,18 @@ public class UIElement {
         toRemove.Add(elem);
     }
 
-    public void RemoveAll(ICollection<UIElement> elems) {
+    public void RemoveNow(UIElement elem) {
+        Children.Remove(elem);
+    }
+
+    public void RemoveAll(IEnumerable<UIElement> elems) {
         foreach (var item in elems)
             Remove(item);
+    }
+
+    public void RemoveAllNow(IEnumerable<UIElement> elems) {
+        foreach (var item in elems)
+            RemoveNow(item);
     }
 
     public T HoveredChildProperty<T>(Func<UIElement, T> getter, T ignore = default) {
@@ -205,7 +217,7 @@ public class UIElement {
     }
 
     public T ChildWithTag<T>(string tag) where T : UIElement =>
-        Children.OfType<T>().FirstOrDefault(child => string.Equals(child.Tag, tag));
+        Children.OfType<T>().FirstOrDefault(child => Equals(child.Tag, tag));
 
     public T NestedChildWithTag<T>(string tag) where T : UIElement =>
         ChildWithTag<T>(tag) ?? Children.Select(child => child.NestedChildWithTag<T>(tag)).FirstOrDefault(ret => ret != null);

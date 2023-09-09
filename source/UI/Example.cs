@@ -192,5 +192,28 @@ public class Example : UIScene {
         searchDemo.AddBelow(searchable, new(0, 5));
 
         content.AddRight(searchDemo, new(20, 10));
+
+        // woooooooooooo
+        UITextField text = new UITextField(Fonts.Regular, 200);
+        content.AddRight(text, new(20));
+        var drop2downButton = new UIButton("\uF036", Fonts.Regular, 2, 2) {
+            OnPress = () => {
+                List<List<string>> texts = GFX.Game.Textures.Keys
+                    .Select(x => x.Split('/').ToList())
+                    .Where(x => x.Count > 0 && x[0] == "bgs")
+                    .ToList();
+                Tree<string> theBigOne = Tree<string>.FromPrefixes(texts, "");
+                UIMultiDropdown<string> dd = new UIMultiDropdown<string>(theBigOne, x => new UIDropdown.DropdownEntry(x.Value, null) {
+                    OnPress = () => {
+                        string entire = x.AggregateUp((l, r) => l + "/" + r).Substring(1);
+                        text.UpdateInput(entire);
+                    }
+                }) {
+                    Position = text.GetBoundsPos() + new Vector2(-2, text.Height + 3) - content.GetBoundsPos()
+                };
+                content.Add(dd);
+            }
+        };
+        content.AddRight(drop2downButton, new(3, 18));
     }
 }
