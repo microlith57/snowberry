@@ -181,7 +181,7 @@ public class RoomTool : Tool {
         justify = Vector2.One / 2f;
         // over empty space? then a plus
         if (over == null) {
-            cursor = Editor.cursors.GetSubtexture(0, 16, 16, 16);
+            cursor = Editor.CursorsAtlas.GetSubtexture(0, 16, 16, 16);
             return;
         }
         // if nothing is selected then these can be the only two
@@ -194,22 +194,22 @@ public class RoomTool : Tool {
         var fromTop = Math.Abs(Mouse.World.Y / 8f - curRoom.Position.Y) < 1;
         var fromBottom = Math.Abs(Mouse.World.Y / 8f - (curRoom.Position.Y + curRoom.Height)) < 1;
         if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
-            cursor = Editor.cursors.GetSubtexture(32, 32, 16, 16);
+            cursor = Editor.CursorsAtlas.GetSubtexture(32, 32, 16, 16);
             return;
         }
         if ((fromTop && fromLeft) || (fromBottom && fromRight)) {
-            cursor = Editor.cursors.GetSubtexture(48, 32, 16, 16);
+            cursor = Editor.CursorsAtlas.GetSubtexture(48, 32, 16, 16);
             return;
         }
         if (fromLeft || fromRight) {
-            cursor = Editor.cursors.GetSubtexture(0, 32, 16, 16);
+            cursor = Editor.CursorsAtlas.GetSubtexture(0, 32, 16, 16);
             return;
         }
         if (fromBottom || fromTop) {
-            cursor = Editor.cursors.GetSubtexture(16, 32, 16, 16);
+            cursor = Editor.CursorsAtlas.GetSubtexture(16, 32, 16, 16);
             return;
         }
 
-        cursor = Editor.cursors.GetSubtexture(16, 16, 16, 16);
+        cursor = Editor.CursorsAtlas.GetSubtexture(16, 16, 16, 16);
     }
 }

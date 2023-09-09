@@ -55,10 +55,10 @@ public class UIScrollPane : UIElement {
         bool hovered = Bounds.Contains((int)Mouse.Screen.X, (int)Mouse.Screen.Y);
 
         // pretend that the mouse has already been clicked if the mouse is outside of the scroll pane's bounds
-        bool mouseClicked = Editor.Editor.MouseClicked;
-        Editor.Editor.MouseClicked = !hovered || mouseClicked;
+        bool mouseClicked = UIScene.Instance.MouseClicked;
+        UIScene.Instance.MouseClicked = !hovered || mouseClicked;
         base.Update(position + ScrollOffset());
-        Editor.Editor.MouseClicked = mouseClicked;
+        UIScene.Instance.MouseClicked = mouseClicked;
 
         if (hovered)
             ScrollBy(MInput.Mouse.WheelDelta);

@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using Mouse = Snowberry.Mouse;
 
 namespace Snowberry.UI;
 
@@ -55,6 +54,23 @@ public class UIElement {
             foreach (UIElement element in Children)
                 if (element.Visible)
                     element.Render(position + element.Position);
+
+        if (UIScene.DebugShowUIBounds) {
+            Rectangle r = Bounds;
+            Color c = Color.Red;
+            // differentiate between "hovered but out of parent's (broken) bounds" and "hovered and in-bounds" for e.g. tooltips
+            var point = Mouse.Screen.ToPoint();
+            if (r.Contains(point)) {
+                UIElement p = this;
+                c = Color.Green;
+                while ((p = p.Parent) != null)
+                    if (!p.Bounds.Contains(point)) {
+                        c = Color.Orange;
+                        break;
+                    }
+            }
+            Draw.HollowRect(r, c);
+        }
     }
 
     protected virtual void Initialize() { }
@@ -162,8 +178,8 @@ public class UIElement {
     }
 
     private bool ConsumeClick() {
-        if (!Editor.Editor.MouseClicked) {
-            Editor.Editor.MouseClicked = true;
+        if (!UIScene.Instance.MouseClicked) {
+            UIScene.Instance.MouseClicked = true;
             return true;
         }
 

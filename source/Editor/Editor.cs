@@ -15,7 +15,7 @@ using Snowberry.UI.Menus.MainMenu;
 
 namespace Snowberry.Editor;
 
-public class Editor : Scene {
+public class Editor : UIScene {
     public class BufferCamera {
         private bool changedView = true;
 
@@ -111,25 +111,15 @@ public class Editor : Scene {
     public static bool FancyRender => Snowberry.Settings.FancyRender;
     public static bool StylegroundsPreviews => Snowberry.Settings.StylegroundsPreview;
 
-    public static readonly MTexture cursors = GFX.Gui["Snowberry/cursors"];
-    public static readonly Color bg = Calc.HexToColor("060607");
-    public static readonly MTexture defaultCursor = cursors.GetSubtexture(0, 0, 16, 16);
-    public static readonly MTexture panningCursor = cursors.GetSubtexture(32, 16, 16, 16);
-
-    public static readonly MTexture actionbarIcons = GFX.Gui["Snowberry/actionbar_icons"];
+    public static readonly MTexture panningCursor = CursorsAtlas.GetSubtexture(32, 16, 16, 16);
 
     private bool fadeIn = false;
     public BufferCamera Camera { get; private set; }
 
     public Vector2 mousePos, lastMousePos;
     public Vector2 worldClick;
-    public static bool MouseClicked = false;
 
     public Map Map { get; private set; }
-
-    private RenderTarget2D uiBuffer;
-    private readonly UIElement ui = new();
-    public static UIMessage Message { get; private set; }
 
     internal static Rectangle? SelectionInProgress;
     internal static Room SelectedRoom;
@@ -188,13 +178,11 @@ public class Editor : Scene {
         Engine.Scene = new Editor(map);
     }
 
-    internal static void OpenFancy(MapData data)
-    {
+    internal static void OpenFancy(MapData data) {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
         Map map = null;
-        if(data != null)
-        {
+        if (data != null) {
             Snowberry.Log(LogLevel.Info, $"Opening level editor using map {data.Area.GetSID()}");
             map = new Map(data);
         }
@@ -210,24 +198,25 @@ public class Editor : Scene {
     }
 
     private void MenuUI() {
-        ui.Add(new UIMainMenu(uiBuffer.Width, uiBuffer.Height));
+        UI.Add(new UIMainMenu(UIBuffer.Width, UIBuffer.Height));
     }
 
     private void MappingUI() {
         Toolbar = new UIToolbar(this);
-        ui.Add(Toolbar);
-        Toolbar.Width = uiBuffer.Width;
+        UI.Add(Toolbar);
+        Toolbar.Width = UIBuffer.Width;
 
         ActionBar = new() {
             Background = Calc.HexToColor("202929") * 0.4f,
             GrabsClick = true,
-            Height = 33
+            Height = 33,
+            Position = new(0, Toolbar.Height)
         };
-        ui.AddBelow(ActionBar);
+        UI.Add(ActionBar);
 
         ActionBar.AddRight(new UILabel($"{From?.SID ?? "(new map)"}"), new Vector2(10, 12));
 
-        if(From != null){
+        if (From != null) {
             ActionBar.AddRight(new UILabel(From.Value.Mode switch {
                 AreaMode.Normal => "A-Side",
                 AreaMode.BSide => "B-Side",
@@ -239,11 +228,7 @@ public class Editor : Scene {
             }, new Vector2(10, 11));
         }
 
-        string editorreturn = Dialog.Clean("SNOWBERRY_EDITOR_RETURN");
-        string editorplaytest = Dialog.Clean("SNOWBERRY_EDITOR_PLAYTEST");
-        string editorexport = Dialog.Clean("SNOWBERRY_EDITOR_EXPORT");
-
-        UIButton play = new UIKeyboundButton(actionbarIcons.GetSubtexture(0, 0, 16, 16), 3, 3) {
+        UIButton play = new UIKeyboundButton(ActionbarAtlas.GetSubtexture(0, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 Audio.SetMusic(null);
                 Audio.SetAmbience(null);
@@ -275,7 +260,7 @@ public class Editor : Scene {
         };
         ActionBar.AddRight(play, new(10, 4));
 
-        UIButton save = new UIKeyboundButton(actionbarIcons.GetSubtexture(16, 0, 16, 16), 3, 3) {
+        UIButton save = new UIKeyboundButton(ActionbarAtlas.GetSubtexture(16, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 if (From == null || Util.KeyToPath(From.Value) == null) {
                     // show a popup asking for a filename to save to
@@ -289,7 +274,8 @@ public class Editor : Scene {
                     // TODO: this UI code sucks
                     var element = UIElement.Regroup(info, newName);
                     Vector2 offset = new Vector2(element.Width / 2f, element.Height);
-                    info.Position -= offset; newName.Position -= offset;
+                    info.Position -= offset;
+                    newName.Position -= offset;
                     Message.AddElement(element, 0.5f, 0.5f, 0.5f, -0.1f);
                     var buttons = UIMessage.YesAndNoButtons(() => {
                         // no point auto-reloading when the map definitely doesn't exist yet
@@ -300,7 +286,7 @@ public class Editor : Scene {
                     Message.Shown = true;
                 } else {
                     BinaryExporter.ExportMap(Map);
-                    if(From != null)
+                    if (From != null)
                         AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () => AreaData.Areas[From.Value.ID].Mode[0].MapData.Reload());
                 }
             },
@@ -309,7 +295,7 @@ public class Editor : Scene {
         };
         ActionBar.AddRight(save, new(6, 4));
 
-        UIButton exit = new UIKeyboundButton(actionbarIcons.GetSubtexture(32, 0, 16, 16), 3, 3) {
+        UIButton exit = new UIKeyboundButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 // TODO: show an "are you sure" message
                 Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
@@ -320,8 +306,10 @@ public class Editor : Scene {
         };
         ActionBar.AddRight(exit, new(6, 4));
 
-        var roomLabel = new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}");
-        ui.AddBelow(roomLabel, new(10));
+        var roomLabel = new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}") {
+            Position = ActionBar.Position + new Vector2(10, ActionBar.Height + 10)
+        };
+        UI.Add(roomLabel);
 
         SwitchTool(0);
     }
@@ -331,39 +319,23 @@ public class Editor : Scene {
 
         Camera = new BufferCamera();
 
-        uiBuffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, Engine.ViewWidth / 2, Engine.ViewHeight / 2);
-        ui.Width = uiBuffer.Width;
-        ui.Height = uiBuffer.Height;
-
         if (Map == null)
             MenuUI();
         else
             MappingUI();
-
-        ui.Add(Message = new UIMessage {
-            Width = ui.Width,
-            Height = ui.Height
-        });
     }
 
     public override void End() {
         base.End();
         Camera.Buffer?.Dispose();
-        uiBuffer.Dispose();
-        ui.Destroy();
     }
 
-    public override void Update() {
-        base.Update();
-
-        Mouse.WorldLast = Mouse.World;
-        Mouse.ScreenLast = Mouse.Screen;
-
+    protected override void UpdateContent() {
         lastMousePos = mousePos;
         mousePos = MInput.Mouse.Position;
 
         // zooming
-        bool canZoom = ui.CanScrollThrough();
+        bool canZoom = UI.CanScrollThrough();
         int wheel = Math.Sign(MInput.Mouse.WheelDelta);
         if (wheel != 0) {
             float scale = Camera.Zoom;
@@ -383,7 +355,7 @@ public class Editor : Scene {
             mousePos /= Camera.Zoom;
 
         // controls
-        bool canClick = ui.CanClickThrough() && !Message.Shown;
+        bool canClick = UI.CanClickThrough() && !Message.Shown;
 
         // panning
         bool middlePan = Snowberry.Settings.MiddleClickPan;
@@ -393,16 +365,8 @@ public class Editor : Scene {
                 Camera.Position += move / (Camera.Buffer == null ? Camera.Zoom : 1f);
         }
 
-        MouseState m = Microsoft.Xna.Framework.Input.Mouse.GetState();
-        Vector2 mouseVec = new Vector2(m.X, m.Y);
-        Mouse.Screen = mouseVec / 2;
-        Mouse.World = Vector2.Transform(Camera.Buffer == null ? mouseVec : mousePos, Camera.Inverse).Floor();
-
-        MouseClicked = false;
-        ui.Update();
-
-        // room & filler select
         if (Map != null) {
+            // room & filler select
             if ((MInput.Mouse.CheckLeftButton || MInput.Mouse.CheckRightButton) && canClick) {
                 if (MInput.Mouse.PressedLeftButton || MInput.Mouse.PressedRightButton) {
                     Point mouse = new Point((int)Mouse.World.X, (int)Mouse.World.Y);
@@ -428,18 +392,20 @@ public class Editor : Scene {
                     Snowberry.Settings.FancyRender = !Snowberry.Settings.FancyRender;
                     save = true;
                 }
+
                 if (MInput.Keyboard.Pressed(Keys.L)) {
                     Snowberry.Settings.StylegroundsPreview = !Snowberry.Settings.StylegroundsPreview;
                     save = true;
                 }
+
                 if (save)
                     Snowberry.Instance.SaveSettings();
             }
         }
+    }
 
-        // Double click
-        if (MInput.Mouse.PressedLeftButton)
-            Mouse.LastClick = DateTime.Now;
+    protected override Vector2 CalculateMouseWorld(MouseState m) {
+        return Vector2.Transform(Camera.Buffer == null ? new(m.X, m.Y) : mousePos, Camera.Inverse).Floor();
     }
 
     public void SwitchTool(int toolIdx) {
@@ -447,14 +413,14 @@ public class Editor : Scene {
 
         Toolbar.CurrentTool = toolIdx;
         var tool = Tool.Tools[toolIdx];
-        ToolPanel = tool.CreatePanel(uiBuffer.Height - Toolbar.Height);
-        ToolPanel.Position = new Vector2(uiBuffer.Width - ToolPanel.Width, Toolbar.Height);
-        ui.Add(ToolPanel);
+        ToolPanel = tool.CreatePanel(UIBuffer.Height - Toolbar.Height);
+        ToolPanel.Position = new Vector2(UIBuffer.Width - ToolPanel.Width, Toolbar.Height);
+        UI.Add(ToolPanel);
 
         ToolActionGroup?.RemoveSelf();
         ToolActionGroup = null;
         ActionBar.Update(); // get rid of the old action group immediately
-        ActionBar.Width = uiBuffer.Width - ToolPanel.Width;
+        ActionBar.Width = UIBuffer.Width - ToolPanel.Width;
         var toolActionGroup = tool.CreateActionBar();
         if (toolActionGroup != null) {
             toolActionGroup.Position = new(5, 0);
@@ -471,51 +437,12 @@ public class Editor : Scene {
         SelectedObjects = null;
     }
 
-    public override void Render() {
-        Draw.SpriteBatch.GraphicsDevice.Clear(bg);
-
+    protected override void RenderContent() {
         var tool = Map == null ? null : Tool.Tools[Toolbar.CurrentTool];
-        bool canClick = ui.CanClickThrough() && !Message.Shown;
-        bool middlePan = Snowberry.Settings.MiddleClickPan;
-        var panning = (middlePan && MInput.Mouse.CheckMiddleButton || !middlePan && MInput.Mouse.CheckRightButton) && canClick;
-
-        #region UI Rendering
-
-        Engine.Instance.GraphicsDevice.SetRenderTarget(uiBuffer);
-        Engine.Instance.GraphicsDevice.Clear(Color.Transparent);
-        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
-
-        ui.Render();
-
-        MTexture curCursor = defaultCursor;
-        Vector2 curJustify = Vector2.Zero;
-        if (panning) {
-            curCursor = panningCursor;
-            curJustify = new(0.5f);
-        } else if(canClick)
-            tool?.SuggestCursor(ref curCursor, ref curJustify);
-        curCursor.DrawJustified(Mouse.Screen, curJustify);
-
-        // Tooltip rendering
-        var tooltip = ui.HoveredTooltip();
-        if (tooltip != null) {
-            string[] array = tooltip.Split(new[] { "\\n" }, StringSplitOptions.None);
-            for(int i = 0; i < array.Length; i++) {
-                string line = array[i];
-                var tooltipArea = Fonts.Regular.Measure(line);
-                var at = Mouse.Screen.Floor() - new Vector2((tooltipArea.X + 8), -(tooltipArea.Y + 6) * i);
-                Draw.Rect(at, tooltipArea.X + 8, tooltipArea.Y + 6, Color.Black * 0.8f);
-                Fonts.Regular.Draw(line, at + new Vector2(4, 3), Vector2.One, Color.White);
-            }
-        }
-
-        Draw.SpriteBatch.End();
-
-        #endregion
 
         #region Tool Rendering
 
-        if (Map != null) {
+        if (tool != null) {
             Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
             tool.RenderScreenSpace();
             Draw.SpriteBatch.End();
@@ -525,12 +452,9 @@ public class Editor : Scene {
 
         #region Map Rendering
 
-        if (Camera.Buffer != null)
-            Engine.Instance.GraphicsDevice.SetRenderTarget(Camera.Buffer);
-        else
-            Engine.Instance.GraphicsDevice.SetRenderTarget(null);
+        Engine.Instance.GraphicsDevice.SetRenderTarget(Camera.Buffer);
 
-        Engine.Instance.GraphicsDevice.Clear(bg);
+        Engine.Instance.GraphicsDevice.Clear(BG);
         if (Map != null) {
             Map.Render(Camera);
             Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Camera.Matrix);
@@ -554,14 +478,23 @@ public class Editor : Scene {
         // HQRender
         Map?.HQRender(Camera);
 
-        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
-        Draw.SpriteBatch.Draw(uiBuffer, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, Vector2.One * 2, SpriteEffects.None, 0f);
-        Draw.SpriteBatch.End();
-
         #endregion
     }
 
-    public bool CanTypeShortcut() => !ui.NestedGrabsKeyboard();
+    protected override void SuggestCursor(ref MTexture texture, ref Vector2 justify) {
+        var tool = Map == null ? null : Tool.Tools[Toolbar.CurrentTool];
+        bool canClick = UI.CanClickThrough() && !Message.Shown;
+        bool middlePan = Snowberry.Settings.MiddleClickPan;
+        var panning = (middlePan && MInput.Mouse.CheckMiddleButton || !middlePan && MInput.Mouse.CheckRightButton) && canClick;
+
+        if (panning) {
+            texture = panningCursor;
+            justify = new(0.5f);
+        } else if (canClick)
+            tool?.SuggestCursor(ref texture, ref justify);
+    }
+
+    public bool CanTypeShortcut() => !UI.NestedGrabsKeyboard();
 
     private static void CreatePlaytestMapDataHook(Action<MapData> orig_Load, MapData self) {
         if (!generatePlaytestMapData)
@@ -610,7 +543,7 @@ public class Editor : Scene {
         VanillaLevelID = from.IsOfficialLevelSet() ? from.ID : -1;
     }
 
-    internal static void CopyMapMeta(MapMeta from, MapMeta to){
+    internal static void CopyMapMeta(MapMeta from, MapMeta to) {
         to.Parent = from.Parent;
         to.Icon = from.Icon;
         to.Interlude = from.Interlude;
@@ -637,8 +570,8 @@ public class Editor : Scene {
         to.Portraits = from.Portraits;
         to.OverrideASideMeta = from.OverrideASideMeta;
 
-        if(from.CassetteModifier != null)
-            to.CassetteModifier = new MapMetaCassetteModifier{
+        if (from.CassetteModifier != null)
+            to.CassetteModifier = new MapMetaCassetteModifier {
                 TempoMult = from.CassetteModifier.TempoMult,
                 LeadBeats = from.CassetteModifier.LeadBeats,
                 BeatsPerTick = from.CassetteModifier.BeatsPerTick,

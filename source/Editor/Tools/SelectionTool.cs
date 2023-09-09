@@ -54,8 +54,8 @@ public class SelectionTool : Tool {
     }
 
     private static UIButton CreateToggleButton(int icoX, int icoY, Keys toggleBind, string tooltipKey, Func<bool> value, Action<bool> onPress) {
-        MTexture active = Editor.actionbarIcons.GetSubtexture(icoX, icoY, 16, 16);
-        MTexture inactive = Editor.actionbarIcons.GetSubtexture(icoX + 16, icoY, 16, 16);
+        MTexture active = Editor.ActionbarAtlas.GetSubtexture(icoX, icoY, 16, 16);
+        MTexture inactive = Editor.ActionbarAtlas.GetSubtexture(icoX + 16, icoY, 16, 16);
         UIKeyboundButton button = null; // to allow referring to it in OnPress
         button = new UIKeyboundButton(value() ? active : inactive, 3, 3) {
             OnPress = () => {
@@ -287,7 +287,7 @@ public class SelectionTool : Tool {
         // hovering over a selected entity? movement arrow
         if (Editor.SelectedObjects != null && Editor.SelectedObjects.Any(s => s.Contains(mouse))) {
             justify = Vector2.One / 2f;
-            cursor = Editor.cursors.GetSubtexture(16, 16, 16, 16);
+            cursor = Editor.CursorsAtlas.GetSubtexture(16, 16, 16, 16);
 
             // only have 1 entity selected & at the borders? show resizing tooltips
             Entity solo = GetSoloEntity();
@@ -298,22 +298,22 @@ public class SelectionTool : Tool {
                 var fromBottom = solo.MinHeight > -1 && Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4;
                 if (fromLeft || fromRight || fromTop || fromBottom) {
                     if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
-                        cursor = Editor.cursors.GetSubtexture(32, 32, 16, 16);
+                        cursor = Editor.CursorsAtlas.GetSubtexture(32, 32, 16, 16);
                         return;
                     }
 
                     if ((fromTop && fromLeft) || (fromBottom && fromRight)) {
-                        cursor = Editor.cursors.GetSubtexture(48, 32, 16, 16);
+                        cursor = Editor.CursorsAtlas.GetSubtexture(48, 32, 16, 16);
                         return;
                     }
 
                     if (fromLeft || fromRight) {
-                        cursor = Editor.cursors.GetSubtexture(0, 32, 16, 16);
+                        cursor = Editor.CursorsAtlas.GetSubtexture(0, 32, 16, 16);
                         return;
                     }
 
                     if (fromBottom || fromTop)
-                        cursor = Editor.cursors.GetSubtexture(16, 32, 16, 16);
+                        cursor = Editor.CursorsAtlas.GetSubtexture(16, 32, 16, 16);
                 }
             }
         }

@@ -2,6 +2,7 @@
 using System.Linq;
 using Celeste;
 using Monocle;
+using Snowberry.UI;
 
 namespace Snowberry;
 
@@ -32,11 +33,16 @@ internal class Commands {
     }
 
     [Command("editor_surgery", "opens the snowberry surgery screen for low-level map manipulation")]
-    internal static void SurgeryCommand(string mapPath = null) {
+    internal static void SurgeryCommand(string mapPath) {
         var file = Util.GetRealPath(mapPath);
         if (File.Exists(file))
             Engine.Scene = new Surgery.Surgery(mapPath, BinaryPacker.FromBinary(mapPath));
         else
             Engine.Commands.Log($"could not find map file {mapPath ?? "null"}");
+    }
+
+    [Command("editor_ui_bounds", "toggles displaying the bounds of all snowberry UI elements")]
+    internal static void UIBoundsCommand() {
+        UIScene.DebugShowUIBounds = !UIScene.DebugShowUIBounds;
     }
 }

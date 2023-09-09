@@ -103,14 +103,14 @@ public class UILevelRibbon : UIRibbon {
 
         int mouseX = (int)Mouse.Screen.X;
         int mouseY = (int)Mouse.Screen.Y;
-        hover = !Editor.Editor.Message.Shown && Visible &&
+        hover = !UIScene.Instance.Message.Shown && Visible &&
                 new Rectangle((int)position.X + 16, (int)position.Y - 1, Width + w, Height + H + 2).Contains(mouseX, mouseY);
 
         lerp = Calc.Approach(lerp, (hover || pressing).Bit(), Engine.DeltaTime * 6f);
         listLerp = Calc.Approach(listLerp, (selector.LevelRibbonAnim < n).Bit(), Engine.DeltaTime * 4f);
 
         if (Visible) {
-            if (!Editor.Editor.Message.Shown && hover && ConsumeLeftClick()) {
+            if (!UIScene.Instance.Message.Shown && hover && ConsumeLeftClick()) {
                 if (dropdown) {
                     if (!HoveringChildren()) {
                         openLerp = open.Bit();
@@ -121,19 +121,19 @@ public class UILevelRibbon : UIRibbon {
                     pressing = true;
                 }
             }
-            if (Editor.Editor.Message.Shown || pressing && ConsumeLeftClick(pressed: false, released: true)) {
+            if (UIScene.Instance.Message.Shown || pressing && ConsumeLeftClick(pressed: false, released: true)) {
                 pressing = false;
                 if (hover) {
                     if (MInput.Keyboard.CurrentState[Keys.LeftControl] == KeyState.Down || MInput.Keyboard.CurrentState[Keys.RightControl] == KeyState.Down)
                         Editor.Editor.Open(mode.MapData);
                     else {
-                        Editor.Editor.Message.Clear();
+                        UIScene.Instance.Message.Clear();
 
-                        Editor.Editor.Message.AddElement(ConfirmLoadMessage(), 0.5f, 0.5f, 0.5f, -0.1f);
-                        var buttons = UIMessage.YesAndNoButtons(() => Editor.Editor.Open(mode.MapData), () => Editor.Editor.Message.Shown = false, 0, 4, 0.5f, 0f);
-                        Editor.Editor.Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
+                        UIScene.Instance.Message.AddElement(ConfirmLoadMessage(), 0.5f, 0.5f, 0.5f, -0.1f);
+                        var buttons = UIMessage.YesAndNoButtons(() => Editor.Editor.Open(mode.MapData), () => UIScene.Instance.Message.Shown = false, 0, 4, 0.5f, 0f);
+                        UIScene.Instance.Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
 
-                        Editor.Editor.Message.Shown = true;
+                        UIScene.Instance.Message.Shown = true;
                     }
                 }
             }
