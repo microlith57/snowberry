@@ -258,6 +258,14 @@ public class Editor : Scene {
                     PlaytestSession.StartedFromBeginning = false;
                 }
 
+                /*
+                 TODO: need to re-apply map meta here to ensure edits made in the editor actually apply during playtest properly
+                    but this naive approach doesn't work, causes crashes in Xaphan Helper and others; something is setup inconsistently
+                */
+                // Map.Meta.ApplyTo(PlaytestMapData.Data);
+                // foreach(ModeProperties prop in PlaytestMapData.Data.Mode)
+                //     prop.MapData = PlaytestMapData;
+
                 LevelEnter.Go(PlaytestSession, true);
                 generatePlaytestMapData = false;
             },
