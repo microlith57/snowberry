@@ -2,8 +2,8 @@
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Snowberry.Editor.UI;
-using Snowberry.Editor.UI.Menus;
+using Snowberry.UI;
+using Snowberry.UI.Menus;
 using static Snowberry.Editor.Triggers.Plugin_ChangeInventoryTrigger;
 
 namespace Snowberry.Editor.Tools;

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Snowberry.Editor;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace Snowberry.Editor.UI;
+namespace Snowberry.UI;
 
 // Segmented UIButton that hovers and clicks different entries separately
 public class UIDropdown : UIElement {

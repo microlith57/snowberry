@@ -9,8 +9,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.Entities;
-using Snowberry.Editor.UI;
-using Snowberry.Editor.UI.Menus;
+using Snowberry.UI;
+using Snowberry.UI.Menus;
+using Snowberry.UI.Menus.MainMenu;
 
 namespace Snowberry.Editor;
 

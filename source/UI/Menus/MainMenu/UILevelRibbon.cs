@@ -1,11 +1,12 @@
-﻿using Monocle;
-using Microsoft.Xna.Framework;
-using Celeste;
-using System;
+﻿using System;
 using System.Linq;
+using Celeste;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Monocle;
+using Mouse = Snowberry.Editor.Mouse;
 
-namespace Snowberry.Editor.UI.Menus;
+namespace Snowberry.UI.Menus.MainMenu;
 
 public class UILevelRibbon : UIRibbon {
     private readonly UILevelSelector selector;
@@ -102,14 +103,14 @@ public class UILevelRibbon : UIRibbon {
 
         int mouseX = (int)Mouse.Screen.X;
         int mouseY = (int)Mouse.Screen.Y;
-        hover = !Editor.Message.Shown && Visible &&
+        hover = !Editor.Editor.Message.Shown && Visible &&
                 new Rectangle((int)position.X + 16, (int)position.Y - 1, Width + w, Height + H + 2).Contains(mouseX, mouseY);
 
         lerp = Calc.Approach(lerp, (hover || pressing).Bit(), Engine.DeltaTime * 6f);
         listLerp = Calc.Approach(listLerp, (selector.LevelRibbonAnim < n).Bit(), Engine.DeltaTime * 4f);
 
         if (Visible) {
-            if (!Editor.Message.Shown && hover && ConsumeLeftClick()) {
+            if (!Editor.Editor.Message.Shown && hover && ConsumeLeftClick()) {
                 if (dropdown) {
                     if (!HoveringChildren()) {
                         openLerp = open.Bit();
@@ -120,19 +121,19 @@ public class UILevelRibbon : UIRibbon {
                     pressing = true;
                 }
             }
-            if (Editor.Message.Shown || pressing && ConsumeLeftClick(pressed: false, released: true)) {
+            if (Editor.Editor.Message.Shown || pressing && ConsumeLeftClick(pressed: false, released: true)) {
                 pressing = false;
                 if (hover) {
                     if (MInput.Keyboard.CurrentState[Keys.LeftControl] == KeyState.Down || MInput.Keyboard.CurrentState[Keys.RightControl] == KeyState.Down)
-                        Editor.Open(mode.MapData);
+                        Editor.Editor.Open(mode.MapData);
                     else {
-                        Editor.Message.Clear();
+                        Editor.Editor.Message.Clear();
 
-                        Editor.Message.AddElement(ConfirmLoadMessage(), 0.5f, 0.5f, 0.5f, -0.1f);
-                        var buttons = UIMessage.YesAndNoButtons(() => Editor.Open(mode.MapData), () => Editor.Message.Shown = false, 0, 4, 0.5f, 0f);
-                        Editor.Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
+                        Editor.Editor.Message.AddElement(ConfirmLoadMessage(), 0.5f, 0.5f, 0.5f, -0.1f);
+                        var buttons = UIMessage.YesAndNoButtons(() => Editor.Editor.Open(mode.MapData), () => Editor.Editor.Message.Shown = false, 0, 4, 0.5f, 0f);
+                        Editor.Editor.Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
 
-                        Editor.Message.Shown = true;
+                        Editor.Editor.Message.Shown = true;
                     }
                 }
             }

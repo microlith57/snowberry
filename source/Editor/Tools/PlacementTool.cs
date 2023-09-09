@@ -5,8 +5,7 @@ using Celeste;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using Snowberry.Editor.UI;
-
+using Snowberry.UI;
 using Placement = Snowberry.Editor.Placements.Placement;
 
 namespace Snowberry.Editor.Tools;

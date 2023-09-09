@@ -1,10 +1,10 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Snowberry.Editor.UI;
-using Snowberry.Editor.UI.Menus;
 using System.Collections.Generic;
 using System.Linq;
+using Snowberry.UI;
+using Snowberry.UI.Menus;
 
 namespace Snowberry.Editor.Tools;
 

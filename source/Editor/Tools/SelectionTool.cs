@@ -2,12 +2,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using Snowberry.Editor.UI;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Celeste.Mod;
+using Snowberry.UI;
 
 namespace Snowberry.Editor.Tools;
 

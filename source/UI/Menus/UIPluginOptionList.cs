@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Linq;
-using Snowberry.Editor.Tools;
+using Microsoft.Xna.Framework;
+using Snowberry.Editor;
 
-namespace Snowberry.Editor.UI.Menus;
+namespace Snowberry.UI.Menus;
 
 public class UIPluginOptionList : UIElement {
     public class UIOption : UIElement {
@@ -166,8 +166,8 @@ public class UIPluginOptionList : UIElement {
                     onChange?.Invoke(it);
                     button.SetText(it + " \uF036");
                 });
-                dropdown.Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos();
-                Editor.Instance.ToolPanel.Add(dropdown);
+                dropdown.Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Editor.Instance.ToolPanel.GetBoundsPos();
+                Editor.Editor.Instance.ToolPanel.Add(dropdown);
             }
         };
 
@@ -190,10 +190,10 @@ public class UIPluginOptionList : UIElement {
                     }) {
                         Icon = ts.Tile.Tiles[0, 0]
                     }).ToArray()) {
-                    Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos()
+                    Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Editor.Instance.ToolPanel.GetBoundsPos()
                 };
 
-                Editor.Instance.ToolPanel.Add(dropdown);
+                Editor.Editor.Instance.ToolPanel.Add(dropdown);
             }
         };
         // TODO: give the button an icon as well

@@ -1,11 +1,13 @@
-﻿using Celeste.Mod;
+﻿using System;
+using System.Linq;
+using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using System;
-using System.Linq;
+using Snowberry.Editor;
+using Mouse = Snowberry.Editor.Mouse;
 
-namespace Snowberry.Editor.UI;
+namespace Snowberry.UI;
 
 public class UITextField : UIElement {
 

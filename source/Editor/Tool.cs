@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.Tools;
-using Snowberry.Editor.UI;
 using System.Collections.Generic;
+using Snowberry.UI;
 
 namespace Snowberry.Editor;
 

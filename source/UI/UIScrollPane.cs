@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Monocle;
-using System;
+﻿using System;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Monocle;
+using Snowberry.Editor;
 
-namespace Snowberry.Editor.UI;
+namespace Snowberry.UI;
 
 public class UIScrollPane : UIElement {
     public Color BG = Calc.HexToColor("202929") * (185 / 255f);
@@ -54,10 +55,10 @@ public class UIScrollPane : UIElement {
         bool hovered = Bounds.Contains((int)Mouse.Screen.X, (int)Mouse.Screen.Y);
 
         // pretend that the mouse has already been clicked if the mouse is outside of the scroll pane's bounds
-        bool mouseClicked = Editor.MouseClicked;
-        Editor.MouseClicked = !hovered || mouseClicked;
+        bool mouseClicked = Editor.Editor.MouseClicked;
+        Editor.Editor.MouseClicked = !hovered || mouseClicked;
         base.Update(position + ScrollOffset());
-        Editor.MouseClicked = mouseClicked;
+        Editor.Editor.MouseClicked = mouseClicked;
 
         if (hovered)
             ScrollBy(MInput.Mouse.WheelDelta);

@@ -6,8 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using Snowberry.Editor.UI;
-using Snowberry.Editor.UI.Menus;
+using Snowberry.UI;
+using Snowberry.UI.Menus;
 using Mouse = Snowberry.Editor.Mouse;
 
 namespace Snowberry.Surgery;

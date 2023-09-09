@@ -1,13 +1,14 @@
 ﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Snowberry.Editor.UI.Menus;
+using Snowberry.Editor;
 using Snowberry.Editor.Tools;
-using System.Text.RegularExpressions;
+using Snowberry.UI.Menus;
 using WindController = Celeste.WindController;
 
-namespace Snowberry.Editor.UI;
+namespace Snowberry.UI;
 
 class UIRoomSelectionPanel : UIElement {
     public Color BG = Calc.HexToColor("202929") * 0.5f;
@@ -26,10 +27,10 @@ class UIRoomSelectionPanel : UIElement {
         UIElement label;
 
         var offset = new Vector2(4, 3);
-        if (Editor.SelectedRoom == null) {
+        if (Editor.Editor.SelectedRoom == null) {
             if (!RoomTool.PendingRoom.HasValue) {
-                if (Editor.SelectedFillerIndex != -1) {
-                    Add(label = new UILabel(Dialog.Get("SNOWBERRY_EDITOR_ROOM_FILL_SELECTED_TITLE").Substitute(Editor.SelectedFillerIndex)) {
+                if (Editor.Editor.SelectedFillerIndex != -1) {
+                    Add(label = new UILabel(Dialog.Get("SNOWBERRY_EDITOR_ROOM_FILL_SELECTED_TITLE").Substitute(Editor.Editor.SelectedFillerIndex)) {
                         FG = Color.DarkKhaki,
                         Underline = true
                     });
@@ -40,8 +41,8 @@ class UIRoomSelectionPanel : UIElement {
                         HoveredFG = Color.Crimson,
                         PressedFG = Color.DarkRed,
                         OnPress = () => {
-                            Editor.Instance.Map.Fillers.RemoveAt(Editor.SelectedFillerIndex);
-                            Editor.SelectedFillerIndex = -1;
+                            Editor.Editor.Instance.Map.Fillers.RemoveAt(Editor.Editor.SelectedFillerIndex);
+                            Editor.Editor.SelectedFillerIndex = -1;
                             RoomTool.ScheduledRefresh = true;
                         }
                     }, new Vector2(4, 12));
@@ -84,14 +85,14 @@ class UIRoomSelectionPanel : UIElement {
                 // validate room name
                 if (newName.Length <= 0 || Regex.Match(newName, "[0-9a-zA-Z\\-_ ]+").Length != newName.Length)
                     newNameInvalid.FG = Color.Red;
-                else if (Editor.Instance.Map.Rooms.Exists(it => it.Name.Equals(newName)))
+                else if (Editor.Editor.Instance.Map.Rooms.Exists(it => it.Name.Equals(newName)))
                     newNameTaken.FG = Color.Red;
                 else {
                     // add room
                     var b = RoomTool.PendingRoom.Value;
-                    var newRoom = new Room(newName, new Rectangle(b.X / 8, b.Y / 8, b.Width / 8, b.Height / 8), Editor.Instance.Map);
-                    Editor.Instance.Map.Rooms.Add(newRoom);
-                    Editor.SelectedRoom = newRoom;
+                    var newRoom = new Room(newName, new Rectangle(b.X / 8, b.Y / 8, b.Width / 8, b.Height / 8), Editor.Editor.Instance.Map);
+                    Editor.Editor.Instance.Map.Rooms.Add(newRoom);
+                    Editor.Editor.SelectedRoom = newRoom;
                     RoomTool.PendingRoom = null;
                     RoomTool.ScheduledRefresh = true;
                 }
@@ -102,8 +103,8 @@ class UIRoomSelectionPanel : UIElement {
                 OnPress = () => {
                     var b = RoomTool.PendingRoom.Value;
                     var newFiller = new Rectangle(b.X / 8, b.Y / 8, b.Width / 8, b.Height / 8);
-                    Editor.Instance.Map.Fillers.Add(newFiller);
-                    Editor.SelectedFillerIndex = Editor.Instance.Map.Fillers.Count - 1;
+                    Editor.Editor.Instance.Map.Fillers.Add(newFiller);
+                    Editor.Editor.SelectedFillerIndex = Editor.Editor.Instance.Map.Fillers.Count - 1;
                     RoomTool.PendingRoom = null;
                     RoomTool.ScheduledRefresh = true;
                 }
@@ -113,7 +114,7 @@ class UIRoomSelectionPanel : UIElement {
         }
 
         int spacing = Fonts.Regular.LineHeight + 2;
-        Room room = Editor.SelectedRoom;
+        Room room = Editor.Editor.SelectedRoom;
 
         Add(label = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_SELECTED_TITLE")) {
             FG = Color.DarkKhaki,
@@ -187,8 +188,8 @@ class UIRoomSelectionPanel : UIElement {
             HoveredFG = Color.Crimson,
             PressedFG = Color.DarkRed,
             OnPress = () => {
-                Editor.Instance.Map.Rooms.Remove(room);
-                Editor.SelectedRoom = null;
+                Editor.Editor.Instance.Map.Rooms.Remove(room);
+                Editor.Editor.SelectedRoom = null;
                 RoomTool.ScheduledRefresh = true;
             }
         }, new Vector2(4, 12));

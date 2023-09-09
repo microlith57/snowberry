@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using Monocle;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using Monocle;
+using Mouse = Snowberry.Editor.Mouse;
 
-namespace Snowberry.Editor.UI;
+namespace Snowberry.UI;
 
 public class UIElement {
     private readonly List<UIElement> toRemove = new();
@@ -161,8 +162,8 @@ public class UIElement {
     }
 
     private bool ConsumeClick() {
-        if (!Editor.MouseClicked) {
-            Editor.MouseClicked = true;
+        if (!Editor.Editor.MouseClicked) {
+            Editor.Editor.MouseClicked = true;
             return true;
         }
 

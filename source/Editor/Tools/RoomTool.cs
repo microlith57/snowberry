@@ -1,9 +1,9 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Snowberry.Editor.UI;
 using System;
 using Microsoft.Xna.Framework.Input;
+using Snowberry.UI;
 
 namespace Snowberry.Editor.Tools;
 

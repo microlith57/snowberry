@@ -2,8 +2,9 @@
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Snowberry.Editor;
 
-namespace Snowberry.Editor.UI;
+namespace Snowberry.UI;
 
 public class UIButton : UIElement {
     private readonly Vector2 space, minSize;
