@@ -45,4 +45,9 @@ internal class Commands {
     internal static void UIBoundsCommand() {
         UIScene.DebugShowUIBounds = !UIScene.DebugShowUIBounds;
     }
+
+    [Command("editor_ui_example", "opens a screen displaying examples of various UI elements")]
+    internal static void UIExampleCommand() {
+        Engine.Scene = new Example();
+    }
 }
