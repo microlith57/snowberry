@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor;
+namespace Snowberry;
 
 public static class Mouse {
     public static Vector2 Screen { get; internal set; }

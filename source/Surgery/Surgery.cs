@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.UI;
 using Snowberry.UI.Menus;
-using Mouse = Snowberry.Editor.Mouse;
 
 namespace Snowberry.Surgery;
 

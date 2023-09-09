@@ -4,7 +4,7 @@ using Celeste;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
-using Mouse = Snowberry.Editor.Mouse;
+using Mouse = Snowberry.Mouse;
 
 namespace Snowberry.UI.Menus.MainMenu;
 

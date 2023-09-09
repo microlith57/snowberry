@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor;
-using Mouse = Snowberry.Editor.Mouse;
+using Mouse = Snowberry.Mouse;
 
 namespace Snowberry.UI;
 
