@@ -2,7 +2,6 @@
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Snowberry.Editor;
 
 namespace Snowberry.UI;
 

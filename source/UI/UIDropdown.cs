@@ -4,7 +4,6 @@ using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Snowberry.Editor;
 using Color = Microsoft.Xna.Framework.Color;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
