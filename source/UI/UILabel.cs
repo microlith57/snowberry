@@ -25,10 +25,10 @@ class UILabel : UIElement {
 
     public UILabel(Font font, int width, Func<string> input, float scale) {
         this.font = font;
-        Width = Math.Max(1, width);
-        Height = font.LineHeight;
         Value = input;
         Scale = scale;
+        Width = Math.Max(1, width);
+        Height = (int)(font.LineHeight * Scale);
     }
 
     public override void Render(Vector2 position = default) {
@@ -36,9 +36,9 @@ class UILabel : UIElement {
 
         font.Draw(Value(), position, new(Scale), FG);
         if (Underline)
-            Draw.Rect(position + Vector2.UnitY * Height * Scale, Width, Scale, FG);
+            Draw.Rect(position + Vector2.UnitY * Height, Width, Scale, FG);
         if (Strikethrough)
-            Draw.Rect(position + Vector2.UnitY * (Height / 2) * Scale, Width, Scale, Color.Lerp(FG, Color.Black, 0.25f));
+            Draw.Rect(position + Vector2.UnitY * (Height / 2), Width, Scale, Color.Lerp(FG, Color.Black, 0.25f));
     }
 
     public override string Tooltip() => LabelTooltip;
