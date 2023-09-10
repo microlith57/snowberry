@@ -203,11 +203,13 @@ public class Example : UIScene {
                     .Where(x => x.Count > 0 && x[0] == "bgs")
                     .ToList();
                 Tree<string> theBigOne = Tree<string>.FromPrefixes(texts, "");
-                UIMultiDropdown<string> dd = new UIMultiDropdown<string>(theBigOne, x => new UIDropdown.DropdownEntry(x.Value, null) {
-                    OnPress = () => {
-                        string entire = x.AggregateUp((l, r) => l + "/" + r).Substring(1);
-                        text.UpdateInput(entire);
-                    }
+                UIMultiDropdown<string> dd = new UIMultiDropdown<string>(theBigOne, x => {
+                    return new UIDropdown.DropdownEntry(x.Value + (x.Children.Count > 0 ? "/" : ""), null) {
+                        OnPress = () => {
+                            string entire = x.AggregateUp((l, r) => l + "/" + r).Substring(1);
+                            text.UpdateInput(entire);
+                        }
+                    };
                 }) {
                     Position = text.GetBoundsPos() + new Vector2(-2, text.Height + 3) - content.GetBoundsPos()
                 };
