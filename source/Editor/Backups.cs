@@ -55,7 +55,7 @@ public static class Backups{
                         ret.Add(new Backup{
                             Path = file,
                             For = key,
-                            Timestamp = DateTime.Parse(meta.Timestamp, CultureInfo.InvariantCulture),
+                            Timestamp = DateTime.Parse(meta.Timestamp, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
                             Reason = Enum.TryParse<BackupReason>(meta.Reason, out var r) ? r : BackupReason.Unknown
                         });
                     }
@@ -69,20 +69,20 @@ public static class Backups{
     }
 
     public static void SaveBackup(string mapPath, AreaKey key, BackupReason reason) {
-        DateTime now = DateTime.Now;
+        DateTime now = DateTime.Now.ToUniversalTime();
 
         var dir = BackupsDirectoryFor(key);
         Directory.CreateDirectory(dir);
 
         string meta = $"""
-                       Timestamp: "{now.ToString(CultureInfo.InvariantCulture)}"
+                       Timestamp: "{now:O}"
                        Reason: "{reason.ToString()}"
                        """;
 
         using ZipFile file = new ZipFile();
         file.AddEntry(MapFilename, File.ReadAllBytes(mapPath));
         file.AddEntry(MetaFilename, meta);
-        file.Save(Path.Combine(dir, $"backup-{now:yyyy'-'MM'-'dd'-'HH'-'mm'-'ss}-{reason.ToString()}.zip"));
+        file.Save(Path.Combine(dir, $"backup-{now:yyyy'-'MM'-'dd'-'HH'-'mm'-'ss'-'fff}-{reason.ToString()}.zip"));
     }
 
     public static void RestoreBackup(Backup b){
