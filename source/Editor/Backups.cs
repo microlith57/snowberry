@@ -55,7 +55,7 @@ public static class Backups{
                         ret.Add(new Backup{
                             Path = file,
                             For = key,
-                            Timestamp = DateTime.Parse(meta.Timestamp, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
+                            Timestamp = DateTime.Parse(meta.Timestamp, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind).ToLocalTime(),
                             Reason = Enum.TryParse<BackupReason>(meta.Reason, out var r) ? r : BackupReason.Unknown
                         });
                     }

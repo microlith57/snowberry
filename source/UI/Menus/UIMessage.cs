@@ -30,7 +30,8 @@ public class UIMessage : UIElement {
     public bool Shown;
 
     public new void Clear() {
-        base.Clear(); msgs.Clear();
+        base.Clear();
+        msgs.Clear();
     }
 
     public void AddElement(UIElement element, float justifyX, float justifyY, float hiddenJustifyX, float hiddenJustifyY) {
@@ -46,12 +47,16 @@ public class UIMessage : UIElement {
         lerp = Calc.Approach(lerp, Shown.Bit(), Engine.DeltaTime * 2f);
         float ease = Ease.ExpoOut(lerp);
 
-        foreach (Msg msg in msgs) {
+        if (!Shown && lerp < 0.005f)
+            Clear();
+
+        foreach (Msg msg in msgs)
             msg.UpdateElement(Width, Height, ease);
-        }
 
         if (MInput.Keyboard.Check(Keys.Escape))
             Shown = false;
+
+        GrabsClick = GrabsScroll = Shown;
     }
 
     public override void Render(Vector2 position = default) {

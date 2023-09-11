@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Celeste;
 using Celeste.Mod;
@@ -186,7 +188,7 @@ public class Editor : UIScene {
             map = new Map(data);
         }
 
-        var _ = new FadeWipe(Engine.Scene, false, () => {
+        _ = new FadeWipe(Engine.Scene, false, () => {
             Engine.Scene = new Editor(map);
         }) {
             Duration = data != null ? 0.3f : 0.85f
@@ -223,7 +225,7 @@ public class Editor : UIScene {
             }, new Vector2(10, 11));
         }
 
-        UIButton play = new UIKeyboundButton(ActionbarAtlas.GetSubtexture(0, 0, 16, 16), 3, 3) {
+        ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(0, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 Audio.SetMusic(null);
                 Audio.SetAmbience(null);
@@ -252,10 +254,9 @@ public class Editor : UIScene {
             },
             Ctrl = true,
             Key = Keys.P
-        };
-        ActionBar.AddRight(play, new(10, 4));
+        }, new(10, 4));
 
-        UIButton save = new UIKeyboundButton(ActionbarAtlas.GetSubtexture(16, 0, 16, 16), 3, 3) {
+        ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(16, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 if (From == null || Util.KeyToPath(From.Value) == null) {
                     // show a popup asking for a filename to save to
@@ -287,10 +288,9 @@ public class Editor : UIScene {
             },
             Ctrl = true,
             Key = Keys.S
-        };
-        ActionBar.AddRight(save, new(6, 4));
+        }, new(6, 4));
 
-        UIButton exit = new UIKeyboundButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
+        ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 // TODO: show an "are you sure" message
                 Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
@@ -298,8 +298,66 @@ public class Editor : UIScene {
             Ctrl = true,
             Alt = true,
             Key = Keys.Q
-        };
-        ActionBar.AddRight(exit, new(6, 4));
+        }, new(6, 4));
+
+        if(From != null && Util.KeyToPath(From.Value) != null){
+            ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(48, 0, 16, 16), 3, 3) {
+                OnPress = () => {
+                    var backups = Backups.GetBackupsFor(From.Value);
+
+                    Message.Clear();
+
+                    UILabel title = new UILabel("backups");
+                    UIScrollPane list = new() {
+                        Width = 300,
+                        Height = 400
+                    };
+                    bool odd = false;
+                    foreach (Backups.Backup b in backups.OrderByDescending(x => x.Timestamp)) {
+                        UIElement bg = new() {
+                            Width = 300,
+                            Height = 20,
+                            Background = Color.Orange * (odd ? 0.4f : 0.5f)
+                        };
+                        UILabel label = new UILabel($"{b.Reason.ToString()} at {b.Timestamp}");
+                        bg.AddBelow(label, new((bg.Height - label.Height) / 2f));
+                        list.AddBelow(bg);
+                        odd = !odd;
+                    }
+
+                    UIElement content = new();
+                    content.AddBelow(title, new(-title.Width / 2f, -220));
+                    content.AddBelow(list, new(-list.Width / 2f, 5));
+                    Message.AddElement(content, 0.5f, 0.5f, 0.5f, -0.1f);
+
+                    UIButton openFolder = new("open backups folder", Fonts.Regular, 3, 3) {
+                        OnPress = () => {
+                            string folder = Backups.BackupsDirectoryFor(From.Value);
+                            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+                            if (!folder.EndsWith("/")) folder += "/";
+                            Process.Start("file://" + folder);
+                        },
+                        BG = Calc.HexToColor("ff8c00"),
+                        HoveredBG = Calc.HexToColor("e37e02"),
+                        PressedBG = Calc.HexToColor("874e07")
+                    };
+                    UIButton done = new("close", Fonts.Regular, 3, 3) {
+                        OnPress = () => Message.Shown = false,
+                        BG = Color.Red,
+                        HoveredBG = Color.Crimson,
+                        PressedBG = Color.DarkRed
+                    };
+                    UIElement wrapper = new UIElement();
+                    wrapper.AddBelow(openFolder, new(-openFolder.Width / 2f, 207));
+                    wrapper.AddBelow(done, new(-done.Width / 2f, 7));
+                    Message.AddElement(wrapper, 0.5f, 0.5f, 0.5f, 1.1f);
+
+                    Message.Shown = true;
+                },
+                Ctrl = true,
+                Key = Keys.B
+            }, new(6, 4));
+        }
 
         UI.AddBelow(new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}"), new(10));
 
