@@ -56,6 +56,11 @@ public class Map {
         // TODO: crashes in vanilla maps, pretty sure it's not actually necessary?
         //new MapDataFixup(data).Process(FromRaw);
 
+        // just for now
+        string realPath = Util.KeyToPath(targetData.ToKey());
+        if (File.Exists(realPath))
+            Backups.SaveBackup(realPath, targetData.ToKey(), Backups.BackupReason.OnOpen);
+
         if (FromRaw.Children?.Find(element => element.Name == "meta") is {} metaElem) {
             Meta = new MapMeta(metaElem);
             if (Meta.Modes.Length < 3) {

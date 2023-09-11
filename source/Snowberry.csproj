@@ -31,6 +31,9 @@
     <Reference Include="System.ValueTuple">
       <HintPath>$(CelestePrefix)\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="DotNetZip">
+      <HintPath>$(CelestePrefix)\DotNetZip.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.11.4" PrivateAssets="all" ExcludeAssets="runtime" />
