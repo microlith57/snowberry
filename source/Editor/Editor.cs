@@ -128,7 +128,7 @@ public class Editor : UIScene {
     internal static List<Selection> SelectedObjects;
 
     public UIToolbar Toolbar;
-    public UIElement ToolPanel;
+    public UIElement ToolPanel, ToolPanelContainer;
     public UIElement ActionBar, ToolActionGroup;
 
     // TODO: potentially replace with just setting the MapData of Playtest
@@ -361,6 +361,13 @@ public class Editor : UIScene {
 
         UI.AddBelow(new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}"), new(10));
 
+        // anchor the tool panel under Message
+        ToolPanelContainer = new() {
+            Width = UI.Width,
+            Height = UI.Height
+        };
+        UI.Add(ToolPanelContainer);
+
         SwitchTool(0);
     }
 
@@ -463,7 +470,7 @@ public class Editor : UIScene {
         var tool = Tool.Tools[toolIdx];
         ToolPanel = tool.CreatePanel(UIBuffer.Height - Toolbar.Height);
         ToolPanel.Position = new Vector2(UIBuffer.Width - ToolPanel.Width, Toolbar.Height);
-        UI.Add(ToolPanel);
+        ToolPanelContainer.Add(ToolPanel);
 
         ToolActionGroup?.RemoveSelf();
         ToolActionGroup = null;
