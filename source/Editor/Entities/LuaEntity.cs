@@ -126,6 +126,41 @@ public class LuaEntity : Entity {
         }
     }
 
+    protected override IEnumerable<Rectangle> Select() {
+        // if the entity has a custom selection function, try to use it
+        List<Rectangle> ret = CallOrGetAll("selection")
+            .OfType<LuaTable>()
+            .Where(x => x["_type"] is "rectangle")
+            .Select(t => new Rectangle(
+                (int)Float(t, "x", 0),
+                (int)Float(t, "y", 0),
+                (int)Float(t, "width", 4),
+                (int)Float(t, "height", 4)))
+            .ToList();
+
+        // fill in the gaps with selections derived from sprites
+        if (ret.Count == 0 && texture != null) {
+            MTexture tex = GFX.Game[texture];
+            ret.Add(RectOnRelative(new(tex.Width, tex.Height), justify: justify));
+        }
+
+        if ((nodeTexture ?? texture) != null) {
+            MTexture tex = GFX.Game[nodeTexture ?? texture];
+            for (int i = ret.Count; i < Nodes.Count + 1; i++)
+                ret.Add(RectOnAbsolute(new(tex.Width, tex.Height), position: Nodes[i - 1], justify: nodeJustify));
+        }
+
+        // fill in the rest with defaults
+        if (ret.Count == 0)
+            ret.Add(new(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height));
+        for (int i = ret.Count; i < Nodes.Count + 1; i++) {
+            var node = Nodes[i - 1];
+            ret.Add(new Rectangle((int)node.X - 3, (int)node.Y - 3, 6, 6));
+        }
+
+        return ret;
+    }
+
     private List<SpriteWithPos> Sprites() {
         List<SpriteWithPos> ret = new();
         if(CallOrGetAll("sprite") is object[] sprites)
