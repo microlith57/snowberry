@@ -21,6 +21,7 @@ public class LuaEntity : Entity {
     private string texture, nodeTexture;
     private List<SpriteWithPos> sprites;
     private Vector2 justify = Vector2.One * 0.5f, nodeJustify = Vector2.One * 0.5f;
+    private NodeLineRenderType nodeLines = NodeLineRenderType.none;
 
     public Dictionary<string, object> Values = new();
 
@@ -94,9 +95,35 @@ public class LuaEntity : Entity {
             if (nodeJustifyTable != null)
                 nodeJustify = new Vector2(Float(nodeJustifyTable, 1, 0.5f), Float(nodeJustifyTable, 2, 0.5f));
 
+            nodeLines = Enum.TryParse<NodeLineRenderType>(CallOrGet<string>("nodeLineRenderType"), true, out var v)
+                ? v
+                : NodeLineRenderType.none;
+
             sprites = Sprites();
 
             initialized = true;
+        }
+
+        if(Nodes.Count > 0){
+            switch (nodeLines) {
+                case NodeLineRenderType.line:
+                    Vector2 prev = Position;
+                    foreach (Vector2 node in Nodes) {
+                        DrawUtil.DottedLine(prev, node, Color.White * 0.5f, 8, 4);
+                        prev = node;
+                    }
+                    break;
+                case NodeLineRenderType.fan:
+                    foreach (Vector2 node in Nodes)
+                        DrawUtil.DottedLine(Position, node, Color.White * 0.5f, 8, 4);
+                    break;
+                case NodeLineRenderType.circle:
+                    Draw.Circle(Position, Vector2.Distance(Position, Nodes[0]), Color.White * 0.5f, 20);
+                    break;
+                case NodeLineRenderType.none:
+                default:
+                    break;
+            }
         }
 
         if (texture != null)
@@ -329,5 +356,9 @@ public class LuaEntity : Entity {
         public readonly Color Color = Color;
         public readonly float Rotation = Rotation;
         public readonly Vector2 TexPos = TexPos, TexSize = TexSize;
+    }
+
+    private enum NodeLineRenderType {
+        line, fan, circle, none
     }
 }
