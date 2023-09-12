@@ -119,7 +119,7 @@ public static class LoennPluginLoader {
             PluginInfo.Entities[plugin.Key] = info;
 
             if (plugin.Value["placements"] is LuaTable placements)
-                if (placements.Keys.OfType<string>().Any(k => k.Equals("name"))) {
+                if (placements.Keys.OfType<string>().Contains("name")) {
                     Dictionary<string, object> options = new();
                     if(placements["data"] is LuaTable data)
                         foreach (var item in data.Keys.OfType<string>())
@@ -131,10 +131,10 @@ public static class LoennPluginLoader {
                 } else if (placements.Keys.Count >= 1 && placements[1] is LuaTable) {
                     for (int i = 1; i < placements.Keys.Count + 1; i++) {
                         Dictionary<string, object> options = new();
-                        if (placements[i] is LuaTable ptable && ptable["data"] is LuaTable data) {
-                            foreach (var item in data.Keys.OfType<string>()) {
-                                options[item] = data[item];
-                            }
+                        if (placements[i] is LuaTable ptable && ptable.Keys.OfType<string>().Contains("name")) {
+                            if (ptable["data"] is LuaTable data)
+                                foreach (var item in data.Keys.OfType<string>())
+                                    options[item] = data[item];
 
                             string placementName = ptable["name"] as string;
                             placementName = LoennText.TryGetValue($"entities.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"Loenn: {plugin.Key} :: {ptable["name"]}";
