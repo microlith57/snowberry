@@ -35,6 +35,10 @@ public static class LoennPluginLoader {
 
             math = math or {}
             math.atan2 = math.atan2 or require("#Snowberry.LoennPluginLoader").atan2
+
+            _MAP_VIEWER = {
+                name = "snowberry"
+            }
             """);
 
         Snowberry.LogInfo("Trying to load Loenn plugins");
