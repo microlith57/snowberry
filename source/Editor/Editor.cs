@@ -307,7 +307,7 @@ public class Editor : UIScene {
 
                     Message.Clear();
 
-                    UILabel title = new UILabel("backups");
+                    UILabel title = new UILabel(Dialog.Clean("SNOWBERRY_BACKUPS"));
                     UIScrollPane list = new() {
                         Width = 300,
                         Height = 400
@@ -319,7 +319,10 @@ public class Editor : UIScene {
                             Height = 20,
                             Background = Color.Orange * (odd ? 0.4f : 0.5f)
                         };
-                        UILabel label = new UILabel($"{b.Reason.ToString()} at {b.Timestamp}");
+                        UILabel label = new UILabel(Dialog.Get("SNOWBERRY_BACKUPS_DESC").Substitute(
+                            Dialog.Clean("SNOWBERRY_BACKUPS_REASON_" + b.Reason.ToString().ToUpperInvariant()),
+                            b.Timestamp
+                        ));
                         bg.AddBelow(label, new((bg.Height - label.Height) / 2f));
                         list.AddBelow(bg);
                         odd = !odd;
@@ -330,7 +333,7 @@ public class Editor : UIScene {
                     content.AddBelow(list, new(-list.Width / 2f, 5));
                     Message.AddElement(content, 0.5f, 0.5f, 0.5f, -0.1f);
 
-                    UIButton openFolder = new("open backups folder", Fonts.Regular, 3, 3) {
+                    UIButton openFolder = new(Dialog.Clean("SNOWBERRY_BACKUPS_OPEN_MAP_FOLDER"), Fonts.Regular, 3, 3) {
                         OnPress = () => {
                             string folder = Backups.BackupsDirectoryFor(From.Value);
                             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
@@ -341,7 +344,7 @@ public class Editor : UIScene {
                         HoveredBG = Calc.HexToColor("e37e02"),
                         PressedBG = Calc.HexToColor("874e07")
                     };
-                    UIButton done = new("close", Fonts.Regular, 3, 3) {
+                    UIButton done = new(Dialog.Clean("SNOWBERRY_BACKUPS_DONE"), Fonts.Regular, 3, 3) {
                         OnPress = () => Message.Shown = false,
                         BG = Color.Red,
                         HoveredBG = Color.Crimson,

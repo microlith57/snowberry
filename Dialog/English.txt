@@ -50,6 +50,23 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_EDITOR_UTIL_FOREGROUND=           foreground
     SNOWBERRY_EDITOR_UTIL_BACKGROUND=           background
 
+# *** Backups Menu ***
+	SNOWBERRY_BACKUPS=                          backups
+	SNOWBERRY_BACKUPS_OPEN_MAP_FOLDER=          open map backups folder
+	SNOWBERRY_BACKUPS_DONE=                     close
+	
+	SNOWBERRY_BACKUPS_DESC=                     {0} at {1}
+	SNOWBERRY_BACKUPS_REASON_ONOPEN=            when opened
+	SNOWBERRY_BACKUPS_REASON_ONSAVE=            when saved
+	SNOWBERRY_BACKUPS_REASON_ONCLOSE=           when closed
+	SNOWBERRY_BACKUPS_REASON_AUTOSAVE=          autosaved
+	SNOWBERRY_BACKUPS_REASON_UNKNOWN=           backed up
+	
+	SNOWBERRY_BACKUPS_OPEN_FOLDER=              open all backups folder
+	SNOWBERRY_BACKUPS_TOTAL_SIZE=               {0} total
+	SNOWBERRY_BACKUPS_CLEAR=                    clear all backups
+	SNOWBERRY_BACKUPS_CLEAR_WARNING=            are you sure you want to clear all backups? this can't be undone!
+
 # *** Selection Tool ***
 	SNOWBERRY_EDITOR_SELECT_ENTITIES_TT=        select entities (shift-E)
 	SNOWBERRY_EDITOR_SELECT_TRIGGERS_TT=        select triggers (shift-T)
