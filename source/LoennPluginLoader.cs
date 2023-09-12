@@ -119,7 +119,7 @@ public static class LoennPluginLoader {
             PluginInfo.Entities[plugin.Key] = info;
 
             if (plugin.Value["placements"] is LuaTable placements)
-                if (placements.Keys.OfType<string>().Any(k => k.Equals("data"))) {
+                if (placements.Keys.OfType<string>().Any(k => k.Equals("name"))) {
                     Dictionary<string, object> options = new();
                     if(placements["data"] is LuaTable data)
                         foreach (var item in data.Keys.OfType<string>())
