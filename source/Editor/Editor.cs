@@ -160,6 +160,8 @@ public class Editor : UIScene {
             From = data.Area;
             map = new Map(data);
             map.Rooms.ForEach(r => r.AllEntities.ForEach(e => e.InitializeAfter()));
+
+            TryBackup(Backups.BackupReason.OnOpen);
         } else
             From = null;
 
@@ -179,19 +181,14 @@ public class Editor : UIScene {
         Engine.Scene = new Editor(map);
     }
 
-    internal static void OpenFancy(MapData data) {
+    internal static void OpenMainMenu() {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
-        Map map = null;
-        if (data != null) {
-            Snowberry.Log(LogLevel.Info, $"Opening level editor using map {data.Area.GetSID()}");
-            map = new Map(data);
-        }
 
         _ = new FadeWipe(Engine.Scene, false, () => {
-            Engine.Scene = new Editor(map);
+            Engine.Scene = new Editor(null);
         }) {
-            Duration = data != null ? 0.3f : 0.85f
+            Duration = 0.85f
         };
     }
 
@@ -553,6 +550,14 @@ public class Editor : UIScene {
     }
 
     public bool CanTypeShortcut() => !UI.NestedGrabsKeyboard();
+
+    public static void TryBackup(Backups.BackupReason reason) {
+        if(From != null) {
+            string realPath = Util.KeyToPath(From.Value);
+            if (File.Exists(realPath))
+                Backups.SaveBackup(realPath, From.Value, reason);
+        }
+    }
 
     private static void CreatePlaytestMapDataHook(Action<MapData> orig_Load, MapData self) {
         if (!generatePlaytestMapData)

@@ -97,9 +97,7 @@ public sealed class Snowberry : EverestModule {
     }
 
     private void MainMenu_OnCreateButtons(OuiMainMenu menu, List<MenuButton> buttons) {
-        MainMenuSmallButton btn = new MainMenuSmallButton("EDITOR_MAINMENU", "menu/editor", menu, Vector2.Zero, Vector2.Zero, () => {
-            Editor.Editor.OpenFancy(null); //uwu
-        });
+        MainMenuSmallButton btn = new MainMenuSmallButton("EDITOR_MAINMENU", "menu/editor", menu, Vector2.Zero, Vector2.Zero, Editor.Editor.OpenMainMenu);
         int c = 2;
         if (Celeste.Celeste.PlayMode == Celeste.Celeste.PlayModes.Debug) c++;
         buttons.Insert(c, btn);
@@ -124,7 +122,7 @@ public sealed class Snowberry : EverestModule {
             if (returnToMapIndex != -1) {
                 // instantiate the "Return to Editor" button
                 TextMenu.Button rteBtn = new TextMenu.Button(Dialog.Clean("SNOWBERRY_RETURN_TO_EDITOR"));
-                rteBtn.Pressed(() => Editor.Editor.OpenFancy(level.Session.MapData));
+                rteBtn.Pressed(() => Editor.Editor.Open(level.Session.MapData));
 
                 // replace the "Return to Map" button with "Return to Editor"
                 menu.Remove(menu.Items[returnToMapIndex]);
