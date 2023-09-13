@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Monocle;
+using Snowberry.Editor.Recording;
 
 namespace Snowberry;
 
@@ -51,6 +52,8 @@ public sealed class Snowberry : EverestModule {
 
         Everest.Events.MainMenu.OnCreateButtons += MainMenu_OnCreateButtons;
         Everest.Events.Level.OnCreatePauseMenuButtons += Level_OnCreatePauseMenuButtons;
+
+        RecInProgress.Load();
     }
 
     public override void LoadContent(bool firstLoad) {
@@ -73,6 +76,8 @@ public sealed class Snowberry : EverestModule {
 
         Everest.Events.MainMenu.OnCreateButtons -= MainMenu_OnCreateButtons;
         Everest.Events.Level.OnCreatePauseMenuButtons -= Level_OnCreatePauseMenuButtons;
+
+        RecInProgress.Unload();
     }
 
     private static void LoadModules() {

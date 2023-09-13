@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.Entities;
+using Snowberry.Editor.Recording;
 using Snowberry.UI;
 using Snowberry.UI.Menus;
 using Snowberry.UI.Menus.MainMenu;
@@ -155,6 +156,11 @@ public class Editor : UIScene {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
 
+        if (rte)
+            RecInProgress.FinishRecording();
+        else
+            RecInProgress.DiscardRecording();
+
         Map map = null;
         if (data != null) {
             if (rte)
@@ -176,6 +182,7 @@ public class Editor : UIScene {
     internal static void OpenNew() {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
+        RecInProgress.DiscardRecording();
 
         Snowberry.LogInfo("Opening new map in level editor");
         // Also empties the target's metadata.
@@ -189,6 +196,7 @@ public class Editor : UIScene {
     internal static void OpenMainMenu() {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
+        RecInProgress.DiscardRecording();
 
         _ = new FadeWipe(Engine.Scene, false, () => {
             Engine.Scene = new Editor(null);
@@ -228,34 +236,7 @@ public class Editor : UIScene {
         }
 
         ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(0, 0, 16, 16), 3, 3) {
-            OnPress = () => {
-                Audio.SetMusic(null);
-                Audio.SetAmbience(null);
-
-                SaveData.InitializeDebugMode();
-
-                TryAutosave(Backups.BackupReason.OnPlaytest);
-
-                generatePlaytestMapData = true;
-                PlaytestMapData = new MapData(Map.From);
-                PlaytestSession = new Session(Map.From);
-                if (SelectedRoom != null) {
-                    PlaytestSession.RespawnPoint = SelectedRoom.Entities.OfType<Plugin_Player>().FirstOrDefault()?.Position;
-                    PlaytestSession.Level = SelectedRoom.Name;
-                    PlaytestSession.StartedFromBeginning = false;
-                }
-
-                /*
-                 TODO: need to re-apply map meta here to ensure edits made in the editor actually apply during playtest properly
-                    but this naive approach doesn't work, causes crashes in Xaphan Helper and others; something is setup inconsistently
-                */
-                // Map.Meta.ApplyTo(PlaytestMapData.Data);
-                // foreach(ModeProperties prop in PlaytestMapData.Data.Mode)
-                //     prop.MapData = PlaytestMapData;
-
-                LevelEnter.Go(PlaytestSession, true);
-                generatePlaytestMapData = false;
-            },
+            OnPress = BeginPlaytest,
             Ctrl = true,
             Key = Keys.P
         }, new(10, 4));
@@ -381,6 +362,35 @@ public class Editor : UIScene {
         UI.Add(ToolPanelContainer);
 
         SwitchTool(0);
+    }
+
+    public void BeginPlaytest() {
+        Audio.SetMusic(null);
+        Audio.SetAmbience(null);
+
+        SaveData.InitializeDebugMode();
+
+        TryAutosave(Backups.BackupReason.OnPlaytest);
+
+        generatePlaytestMapData = true;
+        PlaytestMapData = new MapData(Map.From);
+        PlaytestSession = new Session(Map.From);
+        if (SelectedRoom != null) {
+            PlaytestSession.RespawnPoint = SelectedRoom.Entities.OfType<Plugin_Player>().FirstOrDefault()?.Position;
+            PlaytestSession.Level = SelectedRoom.Name;
+            PlaytestSession.StartedFromBeginning = false;
+        }
+
+        /*
+          TODO: need to re-apply map meta here to ensure edits made in the editor actually apply during playtest properly
+          but this naive approach doesn't work, causes crashes in Xaphan Helper and others; something is setup inconsistently
+        */
+        // Map.Meta.ApplyTo(PlaytestMapData.Data);
+        // foreach(ModeProperties prop in PlaytestMapData.Data.Mode)
+        //     prop.MapData = PlaytestMapData;
+
+        LevelEnter.Go(PlaytestSession, true);
+        generatePlaytestMapData = false;
     }
 
     protected override void BeginContent() {

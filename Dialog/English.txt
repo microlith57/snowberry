@@ -46,6 +46,8 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_EDITOR_TOOL_STYLEGROUNDS=         stylegrounds
     
     SNOWBERRY_EDITOR_TOOL_MAPINFO=              map info
+	
+	SNOWBERRY_EDITOR_TOOL_PLAYTEST=             playtest
 
     SNOWBERRY_EDITOR_UTIL_FOREGROUND=           foreground
     SNOWBERRY_EDITOR_UTIL_BACKGROUND=           background

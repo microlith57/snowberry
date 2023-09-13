@@ -14,7 +14,8 @@ public abstract class Tool{
         new RoomTool(),
         new PlacementTool(),
         new StylegroundsTool(),
-        new MapInfoTool()
+        new MapInfoTool(),
+        new PlaytestTool()
     };
 
     public static readonly Color LeftSelectedBtnBg = Calc.HexToColor("274292");
