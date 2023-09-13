@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Celeste;
+using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -54,11 +55,16 @@ public class HitboxesRecorder : Recorder{
 
     public override void RenderScreenSpace(float time){}
 
-    public override void RenderWorldSpace(float time){
+    public override void RenderWorldSpace(float time) {
+        Editor.BufferCamera sbCam = Editor.Instance.Camera;
+        Camera culler = new Camera(sbCam.ViewRect.Width, sbCam.ViewRect.Height) {
+            Position = sbCam.ViewRect.Location.ToVector2()
+        };
+
         foreach (var entityStates in OldStates)
             foreach (var state in entityStates.cs.AsEnumerable().Reverse())
                 if (state.time <= time) {
-                    state.collider?.Render(null);
+                    state.collider?.Render(culler);
                     break;
                 }
     }
