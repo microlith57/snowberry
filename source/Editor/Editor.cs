@@ -127,6 +127,8 @@ public class Editor : UIScene {
     internal static int SelectedFillerIndex = -1;
     internal static List<Selection> SelectedObjects;
 
+    internal static DateTime? LastAutosave = null;
+
     public UIToolbar Toolbar;
     public UIElement ToolPanel, ToolPanelContainer;
     public UIElement ActionBar, ToolActionGroup;
@@ -232,6 +234,8 @@ public class Editor : UIScene {
 
                 SaveData.InitializeDebugMode();
 
+                TryAutosave(Backups.BackupReason.OnPlaytest);
+
                 generatePlaytestMapData = true;
                 PlaytestMapData = new MapData(Map.From);
                 PlaytestSession = new Session(Map.From);
@@ -275,14 +279,14 @@ public class Editor : UIScene {
                     Message.AddElement(element, 0.5f, 0.5f, 0.5f, -0.1f);
                     var buttons = UIMessage.YesAndNoButtons(() => {
                         // no point auto-reloading when the map definitely doesn't exist yet
-                        BinaryExporter.ExportMap(Map, newName.Value + ".bin");
+                        BinaryExporter.ExportMapToFile(Map, newName.Value + ".bin");
                         Message.Shown = false;
                     }, () => Message.Shown = false, 0, 4, 0.5f);
                     Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
                     Message.Shown = true;
                 } else {
                     TryBackup(Backups.BackupReason.OnSave);
-                    BinaryExporter.ExportMap(Map);
+                    BinaryExporter.ExportMapToFile(Map);
                     if (From != null)
                         AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () => AreaData.Areas[From.Value.ID].Mode[0].MapData.Reload());
                 }
@@ -294,6 +298,7 @@ public class Editor : UIScene {
         ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 // TODO: show an "are you sure" message
+                TryAutosave(Backups.BackupReason.OnClose);
                 Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
             },
             Ctrl = true,
@@ -460,6 +465,13 @@ public class Editor : UIScene {
                 if (save)
                     Snowberry.Instance.SaveSettings();
             }
+
+            // autosaving
+            DateTime now = DateTime.Now;
+            if (LastAutosave is null || LastAutosave.Value.AddMinutes(10) <= now) {
+                TryAutosave(Backups.BackupReason.Autosave);
+                LastAutosave = now; // in case we fail
+            }
         }
     }
 
@@ -559,8 +571,17 @@ public class Editor : UIScene {
         if(From != null) {
             string realPath = Util.KeyToPath(From.Value);
             if (File.Exists(realPath))
-                Backups.SaveBackup(realPath, From.Value, reason);
+                Backups.SaveBackup(File.ReadAllBytes(realPath), From.Value, reason);
         }
+
+        LastAutosave = DateTime.Now;
+    }
+
+    public static void TryAutosave(Backups.BackupReason reason) {
+        if(From != null && Instance?.Map != null)
+            Backups.SaveBackup(BinaryExporter.ExportToBytes(Instance.Map.Export(), From.Value.SID), From.Value, reason);
+
+        LastAutosave = DateTime.Now;
     }
 
     private static void CreatePlaytestMapDataHook(Action<MapData> orig_Load, MapData self) {

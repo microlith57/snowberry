@@ -10,14 +10,24 @@ using Element = Celeste.BinaryPacker.Element;
 
 public class BinaryExporter {
 
-    public static void ExportMap(Map map, string filename = null) {
-        Export(map.Export(), filename ?? (Editor.Editor.From is {} v ? Util.KeyToPath(v) : "untitled_snowberry_map.bin"));
+    public static void ExportMapToFile(Map map, string filename = null) {
+        ExportToFile(map.Export(), filename ?? (Editor.Editor.From is {} v ? Util.KeyToPath(v) : "untitled_snowberry_map.bin"));
     }
 
-    public static void Export(Element e, string filename) {
+    public static void ExportToFile(Element e, string filename) {
         string output = Path.Combine(Celeste.Mod.Everest.Loader.PathMods, filename);
         Directory.CreateDirectory(Path.GetDirectoryName(output));
+        using var file = File.OpenWrite(output);
+        ExportInto(e, filename, file);
+    }
 
+    public static byte[] ExportToBytes(Element e, string name) {
+        MemoryStream stream = new();
+        ExportInto(e, name, stream);
+        return stream.ToArray();
+    }
+
+    public static void ExportInto(Element e, string name, Stream into) {
         var values = new Dictionary<string, short>();
         CreateLookupTable(e, values);
         if (!values.ContainsKey("innerText"))
@@ -25,11 +35,10 @@ public class BinaryExporter {
         if (!values.ContainsKey("unnamed"))
             values.Add("unnamed", (short)values.Count);
 
-        using var file = File.OpenWrite(output);
-        var writer = new BinaryWriter(file);
+        var writer = new BinaryWriter(into);
 
         writer.Write("CELESTE MAP");
-        writer.Write(filename);
+        writer.Write(name);
         writer.Write((short)values.Count);
 
         foreach(var item in values)

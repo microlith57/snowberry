@@ -40,7 +40,7 @@ public class Surgery : UIScene {
 
         UITextField mapName = new UITextField(Fonts.Regular, 400, Path.GetFileName(path));
         topBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(16, 0, 16, 16), 3, 3) {
-            OnPress = () => BinaryExporter.Export(elem, mapName.Value + ".bin")
+            OnPress = () => BinaryExporter.ExportToFile(elem, mapName.Value + ".bin")
         }, new(40, 8));
         topBar.AddRight(mapName, new(8, 14));
 

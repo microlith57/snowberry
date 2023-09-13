@@ -13,6 +13,7 @@ public static class Backups{
     public enum BackupReason{
         OnOpen,
         OnSave,
+        OnPlaytest,
         Autosave,
         OnClose,
         Unknown
@@ -68,7 +69,7 @@ public static class Backups{
         return new();
     }
 
-    public static void SaveBackup(string mapPath, AreaKey key, BackupReason reason) {
+    public static void SaveBackup(byte[] data, AreaKey key, BackupReason reason) {
         DateTime now = DateTime.Now.ToUniversalTime();
 
         var dir = BackupsDirectoryFor(key);
@@ -80,7 +81,7 @@ public static class Backups{
                        """;
 
         using ZipFile file = new ZipFile();
-        file.AddEntry(MapFilename, File.ReadAllBytes(mapPath));
+        file.AddEntry(MapFilename, data);
         file.AddEntry(MetaFilename, meta);
         file.Save(Path.Combine(dir, $"backup-{now:yyyy'-'MM'-'dd'-'HH'-'mm'-'ss'-'fff}-{reason.ToString()}.zip"));
     }
