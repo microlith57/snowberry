@@ -14,7 +14,7 @@ public class HitboxesRecorder : Recorder{
 
     // split things up into "each entity at a specific time", so the various entities that don't do much with theirs
     // can be more efficient about it.
-    private List<(WeakReference<CEntity> entityRef, List<(Collider collider, Vector2 offset, float time)> cs)> OldStates = new(), InProgressStates = new();
+    private List<(WeakReference<CEntity> entityRef, List<(Collider collider, Vector2 offset, bool collidable, float time)> cs)> OldStates = new(), InProgressStates = new();
 
     public override void UpdateInGame(Level l){
         HashSet<CEntity> toTrack = new(l.Entities);
@@ -24,8 +24,8 @@ public class HitboxesRecorder : Recorder{
                 // all entities should have at least one state
                 var lastState = state.cs.Last();
                 // only create a new entity state if necessary
-                if (!CollidersEq(lastState.collider, entity.Collider) || lastState.offset != entity.Position)
-                    state.cs.Add((entity.Collider.Clone(), entity.Position, l.TimeActive));
+                if (!CollidersEq(lastState.collider, entity.Collider) || lastState.offset != entity.Position || lastState.collidable != entity.Collidable)
+                    state.cs.Add((entity.Collider.Clone(), entity.Position, entity.Collidable, l.TimeActive));
                 // no need to look at it anymore
                 toTrack.Remove(entity);
             }else{
@@ -33,14 +33,14 @@ public class HitboxesRecorder : Recorder{
                 InProgressStates.Remove(state);
                 OldStates.Add(state);
                 // explicitly mark it as done
-                state.cs.Add((null, new(0), l.TimeActive));
+                state.cs.Add((null, new(0), false, l.TimeActive));
             }
         }
 
         // discovered new entities to track
         foreach(CEntity entity in toTrack)
             if(entity.Collider != null)
-                InProgressStates.Add((new WeakReference<CEntity>(entity), new() { (entity.Collider.Clone(), entity.Position, l.TimeActive) }));
+                InProgressStates.Add((new WeakReference<CEntity>(entity), new() { (entity.Collider.Clone(), entity.Position, entity.Collidable, l.TimeActive) }));
     }
 
     public override void FinalizeRecording(){
@@ -64,7 +64,7 @@ public class HitboxesRecorder : Recorder{
         foreach (var entityStates in OldStates)
             foreach (var state in entityStates.cs.AsEnumerable().Reverse())
                 if (state.time <= time) {
-                    state.collider?.Render(culler);
+                    state.collider?.Render(culler, state.collidable ? Color.Red : Color.DarkRed);
                     break;
                 }
     }
