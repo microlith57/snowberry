@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Snowberry.Editor;
 
 namespace Snowberry.UI.Menus.MainMenu;
 
@@ -118,6 +121,27 @@ public class UIMainMenu : UIElement {
             Snowberry.Instance.SaveSettings();
         }), settingsOffset);
         settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_SG_PREVIEW_SUB")), descOffset);
+
+        UIButton openBackupsFolder = new(Dialog.Clean("SNOWBERRY_BACKUPS_OPEN_FOLDER"), Fonts.Regular, 6, 6) {
+            OnPress = () => {
+                string folder = Backups.BackupsDirectory;
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+                if (!folder.EndsWith("/")) folder += "/";
+                Process.Start("file://" + folder);
+            },
+            BG = Calc.HexToColor("ff8c00"),
+            HoveredBG = Calc.HexToColor("e37e02"),
+            PressedBG = Calc.HexToColor("874e07")
+        };
+        long folderSize = Directory.Exists(Backups.BackupsDirectory) ? Util.DirSize(new DirectoryInfo(Backups.BackupsDirectory)) : 0;
+        UILabel backupsTotalSize = new UILabel(Dialog.Get("SNOWBERRY_BACKUPS_TOTAL_SIZE").Substitute(Util.FormatFilesize(folderSize)));
+        UIElement group = new();
+        group.AddRight(openBackupsFolder);
+        group.AddRight(backupsTotalSize, new(6, (openBackupsFolder.Height - backupsTotalSize.Height) / 2f));
+        group.CalculateBounds();
+
+        settingsOptions.AddBelow(group, settingsOffset);
+
         Add(settingsOptions);
 
         Color rib = Calc.HexToColor("20212e"), acc = Calc.HexToColor("3889d9");

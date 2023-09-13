@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -62,6 +63,10 @@ public static class Util {
         double num = Math.Round(absBytes / Math.Pow(1024, place), 1);
         return (Math.Sign(bytes) * num) + suffixes[place];
     }
+
+    // adapted from https://stackoverflow.com/a/468131
+    public static long DirSize(DirectoryInfo d) =>
+        d.GetFiles().Sum(fi => fi.Length) + d.GetDirectories().Sum(DirSize);
 
     // from FileProxy
     public static string Modize(string path) {
