@@ -149,19 +149,22 @@ public class Editor : UIScene {
         SaveData.InitializeDebugMode();
     }
 
-    internal static void Open(MapData data) {
+    internal static void Open(MapData data, bool rte = false) {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
 
         Map map = null;
         if (data != null) {
-            Snowberry.Log(LogLevel.Info, $"Opening level editor using map {data.Area.GetSID()}");
-            // Also copies the target's metadata into Playtest's metadata.
-            From = data.Area;
+            if (rte)
+                Snowberry.Log(LogLevel.Info, $"Returning to editor for {From.Value.SID}");
+            else {
+                Snowberry.Log(LogLevel.Info, $"Opening level editor using map {data.Area.GetSID()}");
+                From = data.Area;
+                TryBackup(Backups.BackupReason.OnOpen);
+            }
+
             map = new Map(data);
             map.Rooms.ForEach(r => r.AllEntities.ForEach(e => e.InitializeAfter()));
-
-            TryBackup(Backups.BackupReason.OnOpen);
         } else
             From = null;
 
@@ -278,6 +281,7 @@ public class Editor : UIScene {
                     Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
                     Message.Shown = true;
                 } else {
+                    TryBackup(Backups.BackupReason.OnSave);
                     BinaryExporter.ExportMap(Map);
                     if (From != null)
                         AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () => AreaData.Areas[From.Value.ID].Mode[0].MapData.Reload());

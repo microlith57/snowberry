@@ -122,7 +122,7 @@ public sealed class Snowberry : EverestModule {
             if (returnToMapIndex != -1) {
                 // instantiate the "Return to Editor" button
                 TextMenu.Button rteBtn = new TextMenu.Button(Dialog.Clean("SNOWBERRY_RETURN_TO_EDITOR"));
-                rteBtn.Pressed(() => Editor.Editor.Open(level.Session.MapData));
+                rteBtn.Pressed(() => Editor.Editor.Open(level.Session.MapData, rte: true));
 
                 // replace the "Return to Map" button with "Return to Editor"
                 menu.Remove(menu.Items[returnToMapIndex]);
