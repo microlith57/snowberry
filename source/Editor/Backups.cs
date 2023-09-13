@@ -24,6 +24,7 @@ public static class Backups{
         public AreaKey? For;
         public DateTime Timestamp;
         public BackupReason Reason;
+        public long Filesize;
     }
 
     // for yaml serialization
@@ -56,7 +57,8 @@ public static class Backups{
                             Path = file,
                             For = key,
                             Timestamp = DateTime.Parse(meta.Timestamp, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind).ToLocalTime(),
-                            Reason = Enum.TryParse<BackupReason>(meta.Reason, out var r) ? r : BackupReason.Unknown
+                            Reason = Enum.TryParse<BackupReason>(meta.Reason, out var r) ? r : BackupReason.Unknown,
+                            Filesize = new FileInfo(file).Length
                         });
                     }
                 }

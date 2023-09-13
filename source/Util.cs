@@ -52,6 +52,17 @@ public static class Util {
         return null;
     }
 
+    // adapted from https://stackoverflow.com/a/4975942
+    public static string FormatFilesize(long bytes) {
+        string[] suffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+        if (bytes == 0)
+            return "0" + suffixes[0];
+        long absBytes = Math.Abs(bytes);
+        int place = Convert.ToInt32(Math.Floor(Math.Log(absBytes, 1024)));
+        double num = Math.Round(absBytes / Math.Pow(1024, place), 1);
+        return (Math.Sign(bytes) * num) + suffixes[place];
+    }
+
     // from FileProxy
     public static string Modize(string path) {
         string directoryName = Path.GetDirectoryName(path);

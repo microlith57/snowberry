@@ -330,6 +330,9 @@ public class Editor : UIScene {
                             b.Timestamp
                         ));
                         bg.AddBelow(label, new((bg.Height - label.Height) / 2f));
+                        UILabel filesize = new UILabel(Util.FormatFilesize(b.Filesize));
+                        filesize.Position = new Vector2(bg.Width - filesize.Width - (bg.Height - filesize.Height) / 2f, (bg.Height - filesize.Height) / 2f);
+                        bg.Add(filesize);
                         list.AddBelow(bg);
                         odd = !odd;
                     }
