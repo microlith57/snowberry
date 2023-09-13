@@ -13,6 +13,7 @@ public abstract class Recorder{
     };
 
     public abstract void UpdateInGame(Level l);
+    public virtual void FinalizeRecording(){}
 
     public abstract void RenderScreenSpace(float time);
     public abstract void RenderWorldSpace(float time);
