@@ -8,7 +8,7 @@ namespace Snowberry;
 
 using Element = Celeste.BinaryPacker.Element;
 
-public class BinaryExporter {
+public static class BinaryExporter {
 
     public static void ExportMapToFile(Map map, string filename = null) {
         ExportToFile(map.Export(), filename ?? (Editor.Editor.From is {} v ? Util.KeyToPath(v) : "untitled_snowberry_map.bin"));
