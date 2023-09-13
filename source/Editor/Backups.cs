@@ -42,7 +42,6 @@ public static class Backups{
 
     public static List<Backup> GetBackupsFor(AreaKey key){
         string dir = BackupsDirectoryFor(key);
-        Snowberry.LogInfo($"looking for backups in {key}!");
         if(Directory.Exists(dir)){
             List<Backup> ret = new();
 
