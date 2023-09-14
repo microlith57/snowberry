@@ -121,6 +121,11 @@ public class UIMainMenu : UIElement {
             Snowberry.Instance.SaveSettings();
         }), settingsOffset);
         settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_SG_PREVIEW_SUB")), descOffset);
+        settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP"), Snowberry.Settings.AggressiveSnap, b => {
+            Snowberry.Settings.AggressiveSnap = b;
+            Snowberry.Instance.SaveSettings();
+        }), settingsOffset);
+        settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP_SUB")), descOffset);
 
         UIButton openBackupsFolder = new(Dialog.Clean("SNOWBERRY_BACKUPS_OPEN_FOLDER"), Fonts.Regular, 6, 6) {
             OnPress = () => {

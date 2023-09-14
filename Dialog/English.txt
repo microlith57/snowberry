@@ -145,6 +145,9 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     
     SNOWBERRY_SETTINGS_SG_PREVIEW=              Stylegrounds Previewing
     SNOWBERRY_SETTINGS_SG_PREVIEW_SUB=          Whether to preview stylegrounds in-editor.
+	
+	SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP=         Aggressive Snapping
+	SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP_SUB=     Whether to always snap entities to the grid when pasting, and when moving{n}without holding Control.
 
 # *** Pause Menu ***
 

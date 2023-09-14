@@ -146,6 +146,8 @@ public class SelectionTool : Tool {
                                 solo.SetPosition(new(solo.X, (int)Math.Floor(wSnapped.Y)));
                         }
 
+                        // TODO: don't snap offgrid entities while resizing, except with AggressiveSnap
+
                         // skip dragging code
                         goto postResize;
                     }
@@ -156,8 +158,10 @@ public class SelectionTool : Tool {
                 Vector2 worldSnapped = noSnap ? Mouse.World : Mouse.World.RoundTo(8);
                 Vector2 worldLastSnapped = noSnap ? Mouse.WorldLast : Mouse.WorldLast.RoundTo(8);
                 Vector2 move = worldSnapped - worldLastSnapped;
-                foreach (Selection s in Editor.SelectedObjects)
+                foreach (Selection s in Editor.SelectedObjects) {
                     s.Move(move);
+                    SnapIfNecessary(s);
+                }
             }
         } else
             Editor.SelectionInProgress = null;
@@ -198,17 +202,13 @@ public class SelectionTool : Tool {
                 pasting = false;
                 toPaste = null;
             } else if (MInput.Keyboard.Pressed(Keys.Up)) { // Up/Down/Left/Right to nudge entities
-                foreach (Selection es in Editor.SelectedObjects)
-                    es.Move(new(0, ctrl ? -1 : -8));
+                Nudge(new(0, ctrl ? -1 : -8));
             } else if (MInput.Keyboard.Pressed(Keys.Down)) {
-                foreach (Selection es in Editor.SelectedObjects)
-                    es.Move(new(0, ctrl ? 1 : 8));
+                Nudge(new(0, ctrl ? 1 : 8));
             } else if (MInput.Keyboard.Pressed(Keys.Left)) {
-                foreach (Selection es in Editor.SelectedObjects)
-                    es.Move(new(ctrl ? -1 : -8, 0));
+                Nudge(new(ctrl ? -1 : -8, 0));
             } else if (MInput.Keyboard.Pressed(Keys.Right)) {
-                foreach (Selection es in Editor.SelectedObjects)
-                    es.Move(new(ctrl ? 1 : 8, 0));
+                Nudge(new(ctrl ? 1 : 8, 0));
             } else if (Editor.SelectedRoom != null && ctrl) {
                 if (MInput.Keyboard.Pressed(Keys.A)) { // Ctrl-A to select all
                     // select all
@@ -319,6 +319,13 @@ public class SelectionTool : Tool {
         }
     }
 
+    private void Nudge(Vector2 by) {
+        foreach (Selection s in Editor.SelectedObjects) {
+            s.Move(by);
+            SnapIfNecessary(s);
+        }
+    }
+
     private static Entity GetSoloEntity() {
         // list patterns would be nice here...
         if (Editor.SelectedObjects != null && Editor.SelectedObjects.Count == 1) {
@@ -337,9 +344,23 @@ public class SelectionTool : Tool {
             e.Move(offset);
             for (int i = 0; i < e.Nodes.Count; i++)
                 e.MoveNode(i, offset);
+            SnapIfNecessary(e, true);
         }
     }
 
     private static Rectangle CoveringRect(IReadOnlyList<Rectangle> rects) =>
         rects.Aggregate(rects[0], Rectangle.Union);
+
+    private static void SnapIfNecessary(Entity e, bool ignoreCtrl = false) {
+        if (Snowberry.Settings.AggressiveSnap && (ignoreCtrl || !MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl))) {
+            e.SetPosition(e.Position.RoundTo(8));
+            for (var idx = 0; idx < e.Nodes.Count; idx++)
+                e.SetNode(idx, e.Nodes[idx].RoundTo(8));
+        }
+    }
+
+    private static void SnapIfNecessary(Selection s, bool ignoreCtrl = false) {
+        if (s is EntitySelection { Entity: var e })
+            SnapIfNecessary(e, ignoreCtrl);
+    }
 }
