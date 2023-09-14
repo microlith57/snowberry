@@ -30,7 +30,7 @@ public class UIButton : UIElement {
     private float lerp;
     protected bool pressed, hovering;
 
-    private readonly MTexture
+    private static readonly MTexture
         top,
         bottom,
         topFill,
@@ -40,14 +40,16 @@ public class UIButton : UIElement {
     public Action OnPress, OnRightPress;
     public bool Underline = false, Strikethrough = false;
 
-    private UIButton(int spaceX, int spaceY, int minWidth, int minHeight) {
+    static UIButton(){
         MTexture full = GFX.Gui["Snowberry/button"];
         top = full.GetSubtexture(0, 0, 3, 4);
         topFill = full.GetSubtexture(2, 0, 1, 4);
         bottom = full.GetSubtexture(0, 5, 3, 3);
         bottomFill = full.GetSubtexture(2, 5, 1, 4);
         mid = full.GetSubtexture(0, 4, 2, 1);
+    }
 
+    private UIButton(int spaceX, int spaceY, int minWidth, int minHeight) {
         minSize = new Vector2(minWidth, minHeight);
         space = new Vector2(spaceX, spaceY);
 
@@ -152,24 +154,8 @@ public class UIButton : UIElement {
     public override void Render(Vector2 position = default) {
         base.Render(position);
 
-        int press = pressed ? 1 : 0;
-
-        Color bg = Color.Lerp(hovering ? HoveredBG : BG, PressedBG, lerp);
-
-        top.Draw(new Vector2(position.X, position.Y + press), Vector2.Zero, bg);
-        topFill.Draw(new Vector2(position.X + 3, position.Y + press), Vector2.Zero, bg, new Vector2(Width - 6, 1));
-        top.Draw(new Vector2(position.X + Width, position.Y + press), Vector2.Zero, bg, new Vector2(-1, 1));
-
-        mid.Draw(new Vector2(position.X, position.Y + Height - 4), Vector2.Zero, bg);
-        mid.Draw(new Vector2(position.X + Width, position.Y + Height - 4), Vector2.Zero, bg, new Vector2(-1, 1));
-        Draw.Rect(new Vector2(position.X, position.Y + 4 + press), Width, Height - 8, Color.Black);
-        Draw.Rect(new Vector2(position.X + 1, position.Y + 4 + press), Width - 2, Height - 8, bg);
-
-        bottom.Draw(new Vector2(position.X, position.Y + Height - 3), Vector2.Zero, bg);
-        bottomFill.Draw(new Vector2(position.X + 3, position.Y + Height - 3), Vector2.Zero, bg, new Vector2(Width - 6, 1));
-        bottom.Draw(new Vector2(position.X + Width, position.Y + Height - 3), Vector2.Zero, bg, new Vector2(-1, 1));
-
-        Draw.Rect(new Vector2(position.X + 2, position.Y + Height - 4 + press), Width - 4, 1, bg);
+        Color curBg = Color.Lerp(hovering ? HoveredBG : BG, PressedBG, lerp);
+        var press = DrawButtonBg(new((int)position.X, (int)position.Y, Width, Height), pressed, curBg);
 
         Vector2 at = position + new Vector2(3 + space.X, press + space.Y);
         Color fg = Color.Lerp(hovering ? HoveredFG : FG, PressedFG, lerp);
@@ -181,6 +167,26 @@ public class UIButton : UIElement {
             if (Strikethrough)
                 Draw.Rect(at + new Vector2(-2, textArea.Y / 2 + 1), textArea.X + 4, 1, Color.Lerp(FG, Color.Black, 0.25f));
         } else icon?.Invoke(at, fg);
+    }
+
+    public static int DrawButtonBg(Rectangle bounds, bool pressed, Color color){
+        int press = pressed ? 1 : 0;
+
+        top.Draw(new Vector2(bounds.X, bounds.Y + press), Vector2.Zero, color);
+        topFill.Draw(new Vector2(bounds.X + 3, bounds.Y + press), Vector2.Zero, color, new Vector2(bounds.Width - 6, 1));
+        top.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + press), Vector2.Zero, color, new Vector2(-1, 1));
+
+        mid.Draw(new Vector2(bounds.X, bounds.Y + bounds.Height - 4), Vector2.Zero, color);
+        mid.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height - 4), Vector2.Zero, color, new Vector2(-1, 1));
+        Draw.Rect(new Vector2(bounds.X, bounds.Y + 4 + press), bounds.Width, bounds.Height - 8, Color.Black);
+        Draw.Rect(new Vector2(bounds.X + 1, bounds.Y + 4 + press), bounds.Width - 2, bounds.Height - 8, color);
+
+        bottom.Draw(new Vector2(bounds.X, bounds.Y + bounds.Height - 3), Vector2.Zero, color);
+        bottomFill.Draw(new Vector2(bounds.X + 3, bounds.Y + bounds.Height - 3), Vector2.Zero, color, new Vector2(bounds.Width - 6, 1));
+        bottom.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height - 3), Vector2.Zero, color, new Vector2(-1, 1));
+
+        Draw.Rect(new Vector2(bounds.X + 2, bounds.Y + bounds.Height - 4 + press), bounds.Width - 4, 1, color);
+        return press;
     }
 
     public override string Tooltip() => ButtonTooltip;

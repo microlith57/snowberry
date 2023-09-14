@@ -23,7 +23,7 @@ public class PlaytestTool : Tool {
                 RecInProgress.BeginRecording();
             }
         }, new(0, 4));
-        p.AddRight(new UIButton("s", Fonts.Regular, 6, 6) {
+        p.AddRight(new UIButton("<<", Fonts.Regular, 6, 6) {
             OnPress = () => {
                 time = 0;
             }
