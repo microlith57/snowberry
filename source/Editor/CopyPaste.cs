@@ -200,7 +200,7 @@ public static class CopyPaste{
             }
 
             if(startsWith("-") || char.IsDigit(rest.First())){
-                var v = rest.First() + rest.Skip(1).TakeWhile(char.IsDigit).IntoString();
+                var v = rest.First() + rest.Skip(1).TakeWhile(c => char.IsDigit(c) || c is '.').IntoString();
                 rest = rest.Substring(v.Length);
                 if(isIdChar(rest.First()))
                     throw new ArgumentException("Failed to paste, found a letter at the end of a numeric value");
