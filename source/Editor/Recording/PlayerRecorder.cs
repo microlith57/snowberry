@@ -17,15 +17,18 @@ public class PlayerRecorder : Recorder{
         Hair = new PlayerHair(Sprite);
     }
 
-    public override void UpdateInGame(Level l){
-        if(l.Tracker.GetEntity<Player>() is { ChaserStates.Count: > 0 } player)
-            States.Add(player.ChaserStates[player.ChaserStates.Count - 1]);
+    public override void UpdateInGame(Level l, float time){
+        if(l.Tracker.GetEntity<Player>() is { ChaserStates.Count: > 0 } player) {
+            Player.ChaserState state = player.ChaserStates[player.ChaserStates.Count - 1];
+            state.TimeStamp = time; // it's a struct, so no need to copy
+            States.Add(state);
+        }
     }
 
     public override void RenderScreenSpace(float time){}
 
     public override void RenderWorldSpace(float time){
-        Player.ChaserState? display = States.FirstOrDefault(chaserState => time <= chaserState.TimeStamp);
+        Player.ChaserState? display = States.LastOrDefault(chaserState => chaserState.TimeStamp <= time);
         if(display is { /*non null*/ } state){
             Sprite.Visible = true;
             Hair.Visible = true;

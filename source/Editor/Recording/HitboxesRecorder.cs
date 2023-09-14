@@ -16,7 +16,7 @@ public class HitboxesRecorder : Recorder{
     // can be more efficient about it.
     private List<(WeakReference<CEntity> entityRef, List<(Collider collider, Vector2 offset, bool collidable, float time)> cs)> OldStates = new(), InProgressStates = new();
 
-    public override void UpdateInGame(Level l){
+    public override void UpdateInGame(Level l, float time){
         HashSet<CEntity> toTrack = new(l.Entities);
 
         foreach(var state in InProgressStates /* copy to allow mutation */ .ToList()){
@@ -25,7 +25,7 @@ public class HitboxesRecorder : Recorder{
                 var lastState = state.cs.Last();
                 // only create a new entity state if necessary
                 if (!CollidersEq(lastState.collider, entity.Collider) || lastState.offset != entity.Position || lastState.collidable != entity.Collidable)
-                    state.cs.Add((entity.Collider.Clone(), entity.Position, entity.Collidable, l.TimeActive));
+                    state.cs.Add((entity.Collider?.Clone(), entity.Position, entity.Collidable, time));
                 // no need to look at it anymore
                 toTrack.Remove(entity);
             }else{
@@ -33,14 +33,14 @@ public class HitboxesRecorder : Recorder{
                 InProgressStates.Remove(state);
                 OldStates.Add(state);
                 // explicitly mark it as done
-                state.cs.Add((null, new(0), false, l.TimeActive));
+                state.cs.Add((null, new(0), false, time));
             }
         }
 
         // discovered new entities to track
         foreach(CEntity entity in toTrack)
             if(entity.Collider != null)
-                InProgressStates.Add((new WeakReference<CEntity>(entity), new() { (entity.Collider.Clone(), entity.Position, entity.Collidable, l.TimeActive) }));
+                InProgressStates.Add((new WeakReference<CEntity>(entity), new() { (entity.Collider.Clone(), entity.Position, entity.Collidable, time) }));
     }
 
     public override void FinalizeRecording(){

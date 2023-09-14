@@ -12,7 +12,7 @@ public abstract class Recorder{
         () => new HitboxesRecorder()
     };
 
-    public abstract void UpdateInGame(Level l);
+    public abstract void UpdateInGame(Level l, float time);
     public virtual void FinalizeRecording(){}
 
     public abstract void RenderScreenSpace(float time);
