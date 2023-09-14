@@ -48,9 +48,16 @@ public class HitboxesRecorder : Recorder{
         OldStates.AddRange(InProgressStates);
         InProgressStates = null;
 
+        void MoveCollider(Collider c, Vector2 v) {
+            c.Position += v;
+            if(c is ColliderList cl)
+                foreach (Collider sub in cl.colliders)
+                    MoveCollider(sub, v);
+        }
+
         foreach(var state in OldStates.SelectMany(entityStates => entityStates.cs))
             if(state.collider != null)
-                state.collider.Position += state.offset;
+                MoveCollider(state.collider, state.offset);
     }
 
     public override void RenderScreenSpace(float time){}
