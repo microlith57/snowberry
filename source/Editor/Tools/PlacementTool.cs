@@ -19,6 +19,8 @@ public class PlacementTool : Tool {
     private Placement lastPlacement;
     private UISearchBar<Placement> searchBar;
 
+    private static string search = "";
+
     public override UIElement CreatePanel(int height) {
         placementButtons.Clear();
 
@@ -57,7 +59,8 @@ public class PlacementTool : Tool {
             Position = new Vector2(5, height - 20),
             Entries = Placements.All.ToArray(),
             InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
-            OnInputChange = _ => {
+            OnInputChange = s => {
+                search = s;
                 buttonPane.Scroll = 0;
                 int y = 0;
                 foreach (var b in placementButtons) {
@@ -73,6 +76,7 @@ public class PlacementTool : Tool {
             }
         });
         searchBar.AddSpecialMatcher('@', modMatcher, Calc.HexToColor("1b6dcc"));
+        searchBar.UpdateInput(search);
 
         return panel;
     }
