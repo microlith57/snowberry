@@ -375,8 +375,8 @@ public class Editor : UIScene {
         generatePlaytestMapData = true;
         PlaytestMapData = new MapData(Map.From);
         PlaytestSession = new Session(Map.From);
-        if (SelectedRoom != null) {
-            PlaytestSession.RespawnPoint = SelectedRoom.Entities.OfType<Plugin_Player>().FirstOrDefault()?.Position;
+        if (SelectedRoom?.Entities.OfType<Plugin_Player>().FirstOrDefault()?.Position is Vector2 v) {
+            PlaytestSession.RespawnPoint = v;
             PlaytestSession.Level = SelectedRoom.Name;
             PlaytestSession.StartedFromBeginning = false;
         }
