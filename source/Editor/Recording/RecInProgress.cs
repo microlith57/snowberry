@@ -22,8 +22,9 @@ public static class RecInProgress {
     }
 
     public static void FinishRecording() {
-        foreach(Recorder r in Recorders)
-            r.FinalizeRecording();
+        if(recInProgress)
+            foreach (Recorder r in Recorders)
+                r.FinalizeRecording();
 
         recInProgress = false;
     }
