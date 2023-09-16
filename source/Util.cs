@@ -110,6 +110,15 @@ public static class Util {
         return s;
     }
 
-    public static string IntoString(this Color c) =>
-        BitConverter.ToString(new[] { c.R, c.G, c.B }).Replace("-", string.Empty);
+    public static string ToHex(this byte b) => BitConverter.ToString(new[] { b }).ToLower();
+
+    public static string IntoRgbString(this Color c) =>
+        $"{c.R.ToHex()}{c.G.ToHex()}{c.B.ToHex()}".ToLower();
+
+    public static string IntoRgbaString(this Color c) {
+        float f = (255f / c.A);
+        return c.A == 0 ? "00000000" : BitConverter.ToString(
+            new[] { (byte)Math.Round(c.R * f), (byte)Math.Round(c.G * f), (byte)Math.Round(c.B * f), c.A }
+        ).Replace("-", string.Empty);
+    }
 }

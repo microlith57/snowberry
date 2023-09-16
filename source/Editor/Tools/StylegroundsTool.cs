@@ -162,13 +162,16 @@ public class StylegroundsTool : Tool {
         // might not have any stylegrounds
         if(selected != null && Stylegrounds.TryGetValue(selected, out var styleground)){
             var offset = Vector2.UnitY * 4;
-            panel.Add(UIPluginOptionList.StringOption("Only In", styleground.OnlyIn, s => styleground.OnlyIn = s));
-            panel.AddBelow(UIPluginOptionList.StringOption("Not In", styleground.ExcludeFrom, s => styleground.ExcludeFrom = s), offset);
-            panel.AddBelow(UIPluginOptionList.StringOption("Flag", styleground.Flag, s => styleground.Flag = s), offset);
-            panel.AddBelow(UIPluginOptionList.StringOption("Not Flag", styleground.NotFlag, s => styleground.NotFlag = s), offset);
-            panel.AddBelow(UIPluginOptionList.StringOption("Force Flag", styleground.ForceFlag, s => styleground.ForceFlag = s), offset);
-            panel.AddBelow(UIPluginOptionList.ColorOption("Colour", styleground.Color, c => styleground.Color = c), offset);
-            panel.AddBelow(UIPluginOptionList.StringOption("Tags", styleground.Tags, t => styleground.Tags = t), offset);
+            panel.Add(UIPluginOptionList.StringOption("only in", styleground.OnlyIn, s => styleground.OnlyIn = s));
+            panel.AddBelow(UIPluginOptionList.StringOption("not in", styleground.ExcludeFrom, s => styleground.ExcludeFrom = s), offset);
+            panel.AddBelow(UIPluginOptionList.StringOption("flag", styleground.Flag, s => styleground.Flag = s), offset);
+            panel.AddBelow(UIPluginOptionList.StringOption("not flag", styleground.NotFlag, s => styleground.NotFlag = s), offset);
+            panel.AddBelow(UIPluginOptionList.StringOption("force flag", styleground.ForceFlag, s => styleground.ForceFlag = s), offset);
+            panel.AddBelow(UIPluginOptionList.ColorAlphaOption("colour", styleground.RawColor, styleground.Alpha, (c, f) => {
+                styleground.RawColor = c;
+                styleground.Alpha = f;
+            }), offset);
+            panel.AddBelow(UIPluginOptionList.StringOption("tags", styleground.Tags, t => styleground.Tags = t), offset);
 
             panel.AddBelow(new UIPluginOptionList(styleground), offset * 2);
         }

@@ -462,7 +462,7 @@ public class Room {
                     ["scaleX"] = decal.Scale.X,
                     ["scaleY"] = decal.Scale.Y,
                     ["texture"] = decal.Texture,
-                    ["color"] = decal.Color.IntoString(),
+                    ["color"] = decal.Color.IntoRgbString(),
                     ["rotation"] = decal.Rotation
                 }
             });
@@ -481,7 +481,7 @@ public class Room {
                     ["scaleX"] = decal.Scale.X,
                     ["scaleY"] = decal.Scale.Y,
                     ["texture"] = decal.Texture,
-                    ["color"] = decal.Color.IntoString(),
+                    ["color"] = decal.Color.IntoRgbString(),
                     ["rotation"] = decal.Rotation
                 }
             });

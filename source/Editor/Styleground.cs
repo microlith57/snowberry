@@ -20,7 +20,9 @@ public class Styleground : Plugin {
 
     public float WindMultiplier;
 
-    public Color Color = Color.White;
+    public Color RawColor = Color.White;
+
+    public float Alpha = 1;
 
     public bool LoopX = true;
 
@@ -47,6 +49,8 @@ public class Styleground : Plugin {
     public bool InstantOut;
 
     public virtual bool Additive => false;
+
+    public Color Color => RawColor * Alpha;
 
     // Render on the Snowberry background
     public virtual void Render(Room room) { }
@@ -155,16 +159,16 @@ public class Styleground : Plugin {
             else if (applyData != null && applyData.HasAttr("speedy"))
                 styleground.Speed.Y = applyData.AttrFloat("speedy");
 
-            styleground.Color = Color.White;
+            styleground.RawColor = Color.White;
             if (data.HasAttr("color"))
-                styleground.Color = Calc.HexToColor(data.Attr("color"));
+                styleground.RawColor = Calc.HexToColor(data.Attr("color"));
             else if (applyData != null && applyData.HasAttr("color"))
-                styleground.Color = Calc.HexToColor(applyData.Attr("color"));
+                styleground.RawColor = Calc.HexToColor(applyData.Attr("color"));
 
             if (data.HasAttr("alpha"))
-                styleground.Color *= data.AttrFloat("alpha");
+                styleground.Alpha = data.AttrFloat("alpha");
             else if (applyData != null && applyData.HasAttr("alpha"))
-                styleground.Color *= applyData.AttrFloat("alpha");
+                styleground.Alpha = applyData.AttrFloat("alpha");
 
             if (data.HasAttr("flipx"))
                 styleground.FlipX = data.AttrBool("flipx");

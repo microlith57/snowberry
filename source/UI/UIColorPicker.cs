@@ -8,21 +8,26 @@ public class UIColorPicker : UIElement {
     private readonly int wheelWidth;
     private int svWidth, svHeight;
     private int colorPreviewSize;
+    private bool alphaWheel;
 
     private readonly UITextField hexTextField;
-    private bool hueEdit, svEdit;
+    private bool hueEdit, svEdit, alphaEdit;
 
-    public Action<Color> OnColorChange;
+    public Action<Color, float> OnColorChange;
     public Color Value { get; private set; }
-    private float h, s, v;
+    private float h, s, v, a;
 
-    public UIColorPicker(Color color = default, int svWidth = 100, int svHeight = 80, int wheelWidth = 16, int colorPreviewSize = 12) {
+    public UIColorPicker(Color color = default, float? alpha = null, int svWidth = 100, int svHeight = 80, int wheelWidth = 16, int colorPreviewSize = 12, bool alphaWheel = false) {
         this.wheelWidth = wheelWidth;
         this.svWidth = svWidth;
         this.svHeight = svHeight;
         this.colorPreviewSize = Math.Max(colorPreviewSize, Fonts.Regular.LineHeight);
+        this.alphaWheel = alphaWheel;
         Width = svWidth + wheelWidth - 2;
         Height = svHeight + colorPreviewSize - 2;
+
+        if (alphaWheel)
+            Width += wheelWidth - 2;
 
         Add(hexTextField = new UITextField(Fonts.Regular, 36) {
             Position = new Vector2(Width / 2 - 18, svHeight - 1),
@@ -32,6 +37,7 @@ public class UIColorPicker : UIElement {
             BGSelected = Color.Transparent,
         });
 
+        a = alpha ?? color.A / 255f;
         SetColor(color);
         HSV(color, out h, out s, out v);
         GrabsClick = true;
@@ -39,7 +45,8 @@ public class UIColorPicker : UIElement {
 
     public void SetColor(Color c) {
         Value = c;
-        hexTextField.UpdateInput($"#{Value.IntoString().ToLower()}");
+        bool showAlpha = a < 1 || alphaWheel;
+        hexTextField.UpdateInput(showAlpha ? $"#{Value.IntoRgbString()}{((byte)(a * 255f)).ToHex()}" : $"#{Value.IntoRgbString()}");
     }
 
     public override void Update(Vector2 position = default) {
@@ -47,38 +54,42 @@ public class UIColorPicker : UIElement {
 
         int mouseX = (int)Mouse.Screen.X;
         int mouseY = (int)Mouse.Screen.Y;
+        Point mouseP = Mouse.Screen.ToPoint();
         Rectangle svRect = new Rectangle((int)position.X + 1, (int)position.Y + 1, svWidth - 2, svHeight - 2);
-        Rectangle wheelRect = new Rectangle((int)position.X + svWidth + 1, (int)position.Y + 1, wheelWidth - 2, svHeight - 2);
+        Rectangle wheelRect = new Rectangle((int)position.X + svWidth + 1, (int)position.Y + 1, wheelWidth - 3, svHeight - 2);
+        Rectangle alphaRect = alphaWheel ? new Rectangle(wheelRect.Right, (int)(position.Y + 1), wheelWidth - 3, svHeight - 2) : Rectangle.Empty;
 
         if (MInput.Mouse.CheckLeftButton) {
-            if (svRect.Contains(mouseX, mouseY) && ConsumeLeftClick()) {
+            if (svRect.Contains(mouseP) && ConsumeLeftClick())
                 svEdit = true;
-            } else if (wheelRect.Contains(mouseX, mouseY) && ConsumeLeftClick()) {
+            else if (wheelRect.Contains(mouseP) && ConsumeLeftClick())
                 hueEdit = true;
-            }
+            else if (alphaRect.Contains(mouseP) && ConsumeLeftClick())
+                alphaEdit = true;
 
-
-            if (svEdit || hueEdit) {
+            if (svEdit || hueEdit || alphaEdit) {
                 if (svEdit) {
                     s = Calc.Clamp(mouseX - position.X, 0, svWidth) / svWidth;
                     v = 1 - Calc.Clamp(mouseY - position.Y, 0, svHeight) / svHeight;
-                } else if (hueEdit) {
+                } else if (hueEdit)
                     h = Calc.Clamp(mouseY - position.Y, 0, svHeight) / svHeight;
-                }
+                else if (alphaEdit)
+                    a = Calc.Clamp(svHeight - (mouseY - position.Y), 0, svHeight) / svHeight;
 
                 SetColor(Calc.HsvToColor(h, s, v));
-                OnColorChange?.Invoke(Value);
+                OnColorChange?.Invoke(Value, a);
             }
         } else if (MInput.Mouse.ReleasedLeftButton)
-            svEdit = hueEdit = false;
+            svEdit = hueEdit = alphaEdit = false;
     }
 
     public override void Render(Vector2 position = default) {
-        Draw.Rect(position + Vector2.UnitX * svWidth, wheelWidth - 3, svHeight, Color.Black);
+        Draw.Rect(position + new Vector2(svWidth, 0), wheelWidth - 3, svHeight, Color.Black);
         Draw.Rect(position + Vector2.UnitX, svWidth - 2, svHeight, Color.Black);
         Draw.Rect(position + Vector2.UnitY, svWidth + wheelWidth - 2, svHeight - 2, Color.Black);
-        Draw.Rect(position + Vector2.UnitY * svHeight, Width, colorPreviewSize - 3, Color.Black);
-        Draw.Rect(position + new Vector2(1, svHeight - 1), Width - 2, colorPreviewSize - 1, Color.Black);
+        Draw.HollowRect(position + new Vector2(0, svHeight - 1), Width, colorPreviewSize - 1, Color.Black);
+        if (alphaWheel)
+            Draw.HollowRect(position + new Vector2(svWidth + wheelWidth - 3, 0), wheelWidth - 1, svHeight, Color.Black);
 
         float w = svWidth - 2;
         float h = svHeight - 2;
@@ -90,10 +101,21 @@ public class UIColorPicker : UIElement {
         for (int i = 1; i <= h; i++)
             Draw.Rect(position + new Vector2(svWidth, i), wheel, 1, Calc.HsvToColor(i / h, 1, 1));
 
+        if (alphaWheel)
+            for (int i = 1; i <= h; i++)
+                Draw.Rect(position + new Vector2(svWidth + wheelWidth - 2, h - i + 1), wheel, 1, Color.White * (i / h));
+
         int hueX = (int)position.X + svWidth;
         int hueY = (int)position.Y + (int)(this.h * (svHeight - 3)) + 1;
         Draw.Rect(hueX, hueY - 1, wheel, 1, Color.Black);
         Draw.Rect(hueX, hueY + 1, wheel, 1, Color.Black);
+
+        if (alphaWheel) {
+            int alphaX = (int)position.X + svWidth + wheelWidth - 2;
+            int alphaY = (int)position.Y + (int)((1 - a) * (svHeight - 3)) + 1;
+            Draw.Rect(alphaX, alphaY - 1, wheel, 1, Color.Black);
+            Draw.Rect(alphaX, alphaY + 1, wheel, 1, Color.Black);
+        }
 
         Vector2 svPos = position + new Vector2(1 + s * (svWidth - 3), 1 + (1 - v) * (svHeight - 3));
         Draw.Point(svPos - Vector2.UnitX, Color.Black);
@@ -101,7 +123,7 @@ public class UIColorPicker : UIElement {
         Draw.Point(svPos - Vector2.UnitY, Color.Black);
         Draw.Point(svPos + Vector2.UnitY, Color.Black);
 
-        Draw.Rect(position + new Vector2(1, svHeight), Width - 2, colorPreviewSize - 3, Value);
+        Draw.Rect(position + new Vector2(1, svHeight), Width - 2, colorPreviewSize - 3, Value * a);
 
         base.Render(position);
     }

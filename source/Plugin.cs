@@ -74,7 +74,7 @@ public abstract class Plugin {
 
     protected static object ObjectToStr(object obj) {
         return obj switch {
-            Color color => color.IntoString(),
+            Color color => color.IntoRgbString(),
             Enum => obj.ToString(),
             char ch => ch.ToString(),
             Tileset ts => ts.Key.ToString(),
