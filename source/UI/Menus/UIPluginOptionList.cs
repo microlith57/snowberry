@@ -141,14 +141,14 @@ public class UIPluginOptionList : UIElement {
     }
 
     public static UIOption ColorOption(string name, Color value, Action<Color> onChange) {
-        var colorpicker = new UIColorPicker(100, 80, 16, 12, value) {
+        var colorpicker = new UIColorPicker(value) {
             OnColorChange = color => onChange?.Invoke(color)
         };
         return new UIOption(name, colorpicker);
     }
 
     public static UIOption ColorOption(string name, Color value, Plugin plugin) {
-        var colorpicker = new UIColorPicker(100, 80, 16, 12, value) {
+        var colorpicker = new UIColorPicker(value) {
             OnColorChange = color => plugin.Set(name, color)
         };
         return new UIOption(name, colorpicker, plugin.GetTooltipFor(name));

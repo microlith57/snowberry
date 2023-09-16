@@ -55,7 +55,7 @@ public class Example : UIScene {
         content.AddBelow(new UILabel("pick your favourite color! :") {
             Underline = true
         }, new(10));
-        content.AddBelow(new UIColorPicker(100, 80, 16, 12, Color.Yellow), new(10, 4));
+        content.AddBelow(new UIColorPicker(Color.Yellow), new(10, 4));
 
         content.AddBelow(UIPluginOptionList.BoolOption("am i cool", true, _ => {}), new(10));
         content.AddBelow(UIPluginOptionList.BoolOption("are you cool", true, _ => {}), new(10, 3));

@@ -16,7 +16,7 @@ public class UIColorPicker : UIElement {
     public Color Value { get; private set; }
     private float h, s, v;
 
-    public UIColorPicker(int svWidth, int svHeight, int wheelWidth, int colorPreviewSize, Color color = default) {
+    public UIColorPicker(Color color = default, int svWidth = 100, int svHeight = 80, int wheelWidth = 16, int colorPreviewSize = 12) {
         this.wheelWidth = wheelWidth;
         this.svWidth = svWidth;
         this.svHeight = svHeight;
