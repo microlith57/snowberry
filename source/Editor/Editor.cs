@@ -164,7 +164,7 @@ public class Editor : UIScene {
         Map map = null;
         if (data != null) {
             if (rte)
-                Snowberry.Log(LogLevel.Info, $"Returning to editor for {From.Value.SID}");
+                Snowberry.Log(LogLevel.Info, $"Returning to editor for {From?.SID ?? "unnamed"}");
             else {
                 Snowberry.Log(LogLevel.Info, $"Opening level editor using map {data.Area.GetSID()}");
                 From = data.Area;
