@@ -93,9 +93,9 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 # *** Room Tool ***
 
     SNOWBERRY_EDITOR_ROOM_NONE_TITLE=           no room selected
-    SNOWBERRY_EDITOR_ROOM_CREATE_TITLE=         Create room
-	SNOWBERRY_EDITOR_ROOM_SELECTED_TITLE=       Selected room:
-	SNOWBERRY_EDITOR_ROOM_FILL_SELECTED_TITLE=  Selected filler: (%0)
+    SNOWBERRY_EDITOR_ROOM_CREATE_TITLE=         create room
+	SNOWBERRY_EDITOR_ROOM_SELECTED_TITLE=       selected room:
+	SNOWBERRY_EDITOR_ROOM_FILL_SELECTED_TITLE=  selected filler: {0}
 	
     SNOWBERRY_EDITOR_ROOM_CREATE_ROOM=          create room
     SNOWBERRY_EDITOR_ROOM_CREATE_FILLER=        create filler
