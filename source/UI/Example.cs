@@ -127,6 +127,14 @@ public class Example : UIScene {
         brushModes.CalculateBounds();
         content.AddBelow(brushModes, new(4, 10));
 
+        int v = 0;
+        content.AddBelow(new UISlider {
+            OnInputChanged = i => v = i,
+            Min = 0,
+            Max = 10
+        }, new(4, 10));
+        content.AddBelow(new UILabel(() => v.ToString()), new(4, 5));
+
         // TODO: simplify searching
         List<string> thingsToSearch = new() {
             "snowberry",
