@@ -6,10 +6,10 @@ namespace Snowberry.UI;
 
 public class UISlider : UIElement {
 
-    public int Value;
-    public int Min, Max;
+    public float Value;
+    public float Min, Max;
     public int HandleWidth, HandleHeight;
-    public Action<int> OnInputChanged = null;
+    public Action<float> OnInputChanged = null;
 
     protected float lerp;
     protected bool pressed, hovering;
@@ -35,7 +35,7 @@ public class UISlider : UIElement {
         if (pressed) {
             var oldValue = Value;
             // min + variance * percentage
-            Value = (int)MathHelper.Clamp((Min + (Max - Min) * ((Mouse.Screen.X - position.X) / Width)), Min, Max);
+            Value = MathHelper.Clamp((Min + (Max - Min) * ((Mouse.Screen.X - position.X) / Width)), Min, Max);
             if (oldValue != Value)
                 OnInputChanged?.Invoke(Value);
         }
@@ -45,7 +45,7 @@ public class UISlider : UIElement {
 
     public override void Render(Vector2 position = default) {
         base.Render(position);
-        Draw.Line(position + new Vector2(0, Height / 2f), position + new Vector2(Width, Height / 2f), Color.Green);
+        Draw.Line(position + new Vector2(0, Height / 2f), position + new Vector2(Width, Height / 2f), UIButton.DefaultFG);
 
         Rectangle handle = HandleRect();
         Color curBg = Color.Lerp(hovering ? UIButton.DefaultHoveredBG : UIButton.DefaultBG, UIButton.DefaultPressedBG, lerp);
@@ -53,5 +53,5 @@ public class UISlider : UIElement {
     }
 
     protected Rectangle HandleRect() => new(Bounds.X + (int)(Percent * Width - (HandleWidth / 2f)), Bounds.Y, HandleWidth, HandleHeight);
-    protected float Percent => (Value - Min) / (float)(Max - Min);
+    protected float Percent => (Value - Min) / (Max - Min);
 }

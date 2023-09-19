@@ -129,7 +129,7 @@ public class Example : UIScene {
 
         int v = 0;
         content.AddBelow(new UISlider {
-            OnInputChanged = i => v = i,
+            OnInputChanged = i => v = (int)i,
             Min = 0,
             Max = 10
         }, new(4, 10));
