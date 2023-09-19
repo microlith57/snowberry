@@ -55,4 +55,6 @@ public class PlayerRecorder : Recorder{
             Hair.Visible = false;
         }
     }
+
+    public override string Name() => Dialog.Clean("SNOWBERRY_EDITOR_PT_PLAYER");
 }

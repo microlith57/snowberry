@@ -76,6 +76,8 @@ public class HitboxesRecorder : Recorder{
                 }
     }
 
+    public override string Name() => Dialog.Clean("SNOWBERRY_EDITOR_PT_HITBOXES");
+
     // TODO: provide a way for modded Colliders to work better
     private static bool CollidersEq(Collider l, Collider r) {
         return l switch {

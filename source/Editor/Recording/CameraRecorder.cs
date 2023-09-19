@@ -24,4 +24,6 @@ public class CameraRecorder : Recorder{
                 break;
             }
     }
+
+    public override string Name() => Dialog.Clean("SNOWBERRY_EDITOR_PT_CAMERA");
 }

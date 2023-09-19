@@ -1,4 +1,5 @@
-﻿using Celeste.Mod;
+﻿using System.Collections.Generic;
+using Celeste.Mod;
 
 namespace Snowberry;
 
@@ -18,4 +19,8 @@ public class SnowberrySettings : EverestModuleSettings {
     [SettingName("SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP")]
     [SettingSubText("SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP_SUB")]
     public bool AggressiveSnap { get; set; } = false;
+
+    // saved but not displayed
+    [SettingIgnore]
+    public Dictionary<string, (bool show, bool record)> RecorderSettings { get; set; } = new();
 }

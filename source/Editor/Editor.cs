@@ -280,6 +280,7 @@ public class Editor : UIScene {
             OnPress = () => {
                 // TODO: show an "are you sure" message
                 TryAutosave(Backups.BackupReason.OnClose);
+                RecInProgress.DiscardRecording();
                 Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
             },
             Ctrl = true,

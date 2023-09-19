@@ -122,6 +122,16 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_EDITOR_ROOM_OPTS_DDS=             disable down transition
 	SNOWBERRY_EDITOR_ROOM_OPTS_WIND=            wind pattern
 
+# *** Playtest Tool ***
+	SNOWBERRY_EDITOR_PT_NO_DATA=                no data recorded
+	
+	SNOWBERRY_EDITOR_PT_OPTS_SHOW=              show
+	SNOWBERRY_EDITOR_PT_OPTS_RECORD=            record
+	
+	SNOWBERRY_EDITOR_PT_PLAYER=                 player
+	SNOWBERRY_EDITOR_PT_HITBOXES=               hitboxes
+	SNOWBERRY_EDITOR_PT_CAMERA=                 camera
+
 # *** Stylegrounds ***
     
     SNOWBERRY_STYLEGROUNDS_IMAGE=               image

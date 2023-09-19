@@ -17,7 +17,31 @@ public class PlaytestTool : Tool {
 
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_PLAYTEST");
 
-    public override UIElement CreatePanel(int height) => new();
+    public override UIElement CreatePanel(int height) {
+        UIElement panel = new() {
+            Width = 160,
+            Background = Calc.HexToColor("202929") * (185 / 255f),
+            GrabsClick = true,
+            GrabsScroll = true,
+            Height = height
+        };
+
+        if (RecInProgress.Recorders.Count == 0) {
+            var title = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_PT_NO_DATA"));
+            title.Position = new((160 - title.Width) / 2f, 10);
+            panel.Add(title);
+        }
+
+        foreach (Recorder r in RecInProgress.Recorders) {
+            var optionsPane = r.CreateOptionsPane();
+            if (optionsPane != null) {
+                optionsPane.Width = 160 - 10;
+                panel.AddBelow(optionsPane, new(5));
+            }
+        }
+
+        return panel;
+    }
 
     public override UIElement CreateActionBar() {
         UIElement p = new UIElement();
@@ -44,11 +68,8 @@ public class PlaytestTool : Tool {
                 Min = 0,
                 Max = maxTime,
                 Width = 200,
-                OnInputChanged = t => {
-                    time = t;
-                    playing = false;
-                    SetPlayPauseIcon();
-                }
+                // SetTime does set the slider's Value, but this does not trigger this again
+                OnInputChanged = t => SetTime(t)
             }, new(10, 7));
 
             UIElement frameButtons = new();
@@ -57,24 +78,16 @@ public class PlaytestTool : Tool {
                 OnPress = () => {
                     int curIdx = timer.FrameTimes.FindLastIndex(x => x <= time);
                     if (curIdx == -1) curIdx = 0;
-                    if (timer.FrameTimes.Count > curIdx + 1) {
-                        time = timer.FrameTimes[curIdx + 1];
-                        timeSlider.Value = time;
-                        playing = false;
-                        SetPlayPauseIcon();
-                    }
+                    if (timer.FrameTimes.Count > curIdx + 1)
+                        SetTime(timer.FrameTimes[curIdx + 1]);
                 }
             });
             frameButtons.AddBelow(new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(20, 105, 8, 4), 2, 2) {
                 Key = Keys.OemComma,
                 OnPress = () => {
                     int curIdx = timer.FrameTimes.FindLastIndex(x => x <= time);
-                    if (curIdx - 1 >= 0) {
-                        time = timer.FrameTimes[curIdx - 1];
-                        timeSlider.Value = time;
-                        playing = false;
-                        SetPlayPauseIcon();
-                    }
+                    if (curIdx - 1 >= 0)
+                        SetTime(timer.FrameTimes[curIdx - 1]);
                 }
             });
             p.AddRight(frameButtons, new(6, 7));
@@ -85,10 +98,9 @@ public class PlaytestTool : Tool {
 
     public override void Update(bool canClick) {
         if (playing) {
-            if (time < maxTime) {
-                time += Engine.DeltaTime;
-                timeSlider.Value = time;
-            } else {
+            if (time < maxTime)
+                SetTime(time + Engine.DeltaTime, false);
+            else {
                 playing = false;
                 SetPlayPauseIcon();
             }
@@ -99,14 +111,16 @@ public class PlaytestTool : Tool {
         base.RenderWorldSpace();
 
         foreach (Recorder r in RecInProgress.Recorders)
-            r.RenderWorldSpace(time);
+            if (r.GetSettings().show)
+                r.RenderWorldSpace(time);
     }
 
     public override void RenderScreenSpace() {
         base.RenderScreenSpace();
 
         foreach (Recorder r in RecInProgress.Recorders)
-            r.RenderScreenSpace(time);
+            if (r.GetSettings().show)
+                r.RenderScreenSpace(time);
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
@@ -118,4 +132,13 @@ public class PlaytestTool : Tool {
 
     private void SetPlayPauseIcon() =>
         playPauseButton.SetIcon(UIScene.ActionbarAtlas.GetSubtexture(playing ? 2 : 9, 101, 6, 6));
+
+    private void SetTime(float newTime, bool pause = true) {
+        this.time = newTime;
+        timeSlider.Value = newTime;
+        if (pause) {
+            playing = false;
+            SetPlayPauseIcon();
+        }
+    }
 }

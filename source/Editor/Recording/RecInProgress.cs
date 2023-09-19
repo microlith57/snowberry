@@ -60,7 +60,8 @@ public static class RecInProgress {
 
         if(recInProgress)
             foreach(Recorder r in Recorders)
-                r.UpdateInGame(self, timeAccum + self.TimeActive);
+                if(r.GetSettings().record)
+                    r.UpdateInGame(self, timeAccum + self.TimeActive);
     }
 
     private static void OnBeginLevelEnter(On.Celeste.LevelEnter.orig_ctor orig, Celeste.LevelEnter a, Session b, bool c) {
