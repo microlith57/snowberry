@@ -49,7 +49,7 @@ public class PlaytestTool : Tool {
                     playing = false;
                     SetPlayPauseIcon();
                 }
-            }, new(10, 4));
+            }, new(10, 7));
 
             UIElement frameButtons = new();
             frameButtons.Add(new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(20, 99, 8, 4), 2, 2) {
