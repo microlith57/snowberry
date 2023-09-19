@@ -1,5 +1,6 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.Recording;
 using Snowberry.UI;
@@ -8,7 +9,11 @@ namespace Snowberry.Editor.Tools;
 
 public class PlaytestTool : Tool {
 
-    private float time = 0;
+    private float time = 0, maxTime = 0;
+    private bool playing = false;
+
+    private UISlider timeSlider;
+    private UIKeyboundButton playPauseButton;
 
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_PLAYTEST");
 
@@ -23,17 +28,43 @@ public class PlaytestTool : Tool {
                 RecInProgress.BeginRecording();
             }
         }, new(0, 4));
-        p.AddRight(new UIButton("<<", Fonts.Regular, 6, 6) {
-            OnPress = () => {
-                time = 0;
-            }
-        }, new(6, 4));
+
+        if (RecInProgress.Get<TimeRecorder>() is { /* non-null */ } timer) {
+            maxTime = timer.MaxTime;
+
+            playPauseButton = new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(9, 101, 6, 6), 3, 4);
+            playPauseButton.Key = Keys.Space;
+            playPauseButton.OnPress = () => {
+                playing = !playing;
+                SetPlayPauseIcon();
+            };
+            p.AddRight(playPauseButton, new(6, 8));
+
+            p.AddRight(timeSlider = new UISlider {
+                Min = 0,
+                Max = maxTime,
+                Width = 200,
+                OnInputChanged = t => {
+                    time = t;
+                    playing = false;
+                    SetPlayPauseIcon();
+                }
+            }, new(10, 4));
+        }
 
         return p;
     }
 
     public override void Update(bool canClick) {
-        time += Engine.DeltaTime;
+        if (playing) {
+            if (time < maxTime) {
+                time += Engine.DeltaTime;
+                timeSlider.Value = time;
+            } else {
+                playing = false;
+                SetPlayPauseIcon();
+            }
+        }
     }
 
     public override void RenderWorldSpace() {
@@ -51,7 +82,12 @@ public class PlaytestTool : Tool {
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
-        justify = new(0.5f);
-        cursor = UIScene.CursorsAtlas.GetSubtexture(0, 64, 16, 16);
+        if (playing) {
+            justify = new(0.5f);
+            cursor = UIScene.CursorsAtlas.GetSubtexture(0, 64, 16, 16);
+        }
     }
+
+    private void SetPlayPauseIcon() =>
+        playPauseButton.SetIcon(UIScene.ActionbarAtlas.GetSubtexture(playing ? 2 : 9, 101, 6, 6));
 }

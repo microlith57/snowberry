@@ -9,7 +9,8 @@ public abstract class Recorder{
     public static readonly List<Func<Recorder>> Recorders = new() {
         () => new PlayerRecorder(),
         () => new CameraRecorder(),
-        () => new HitboxesRecorder()
+        () => new HitboxesRecorder(),
+        () => new TimeRecorder()
     };
 
     public abstract void UpdateInGame(Level l, float time);

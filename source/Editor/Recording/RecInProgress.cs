@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Session = Celeste.Session;
 
 namespace Snowberry.Editor.Recording;
@@ -35,6 +36,8 @@ public static class RecInProgress {
         recInProgress = false;
         timeAccum = curLevelTime = 0;
     }
+
+    public static T Get<T>() where T : Recorder => Recorders.OfType<T>().FirstOrDefault();
 
     // hooks
 
