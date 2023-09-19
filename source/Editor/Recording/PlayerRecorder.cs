@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Celeste;
+using Microsoft.Xna.Framework;
 using Snowberry.UI;
-using Snowberry.UI.Menus;
 
 namespace Snowberry.Editor.Recording;
 
@@ -12,12 +12,12 @@ public class PlayerRecorder : Recorder{
     private readonly List<Player.ChaserState> States = new();
     private PlayerSprite Sprite;
     private PlayerHair Hair;
-    private PlayerSpriteMode Mode;
     // TODO: death animation...
 
     public PlayerRecorder() {
-        Mode = PlayerSpriteMode.Madeline;
-        Sprite = new PlayerSprite(Mode);
+        SmhInterop.RunWithSkin(() =>
+            Sprite = new PlayerSprite(PlayerSpriteMode.Madeline)
+        );
         Hair = new PlayerHair(Sprite);
     }
 
@@ -63,16 +63,51 @@ public class PlayerRecorder : Recorder{
     public override string Name() => Dialog.Clean("SNOWBERRY_EDITOR_PT_PLAYER");
     public override UIElement CreateOptionsPane() {
         UIElement orig = base.CreateOptionsPane();
-        orig.AddBelow(UIPluginOptionList.DropdownOption(Dialog.Clean("SNOWBERRY_EDITOR_PT_OPTS_SKIN"), Mode, mode => {
+        // it's kind of like if UIPluginOptionList was evil
+        UIButton button = null;
+        button = new UIButton(Dialog.Clean($"SNOWBERRY_EDITOR_PT_SKIN_MADELINE") + " \uF036", Fonts.Regular, 2, 2) {
+            OnPress = () => {
+                List<UIDropdown.DropdownEntry> entries = new();
+                foreach (PlayerSpriteMode sm in Enum.GetValues(typeof(PlayerSpriteMode)).OfType<PlayerSpriteMode>()) {
+                    string name = Dialog.Clean($"SNOWBERRY_EDITOR_PT_SKIN_{sm.ToString().ToUpperInvariant()}");
+                    entries.Add(new UIDropdown.DropdownEntry(name, () => {
+                        UpdateSprite(sm, "Default");
+                        button.SetText(name + " \uF036");
+                    }));
+                }
+                foreach (var skin in SmhInterop.PlayerSkinIds) {
+                    string skinName = Dialog.Clean(skin.key);
+                    if (skinName == "")
+                        skinName = skin.id;
+                    string name = Dialog.Get("SNOWBERRY_EDITOR_PT_OPTS_SMH").Substitute(skinName);
+                    entries.Add(new UIDropdown.DropdownEntry(name, () => {
+                        UpdateSprite(PlayerSpriteMode.Madeline, skin.id);
+                        button.SetText(name + " \uF036");
+                    }));
+                }
+
+                var dropdown = new UIDropdown(Fonts.Regular, entries.ToArray()) {
+                    Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos()
+                };
+
+                Editor.Instance.ToolPanel.Add(dropdown);
+            }
+        };
+        orig.AddBelow(button, new(6, 3));
+        /*orig.AddBelow(UIPluginOptionList.DropdownOption(Dialog.Clean("SNOWBERRY_EDITOR_PT_OPTS_SKIN"), Mode, mode => {
             Mode = mode;
             ChangeMode(ref Sprite, ref Hair, Mode);
-        }), new(6, 3));
+        }), new(6, 3));*/
         orig.CalculateBounds();
         orig.Height += 3;
         return orig;
     }
 
-    private static void ChangeMode(ref PlayerSprite sprite, ref PlayerHair hair, PlayerSpriteMode mode) {
+    private void UpdateSprite(PlayerSpriteMode mode, string skin) =>
+        SmhInterop.RunWithSkin(() =>
+            UpdateSprite(ref Sprite, ref Hair, mode), skin);
+
+    private static void UpdateSprite(ref PlayerSprite sprite, ref PlayerHair hair, PlayerSpriteMode mode) {
         string currentAnimationId = sprite.CurrentAnimationID;
         int currentAnimationFrame = sprite.CurrentAnimationFrame;
         sprite = new PlayerSprite(mode);

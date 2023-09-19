@@ -4,3 +4,6 @@
   Dependencies:
     - Name: Everest
       Version: 1.3070.0
+  OptionalDependencies:
+    - Name: SkinModHelper
+      Version: 0.6.1

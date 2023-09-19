@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using MonoMod.Utils;
 
 namespace Snowberry.Editor;
 
@@ -446,20 +447,19 @@ public class Map {
                 SpriteData value = spriteDatum.Value;
                 if (spriteBank.SpriteData.TryGetValue(key, out SpriteData value2)) {
                     IDictionary animations = value2.Sprite.GetAnimations();
-                    foreach (DictionaryEntry item2 in (IDictionary)value.Sprite.GetAnimations()) {
+                    foreach (DictionaryEntry item2 in (IDictionary)value.Sprite.GetAnimations())
                         animations[item2.Key] = item2.Value;
-                    }
 
                     value2.Sources.AddRange(value.Sources);
                     value2.Sprite.Stop();
-                    if (value.Sprite.CurrentAnimationID != "") {
+                    if (value.Sprite.CurrentAnimationID != "")
                         value2.Sprite.Play(value.Sprite.CurrentAnimationID);
-                    }
-                } else {
+                } else
                     spriteBank.SpriteData[key] = value;
-                }
             }
         }
+
+        SmhInterop.LoadGraphics();
     }
 
     private XmlDocument GetSanitized(string path) {
