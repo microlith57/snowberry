@@ -50,6 +50,34 @@ public class PlaytestTool : Tool {
                     SetPlayPauseIcon();
                 }
             }, new(10, 4));
+
+            UIElement frameButtons = new();
+            frameButtons.Add(new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(20, 99, 8, 4), 2, 2) {
+                Key = Keys.OemPeriod,
+                OnPress = () => {
+                    int curIdx = timer.FrameTimes.FindLastIndex(x => x <= time);
+                    if (curIdx == -1) curIdx = 0;
+                    if (timer.FrameTimes.Count > curIdx + 1) {
+                        time = timer.FrameTimes[curIdx + 1];
+                        timeSlider.Value = time;
+                        playing = false;
+                        SetPlayPauseIcon();
+                    }
+                }
+            });
+            frameButtons.AddBelow(new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(20, 105, 8, 4), 2, 2) {
+                Key = Keys.OemComma,
+                OnPress = () => {
+                    int curIdx = timer.FrameTimes.FindLastIndex(x => x <= time);
+                    if (curIdx - 1 >= 0) {
+                        time = timer.FrameTimes[curIdx - 1];
+                        timeSlider.Value = time;
+                        playing = false;
+                        SetPlayPauseIcon();
+                    }
+                }
+            });
+            p.AddRight(frameButtons, new(6, 7));
         }
 
         return p;
