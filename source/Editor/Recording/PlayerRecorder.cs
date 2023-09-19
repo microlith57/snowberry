@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using Celeste;
+using Snowberry.UI;
+using Snowberry.UI.Menus;
 
 namespace Snowberry.Editor.Recording;
 
 public class PlayerRecorder : Recorder{
 
     private readonly List<Player.ChaserState> States = new();
-    private readonly PlayerSprite Sprite;
-    private readonly PlayerHair Hair;
+    private PlayerSprite Sprite;
+    private PlayerHair Hair;
+    private PlayerSpriteMode Mode;
     // TODO: death animation...
 
     public PlayerRecorder() {
-        Sprite = new PlayerSprite(PlayerSpriteMode.Madeline);
+        Mode = PlayerSpriteMode.Madeline;
+        Sprite = new PlayerSprite(Mode);
         Hair = new PlayerHair(Sprite);
     }
 
@@ -57,4 +61,27 @@ public class PlayerRecorder : Recorder{
     }
 
     public override string Name() => Dialog.Clean("SNOWBERRY_EDITOR_PT_PLAYER");
+    public override UIElement CreateOptionsPane() {
+        UIElement orig = base.CreateOptionsPane();
+        orig.AddBelow(UIPluginOptionList.DropdownOption(Dialog.Clean("SNOWBERRY_EDITOR_PT_OPTS_SKIN"), Mode, mode => {
+            Mode = mode;
+            ChangeMode(ref Sprite, ref Hair, Mode);
+        }), new(6, 3));
+        orig.CalculateBounds();
+        orig.Height += 3;
+        return orig;
+    }
+
+    private static void ChangeMode(ref PlayerSprite sprite, ref PlayerHair hair, PlayerSpriteMode mode) {
+        string currentAnimationId = sprite.CurrentAnimationID;
+        int currentAnimationFrame = sprite.CurrentAnimationFrame;
+        sprite = new PlayerSprite(mode);
+        if (sprite.Has(currentAnimationId)) {
+            sprite.Play(currentAnimationId);
+            if (currentAnimationFrame < sprite.CurrentAnimationTotalFrames)
+                sprite.SetAnimationFrame(currentAnimationFrame);
+        }
+
+        hair.Sprite = sprite;
+    }
 }
