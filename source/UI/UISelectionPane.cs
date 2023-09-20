@@ -12,8 +12,8 @@ public class UISelectionPane : UIScrollPane{
     }
 
     public void Display(List<Selection> selection){
+        Clear();
         if(selection != null){
-            Clear();
             int y = 0;
             foreach (Selection s in selection) {
                 UIElement entry = AddEntry(s);

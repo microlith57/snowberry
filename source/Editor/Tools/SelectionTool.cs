@@ -73,6 +73,12 @@ public class SelectionTool : Tool {
         var editor = Editor.Instance;
         bool refreshPanel = false;
 
+        if (Editor.SelectedRoom == null && Editor.SelectedObjects is { Count: > 0 }) {
+            // refreshPanel code gets skipped because there's no room
+            Editor.SelectedObjects = null;
+            selectionPanel?.Display(null);
+        }
+
         if (pasting) {
             AdjustPastedEntities();
 
