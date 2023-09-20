@@ -134,8 +134,11 @@ public class Room {
         }
 
         // Player Spawnpoints (excluded from LevelData.Entities)
-        foreach (Vector2 spawn in data.Spawns)
-            AddEntity(Entity.Create("player", this).SetPosition(spawn));
+        foreach (Vector2 spawn in data.Spawns) {
+            Entity s = Entity.Create("player", this);
+            s.SetPosition(spawn);
+            AddEntity(s);
+        }
 
         // Triggers
         foreach (EntityData trigger in data.Triggers) {
