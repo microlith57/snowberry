@@ -186,16 +186,20 @@ public class SelectionTool : Tool {
 
                 Editor.SelectedObjects.Clear();
             } else if (MInput.Keyboard.Pressed(Keys.N)) { // N to create node
+                // only visit each entity once
+                HashSet<Entity> seen = new();
                 // iterate backwards to allow modifying the list as we go
                 for (var idx = Editor.SelectedObjects.Count - 1; idx >= 0; idx--) {
                     var item = Editor.SelectedObjects[idx];
-                    if(item is EntitySelection{ Entity: var e } es && (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1)) {
-                        int oldIdx = es.Index;
-                        int newNodeIdx = oldIdx + 1;
-                        Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
-                        e.AddNode(oldPos + new Vector2(24, 0), newNodeIdx);
+                    if (item is EntitySelection{ Entity: var e, Index: var oldIdx } && (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1)) {
+                        if (!seen.Contains(e)) {
+                            int newNodeIdx = oldIdx + 1;
+                            Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
+                            e.AddNode(oldPos + new Vector2(24, 0), newNodeIdx);
+                            Editor.SelectedObjects.Add(new EntitySelection(e, newNodeIdx));
+                            seen.Add(e);
+                        }
                         Editor.SelectedObjects.Remove(item);
-                        Editor.SelectedObjects.Add(new EntitySelection(e, newNodeIdx));
                     }
                 }
             } else if (MInput.Keyboard.Pressed(Keys.Escape)) { // Esc to deselect all & cancel paste
