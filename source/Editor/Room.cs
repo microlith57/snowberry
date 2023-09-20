@@ -187,7 +187,7 @@ public class Room {
         bgTiles = GFX.BGAutotiler.GenerateMap(bgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
     }
 
-    internal List<Selection> GetSelectedObjects(Rectangle rect, bool entities, bool triggers, bool fgDecals, bool bgDecals) {
+    internal List<Selection> GetSelectedObjects(Rectangle? rect, bool entities, bool triggers, bool fgDecals, bool bgDecals) {
         List<Selection> result = new List<Selection>();
 
         if (entities || triggers)
@@ -196,27 +196,19 @@ public class Room {
                     continue;
 
                 var rects = entity.SelectionRectangles;
-                if (rects is { Length: > 0 }) {
-                    List<EntitySelection.SelectionRect> selection = new List<EntitySelection.SelectionRect>();
-                    bool wasSelected = false;
+                if (rects is { Length: > 0 })
                     for (int i = 0; i < rects.Length; i++) {
                         Rectangle r = rects[i];
-                        if (rect.Intersects(r)) {
-                            selection.Add(new EntitySelection.SelectionRect(entity, i - 1));
-                            wasSelected = true;
-                        }
+                        if (rect?.Intersects(r) ?? true)
+                            result.Add(new EntitySelection(entity, i - 1));
                     }
-
-                    if (wasSelected)
-                        result.Add(new EntitySelection(entity, selection));
-                }
             }
 
         if(fgDecals)
             result.AddRange(
                 from fgDecal
                 in FgDecals
-                where fgDecal.Bounds.Intersects(rect)
+                where rect?.Intersects(fgDecal.Bounds) ?? true
                 select new DecalSelection(fgDecal, true)
             );
 
@@ -224,7 +216,7 @@ public class Room {
             result.AddRange(
                 from bgDecal
                 in BgDecals
-                where bgDecal.Bounds.Intersects(rect)
+                where rect?.Intersects(bgDecal.Bounds) ?? true
                 select new DecalSelection(bgDecal, false)
             );
 
@@ -287,7 +279,7 @@ public class Room {
             if (Editor.SelectionInProgress.HasValue)
                 Draw.Rect(Editor.SelectionInProgress.Value, Color.Blue * 0.25f);
             if (Editor.SelectedObjects != null)
-                foreach (var rect in Editor.SelectedObjects.SelectMany(s => s.Rectangles()))
+                foreach (var rect in Editor.SelectedObjects.Select(s => s.Area()))
                     Draw.Rect(rect, Color.Blue * 0.25f);
         }
     }

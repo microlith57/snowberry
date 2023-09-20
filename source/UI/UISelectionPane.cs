@@ -13,9 +13,16 @@ public class UISelectionPane : UIScrollPane{
 
     public void Display(List<Selection> selection){
         Clear();
+        HashSet<Entity> seen = new();
         if(selection != null){
             int y = 0;
             foreach (Selection s in selection) {
+                if (s is EntitySelection{ Entity: var e }) {
+                    if (seen.Contains(e))
+                        continue;
+                    seen.Add(e);
+                }
+
                 UIElement entry = AddEntry(s);
                 entry.Position.Y = y;
                 y += entry.Height + 8;

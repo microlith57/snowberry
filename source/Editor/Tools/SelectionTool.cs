@@ -109,7 +109,7 @@ public class SelectionTool : Tool {
                 // add back all entities of the same type
                 foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => entityTypes.Contains(entity.Name)))
                     if (entity.SelectionRectangles is { Length: > 0 } rs)
-                        Editor.SelectedObjects.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.SelectionRect(entity, i - 1)).ToList()));
+                        Editor.SelectedObjects.AddRange(rs.Select((_, i) => new EntitySelection(entity, i - 1)).ToList());
                 // we might have selected and/or deselected something, so refresh the panel
                 refreshPanel = true;
             }
@@ -189,16 +189,13 @@ public class SelectionTool : Tool {
                 // iterate backwards to allow modifying the list as we go
                 for (var idx = Editor.SelectedObjects.Count - 1; idx >= 0; idx--) {
                     var item = Editor.SelectedObjects[idx];
-                    if(item is EntitySelection es) {
-                        var e = es.Entity;
-                        if (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1) {
-                            int oldIdx = es.Selections[0].Index;
-                            int newNodeIdx = oldIdx + 1;
-                            Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
-                            e.AddNode(oldPos + new Vector2(24, 0), newNodeIdx);
-                            Editor.SelectedObjects.Remove(item);
-                            Editor.SelectedObjects.Add(new EntitySelection(e, new() { new(e, newNodeIdx) }));
-                        }
+                    if(item is EntitySelection{ Entity: var e } es && (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1)) {
+                        int oldIdx = es.Index;
+                        int newNodeIdx = oldIdx + 1;
+                        Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
+                        e.AddNode(oldPos + new Vector2(24, 0), newNodeIdx);
+                        Editor.SelectedObjects.Remove(item);
+                        Editor.SelectedObjects.Add(new EntitySelection(e, newNodeIdx));
                     }
                 }
             } else if (MInput.Keyboard.Pressed(Keys.Escape)) { // Esc to deselect all & cancel paste
@@ -221,7 +218,7 @@ public class SelectionTool : Tool {
                     Editor.SelectedObjects = new();
                     foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => (selectEntities && !entity.IsTrigger) || (selectTriggers && entity.IsTrigger)))
                         if (entity.SelectionRectangles is { Length: > 0 } rs)
-                            Editor.SelectedObjects.Add(new EntitySelection(entity, rs.Select((_, i) => new EntitySelection.SelectionRect(entity, i - 1)).ToList()));
+                            Editor.SelectedObjects.AddRange(rs.Select((_, i) => new EntitySelection(entity, i - 1)));
                     if (selectFgDecals)
                         foreach (Decal d in Editor.SelectedRoom.FgDecals)
                             Editor.SelectedObjects.Add(new DecalSelection(d, true));
@@ -268,8 +265,7 @@ public class SelectionTool : Tool {
         if (Editor.SelectedRoom != null) {
             foreach (var item in Editor.SelectedRoom.GetSelectedObjects(Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals))
                 if (Editor.SelectedObjects == null || !Editor.SelectedObjects.Contains(item))
-                    foreach (var s in item.Rectangles())
-                        Draw.Rect(s, Color.Blue * 0.15f);
+                    Draw.Rect(item.Area(), Color.Blue * 0.15f);
 
             if (MInput.Mouse.CheckLeftButton && !canSelect && (resizingX || resizingY) && GetSoloEntity() is {} nonNull)
                 DrawUtil.DrawGuidelines(nonNull.Bounds, Color.White);
@@ -332,21 +328,16 @@ public class SelectionTool : Tool {
         }
     }
 
-    private static Entity GetSoloEntity() {
-        // list patterns would be nice here...
-        if (Editor.SelectedObjects != null && Editor.SelectedObjects.Count == 1) {
-            Selection selection = Editor.SelectedObjects[0];
-            if (selection is EntitySelection es && es.Selections.Count == 1 && es.Selections[0].Index == -1)
-                return es.Entity;
-        }
-
-        return null;
-    }
+    private static Entity GetSoloEntity() =>
+        Editor.SelectedObjects != null
+        && Editor.SelectedObjects.Count == 1
+        && Editor.SelectedObjects[0] is EntitySelection { Entity: var e, Index: -1 }
+            ? e : null;
 
     private static void AdjustPastedEntities() {
         Rectangle cover = CoveringRect(toPaste.Select(e => e.Bounds).Concat(toPaste.SelectMany(e => e.Nodes.Select(Util.ToRect))).ToList());
         Vector2 offset = (Mouse.World - cover.Center.ToVector2()).RoundTo(8);
-        foreach(Entity e in toPaste){
+        foreach (Entity e in toPaste) {
             e.Move(offset);
             for (int i = 0; i < e.Nodes.Count; i++)
                 e.MoveNode(i, offset);
