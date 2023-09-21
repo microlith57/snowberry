@@ -231,7 +231,7 @@ public class SelectionTool : Tool {
                             Editor.SelectedObjects.Add(new DecalSelection(d, false));
                     refreshPanel = true;
                 } else if (MInput.Keyboard.Pressed(Keys.C, Keys.X)) { // Ctrl-C to copy
-                    CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity));
+                    CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity).Distinct());
 
                     if (MInput.Keyboard.Pressed(Keys.X)) {
                         foreach (var item in Editor.SelectedObjects) {
