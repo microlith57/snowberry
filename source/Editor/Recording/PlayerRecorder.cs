@@ -12,13 +12,14 @@ public class PlayerRecorder : Recorder{
     private readonly List<Player.ChaserState> States = new();
     private PlayerSprite Sprite;
     private PlayerHair Hair;
+    private string Skin = "Default";
     // TODO: death animation...
 
     public PlayerRecorder() {
-        SmhInterop.RunWithSkin(() =>
-            Sprite = new PlayerSprite(PlayerSpriteMode.Madeline)
-        );
-        Hair = new PlayerHair(Sprite);
+        SmhInterop.RunWithSkin(() => {
+            Sprite = new PlayerSprite(PlayerSpriteMode.Madeline);
+            Hair = new PlayerHair(Sprite);
+        });
     }
 
     public override void UpdateInGame(Level l, float time){
@@ -43,7 +44,7 @@ public class PlayerRecorder : Recorder{
             Sprite.Scale = state.Scale;
             if (Sprite.Scale.X != 0.0)
                 Hair.Facing = (Facings) Math.Sign(Sprite.Scale.X);
-            Hair.Color = state.HairColor;
+            Hair.Color = state.HairColor; // note that this sets it to the hair colours of whatever skinmod was enabled
             if (Sprite.Mode == PlayerSpriteMode.Playback)
                 Sprite.Color = Hair.Color;
 
@@ -51,7 +52,7 @@ public class PlayerRecorder : Recorder{
             Hair.Update();
             Hair.AfterUpdate();
 
-            Hair.Render();
+            SmhInterop.RunWithSkin(() => Hair.Render(), Skin); // fix bangs sprite
             Sprite.Render();
         }else{
             // ReSharper disable once HeuristicUnreachableCode
@@ -71,7 +72,7 @@ public class PlayerRecorder : Recorder{
                 foreach (PlayerSpriteMode sm in Enum.GetValues(typeof(PlayerSpriteMode)).OfType<PlayerSpriteMode>()) {
                     string name = Dialog.Clean($"SNOWBERRY_EDITOR_PT_SKIN_{sm.ToString().ToUpperInvariant()}");
                     entries.Add(new UIDropdown.DropdownEntry(name, () => {
-                        UpdateSprite(sm, "Default");
+                        UpdateSprite(sm, Skin = "Default");
                         button.SetText(name + " \uF036");
                     }));
                 }
@@ -81,7 +82,7 @@ public class PlayerRecorder : Recorder{
                         skinName = skin.id;
                     string name = Dialog.Get("SNOWBERRY_EDITOR_PT_OPTS_SMH").Substitute(skinName);
                     entries.Add(new UIDropdown.DropdownEntry(name, () => {
-                        UpdateSprite(PlayerSpriteMode.Madeline, skin.id);
+                        UpdateSprite(PlayerSpriteMode.Madeline, Skin = skin.id);
                         button.SetText(name + " \uF036");
                     }));
                 }
