@@ -49,9 +49,9 @@ public class Room {
     public WindController.Patterns WindPattern = WindController.Patterns.None;
 
     // Tiles
-    private VirtualMap<char> fgTileMap;
-    private VirtualMap<char> bgTileMap;
-    private VirtualMap<MTexture> fgTiles, bgTiles;
+    private VirtualMap<char> fgTileMap, bgTileMap;
+    private VirtualMap<char?> delayedFgTileMap, delayedBgTileMap;
+    private VirtualMap<MTexture> fgTileSprites, bgTileSprites;
 
     public readonly List<Decal> FgDecals = new();
     public readonly List<Decal> BgDecals = new();
@@ -63,8 +63,6 @@ public class Room {
     public readonly Dictionary<Type, List<Entity>> TrackedEntities = new();
     public readonly Dictionary<Type, bool> DirtyTrackedEntities = new();
 
-    public int LoadSeed => Name.Aggregate(0, (current, c) => current + c);
-
     public static readonly HashSet<string> IllegalOptionNames = new(){ "id", "x", "y", "width", "height", "originX", "originY", "nodes" };
     private static readonly Regex tileSplitter = new("\\r\\n|\\n\\r|\\n|\\r");
 
@@ -72,8 +70,8 @@ public class Room {
         Name = name;
         Bounds = bounds;
         Map = map;
-        fgTileMap = new VirtualMap<char>(bounds.Width, bounds.Height, '0');
-        bgTileMap = new VirtualMap<char>(bounds.Width, bounds.Height, '0');
+        fgTileMap = NewTileMap();
+        bgTileMap = NewTileMap();
         Autotile();
     }
 
@@ -148,6 +146,9 @@ public class Room {
         }
     }
 
+    private VirtualMap<char> NewTileMap() => new(Bounds.Width, Bounds.Height, '0');
+    private VirtualMap<char?> NewCondTileMap() => new(Bounds.Width, Bounds.Height, null);
+
     public char GetTile(bool fg, Vector2 at) {
         return fg ? GetFgTile(at) : GetBgTile(at);
     }
@@ -161,6 +162,8 @@ public class Room {
         Vector2 p = (at - Position * 8) / 8;
         return bgTileMap[(int)p.X, (int)p.Y];
     }
+
+    public bool SetTile(int x, int y, bool fg, char tile) => fg ? SetFgTile(x, y, tile) : SetBgTile(x, y, tile);
 
     public bool SetFgTile(int x, int y, char tile) {
         char orig = fgTileMap[x, y];
@@ -182,13 +185,24 @@ public class Room {
         return false;
     }
 
+    public void SetTileDelayed(int x, int y, bool fg, char tile) =>
+        (fg ? (delayedFgTileMap ??= NewCondTileMap()) : (delayedBgTileMap ??= NewCondTileMap()))[x, y] = tile;
+
     public void Autotile() {
-        fgTiles = GFX.FGAutotiler.GenerateMap(fgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
-        bgTiles = GFX.BGAutotiler.GenerateMap(bgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
+        fgTileSprites = GFX.FGAutotiler.GenerateMap(fgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
+        bgTileSprites = GFX.BGAutotiler.GenerateMap(bgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
     }
 
-    internal List<Selection> GetSelectedObjects(Rectangle? rect, bool entities, bool triggers, bool fgDecals, bool bgDecals) {
-        List<Selection> result = new List<Selection>();
+    internal List<Selection> GetSelections(
+        Rectangle? rect,
+        bool entities = true,
+        bool triggers = false,
+        bool fgDecals = false,
+        bool bgDecals = false,
+        bool fgTiles = false,
+        bool bgTiles = false
+    ) {
+        List<Selection> result = new();
 
         if (entities || triggers)
             foreach (Entity entity in AllEntities) {
@@ -220,6 +234,33 @@ public class Room {
                 select new DecalSelection(bgDecal, false)
             );
 
+        if (fgTiles || bgTiles) {
+            // this is kind of awful
+            Rectangle cover;
+            if (rect != null) {
+                Vector2 start = (rect.Value.Location.ToVector2() / 8).Floor();
+                Vector2 end = (new Vector2(rect.Value.Right, rect.Value.Bottom) / 8).Ceiling();
+                cover = new Rectangle((int)start.X, (int)start.Y, (int)(end.X - start.X), (int)(end.Y - start.Y));
+            } else
+                cover = Bounds.Multiply(8);
+
+            for (int x = 0; x < cover.Width; x++) {
+                for (int y = 0; y < cover.Height; y++) {
+                    Vector2 at = new(cover.X + x, cover.Y + y);
+                    if (fgTiles) {
+                        char c = GetFgTile(at * 8);
+                        if (c != '0')
+                            result.Add(new TileSelection((at).ToPoint(), true, this));
+                    }
+                    if (bgTiles) {
+                        char c = GetBgTile(at * 8);
+                        if (c != '0')
+                            result.Add(new TileSelection((at).ToPoint(), false, this));
+                    }
+                }
+            }
+        }
+
         return result;
     }
 
@@ -246,8 +287,8 @@ public class Room {
         // BgTiles
         for (int x = startX; x < endX; x++)
             for (int y = startY; y < endY; y++)
-                if (bgTiles[x, y] != null)
-                    bgTiles[x, y].Draw(offset + new Vector2(x, y) * 8);
+                if (bgTileSprites[x, y] != null)
+                    bgTileSprites[x, y].Draw(offset + new Vector2(x, y) * 8);
 
         // BgDecals
         foreach (Decal decal in BgDecals)
@@ -264,8 +305,8 @@ public class Room {
         // FgTiles
         for (int x = startX; x < endX; x++)
             for (int y = startY; y < endY; y++)
-                if (fgTiles[x, y] != null)
-                    fgTiles[x, y].Draw(offset + new Vector2(x, y) * 8);
+                if (fgTileSprites[x, y] != null)
+                    fgTileSprites[x, y].Draw(offset + new Vector2(x, y) * 8);
 
         // FgDecals
         foreach (Decal decal in FgDecals)
@@ -309,6 +350,30 @@ public class Room {
                 Fonts.Regular.Draw(str,  new(mainRect.X + 1, mainRect.Y + 1), new(0.5f), Color.White);
             }
         }
+    }
+
+    internal void Update() {
+        bool retile = false;
+        if (delayedFgTileMap != null)
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
+                    if (delayedFgTileMap[x, y] is char c) {
+                        fgTileMap[x, y] = c;
+                        retile = true;
+                    }
+
+        if (delayedBgTileMap != null)
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
+                    if (delayedBgTileMap[x, y] is char c) {
+                        bgTileMap[x, y] = c;
+                        retile = true;
+                    }
+
+        if (retile)
+            Autotile();
+
+        delayedFgTileMap = delayedBgTileMap = null;
     }
 
     public void UpdateBounds() {

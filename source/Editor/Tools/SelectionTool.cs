@@ -13,7 +13,7 @@ namespace Snowberry.Editor.Tools;
 
 public class SelectionTool : Tool {
     private static bool canSelect;
-    private static bool selectEntities = true, selectTriggers = true, selectFgDecals = false, selectBgDecals = false;
+    private static bool selectEntities = true, selectTriggers = true, selectFgDecals = false, selectBgDecals = false, selectFgTiles = false, selectBgTiles = false;
     private static UISelectionPane selectionPanel;
 
     // entity resizing
@@ -50,6 +50,8 @@ public class SelectionTool : Tool {
         p.AddRight(CreateToggleButton(32, 32, Keys.T, "TRIGGERS", () => selectTriggers, s => selectTriggers = s), offset);
         p.AddRight(CreateToggleButton(0, 48, Keys.F, "FG_DECALS", () => selectFgDecals, s => selectFgDecals = s), offset);
         p.AddRight(CreateToggleButton(32, 48, Keys.B, "BG_DECALS", () => selectBgDecals, s => selectBgDecals = s), offset);
+        p.AddRight(CreateToggleButton(0, 64, Keys.H, "FG_TILES", () => selectFgTiles, s => selectFgTiles = s), offset);
+        p.AddRight(CreateToggleButton(32, 64, Keys.J, "BG_TILES", () => selectBgTiles, s => selectBgTiles = s), offset);
         return p;
     }
 
@@ -101,7 +103,7 @@ public class SelectionTool : Tool {
             // double click -> select all of type
             if (Editor.SelectedRoom != null && Mouse.IsDoubleClick) {
                 // first get everything under the mouse
-                Editor.SelectedObjects = Editor.SelectedRoom.GetSelectedObjects(Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals);
+                Editor.SelectedObjects = Editor.SelectedRoom.GetSelections(Mouse.World.ToRect(), selectEntities, selectTriggers /* nothing else does anything here */);
                 // then get all types of those entities
                 HashSet<string> entityTypes = new(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity.Name));
                 // clear the current selection
@@ -125,7 +127,7 @@ public class SelectionTool : Tool {
                 int by = (int)Math.Max(Mouse.World.Y, editor.worldClick.Y);
                 Editor.SelectionInProgress = new Rectangle(ax, ay, bx - ax, by - ay);
 
-                Editor.SelectedObjects = Editor.SelectedRoom.GetSelectedObjects(Editor.SelectionInProgress.Value, selectEntities, selectTriggers, selectFgDecals, selectBgDecals);
+                Editor.SelectedObjects = Editor.SelectedRoom.GetSelections(Editor.SelectionInProgress.Value, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles);
             } else if (Editor.SelectedObjects != null) {
                 // if only one entity is selected near the corners, resize
                 Entity solo = GetSoloEntity();
@@ -218,17 +220,7 @@ public class SelectionTool : Tool {
                 Nudge(new(ctrl ? 1 : 8, 0));
             } else if (Editor.SelectedRoom != null && ctrl) {
                 if (MInput.Keyboard.Pressed(Keys.A)) { // Ctrl-A to select all
-                    // select all
-                    Editor.SelectedObjects = new();
-                    foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => (selectEntities && !entity.IsTrigger) || (selectTriggers && entity.IsTrigger)))
-                        if (entity.SelectionRectangles is { Length: > 0 } rs)
-                            Editor.SelectedObjects.AddRange(rs.Select((_, i) => new EntitySelection(entity, i - 1)));
-                    if (selectFgDecals)
-                        foreach (Decal d in Editor.SelectedRoom.FgDecals)
-                            Editor.SelectedObjects.Add(new DecalSelection(d, true));
-                    if (selectBgDecals)
-                        foreach (Decal d in Editor.SelectedRoom.BgDecals)
-                            Editor.SelectedObjects.Add(new DecalSelection(d, false));
+                    Editor.SelectedObjects = Editor.SelectedRoom.GetSelections(null, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles);
                     refreshPanel = true;
                 } else if (MInput.Keyboard.Pressed(Keys.C, Keys.X)) { // Ctrl-C to copy
                     CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity).Distinct());
@@ -267,7 +259,7 @@ public class SelectionTool : Tool {
     public override void RenderWorldSpace() {
         base.RenderWorldSpace();
         if (Editor.SelectedRoom != null) {
-            foreach (var item in Editor.SelectedRoom.GetSelectedObjects(Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals))
+            foreach (var item in Editor.SelectedRoom.GetSelections(Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles))
                 if (Editor.SelectedObjects == null || !Editor.SelectedObjects.Contains(item))
                     Draw.Rect(item.Area(), Color.Blue * 0.15f);
 

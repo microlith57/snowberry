@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod;
+using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Snowberry.Editor;
 
@@ -79,4 +81,45 @@ public class DecalSelection : Selection {
     }
 
     public override Rectangle Area() => Decal.Bounds;
+
+    public override bool Equals(object obj) => obj is DecalSelection ds && ds.Decal == Decal;
+
+    public override int GetHashCode() => Decal.GetHashCode();
+}
+
+public class TileSelection : Selection {
+
+    public readonly Point Position;
+    public readonly bool Fg;
+    public readonly Room Room;
+
+    public TileSelection(Point position, bool fg, Room room) {
+        Position = position;
+        Fg = fg;
+        Room = room;
+    }
+
+    public override string Name() => "no";
+
+    public override Color Accent() => Color.Red;
+
+    public override void Move(Vector2 amount) {
+        Vector2 adj = (Position.ToVector2() + (amount / 8).Floor());
+        Room.SetTileDelayed(
+            (int)(adj.X - Room.Position.X),
+            (int)(adj.Y - Room.Position.Y),
+            Fg,
+            Room.GetTile(Fg, Position.ToVector2() * 8)
+        );
+    }
+
+    public override void RemoveSelf() =>
+        Room.SetTileDelayed((int)(Position.X - Room.Position.X), (int)(Position.Y - Room.Position.Y), Fg, '0');
+
+    public override Rectangle Area() => new Rectangle(Position.X, Position.Y, 1, 1).Multiply(8);
+
+    public override bool Equals(object obj) =>
+        obj is TileSelection ts && ts.Position == Position && ts.Fg == Fg && ts.Room == Room;
+
+    public override int GetHashCode() => Position.GetHashCode() ^ Fg.Bit() ^ Room.GetHashCode();
 }
