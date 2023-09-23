@@ -50,7 +50,6 @@ public class Room {
 
     // Tiles
     private VirtualMap<char> fgTileMap, bgTileMap;
-    private VirtualMap<char?> delayedFgTileMap, delayedBgTileMap;
     private VirtualMap<MTexture> fgTileSprites, bgTileSprites;
 
     public readonly List<Decal> FgDecals = new();
@@ -147,7 +146,6 @@ public class Room {
     }
 
     private VirtualMap<char> NewTileMap() => new(Bounds.Width, Bounds.Height, '0');
-    private VirtualMap<char?> NewCondTileMap() => new(Bounds.Width, Bounds.Height, null);
 
     public char GetTile(bool fg, Vector2 at) {
         return fg ? GetFgTile(at) : GetBgTile(at);
@@ -184,9 +182,6 @@ public class Room {
 
         return false;
     }
-
-    public void SetTileDelayed(int x, int y, bool fg, char tile) =>
-        (fg ? (delayedFgTileMap ??= NewCondTileMap()) : (delayedBgTileMap ??= NewCondTileMap()))[x, y] = tile;
 
     public void Autotile() {
         fgTileSprites = GFX.FGAutotiler.GenerateMap(fgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
@@ -350,30 +345,6 @@ public class Room {
                 Fonts.Regular.Draw(str,  new(mainRect.X + 1, mainRect.Y + 1), new(0.5f), Color.White);
             }
         }
-    }
-
-    internal void Update() {
-        bool retile = false;
-        if (delayedFgTileMap != null)
-            for (int x = 0; x < Width; x++)
-                for (int y = 0; y < Height; y++)
-                    if (delayedFgTileMap[x, y] is char c) {
-                        fgTileMap[x, y] = c;
-                        retile = true;
-                    }
-
-        if (delayedBgTileMap != null)
-            for (int x = 0; x < Width; x++)
-                for (int y = 0; y < Height; y++)
-                    if (delayedBgTileMap[x, y] is char c) {
-                        bgTileMap[x, y] = c;
-                        retile = true;
-                    }
-
-        if (retile)
-            Autotile();
-
-        delayedFgTileMap = delayedBgTileMap = null;
     }
 
     public void UpdateBounds() {

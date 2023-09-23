@@ -170,6 +170,7 @@ public class SelectionTool : Tool {
                     s.Move(move);
                     SnapIfNecessary(s);
                 }
+                TileSelection.FinishMove();
             }
         } else
             Editor.SelectionInProgress = null;
@@ -322,6 +323,7 @@ public class SelectionTool : Tool {
             s.Move(by);
             SnapIfNecessary(s);
         }
+        TileSelection.FinishMove();
     }
 
     private static Entity GetSoloEntity() =>

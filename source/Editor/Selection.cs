@@ -89,7 +89,9 @@ public class DecalSelection : Selection {
 
 public class TileSelection : Selection {
 
-    public readonly Point Position;
+    private static VirtualMap<char?> delayedFgTileMap, delayedBgTileMap;
+
+    public Point Position;
     public readonly bool Fg;
     public readonly Room Room;
 
@@ -99,22 +101,24 @@ public class TileSelection : Selection {
         Room = room;
     }
 
-    public override string Name() => "no";
+    public override string Name() => "";
 
     public override Color Accent() => Color.Red;
 
     public override void Move(Vector2 amount) {
         Vector2 adj = (Position.ToVector2() + (amount / 8).Floor());
-        Room.SetTileDelayed(
+        RemoveSelf();
+        SetTileDelayed(
             (int)(adj.X - Room.Position.X),
             (int)(adj.Y - Room.Position.Y),
             Fg,
             Room.GetTile(Fg, Position.ToVector2() * 8)
         );
+        Position = adj.ToPoint();
     }
 
     public override void RemoveSelf() =>
-        Room.SetTileDelayed((int)(Position.X - Room.Position.X), (int)(Position.Y - Room.Position.Y), Fg, '0');
+        SetTileDelayed((int)(Position.X - Room.Position.X), (int)(Position.Y - Room.Position.Y), Fg, '0');
 
     public override Rectangle Area() => new Rectangle(Position.X, Position.Y, 1, 1).Multiply(8);
 
@@ -122,4 +126,36 @@ public class TileSelection : Selection {
         obj is TileSelection ts && ts.Position == Position && ts.Fg == Fg && ts.Room == Room;
 
     public override int GetHashCode() => Position.GetHashCode() ^ Fg.Bit() ^ Room.GetHashCode();
+
+    private void SetTileDelayed(int x, int y, bool fg, char tile) {
+        VirtualMap<char?> map = (fg ? (delayedFgTileMap ??= NewCondTileMap()) : (delayedBgTileMap ??= NewCondTileMap()));
+        if(!(tile == '0' && map[x, y] != null))
+            map[x, y] = tile;
+    }
+
+    private VirtualMap<char?> NewCondTileMap() => new(Room.Bounds.Width, Room.Bounds.Height, null);
+
+    internal static void FinishMove() {
+        Room room = Editor.SelectedRoom;
+
+        if(room != null && (delayedFgTileMap != null || delayedBgTileMap != null)){
+            bool retile = false;
+            if (delayedFgTileMap != null)
+                for (int x = 0; x < room.Width; x++)
+                    for (int y = 0; y < room.Height; y++)
+                        if (delayedFgTileMap[x, y] is char c)
+                            retile |= room.SetFgTile(x, y, c);
+
+            if (delayedBgTileMap != null)
+                for (int x = 0; x < room.Width; x++)
+                    for (int y = 0; y < room.Height; y++)
+                        if (delayedBgTileMap[x, y] is char c)
+                            retile |= room.SetBgTile(x, y, c);
+
+            if (retile)
+                room.Autotile();
+        }
+
+        delayedFgTileMap = delayedBgTileMap = null;
+    }
 }

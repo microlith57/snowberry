@@ -201,11 +201,6 @@ public class Map {
         }
     }
 
-    internal void Update() {
-        foreach (var room in Rooms)
-            room.Update();
-    }
-
     public void GenerateMapData(MapData data) {
         foreach(var room in Rooms)
             try{

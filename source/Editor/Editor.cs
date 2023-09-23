@@ -480,9 +480,6 @@ public class Editor : UIScene {
                     Snowberry.Instance.SaveSettings();
             }
 
-            // delayed actions
-            Map.Update();
-
             // autosaving
             DateTime now = DateTime.Now;
             if (LastAutosave is null || LastAutosave.Value.AddMinutes(10) <= now) {

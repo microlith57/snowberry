@@ -21,7 +21,8 @@ public class UISelectionPane : UIScrollPane{
                     if (seen.Contains(e))
                         continue;
                     seen.Add(e);
-                }
+                } else if (s is TileSelection)
+                    continue;
 
                 UIElement entry = AddEntry(s);
                 entry.Position.Y = y;
