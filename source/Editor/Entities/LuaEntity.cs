@@ -340,22 +340,33 @@ public class LuaEntity : Entity {
         return color1;
     }
 
-    private record SpriteWithPos(
-        MTexture Texture,
-        Vector2 Pos,
-        Vector2 Scale,
-        Color Color,
-        Vector2 Justification,
-        float Rotation,
-        Vector2 TexPos,
-        Vector2 TexSize
-    ) {
+    private class SpriteWithPos {
         // IsExternalInit my ass
-        public readonly MTexture Texture = Texture;
-        public readonly Vector2 Pos = Pos, Scale = Scale, Justification = Justification;
-        public readonly Color Color = Color;
-        public readonly float Rotation = Rotation;
-        public readonly Vector2 TexPos = TexPos, TexSize = TexSize;
+        public readonly MTexture Texture;
+        public readonly Vector2 Pos, Scale, Justification;
+        public readonly Color Color;
+        public readonly float Rotation;
+        public readonly Vector2 TexPos, TexSize;
+
+        public SpriteWithPos(
+            MTexture texture,
+            Vector2 pos,
+            Vector2 scale,
+            Color color,
+            Vector2 justification,
+            float rotation,
+            Vector2 texPos,
+            Vector2 texSize
+        ) {
+            Texture = texture;
+            Pos = pos;
+            Scale = scale;
+            Justification = justification;
+            Color = color;
+            Rotation = rotation;
+            TexPos = texPos;
+            TexSize = texSize;
+        }
     }
 
     private enum NodeLineRenderType {
