@@ -141,15 +141,15 @@ public class LuaEntity : Entity {
             Draw.Rect(Position, Width, Height, c);
         }
 
-        foreach((MTexture tex, Vector2 pos, Vector2 scale, Color tint, Vector2 justification, float rotation, Vector2 texPos, Vector2 texSize) in sprites) {
-            MTexture draw = tex;
-            if (texPos != Vector2.Zero || texSize != -Vector2.One) {
-                float tWidth = texSize.X < 0 ? tex.Width - texPos.X : texSize.X;
-                float tHeight = texSize.Y < 0 ? tex.Height - texPos.Y : texSize.Y;
-                draw = tex.GetSubtexture((int)texPos.X, (int)texPos.Y, (int)tWidth, (int)tHeight);
+        foreach(var spr in sprites) {
+            MTexture draw = spr.Texture;
+            if (spr.TexPos != Vector2.Zero || spr.TexSize != -Vector2.One) {
+                float tWidth = spr.TexSize.X < 0 ? spr.Texture.Width - spr.TexPos.X : spr.TexSize.X;
+                float tHeight = spr.TexSize.Y < 0 ? spr.Texture.Height - spr.TexPos.Y : spr.TexSize.Y;
+                draw = spr.Texture.GetSubtexture((int)spr.TexPos.X, (int)spr.TexPos.Y, (int)tWidth, (int)tHeight);
             }
 
-            draw.DrawJustified(pos, justification, tint, scale, rotation);
+            draw.DrawJustified(spr.Pos, spr.Justification, spr.Color, spr.Scale, spr.Rotation);
         }
     }
 
