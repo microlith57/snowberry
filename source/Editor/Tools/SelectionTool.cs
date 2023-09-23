@@ -27,6 +27,9 @@ public class SelectionTool : Tool {
     // selection cycling
     private static bool movedMouse = false;
 
+    // double click
+    private static bool wasDoubleClick = false;
+
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_SELECT");
 
     public override UIElement CreatePanel(int height) {
@@ -103,93 +106,95 @@ public class SelectionTool : Tool {
             Point mouse = new Point((int)Mouse.World.X, (int)Mouse.World.Y);
             Vector2 world = Mouse.World;
 
-            // double click -> select all of type
-            if (Editor.SelectedRoom != null && Mouse.IsDoubleClick) {
-                // first get everything under the mouse
-                Editor.SelectedObjects = Editor.SelectedRoom.GetSelections(Mouse.World.ToRect(), selectEntities, selectTriggers /* nothing else does anything here */);
-                // then get all types of those entities
-                HashSet<string> entityTypes = new(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity.Name));
-                // clear the current selection
-                Editor.SelectedObjects = new();
-                // add back all entities of the same type
-                foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => entityTypes.Contains(entity.Name)))
-                    if (entity.SelectionRectangles is { Length: > 0 } rs)
-                        Editor.SelectedObjects.AddRange(rs.Select((_, i) => new EntitySelection(entity, i - 1)).ToList());
-                // we might have selected and/or deselected something, so refresh the panel
-                refreshPanel = true;
-            }
-
             if (MInput.Mouse.PressedLeftButton) {
                 canSelect = !(Editor.SelectedObjects != null && Editor.SelectedObjects.Any(s => s.Contains(mouse)));
                 movedMouse = false;
+                wasDoubleClick = Mouse.IsDoubleClick;
             }
 
             if (Mouse.World != Mouse.WorldLast)
                 movedMouse = true;
 
-            if (canSelect && movedMouse && Editor.SelectedRoom != null) {
-                int ax = (int)Math.Min(Mouse.World.X, editor.worldClick.X);
-                int ay = (int)Math.Min(Mouse.World.Y, editor.worldClick.Y);
-                int bx = (int)Math.Max(Mouse.World.X, editor.worldClick.X);
-                int by = (int)Math.Max(Mouse.World.Y, editor.worldClick.Y);
-                Rectangle r = new Rectangle(ax, ay, bx - ax, by - ay);
-                Editor.SelectionInProgress = r;
-                Editor.SelectedObjects = GetEnabledSelections(r);
-            } else if (movedMouse) {
-                // if only one entity is selected near the corners, resize
-                Entity solo = GetSoloEntity();
-                if (solo != null) {
-                    if (MInput.Mouse.PressedLeftButton) {
-                        // TODO: can this be shared between RoomTool & SelectionTool?
-                        fromLeft = Math.Abs(Mouse.World.X - solo.Position.X) <= 4;
-                        resizingX = solo.MinWidth > -1 && (Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft);
-                        fromTop = Math.Abs(Mouse.World.Y - solo.Position.Y) <= 4;
-                        resizingY = solo.MinHeight > -1 && (Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop);
-                        oldEntityBounds = solo.Bounds;
-                    } else if (resizingX || resizingY) {
-                        var wSnapped = Mouse.World.RoundTo(8);
-                        if (resizingX) {
-                            // compare against the opposite edge
-                            solo.SetWidth(Math.Max((int)Math.Round((fromLeft ? oldEntityBounds.Right - world.X : world.X - solo.X) / 8f) * 8, solo.MinWidth));
-                            if (fromLeft)
-                                solo.SetPosition(new((int)Math.Floor(wSnapped.X), solo.Y));
+            if (movedMouse && Editor.SelectedRoom != null)
+                if (canSelect) {
+                    int ax = (int)Math.Min(Mouse.World.X, editor.worldClick.X);
+                    int ay = (int)Math.Min(Mouse.World.Y, editor.worldClick.Y);
+                    int bx = (int)Math.Max(Mouse.World.X, editor.worldClick.X);
+                    int by = (int)Math.Max(Mouse.World.Y, editor.worldClick.Y);
+                    Rectangle r = new Rectangle(ax, ay, bx - ax, by - ay);
+                    Editor.SelectionInProgress = r;
+                    Editor.SelectedObjects = GetEnabledSelections(r);
+                } else {
+                    // if only one entity is selected near the corners, resize
+                    Entity solo = GetSoloEntity();
+                    if (solo != null) {
+                        if (MInput.Mouse.PressedLeftButton) {
+                            // TODO: can this be shared between RoomTool & SelectionTool?
+                            fromLeft = Math.Abs(Mouse.World.X - solo.Position.X) <= 4;
+                            resizingX = solo.MinWidth > -1 && (Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft);
+                            fromTop = Math.Abs(Mouse.World.Y - solo.Position.Y) <= 4;
+                            resizingY = solo.MinHeight > -1 && (Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop);
+                            oldEntityBounds = solo.Bounds;
+                        } else if (resizingX || resizingY) {
+                            var wSnapped = Mouse.World.RoundTo(8);
+                            if (resizingX) {
+                                // compare against the opposite edge
+                                solo.SetWidth(Math.Max((int)Math.Round((fromLeft ? oldEntityBounds.Right - world.X : world.X - solo.X) / 8f) * 8, solo.MinWidth));
+                                if (fromLeft)
+                                    solo.SetPosition(new((int)Math.Floor(wSnapped.X), solo.Y));
+                            }
+
+                            if (resizingY) {
+                                solo.SetHeight(Math.Max((int)Math.Round((fromTop ? oldEntityBounds.Bottom - world.Y : world.Y - solo.Y) / 8f) * 8, solo.MinHeight));
+                                if (fromTop)
+                                    solo.SetPosition(new(solo.X, (int)Math.Floor(wSnapped.Y)));
+                            }
+
+                            // TODO: don't snap offgrid entities while resizing, except with AggressiveSnap
+
+                            // skip dragging code
+                            goto postResize;
                         }
-
-                        if (resizingY) {
-                            solo.SetHeight(Math.Max((int)Math.Round((fromTop ? oldEntityBounds.Bottom - world.Y : world.Y - solo.Y) / 8f) * 8, solo.MinHeight));
-                            if (fromTop)
-                                solo.SetPosition(new(solo.X, (int)Math.Floor(wSnapped.Y)));
-                        }
-
-                        // TODO: don't snap offgrid entities while resizing, except with AggressiveSnap
-
-                        // skip dragging code
-                        goto postResize;
                     }
-                }
 
-                // otherwise, move
-                bool noSnap = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
-                Vector2 worldSnapped = noSnap ? Mouse.World : Mouse.World.RoundTo(8);
-                Vector2 worldLastSnapped = noSnap ? Mouse.WorldLast : Mouse.WorldLast.RoundTo(8);
-                Vector2 move = worldSnapped - worldLastSnapped;
-                foreach (Selection s in Editor.SelectedObjects) {
-                    s.Move(move);
-                    SnapIfNecessary(s);
+                    // otherwise, move
+                    bool noSnap = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
+                    Vector2 worldSnapped = noSnap ? Mouse.World : Mouse.World.RoundTo(8);
+                    Vector2 worldLastSnapped = noSnap ? Mouse.WorldLast : Mouse.WorldLast.RoundTo(8);
+                    Vector2 move = worldSnapped - worldLastSnapped;
+                    foreach (Selection s in Editor.SelectedObjects) {
+                        s.Move(move);
+                        SnapIfNecessary(s);
+                    }
+
+                    TileSelection.FinishMove();
                 }
-                TileSelection.FinishMove();
-            }
         } else {
             if (MInput.Mouse.ReleasedLeftButton && canClick && !movedMouse) {
-                // releasing click on a selected object -> cycle selection
-                var at = GetEnabledSelections(Mouse.World.ToRect());
-                Selection first = Editor.SelectedObjects is { Count: > 0 } es ? es[0] : null;
-                int idx = at.IndexOf(first);
-                if (idx != -1)
-                    Editor.SelectedObjects = new() { at[(idx + 1) % at.Count] };
-                // not hovering over something selected -> just take the first one
-                if (idx == -1 || first == null)
-                    Editor.SelectedObjects = at.Count == 0 ? new() : new() { at[0] };
+                // releasing double click on a selected entity -> select all of type
+                if (wasDoubleClick && Editor.SelectedRoom != null) {
+                    // first get everything under the mouse
+                    var at = Editor.SelectedRoom.GetSelections(Mouse.World.ToRect(), selectEntities, selectTriggers /* nothing else does anything here */);
+                    // then get all types of those entities
+                    HashSet<string> entityTypes = new(at.OfType<EntitySelection>().Select(x => x.Entity.Name));
+                    // clear the current selection
+                    Editor.SelectedObjects = new();
+                    // add back all entities of the same type
+                    foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => entityTypes.Contains(entity.Name)))
+                        if (entity.SelectionRectangles is { Length: > 0 } rs)
+                            Editor.SelectedObjects.AddRange(rs.Select((_, i) => new EntitySelection(entity, i - 1)).ToList());
+                } else {
+                    // releasing click on a selected object -> cycle selection
+                    var at = GetEnabledSelections(Mouse.World.ToRect());
+                    Selection first = Editor.SelectedObjects is { Count: > 0 } es ? es[0] : null;
+                    int idx = at.IndexOf(first);
+                    if (idx != -1)
+                        Editor.SelectedObjects = new() { at[(idx + 1) % at.Count] };
+                    // not hovering over something selected -> just take the first one
+                    if (idx == -1 || first == null)
+                        Editor.SelectedObjects = at.Count == 0 ? new() : new() { at[0] };
+                }
+
                 refreshPanel = true;
             }
 
@@ -215,7 +220,7 @@ public class SelectionTool : Tool {
                 // iterate backwards to allow modifying the list as we go
                 for (var idx = Editor.SelectedObjects.Count - 1; idx >= 0; idx--) {
                     var item = Editor.SelectedObjects[idx];
-                    if (item is EntitySelection{ Entity: var e, Index: var oldIdx } && (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1)) {
+                    if (item is EntitySelection { Entity: var e, Index: var oldIdx } && (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1)) {
                         if (!seen.Contains(e)) {
                             int newNodeIdx = oldIdx + 1;
                             Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
@@ -223,6 +228,7 @@ public class SelectionTool : Tool {
                             Editor.SelectedObjects.Add(new EntitySelection(e, newNodeIdx));
                             seen.Add(e);
                         }
+
                         Editor.SelectedObjects.Remove(item);
                     }
                 }
@@ -344,6 +350,7 @@ public class SelectionTool : Tool {
             s.Move(by);
             SnapIfNecessary(s);
         }
+
         TileSelection.FinishMove();
     }
 
