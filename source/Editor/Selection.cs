@@ -106,7 +106,7 @@ public class TileSelection : Selection {
     public override Color Accent() => Color.Red;
 
     public override void Move(Vector2 amount) {
-        Vector2 adj = (Position.ToVector2() + (amount / 8).Floor());
+        Vector2 adj = (Position.ToVector2() + (amount / 8).Round());
         RemoveSelf();
         SetTileDelayed(
             (int)(adj.X - Room.Position.X),
