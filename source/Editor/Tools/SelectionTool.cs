@@ -24,6 +24,9 @@ public class SelectionTool : Tool {
     private static bool pasting = false;
     private static List<Entity> toPaste;
 
+    // selection cycling
+    private static bool movedMouse = false;
+
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_SELECT");
 
     public override UIElement CreatePanel(int height) {
@@ -118,17 +121,21 @@ public class SelectionTool : Tool {
 
             if (MInput.Mouse.PressedLeftButton) {
                 canSelect = !(Editor.SelectedObjects != null && Editor.SelectedObjects.Any(s => s.Contains(mouse)));
+                movedMouse = false;
             }
 
-            if (canSelect && Editor.SelectedRoom != null) {
+            if (Mouse.World != Mouse.WorldLast)
+                movedMouse = true;
+
+            if (canSelect && movedMouse && Editor.SelectedRoom != null) {
                 int ax = (int)Math.Min(Mouse.World.X, editor.worldClick.X);
                 int ay = (int)Math.Min(Mouse.World.Y, editor.worldClick.Y);
                 int bx = (int)Math.Max(Mouse.World.X, editor.worldClick.X);
                 int by = (int)Math.Max(Mouse.World.Y, editor.worldClick.Y);
-                Editor.SelectionInProgress = new Rectangle(ax, ay, bx - ax, by - ay);
-
-                Editor.SelectedObjects = Editor.SelectedRoom.GetSelections(Editor.SelectionInProgress.Value, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles);
-            } else if (Editor.SelectedObjects != null) {
+                Rectangle r = new Rectangle(ax, ay, bx - ax, by - ay);
+                Editor.SelectionInProgress = r;
+                Editor.SelectedObjects = GetEnabledSelections(r);
+            } else if (movedMouse) {
                 // if only one entity is selected near the corners, resize
                 Entity solo = GetSoloEntity();
                 if (solo != null) {
@@ -172,8 +179,22 @@ public class SelectionTool : Tool {
                 }
                 TileSelection.FinishMove();
             }
-        } else
+        } else {
+            if (MInput.Mouse.ReleasedLeftButton && canClick && !movedMouse) {
+                // releasing click on a selected object -> cycle selection
+                var at = GetEnabledSelections(Mouse.World.ToRect());
+                Selection first = Editor.SelectedObjects is { Count: > 0 } es ? es[0] : null;
+                int idx = at.IndexOf(first);
+                if (idx != -1)
+                    Editor.SelectedObjects = new() { at[(idx + 1) % at.Count] };
+                // not hovering over something selected -> just take the first one
+                if (idx == -1 || first == null)
+                    Editor.SelectedObjects = at.Count == 0 ? new() : new() { at[0] };
+                refreshPanel = true;
+            }
+
             Editor.SelectionInProgress = null;
+        }
 
         if (Editor.SelectedObjects == null)
             return;
@@ -221,7 +242,7 @@ public class SelectionTool : Tool {
                 Nudge(new(ctrl ? 1 : 8, 0));
             } else if (Editor.SelectedRoom != null && ctrl) {
                 if (MInput.Keyboard.Pressed(Keys.A)) { // Ctrl-A to select all
-                    Editor.SelectedObjects = Editor.SelectedRoom.GetSelections(null, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles);
+                    Editor.SelectedObjects = GetEnabledSelections(null);
                     refreshPanel = true;
                 } else if (MInput.Keyboard.Pressed(Keys.C, Keys.X)) { // Ctrl-C to copy
                     CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity).Distinct());
@@ -260,7 +281,7 @@ public class SelectionTool : Tool {
     public override void RenderWorldSpace() {
         base.RenderWorldSpace();
         if (Editor.SelectedRoom != null) {
-            foreach (var item in Editor.SelectedRoom.GetSelections(Mouse.World.ToRect(), selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles))
+            foreach (var item in GetEnabledSelections(Mouse.World.ToRect()))
                 if (Editor.SelectedObjects == null || !Editor.SelectedObjects.Contains(item))
                     Draw.Rect(item.Area(), Color.Blue * 0.15f);
 
@@ -283,10 +304,10 @@ public class SelectionTool : Tool {
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
         Point mouse = new Point((int)Mouse.World.X, (int)Mouse.World.Y);
 
-        // hovering over a selected entity? movement arrow
-        if (Editor.SelectedObjects != null && Editor.SelectedObjects.Any(s => s.Contains(mouse))) {
+        // hovering over a selected entity? and we're not selecting? movement arrow
+        if (Editor.SelectedObjects != null && Editor.SelectionInProgress == null && Editor.SelectedObjects.Any(s => s.Contains(mouse))) {
             justify = Vector2.One / 2f;
-            cursor = Editor.CursorsAtlas.GetSubtexture(16, 16, 16, 16);
+            cursor = UIScene.CursorsAtlas.GetSubtexture(16, 16, 16, 16);
 
             // only have 1 entity selected & at the borders? show resizing tooltips
             Entity solo = GetSoloEntity();
@@ -297,22 +318,22 @@ public class SelectionTool : Tool {
                 var fromBottom = solo.MinHeight > -1 && Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4;
                 if (fromLeft || fromRight || fromTop || fromBottom) {
                     if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
-                        cursor = Editor.CursorsAtlas.GetSubtexture(32, 32, 16, 16);
+                        cursor = UIScene.CursorsAtlas.GetSubtexture(32, 32, 16, 16);
                         return;
                     }
 
                     if ((fromTop && fromLeft) || (fromBottom && fromRight)) {
-                        cursor = Editor.CursorsAtlas.GetSubtexture(48, 32, 16, 16);
+                        cursor = UIScene.CursorsAtlas.GetSubtexture(48, 32, 16, 16);
                         return;
                     }
 
                     if (fromLeft || fromRight) {
-                        cursor = Editor.CursorsAtlas.GetSubtexture(0, 32, 16, 16);
+                        cursor = UIScene.CursorsAtlas.GetSubtexture(0, 32, 16, 16);
                         return;
                     }
 
                     if (fromBottom || fromTop)
-                        cursor = Editor.CursorsAtlas.GetSubtexture(16, 32, 16, 16);
+                        cursor = UIScene.CursorsAtlas.GetSubtexture(16, 32, 16, 16);
                 }
             }
         }
@@ -326,11 +347,11 @@ public class SelectionTool : Tool {
         TileSelection.FinishMove();
     }
 
+    private static Selection GetSoloSelection() =>
+        Editor.SelectedObjects != null && Editor.SelectedObjects.Count == 1 ? Editor.SelectedObjects[0] : null;
+
     private static Entity GetSoloEntity() =>
-        Editor.SelectedObjects != null
-        && Editor.SelectedObjects.Count == 1
-        && Editor.SelectedObjects[0] is EntitySelection { Entity: var e, Index: -1 }
-            ? e : null;
+        GetSoloSelection() is EntitySelection { Entity: var e, Index: -1 } ? e : null;
 
     private static void AdjustPastedEntities() {
         Rectangle cover = CoveringRect(toPaste.Select(e => e.Bounds).Concat(toPaste.SelectMany(e => e.Nodes.Select(Util.ToRect))).ToList());
@@ -358,4 +379,7 @@ public class SelectionTool : Tool {
         if (s is EntitySelection { Entity: var e })
             SnapIfNecessary(e, ignoreCtrl);
     }
+
+    private static List<Selection> GetEnabledSelections(Rectangle? r) =>
+        Editor.SelectedRoom?.GetSelections(r, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles) ?? new();
 }
