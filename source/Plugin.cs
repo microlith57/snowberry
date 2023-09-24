@@ -69,7 +69,16 @@ public abstract class Plugin {
         if(targetType == typeof(bool))
             return raw.Equals("true", StringComparison.InvariantCultureIgnoreCase);
 
-        return Convert.ChangeType(raw, targetType);
+        try {
+            return Convert.ChangeType(raw, targetType);
+        } catch (Exception e) {
+            Snowberry.Log(LogLevel.Error,
+                $"""
+                 Attempted invalid conversion of string "{raw}" into type "{targetType.FullName}"!
+                 {e}
+                 """);
+            return Util.Default(targetType);
+        }
     }
 
     protected static object ObjectToStr(object obj) {
