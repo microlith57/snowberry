@@ -75,6 +75,8 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_EDITOR_SELECT_TRIGGERS_TT=        select triggers (shift-T)
 	SNOWBERRY_EDITOR_SELECT_FG_DECALS_TT=       select FG decals (shift-F)
 	SNOWBERRY_EDITOR_SELECT_BG_DECALS_TT=       select BG decals (shift-B)
+	SNOWBERRY_EDITOR_SELECT_FG_TILES_TT=        select FG tiles (shift-H)
+	SNOWBERRY_EDITOR_SELECT_BG_TILES_TT=        select BG tiles (shift-J)
 	
 	SNOWBERRY_EDITOR_SELECT_COPY_TT=            copy (ctrl-C)
 	SNOWBERRY_EDITOR_SELECT_PASTE_TT=           paste (ctrl-V)
@@ -82,13 +84,13 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_EDITOR_SELECT_DELETE_TT=          delete (del)
 
 # *** Tile Brush Tool ***
-	SNOWBERRY_EDITOR_TILE_BRUSH_BRUSH_TT=       brush
-	SNOWBERRY_EDITOR_TILE_BRUSH_RECT_TT=        rectangle
-	SNOWBERRY_EDITOR_TILE_BRUSH_HOLLOWRECT_TT=  hollow rectangle
-	SNOWBERRY_EDITOR_TILE_BRUSH_FILL_TT=        bucket
-	SNOWBERRY_EDITOR_TILE_BRUSH_LINE_TT=        line
-	SNOWBERRY_EDITOR_TILE_BRUSH_CIRCLE_TT=      circle
-	SNOWBERRY_EDITOR_TILE_BRUSH_EYEDROPPER_TT=  eyedropper
+	SNOWBERRY_EDITOR_TILE_BRUSH_BRUSH_TT=       brush (P, alt-P)
+	SNOWBERRY_EDITOR_TILE_BRUSH_RECT_TT=        rectangle (R, alt-R)
+	SNOWBERRY_EDITOR_TILE_BRUSH_HOLLOWRECT_TT=  hollow rectangle (H, alt-H)
+	SNOWBERRY_EDITOR_TILE_BRUSH_FILL_TT=        fill (F, alt-F)
+	SNOWBERRY_EDITOR_TILE_BRUSH_LINE_TT=        line (L, alt-L)
+	SNOWBERRY_EDITOR_TILE_BRUSH_CIRCLE_TT=      circle (C, alt-C)
+	SNOWBERRY_EDITOR_TILE_BRUSH_EYEDROPPER_TT=  eyedropper (K, alt-K)
 
 # *** Room Tool ***
 

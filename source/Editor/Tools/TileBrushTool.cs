@@ -17,6 +17,9 @@ public class TileBrushTool : Tool {
     public enum TileBrushMode {
         Brush, Rect, HollowRect, Fill, Line, Circle, Eyedropper
     }
+    private static readonly List<Keys> ModeKeybinds = new() {
+        Keys.P, Keys.R, Keys.H, Keys.F, Keys.L, Keys.C, Keys.K
+    };
 
     public static int CurLeftTileset = 2;
     public static bool LeftFg = true;
@@ -135,10 +138,12 @@ public class TileBrushTool : Tool {
         UIElement brushTypes = new();
         modeButtons.Clear();
         foreach (var mode in Enum.GetValues(typeof(TileBrushMode))) {
-            var button = new UIButton(brushes.GetSubtexture(0, 16 * (int)mode, 16, 16), 3, 3) {
+            var button = new UIKeyboundButton(brushes.GetSubtexture(0, 16 * (int)mode, 16, 16), 3, 3) {
                 OnPress = () => LeftMode = (TileBrushMode)mode,
                 OnRightPress = () => RightMode = (TileBrushMode)mode,
-                ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_TILE_BRUSH_{mode.ToString().ToUpperInvariant()}_TT")
+                ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_TILE_BRUSH_{mode.ToString().ToUpperInvariant()}_TT"),
+                AltClickWithAlt = true,
+                Key = ModeKeybinds[(int)mode]
             };
             brushTypes.AddRight(button, modeButtons.Count == 0 ? new(0, 4) : new(6, 4));
             modeButtons.Add(button);

@@ -9,7 +9,7 @@ public class UIKeyboundButton : UIButton {
 
     public Action OnKbPress;
 
-    public bool Ctrl, Alt, Shift;
+    public bool Ctrl, Alt, Shift, AltClickWithAlt;
     public Keys Key;
 
     private bool pressedByKb = false;
@@ -22,12 +22,14 @@ public class UIKeyboundButton : UIButton {
     public override void Update(Vector2 position = default) {
         base.Update(position);
 
-        if ((!Ctrl || MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl))
-        && (!Alt || MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt))
-        && (!Shift || MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift))) {
+        bool primaryAlt;
+        if ((Ctrl == MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl))
+        && ((primaryAlt = (Alt == MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt))) || AltClickWithAlt)
+        && (Shift == MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift))) {
+            var action = OnKbPress ?? (primaryAlt ? OnPress : OnRightPress);
             // when you first press the button, run on-press action
             if(MInput.Keyboard.Pressed(Key))
-                (OnKbPress ?? OnPress)?.Invoke();
+                action?.Invoke();
             // as long as its held, appear visually held
             if(MInput.Keyboard.Check(Key)){
                 pressed = true;
