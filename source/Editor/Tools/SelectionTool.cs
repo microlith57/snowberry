@@ -165,7 +165,7 @@ public class SelectionTool : Tool {
                     Vector2 worldSnapped = noSnap ? Mouse.World : Mouse.World.RoundTo(8);
                     Vector2 worldLastSnapped = noSnap ? Mouse.WorldLast : Mouse.WorldLast.RoundTo(8);
                     Vector2 move = worldSnapped - worldLastSnapped;
-                    foreach (Selection s in Editor.SelectedObjects) {
+                    foreach (Selection s in Editor.SelectedObjects ?? new()) {
                         s.Move(move);
                         SnapIfNecessary(s);
                     }
