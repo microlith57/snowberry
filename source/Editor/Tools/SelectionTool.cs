@@ -112,8 +112,11 @@ public class SelectionTool : Tool {
                 wasDoubleClick = Mouse.IsDoubleClick;
             }
 
-            if (Mouse.World != Mouse.WorldLast)
+            bool justMovedMouse = false;
+            if (Mouse.World != Mouse.WorldLast) {
+                justMovedMouse = !movedMouse;
                 movedMouse = true;
+            }
 
             if (movedMouse && Editor.SelectedRoom != null)
                 if (canSelect) {
@@ -128,7 +131,7 @@ public class SelectionTool : Tool {
                     // if only one entity is selected near the corners, resize
                     Entity solo = GetSoloEntity();
                     if (solo != null) {
-                        if (MInput.Mouse.PressedLeftButton) {
+                        if (MInput.Mouse.PressedLeftButton || justMovedMouse) {
                             // TODO: can this be shared between RoomTool & SelectionTool?
                             fromLeft = Math.Abs(Mouse.World.X - solo.Position.X) <= 4;
                             resizingX = solo.MinWidth > -1 && (Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft);
