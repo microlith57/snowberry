@@ -1,6 +1,7 @@
 ﻿using System;
 using Celeste;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.UI;
 using Snowberry.UI.Menus;
@@ -63,6 +64,14 @@ public class MapInfoTool : Tool {
         ret.AddBelow(UIPluginOptionList.BoolOption("ignore music layers", map.Meta.Modes[0].IgnoreLevelAudioLayerData ?? false, i => map.Meta.Modes[0].IgnoreLevelAudioLayerData = i), optionOffset);
 
         return ret;
+    }
+
+    public override UIElement CreateActionBar() {
+        UIElement bar = new();
+        bar.AddRight(new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(0, 80, 16, 16), 3, 3) {
+            OnPress = () => Editor.Instance.Camera.Zoom = 6
+        }, new(0, 4));
+        return bar;
     }
 
     public override void Update(bool canClick){}
