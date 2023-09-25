@@ -171,15 +171,19 @@ public class LuaEntity : Entity {
             ret.Add(RectOnRelative(new(tex.Width, tex.Height), justify: justify));
         }
 
+        // fill in the rest with defaults
+        if (ret.Count == 0)
+            ret.Add(new(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height));
+
+        // note that `nodeTexture` might be non-null while `texture` itself is null
+        // so we need the default main selection box to be added before the textured node selections
         if ((nodeTexture ?? texture) != null) {
             MTexture tex = GFX.Game[nodeTexture ?? texture];
             for (int i = ret.Count; i < Nodes.Count + 1; i++)
                 ret.Add(RectOnAbsolute(new(tex.Width, tex.Height), position: Nodes[i - 1], justify: nodeJustify));
         }
 
-        // fill in the rest with defaults
-        if (ret.Count == 0)
-            ret.Add(new(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height));
+        // and then fallbacks for nodes
         for (int i = ret.Count; i < Nodes.Count + 1; i++) {
             var node = Nodes[i - 1];
             ret.Add(new Rectangle((int)node.X - 3, (int)node.Y - 3, 6, 6));
