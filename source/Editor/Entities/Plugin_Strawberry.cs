@@ -18,8 +18,10 @@ public class Plugin_Strawberry : Entity {
 
         GetTexture()?.DrawCentered(Position);
 
-        foreach (Vector2 node in Nodes)
+        foreach (Vector2 node in Nodes) {
             FromSprite("strawberrySeed", "idle")?.DrawCentered(node);
+            DrawUtil.DottedLine(Position, node, Color.White * 0.5f, 8, 4);
+        }
     }
 
     protected override IEnumerable<Rectangle> Select() {
