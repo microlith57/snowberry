@@ -120,12 +120,18 @@ public class Example : UIScene {
                 },
                 ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_TILE_BRUSH_{mode.ToString().ToUpperInvariant()}_TT")
             };
-            brushModes.AddRight(button, new(6, 4));
+            brushModes.AddRight(button, new(0, 4));
             blue ??= button;
             red ??= button;
         }
+        for (var idx = 0; idx < brushModes.Children.Count; idx++) {
+            var b = brushModes.Children[idx] as UIButton;
+            if (b is null) continue;
+            if (idx > 0) b.HasLeft = false;
+            if (idx < brushModes.Children.Count - 1) b.HasRight = false;
+        }
         brushModes.CalculateBounds();
-        content.AddBelow(brushModes, new(4, 10));
+        content.AddBelow(brushModes, new(10, 10));
 
         int v = 0;
         content.AddBelow(new UISlider {

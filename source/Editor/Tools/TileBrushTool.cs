@@ -145,9 +145,16 @@ public class TileBrushTool : Tool {
                 AltClickWithAlt = true,
                 Key = ModeKeybinds[(int)mode]
             };
-            brushTypes.AddRight(button, modeButtons.Count == 0 ? new(0, 4) : new(6, 4));
+            brushTypes.AddRight(button, new(0, 4));
             modeButtons.Add(button);
         }
+
+        for (var idx = 0; idx < modeButtons.Count; idx++) {
+            var b = modeButtons[idx];
+            if (idx > 0) b.HasLeft = false;
+            if (idx < modeButtons.Count - 1) b.HasRight = false;
+        }
+
         brushTypes.CalculateBounds();
         return brushTypes;
     }

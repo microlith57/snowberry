@@ -26,6 +26,7 @@ public class UIButton : UIElement {
     public Color HoveredBG = Calc.HexToColor("18181c");
 
     public String ButtonTooltip;
+    public bool HasLeft = true, HasRight = true;
 
     private float lerp;
     protected bool pressed, hovering;
@@ -155,7 +156,7 @@ public class UIButton : UIElement {
         base.Render(position);
 
         Color curBg = Color.Lerp(hovering ? HoveredBG : BG, PressedBG, lerp);
-        var press = DrawButtonBg(new((int)position.X, (int)position.Y, Width, Height), pressed, curBg);
+        var press = DrawButtonBg(new((int)position.X, (int)position.Y, Width, Height), pressed, curBg, HasLeft, HasRight);
 
         Vector2 at = position + new Vector2(3 + space.X, press + space.Y);
         Color fg = Color.Lerp(hovering ? HoveredFG : FG, PressedFG, lerp);
@@ -169,23 +170,30 @@ public class UIButton : UIElement {
         } else icon?.Invoke(at, fg);
     }
 
-    public static int DrawButtonBg(Rectangle bounds, bool pressed, Color color){
+    public static int DrawButtonBg(Rectangle bounds, bool pressed, Color color, bool hasLeft = true, bool hasRight = true){
         int press = pressed ? 1 : 0;
+        int shl = (!hasLeft).Bit(), shr = (!hasRight).Bit() + shl;
 
-        top.Draw(new Vector2(bounds.X, bounds.Y + press), Vector2.Zero, color);
-        topFill.Draw(new Vector2(bounds.X + 3, bounds.Y + press), Vector2.Zero, color, new Vector2(bounds.Width - 6, 1));
-        top.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + press), Vector2.Zero, color, new Vector2(-1, 1));
+        if (hasLeft)
+            top.Draw(new Vector2(bounds.X, bounds.Y + press), Vector2.Zero, color);
+        if (hasRight)
+            top.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + press), Vector2.Zero, color, new Vector2(-1, 1));
+        topFill.Draw(new Vector2(bounds.X + 3 - shl*3, bounds.Y + press), Vector2.Zero, color, new Vector2(bounds.Width - 6 + shr*3, 1));
 
-        mid.Draw(new Vector2(bounds.X, bounds.Y + bounds.Height - 4), Vector2.Zero, color);
-        mid.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height - 4), Vector2.Zero, color, new Vector2(-1, 1));
-        Draw.Rect(new Vector2(bounds.X, bounds.Y + 4 + press), bounds.Width, bounds.Height - 8, Color.Black);
-        Draw.Rect(new Vector2(bounds.X + 1, bounds.Y + 4 + press), bounds.Width - 2, bounds.Height - 8, color);
+        if (hasLeft)
+            mid.Draw(new Vector2(bounds.X, bounds.Y + bounds.Height - 4), Vector2.Zero, color);
+        if (hasRight)
+            mid.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height - 4), Vector2.Zero, color, new Vector2(-1, 1));
+        Draw.Rect(new Vector2(bounds.X + shl*3, bounds.Y + 4 + press), bounds.Width - shr*3, bounds.Height - 8, Color.Black);
+        Draw.Rect(new Vector2(bounds.X + 1 - shl, bounds.Y + 4 + press), bounds.Width - 2 + shr, bounds.Height - 8, color);
 
-        bottom.Draw(new Vector2(bounds.X, bounds.Y + bounds.Height - 3), Vector2.Zero, color);
-        bottomFill.Draw(new Vector2(bounds.X + 3, bounds.Y + bounds.Height - 3), Vector2.Zero, color, new Vector2(bounds.Width - 6, 1));
-        bottom.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height - 3), Vector2.Zero, color, new Vector2(-1, 1));
+        if (hasLeft)
+            bottom.Draw(new Vector2(bounds.X, bounds.Y + bounds.Height - 3), Vector2.Zero, color);
+        if (hasRight)
+            bottom.Draw(new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height - 3), Vector2.Zero, color, new Vector2(-1, 1));
+        bottomFill.Draw(new Vector2(bounds.X + 3 - shl*3, bounds.Y + bounds.Height - 3), Vector2.Zero, color, new Vector2(bounds.Width - 6 + shr*3, 1));
 
-        Draw.Rect(new Vector2(bounds.X + 2, bounds.Y + bounds.Height - 4 + press), bounds.Width - 4, 1, color);
+        Draw.Rect(new Vector2(bounds.X + 2 - shl*2, bounds.Y + bounds.Height - 4 + press), bounds.Width - 4 + shr*2, 1, color);
         return press;
     }
 
