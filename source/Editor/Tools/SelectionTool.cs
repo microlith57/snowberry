@@ -15,6 +15,7 @@ public class SelectionTool : Tool {
     private static bool canSelect;
     private static bool selectEntities = true, selectTriggers = true, selectFgDecals = false, selectBgDecals = false, selectFgTiles = false, selectBgTiles = false;
     private static UISelectionPane selectionPanel;
+    private static List<UIButton> selectionToggleButtons = new();
 
     // entity resizing
     private static bool resizingX, resizingY, fromLeft, fromTop;
@@ -50,14 +51,22 @@ public class SelectionTool : Tool {
     }
 
     public override UIElement CreateActionBar() {
+        selectionToggleButtons.Clear();
         UIElement p = new UIElement();
-        Vector2 offset = new Vector2(6, 4);
-        p.AddRight(CreateToggleButton(0, 32, Keys.E, "ENTITIES", () => selectEntities, s => selectEntities = s), new(0, 4));
+        Vector2 offset = new Vector2(0, 4);
+        p.AddRight(CreateToggleButton(0, 32, Keys.E, "ENTITIES", () => selectEntities, s => selectEntities = s), offset);
         p.AddRight(CreateToggleButton(32, 32, Keys.T, "TRIGGERS", () => selectTriggers, s => selectTriggers = s), offset);
         p.AddRight(CreateToggleButton(0, 48, Keys.F, "FG_DECALS", () => selectFgDecals, s => selectFgDecals = s), offset);
         p.AddRight(CreateToggleButton(32, 48, Keys.B, "BG_DECALS", () => selectBgDecals, s => selectBgDecals = s), offset);
         p.AddRight(CreateToggleButton(0, 64, Keys.H, "FG_TILES", () => selectFgTiles, s => selectFgTiles = s), offset);
         p.AddRight(CreateToggleButton(32, 64, Keys.J, "BG_TILES", () => selectBgTiles, s => selectBgTiles = s), offset);
+
+        for (var idx = 0; idx < selectionToggleButtons.Count; idx++) {
+            var b = selectionToggleButtons[idx];
+            if (idx > 0) b.HasLeft = false;
+            if (idx < selectionToggleButtons.Count - 1) b.HasRight = false;
+        }
+
         return p;
     }
 
@@ -74,6 +83,7 @@ public class SelectionTool : Tool {
             Key = toggleBind,
             ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_SELECT_{tooltipKey}_TT")
         };
+        selectionToggleButtons.Add(button);
         return button;
     }
 
