@@ -16,16 +16,16 @@ public class Plugin_Strawberry : Entity {
     public override void Render() {
         base.Render();
 
-        bool seeded = Nodes.Count != 0;
         GetTexture()?.DrawCentered(Position);
 
-        if (seeded)
-            foreach (Vector2 node in Nodes)
-                FromSprite("strawberrySeed", "idle")?.DrawCentered(node);
+        foreach (Vector2 node in Nodes)
+            FromSprite("strawberrySeed", "idle")?.DrawCentered(node);
     }
 
     protected override IEnumerable<Rectangle> Select() {
-        yield return RectOnRelative(new(10, 13), justify: new(0.5f, 0.5f));
+        yield return RectOnRelative(new(10, 13), justify: new(.5f));
+        foreach (Vector2 node in Nodes)
+            yield return RectOnAbsolute(new(7, 10), position: node, justify: new(.5f));
     }
 
     private MTexture GetTexture() {
