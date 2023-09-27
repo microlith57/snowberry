@@ -31,9 +31,6 @@ public sealed class Snowberry : EverestModule {
     public override Type SettingsType => typeof(SnowberrySettings);
     public static SnowberrySettings Settings => (SnowberrySettings)Instance._Settings;
 
-    // TODO: kind of dirty to leave it here
-    public static bool CrawlForLua = false;
-
     public override void Load() {
         hook_MapData_orig_Load = new Hook(
             typeof(MapData).GetMethod("orig_Load", BindingFlags.Instance | BindingFlags.NonPublic),
@@ -48,7 +45,6 @@ public sealed class Snowberry : EverestModule {
         On.Celeste.Editor.MapEditor.ctor += UsePlaytestMap;
         On.Celeste.MapData.StartLevel += DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine += DontEnterPlaytestMap;
-        On.Celeste.Mod.ModContent.Add += HoldLuaAssets;
 
         Everest.Events.MainMenu.OnCreateButtons += MainMenu_OnCreateButtons;
         Everest.Events.Level.OnCreatePauseMenuButtons += Level_OnCreatePauseMenuButtons;
@@ -72,7 +68,6 @@ public sealed class Snowberry : EverestModule {
         On.Celeste.Editor.MapEditor.ctor -= UsePlaytestMap;
         On.Celeste.MapData.StartLevel -= DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine -= DontEnterPlaytestMap;
-        On.Celeste.Mod.ModContent.Add -= HoldLuaAssets;
 
         Everest.Events.MainMenu.OnCreateButtons -= MainMenu_OnCreateButtons;
         Everest.Events.Level.OnCreatePauseMenuButtons -= Level_OnCreatePauseMenuButtons;
@@ -159,13 +154,9 @@ public sealed class Snowberry : EverestModule {
         }
     }
 
-    public static void Log(LogLevel level, string message) {
-        Logger.Log(level, "Snowberry", message);
-    }
+    public static void Log(LogLevel level, string message) => Logger.Log(level, "Snowberry", message);
 
-    public static void LogInfo(string message) {
-        Log(LogLevel.Info, message);
-    }
+    public static void LogInfo(string message) => Log(LogLevel.Info, message);
 
     private void UsePlaytestMap(On.Celeste.Editor.MapEditor.orig_ctor orig, Celeste.Editor.MapEditor self, AreaKey area, bool reloadMapData) {
         orig(self, area, reloadMapData);
@@ -173,18 +164,16 @@ public sealed class Snowberry : EverestModule {
         if (selfData.Get<Session>("CurrentSession") == Editor.Editor.PlaytestSession) {
             var templates = selfData.Get<List<Celeste.Editor.LevelTemplate>>("levels");
             templates.Clear();
-            foreach (LevelData level in Editor.Editor.PlaytestMapData.Levels) {
+            foreach (LevelData level in Editor.Editor.PlaytestMapData.Levels)
                 templates.Add(new Celeste.Editor.LevelTemplate(level));
-            }
 
-            foreach (Rectangle item in Editor.Editor.PlaytestMapData.Filler) {
+            foreach (Rectangle item in Editor.Editor.PlaytestMapData.Filler)
                 templates.Add(new Celeste.Editor.LevelTemplate(item.X, item.Y, item.Width, item.Height));
-            }
         }
     }
 
     private LevelData DontCrashOnEmptyPlaytestLevel(On.Celeste.MapData.orig_StartLevel orig, MapData self) {
-        // TODO: just add an empty room
+        // TODO: just add an empty room lol
         if (self.Area.SID == PlaytestSid && self.Levels.Count == 0) {
             var empty = new BinaryPacker.Element {
                 Children = new List<BinaryPacker.Element>(),
@@ -207,19 +196,6 @@ public sealed class Snowberry : EverestModule {
         return orig(self);
     }
 
-    private void HoldLuaAssets(On.Celeste.Mod.ModContent.orig_Add orig, ModContent self, string path, ModAsset asset) {
-        if (!CrawlForLua)
-            orig(self, path, asset);
-        else {
-            if (asset.Type == null)
-                path = Everest.Content.GuessType(path, out asset.Type, out asset.Format);
-            asset.PathVirtual = path;
-
-            if (path.Replace('\\', '/').StartsWith("Loenn/"))
-                LoennPluginLoader.RegisterLoennAsset(self.Name, asset, path);
-        }
-    }
-
     private System.Collections.IEnumerator CantEnterRoutine(LevelEnter self) {
         yield return 1f;
         Postcard postcard;
@@ -229,6 +205,6 @@ public sealed class Snowberry : EverestModule {
         SaveData.Instance.CurrentSession_Safe = new Session(AreaKey.Default);
         SaveData.Instance.LastArea_Safe = AreaKey.Default;
 
-        Monocle.Engine.Scene = new OverworldLoader(Overworld.StartMode.AreaQuit);
+        Engine.Scene = new OverworldLoader(Overworld.StartMode.AreaQuit);
     }
 }

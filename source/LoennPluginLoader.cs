@@ -14,7 +14,6 @@ namespace Snowberry;
 
 public static class LoennPluginLoader {
 
-    private static readonly Dictionary<string, List<ModAsset>> assetsByMod = new();
     private static readonly Dictionary<string, LuaTable> reqCache = new();
     private static string curMod = null;
 
@@ -46,11 +45,14 @@ public static class LoennPluginLoader {
         Dictionary<string, LuaTable> plugins = new();
         HashSet<string> triggers = new();
 
-        CrawlForLua();
+        ReCrawlForLua();
 
-        foreach(var modAssets in assetsByMod) {
-            curMod = modAssets.Key;
-            foreach(var asset in modAssets.Value) {
+        foreach(IGrouping<ModContent, ModAsset> modAssets in Everest.Content.Mods
+                    .SelectMany(mod => mod.List.Select(asset => (mod, asset)))
+                    .Where(pair => pair.asset.PathVirtual.StartsWith("Loenn"))
+                    .GroupBy(pair => pair.mod, pair => pair.asset)) {
+            curMod = modAssets.Key.Name;
+            foreach(var asset in modAssets) {
                 var path = asset.PathVirtual.Replace('\\', '/');
                 if(path.StartsWith("Loenn/entities/") || path.StartsWith("Loenn/triggers/")) {
                     try {
@@ -168,6 +170,12 @@ public static class LoennPluginLoader {
         return null;
     }
 
+    private static void ReCrawlForLua() {
+        new DynamicData(typeof(Everest.Content)).Get<HashSet<string>>("BlacklistRootFolders").Remove("Loenn");
+        foreach (var mod in Everest.Content.Mods)
+            DynamicData.For(mod).Invoke("Crawl");
+    }
+
     // invoked via lua
     public static object EverestRequire(string name) {
         // name could be "mods", "structs.rectangle", etc
@@ -185,25 +193,6 @@ public static class LoennPluginLoader {
         }
 
         return "\n\tCould not find Loenn library: " + name;
-    }
-
-    internal static void RegisterLoennAsset(string mod, ModAsset asset, string path) {
-        if (assetsByMod.TryGetValue(mod, out var value))
-            value.Add(asset);
-        else
-            (assetsByMod[mod] = new List<ModAsset>()).Add(asset);
-    }
-
-    internal static void CrawlForLua() {
-        assetsByMod.Clear();
-        try {
-            Snowberry.CrawlForLua = true;
-
-            foreach (var mod in Everest.Content.Mods)
-                DynamicData.For(mod).Invoke("Crawl");
-        } finally {
-            Snowberry.CrawlForLua = false;
-        }
     }
 
     private static LuaTable EmptyTable() {
@@ -276,9 +265,12 @@ public static class LoennPluginLoader {
             if (reqCache.TryGetValue(target, out var library))
                 return library;
 
-            if (assetsByMod.TryGetValue(curModName, out var libFiles))
-                foreach (var asset in libFiles.Where(asset => asset.PathVirtual.Replace('\\', '/') == target))
-                    return reqCache[target] = RunAsset(asset, target)?.FirstOrDefault() as LuaTable;
+            foreach (var asset in Everest.Content.Mods
+                         .Where(mod => mod.Name == curModName)
+                         .SelectMany(mod => mod.List)
+                         .Where(asset => asset.Type == typeof(AssetTypeLua))
+                         .Where(asset => asset.PathVirtual.Replace('\\', '/') == target))
+                return reqCache[target] = RunAsset(asset, target)?.FirstOrDefault() as LuaTable;
 
             return reqCache[target] = null;
         } catch (Exception e) {
