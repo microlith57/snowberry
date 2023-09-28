@@ -268,8 +268,9 @@ public class Editor : UIScene {
                 } else {
                     TryBackup(Backups.BackupReason.OnSave);
                     BinaryExporter.ExportMapToFile(Map);
-                    if (From != null)
-                        AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () => AreaData.Areas[From.Value.ID].Mode[0].MapData.Reload());
+                    // TODO: reload for loose map files
+                    // if (From != null)
+                    //     AssetReloadHelper.Do(Dialog.Clean("ASSETRELOADHELPER_RELOADINGMAP"), () => AreaData.Areas[From.Value.ID].Mode[0].MapData.Reload());
                 }
             },
             Ctrl = true,
