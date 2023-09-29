@@ -8,8 +8,8 @@ using Monocle;
 namespace Snowberry.UI;
 
 public class UIElement {
-    private readonly List<UIElement> toRemove = new();
-    private readonly List<UIElement> toAdd = new();
+    protected readonly List<UIElement> toRemove = new();
+    protected readonly List<UIElement> toAdd = new();
     private bool canModify = true;
 
     public UIElement Parent;

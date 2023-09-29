@@ -68,10 +68,11 @@ public class Surgery : UIScene {
         UITree ret = new(header);
 
         if(parent != null){
-            ret.AddRight(new UIButton("x", Fonts.Regular) {
+            ret.AddRight(new UIButton("delete", Fonts.Regular) {
                 OnPress = () => {
                     parent.Children?.Remove(e);
                     ret.RemoveSelf();
+                    (ret.Parent as UITree)?.Layout();
                 },
                 FG = Color.Red,
                 HoveredFG = Color.Crimson,

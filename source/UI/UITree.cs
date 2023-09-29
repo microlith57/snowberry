@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Snowberry.UI;
 
@@ -46,9 +47,12 @@ public class UITree : UIElement {
 
         if (Collapsed)
             Header.Render(position + Header.Position);
-        else
+        else {
             foreach (var element in Children.Where(element => element.Visible))
                 element.Render(position + element.Position);
+        }
+        Draw.Rect(position + new Vector2(0, PadUp), 1, Height - PadUp - PadDown, Color.White);
+        Draw.Rect(position + new Vector2(1, PadUp + 1), 1, Height - PadUp - PadDown - 2, Color.Gray);
     }
 
     public void Layout() {
@@ -60,7 +64,7 @@ public class UITree : UIElement {
             Height = (int)((Header.Position.Y + Header.Height));
         } else {
             int i = 0;
-            foreach (UIElement e in Children) {
+            foreach (UIElement e in Children.Except(toRemove)) {
                 e.Position = new(PadLeft, PadUp + i);
                 i += (int)(e.Height + Spacing);
             }
