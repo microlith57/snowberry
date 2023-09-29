@@ -16,6 +16,6 @@ public class Plugin_BloomFadeTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Bloom Fade Trigger", "ambienceParamTrigger");
+        Placements.Create("Bloom Fade Trigger", "bloomFadeTrigger");
     }
 }
