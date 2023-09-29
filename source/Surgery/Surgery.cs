@@ -59,13 +59,13 @@ public class Surgery : UIScene {
     }
 
     internal UIElement Render(Element e, Element parent) {
-        UIElement ret = new();
-
-        ret.Add(string.IsNullOrEmpty(e.Name)
+        UILabel header = string.IsNullOrEmpty(e.Name)
             ? new UILabel(e.Name is null ? "(null)" : "(blank)") {
                 FG = Color.Gray
             }
-            : new UILabel(e.Name));
+            : new UILabel(e.Name);
+
+        UITree ret = new(header);
 
         if(parent != null){
             ret.AddRight(new UIButton("x", Fonts.Regular) {
@@ -95,7 +95,7 @@ public class Surgery : UIScene {
             foreach (Element child in e.Children)
                 ret.AddBelow(Render(child, e), new(20, 4));
 
-        ret.CalculateBounds();
+        ret.Layout();
         return ret;
     }
 }

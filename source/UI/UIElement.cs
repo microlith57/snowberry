@@ -234,8 +234,9 @@ public class UIElement {
                 if (bounds.Bottom > bottom) bottom = bounds.Bottom;
             }
 
-            Width = right;
-            Height = bottom;
+            // bounds already include parents bounds
+            Width = (right - Bounds.X);
+            Height = (bottom - Bounds.Y);
         }
     }
 

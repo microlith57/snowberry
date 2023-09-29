@@ -46,7 +46,7 @@ public class UIScrollPane : UIElement {
     }
 
     public override void Update(Vector2 position = default) {
-        bool hovered = Bounds.Contains((int)Mouse.Screen.X, (int)Mouse.Screen.Y);
+        bool hovered = Bounds.Contains(Mouse.Screen.ToPoint());
 
         // pretend that the mouse has already been clicked if the mouse is outside of the scroll pane's bounds
         bool mouseClicked = UIScene.Instance.MouseClicked;
