@@ -54,7 +54,7 @@ public class UITree : UIElement {
         if (Collapsed)
             Header.Render(position + Header.Position);
         else {
-            var screenBounds = UIScene.Instance.UI.Bounds;
+            var screenBounds = UIScene.Instance?.UI?.Bounds ?? Rectangle.Empty;
             foreach (var element in Children.Where(element => element.Visible && element.Bounds.Intersects(screenBounds)))
                 element.Render(position + element.Position);
         }
