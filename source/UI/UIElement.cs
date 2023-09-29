@@ -83,7 +83,7 @@ public class UIElement {
     public virtual string Tooltip() => null;
 
     public virtual bool GrabsKeyboard => false;
-    public bool NestedGrabsKeyboard() => GrabsKeyboard || Children.Any(c => c.NestedGrabsKeyboard());
+    public virtual bool NestedGrabsKeyboard() => GrabsKeyboard || Children.Any(c => c.NestedGrabsKeyboard());
 
     public virtual Vector2 BoundsOffset() => Vector2.Zero;
 

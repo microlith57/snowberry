@@ -9,6 +9,9 @@ public class UITree : UIElement {
     public float PadLeft = 5, PadRight = 5, PadUp = 5, PadDown = 5;
     public float Spacing = 5;
 
+    // extremely deep trees cause a lot of lag looking for nested textboxes. if those definitely don't exist, use this
+    public bool NoKb = false;
+
     public bool Collapsed = false;
     protected UIElement Header;
 
@@ -32,15 +35,16 @@ public class UITree : UIElement {
     }
 
     public override void Update(Vector2 position = default) {
-        if (UIScene.Instance == null) {
-            base.Update(position); return;
+        if (UIScene.Instance is not { /* non-null */ } scene) {
+            base.Update(position);
+            return;
         }
 
         // relies on Relayout sending hidden entities to 9999,9999 but that's like fine yknow
-        bool mouseClicked = UIScene.Instance.MouseClicked;
-        UIScene.Instance.MouseClicked = !Bounds.Contains(Mouse.Screen.ToPoint()) || mouseClicked;
+        bool mouseClicked = scene.MouseClicked;
+        scene.MouseClicked = mouseClicked || !new Rectangle((int)position.X, (int)position.Y, Width, Height).Contains(Mouse.Screen.ToPoint());
         base.Update(position);
-        UIScene.Instance.MouseClicked = mouseClicked;
+        scene.MouseClicked = mouseClicked;
     }
 
     public override void Render(Vector2 position = default) {
@@ -50,7 +54,8 @@ public class UITree : UIElement {
         if (Collapsed)
             Header.Render(position + Header.Position);
         else {
-            foreach (var element in Children.Where(element => element.Visible))
+            var screenBounds = UIScene.Instance.UI.Bounds;
+            foreach (var element in Children.Where(element => element.Visible && element.Bounds.Intersects(screenBounds)))
                 element.Render(position + element.Position);
         }
         Draw.Rect(position + new Vector2(0, PadUp), 1, Height - PadUp - PadDown, Color.White);
@@ -76,4 +81,6 @@ public class UITree : UIElement {
         Height += (int)PadDown;
         (Parent as UITree)?.Layout();
     }
+
+    public override bool NestedGrabsKeyboard() => !NoKb && base.NestedGrabsKeyboard();
 }
