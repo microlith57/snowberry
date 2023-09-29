@@ -12,10 +12,22 @@ using Snowberry.UI;
 namespace Snowberry.Editor.Tools;
 
 public class SelectionTool : Tool {
+    public static readonly MTexture SelectionAtlas = GFX.Gui["Snowberry/selections"];
+
     private static bool canSelect;
     private static bool selectEntities = true, selectTriggers = true, selectFgDecals = false, selectBgDecals = false, selectFgTiles = false, selectBgTiles = false;
     private static UISelectionPane selectionPanel;
-    private static List<UIButton> selectionToggleButtons = new();
+    private static List<UIButton> modeButtons = new(), toggleButtons = new();
+
+    // selection modes
+    private enum SelectionMode {
+        Rect, Line, Lasso, MagicWand
+    }
+    private enum SelectionEffect {
+        Set, Add, Subtract
+    }
+
+    private static SelectionMode currentMode = SelectionMode.Rect;
 
     // entity resizing
     private static bool resizingX, resizingY, fromLeft, fromTop;
@@ -51,21 +63,19 @@ public class SelectionTool : Tool {
     }
 
     public override UIElement CreateActionBar() {
-        selectionToggleButtons.Clear();
+        modeButtons.Clear(); toggleButtons.Clear();
         UIElement p = new UIElement();
         Vector2 offset = new Vector2(0, 4);
+
+
+
         p.AddRight(CreateToggleButton(0, 32, Keys.E, "ENTITIES", () => selectEntities, s => selectEntities = s), offset);
         p.AddRight(CreateToggleButton(32, 32, Keys.T, "TRIGGERS", () => selectTriggers, s => selectTriggers = s), offset);
         p.AddRight(CreateToggleButton(0, 48, Keys.F, "FG_DECALS", () => selectFgDecals, s => selectFgDecals = s), offset);
         p.AddRight(CreateToggleButton(32, 48, Keys.B, "BG_DECALS", () => selectBgDecals, s => selectBgDecals = s), offset);
         p.AddRight(CreateToggleButton(0, 64, Keys.H, "FG_TILES", () => selectFgTiles, s => selectFgTiles = s), offset);
         p.AddRight(CreateToggleButton(32, 64, Keys.J, "BG_TILES", () => selectBgTiles, s => selectBgTiles = s), offset);
-
-        for (var idx = 0; idx < selectionToggleButtons.Count; idx++) {
-            var b = selectionToggleButtons[idx];
-            if (idx > 0) b.HasLeft = false;
-            if (idx < selectionToggleButtons.Count - 1) b.HasRight = false;
-        }
+        UIButton.Group(toggleButtons);
 
         return p;
     }
@@ -83,7 +93,7 @@ public class SelectionTool : Tool {
             Key = toggleBind,
             ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_SELECT_{tooltipKey}_TT")
         };
-        selectionToggleButtons.Add(button);
+        toggleButtons.Add(button);
         return button;
     }
 
@@ -402,4 +412,9 @@ public class SelectionTool : Tool {
 
     private static List<Selection> GetEnabledSelections(Rectangle? r) =>
         Editor.SelectedRoom?.GetSelections(r, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles) ?? new();
+
+    private static SelectionEffect CurrentEffect =>
+        MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl) ? SelectionEffect.Add :
+        MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt) ? SelectionEffect.Subtract :
+        SelectionEffect.Set;
 }

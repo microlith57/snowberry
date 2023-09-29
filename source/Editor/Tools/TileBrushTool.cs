@@ -149,11 +149,7 @@ public class TileBrushTool : Tool {
             modeButtons.Add(button);
         }
 
-        for (var idx = 0; idx < modeButtons.Count; idx++) {
-            var b = modeButtons[idx];
-            if (idx > 0) b.HasLeft = false;
-            if (idx < modeButtons.Count - 1) b.HasRight = false;
-        }
+        UIButton.Group(modeButtons);
 
         brushTypes.CalculateBounds();
         return brushTypes;

@@ -124,12 +124,7 @@ public class Example : UIScene {
             blue ??= button;
             red ??= button;
         }
-        for (var idx = 0; idx < brushModes.Children.Count; idx++) {
-            var b = brushModes.Children[idx] as UIButton;
-            if (b is null) continue;
-            if (idx > 0) b.HasLeft = false;
-            if (idx < brushModes.Children.Count - 1) b.HasRight = false;
-        }
+        UIButton.Group(brushModes.Children.OfType<UIButton>().ToList());
         brushModes.CalculateBounds();
         content.AddBelow(brushModes, new(10, 10));
 

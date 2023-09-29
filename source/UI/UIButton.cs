@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -170,6 +171,8 @@ public class UIButton : UIElement {
         } else icon?.Invoke(at, fg);
     }
 
+    public override string Tooltip() => ButtonTooltip;
+
     public static int DrawButtonBg(Rectangle bounds, bool pressed, Color color, bool hasLeft = true, bool hasRight = true){
         int press = pressed ? 1 : 0;
         int shl = (!hasLeft).Bit(), shr = (!hasRight).Bit() + shl;
@@ -197,5 +200,11 @@ public class UIButton : UIElement {
         return press;
     }
 
-    public override string Tooltip() => ButtonTooltip;
+    public static void Group(List<UIButton> buttons) {
+        for (var idx = 0; idx < buttons.Count; idx++) {
+            var b = buttons[idx];
+            if (idx > 0) b.HasLeft = false;
+            if (idx < buttons.Count - 1) b.HasRight = false;
+        }
+    }
 }
