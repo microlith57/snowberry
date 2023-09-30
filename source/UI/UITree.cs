@@ -15,21 +15,22 @@ public class UITree : UIElement {
     public bool Collapsed = false;
     protected UIElement Header;
 
-    public UITree(UIElement header) : this(header, new(5, 3)) {}
+    public UITree(UIElement header, bool collapsed = false) : this(header, new(0, 3), new(5, 0), collapsed) {}
 
-    public UITree(UIElement header, Vector2 headerOffset) {
+    public UITree(UIElement header, Vector2 headerOffset, Vector2 buttonOffset, bool collapsed = false) {
         RenderChildren = false;
+        Collapsed = collapsed;
 
         Header = new UIElement();
         UIButton b = null;
-        Header.Add(b = new UIButton("\u2193", Fonts.Regular, 2, 2) {
+        Header.AddRight(header, headerOffset);
+        Header.AddRight(b = new UIButton(Collapsed ? "\u2190" : "\u2193", Fonts.Regular, 2, 2) {
             OnPress = () => {
                 Collapsed = !Collapsed;
-                b.SetText(Collapsed ? "\u2192" : "\u2193");
+                b.SetText(Collapsed ? "\u2190" : "\u2193");
                 Layout();
             }
-        });
-        Header.AddRight(header, headerOffset);
+        }, buttonOffset);
         Header.CalculateBounds();
         Add(Header);
     }
