@@ -41,7 +41,7 @@ public class PlacementTool : Tool {
 
         buttonTree.Add(CreateEntitiesTree());
         buttonTree.AddBelow(CreateEntitiesTree(true));
-        buttonTree.AddBelow(CreateDecalsTree());
+        //buttonTree.AddBelow(CreateDecalsTree());
 
         buttonTree.Layout();
 
