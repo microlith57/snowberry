@@ -14,7 +14,7 @@ public class Plugin_ChangeInventoryTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Change Inventory Trigger (Everest)", "everest/changeInventoryTrigger");
+        Placements.Create("Change Inventory Trigger (Everest)", "everest/changeInventoryTrigger", trigger: true);
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]

@@ -16,6 +16,6 @@ public class Plugin_AltMusicTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Alt Music Trigger", "altMusicTrigger");
+        Placements.Create("Alt Music Trigger", "altMusicTrigger", trigger: true);
     }
 }

@@ -16,6 +16,6 @@ public class Plugin_MusicLayerTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Music Layer (Everest)", "everest/musicLayerTrigger");
+        Placements.Create("Music Layer (Everest)", "everest/musicLayerTrigger", trigger: true);
     }
 }

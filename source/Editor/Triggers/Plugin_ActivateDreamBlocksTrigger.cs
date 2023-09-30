@@ -8,6 +8,6 @@ public class Plugin_ActivateDreamBlocksTrigger : Trigger {
     [Option("fastAnimation")] public bool FastAnimation = false;
 
     public new static void AddPlacements() {
-        Placements.Create("Activate Dream Blocks Trigger (Everest)", "everest/activateDreamBlocksTrigger");
+        Placements.Create("Activate Dream Blocks Trigger (Everest)", "everest/activateDreamBlocksTrigger", trigger: true);
     }
 }

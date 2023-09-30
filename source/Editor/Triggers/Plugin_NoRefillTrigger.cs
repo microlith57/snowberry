@@ -13,6 +13,6 @@ public class Plugin_NoRefillTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("No Refill Trigger", "noRefillTrigger");
+        Placements.Create("No Refill Trigger", "noRefillTrigger", trigger: true);
     }
 }

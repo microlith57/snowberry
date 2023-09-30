@@ -17,6 +17,6 @@ public class Plugin_AmbienceVolumeTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Ambience Volume Trigger (Everest)", "everest/AmbienceVolumeTrigger");
+        Placements.Create("Ambience Volume Trigger (Everest)", "everest/AmbienceVolumeTrigger", trigger: true);
     }
 }

@@ -16,6 +16,6 @@ public class Plugin_CustomBirdTutorialTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Custom Bird Tutorial Trigger (Everest)", "everest/customBirdTutorialTrigger");
+        Placements.Create("Custom Bird Tutorial Trigger (Everest)", "everest/customBirdTutorialTrigger", trigger: true);
     }
 }

@@ -21,6 +21,6 @@ public class Plugin_CameraAdvanceTargetTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Camera Advance Target Trigger", "cameraAdvanceTargetTrigger");
+        Placements.Create("Camera Advance Target Trigger", "cameraAdvanceTargetTrigger", trigger: true);
     }
 }

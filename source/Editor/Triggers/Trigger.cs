@@ -36,12 +36,12 @@ public class Trigger : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Checkpoint Blocker Trigger", "checkpointBlockerTrigger");
-        Placements.Create("Golden Berry Collect Trigger", "goldenBerryCollectTrigger");
-        Placements.Create("Lookout Blocker", "lookoutBlocker");
-        Placements.Create("Stop Boost Trigger", "stopBoostTrigger");
-        Placements.Create("Wind Attack Trigger", "windAttackTrigger");
-        Placements.Create("Bird Path Trigger", "birdPathTrigger");
-        Placements.Create("Complete Area Trigger (Everest)", "everest/completeAreaTrigger");
+        Placements.Create("Checkpoint Blocker Trigger", "checkpointBlockerTrigger", trigger: true);
+        Placements.Create("Golden Berry Collect Trigger", "goldenBerryCollectTrigger", trigger: true);
+        Placements.Create("Lookout Blocker", "lookoutBlocker", trigger: true);
+        Placements.Create("Stop Boost Trigger", "stopBoostTrigger", trigger: true);
+        Placements.Create("Wind Attack Trigger", "windAttackTrigger", trigger: true);
+        Placements.Create("Bird Path Trigger", "birdPathTrigger", trigger: true);
+        Placements.Create("Complete Area Trigger (Everest)", "everest/completeAreaTrigger", trigger: true);
     }
 }

@@ -17,6 +17,6 @@ public class Plugin_DialogCutsceneTrigger : Trigger{
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Dialog Cutscene Trigger (Everest)", "everest/dialogTrigger");
+        Placements.Create("Dialog Cutscene Trigger (Everest)", "everest/dialogTrigger", trigger: true);
     }
 }

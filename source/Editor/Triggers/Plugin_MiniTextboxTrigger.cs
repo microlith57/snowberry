@@ -17,7 +17,7 @@ public class Plugin_MiniTextboxTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Mini Textbox Trigger", "minitextboxTrigger");
+        Placements.Create("Mini Textbox Trigger", "minitextboxTrigger", trigger: true);
     }
 
     public enum Modes{

@@ -14,6 +14,6 @@ public class Plugin_CrystalShatterTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Crystal Shatter Trigger (Everest)", "everest/crystalShatterTrigger");
+        Placements.Create("Crystal Shatter Trigger (Everest)", "everest/crystalShatterTrigger", trigger: true);
     }
 }

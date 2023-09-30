@@ -13,6 +13,6 @@ public class Plugin_CameraOffsetTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Camera Offset Trigger", "cameraOffsetTrigger");
+        Placements.Create("Camera Offset Trigger", "cameraOffsetTrigger", trigger: true);
     }
 }

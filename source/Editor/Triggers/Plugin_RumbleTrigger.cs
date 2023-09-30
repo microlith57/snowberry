@@ -19,6 +19,6 @@ public class Plugin_RumbleTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Rumble", "rumbleTrigger");
+        Placements.Create("Rumble", "rumbleTrigger", trigger: true);
     }
 }

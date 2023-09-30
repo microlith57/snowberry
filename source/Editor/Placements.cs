@@ -8,10 +8,13 @@ public class Placements {
 
         public Dictionary<string, object> Defaults;
 
-        public Placement(string name, string entityName, Dictionary<string, object> defaults) {
+        public bool IsTrigger;
+
+        public Placement(string name, string entityName, Dictionary<string, object> defaults, bool isTrigger) {
             Name = name;
             EntityName = entityName;
             Defaults = defaults;
+            IsTrigger = isTrigger;
         }
 
         public Entity Build(Room room) {
@@ -24,7 +27,7 @@ public class Placements {
 
     public static List<Placement> All = new();
 
-    public static void Create(string placementName, string entityName, Dictionary<string, object> defaults = null) {
-        All.Add(new Placement(placementName, entityName, defaults ?? new Dictionary<string, object>()));
+    public static void Create(string placementName, string entityName, Dictionary<string, object> defaults = null, bool trigger = false) {
+        All.Add(new Placement(placementName, entityName, defaults ?? new Dictionary<string, object>(), trigger));
     }
 }

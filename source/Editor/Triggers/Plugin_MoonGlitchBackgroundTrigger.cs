@@ -16,7 +16,7 @@ public class Plugin_MoonGlitchBackgroundTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Moon Glitch Background Trigger", "moonGlitchBackgroundTrigger");
+        Placements.Create("Moon Glitch Background Trigger", "moonGlitchBackgroundTrigger", trigger: true);
     }
 
     public enum Duration{

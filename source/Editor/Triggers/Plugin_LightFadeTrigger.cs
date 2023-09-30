@@ -16,6 +16,6 @@ public class Plugin_LightFadeTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Light Fade Trigger", "lightParamTrigger");
+        Placements.Create("Light Fade Trigger", "lightParamTrigger", trigger: true);
     }
 }

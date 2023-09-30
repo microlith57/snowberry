@@ -129,7 +129,7 @@ public static class LoennPluginLoader {
 
                     string placementName = placements["name"] as string ?? "";
                     placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : "Loenn: " + plugin.Key;
-                    Placements.Create(placementName, plugin.Key, options);
+                    Placements.Create(placementName, plugin.Key, options, isTrigger);
                 } else if (placements.Keys.Count >= 1 && placements[1] is LuaTable) {
                     for (int i = 1; i < placements.Keys.Count + 1; i++) {
                         Dictionary<string, object> options = new();
@@ -140,7 +140,7 @@ public static class LoennPluginLoader {
 
                             string placementName = ptable["name"] as string;
                             placementName = LoennText.TryGetValue($"entities.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"Loenn: {plugin.Key} :: {ptable["name"]}";
-                            Placements.Create(placementName, plugin.Key, options);
+                            Placements.Create(placementName, plugin.Key, options, isTrigger);
                         }
                     }
                 }

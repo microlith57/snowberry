@@ -30,6 +30,6 @@ public class Plugin_CustomHeightDisplayTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Custom Height Display Trigger (Everest)", "everest/customHeightDisplayTrigger");
+        Placements.Create("Custom Height Display Trigger (Everest)", "everest/customHeightDisplayTrigger", trigger: true);
     }
 }
