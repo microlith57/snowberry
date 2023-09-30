@@ -41,7 +41,7 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 
     SNOWBERRY_EDITOR_TOOL_ROOMS=                rooms
 
-    SNOWBERRY_EDITOR_TOOL_ENTITIES=             entities
+    SNOWBERRY_EDITOR_TOOL_ENTITIES=             placements
 
     SNOWBERRY_EDITOR_TOOL_STYLEGROUNDS=         stylegrounds
     

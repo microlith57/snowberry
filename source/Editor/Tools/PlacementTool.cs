@@ -37,53 +37,58 @@ public class PlacementTool : Tool {
             Background = null,
             Height = height - 30
         };
+        var buttonTree = new UITree(new UILabel("wow"));
 
-        foreach(var item in Placements.All.OrderBy(k => k.Name)){
-            UIButton b;
-            buttonPane.AddBelow(b = new UIButton(item.Name, Fonts.Regular, 4, 4) {
-                OnPress = () => curLeftSelection = curLeftSelection != item ? item : null,
-                OnRightPress = () => curRightSelection = curRightSelection != item ? item : null
-            });
-            placementButtons[item] = b;
-        }
+        buttonTree.Add(CreateEntitiesTree());
+        buttonTree.AddBelow(CreateEntitiesTree(true));
+        buttonTree.AddBelow(CreateDecalsTree());
 
+        buttonTree.Layout();
+
+        buttonPane.Add(buttonTree);
         panel.Add(buttonPane);
 
-        static bool entityMatcher(Placement entry, string term) => entry.Name.ToLower().Contains(term.ToLower());
-        static bool modMatcher(Placement entry, string term) {
-            var split = entry.EntityName.Split('/');
-            return (split.Length >= 2 ? split[0] : "Celeste").Contains(term);
-        }
-
-        panel.Add(searchBar = new UISearchBar<Placement>(230, entityMatcher) {
-            Position = new Vector2(5, height - 20),
-            Entries = Placements.All.ToArray(),
-            InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
-            OnInputChange = s => {
-                search = s;
-                buttonPane.Scroll = 0;
-                int y = 0;
-                foreach (var b in placementButtons) {
-                    var button = b.Value;
-                    var active = searchBar.Found == null || searchBar.Found.Contains(b.Key);
-                    button.Visible = active;
-                    button.active = active;
-                    if (active) {
-                        button.Position.Y = y;
-                        y += button.Height;
-                    }
-                }
-            }
-        });
-        searchBar.AddSpecialMatcher('@', modMatcher, Calc.HexToColor("1b6dcc"));
-        searchBar.UpdateInput(search);
+        // foreach(var item in Placements.All.OrderBy(k => k.Name)){
+        //     var b = CreatePlacementButton(item);
+        //     buttonPane.AddBelow(b);
+        //     placementButtons[item] = b;
+        // }
+        //
+        // panel.Add(buttonPane);
+        //
+        // static bool entityMatcher(Placement entry, string term) => entry.Name.ToLower().Contains(term.ToLower());
+        // static bool modMatcher(Placement entry, string term) {
+        //     var split = entry.EntityName.Split('/');
+        //     return (split.Length >= 2 ? split[0] : "Celeste").Contains(term);
+        // }
+        //
+        // panel.Add(searchBar = new UISearchBar<Placement>(230, entityMatcher) {
+        //     Position = new Vector2(5, height - 20),
+        //     Entries = Placements.All.ToArray(),
+        //     InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
+        //     OnInputChange = s => {
+        //         search = s;
+        //         buttonPane.Scroll = 0;
+        //         int y = 0;
+        //         foreach (var b in placementButtons) {
+        //             var button = b.Value;
+        //             var active = searchBar.Found == null || searchBar.Found.Contains(b.Key);
+        //             button.Visible = active;
+        //             button.active = active;
+        //             if (active) {
+        //                 button.Position.Y = y;
+        //                 y += button.Height;
+        //             }
+        //         }
+        //     }
+        // });
+        // searchBar.AddSpecialMatcher('@', modMatcher, Calc.HexToColor("1b6dcc"));
+        // searchBar.UpdateInput(search);
 
         return panel;
     }
 
-    public override string GetName() {
-        return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITIES");
-    }
+    public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITIES");
 
     public override void Update(bool canClick) {
         bool middlePan = Snowberry.Settings.MiddleClickPan;
@@ -219,4 +224,60 @@ public class PlacementTool : Tool {
             Calc.PopRandom();
         }
     }
+
+    private UITree CreateEntitiesTree(bool triggers = false) {
+        UITree entities = new(new UILabel(triggers ? "triggers" : "entities"), true) {
+            NoKb = true,
+            PadUp = 2,
+            PadDown = 2
+        };
+        foreach (var group in Placements.All.Where(x => x.IsTrigger == triggers).GroupBy(x => x.EntityName)) {
+            if (group.Count() == 1)
+                entities.Add(CreatePlacementButton(group.First()));
+            else {
+                UITree subtree = new UITree(CreatePlacementButton(group.First()), new(), new(5, 2), collapsed: true) {
+                    PadUp = 2,
+                    PadDown = 2
+                };
+                foreach (Placement p in group.Skip(1))
+                    subtree.Add(CreatePlacementButton(p));
+                subtree.Layout();
+                entities.Add(subtree);
+            }
+        }
+        entities.Layout();
+        return entities;
+    }
+
+    private UITree CreateDecalsTree() {
+        List<List<string>> decalPaths = GFX.Game.Textures.Keys
+            .Select(x => x.Split('/').ToList())
+            .Where(x => x.Count > 0 && x[0] == "decals")
+            .ToList();
+        Tree<string> decalTree = Tree<string>.FromPrefixes(decalPaths, "").Children[0];
+
+        UITree RenderPart(Tree<string> part){
+            string label = part.Children.Any() ? part.Value + "/" : part.Value;
+            UITree tree = new(new UILabel(label, Fonts.Regular), collapsed: true){
+                NoKb = true,
+                PadUp = 2,
+                PadDown = 2
+            };
+            foreach(Tree<string> c in part.Children)
+                if(c.Children.Any())
+                    tree.Add(RenderPart(c));
+                else
+                    tree.Add(new UIButton(c.Value, Fonts.Regular, 3, 3));
+            tree.Layout();
+            return tree;
+        }
+
+        return RenderPart(decalTree);
+    }
+
+    private UIButton CreatePlacementButton(Placement item) =>
+        new(item.Name, Fonts.Regular, 4, 4){
+            OnPress = () => curLeftSelection = curLeftSelection != item ? item : null,
+            OnRightPress = () => curRightSelection = curRightSelection != item ? item : null
+        };
 }
