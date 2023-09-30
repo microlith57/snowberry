@@ -18,7 +18,7 @@ public class UIImage : UIElement {
     public override void Render(Vector2 position = default) {
         base.Render(position);
 
-        Texture.Draw(position);
+        Texture.Draw(position, new(0), Color.White, Scale);
     }
 
     public UIImage ScaleToFit(Vector2 space) {
