@@ -37,7 +37,7 @@ public class PlacementTool : Tool {
             Background = null,
             Height = height - 30
         };
-        var buttonTree = new UITree(new UILabel("wow"));
+        var buttonTree = new UITree(new UILabel("placements"));
 
         buttonTree.Add(CreateEntitiesTree());
         buttonTree.AddBelow(CreateEntitiesTree(true));
