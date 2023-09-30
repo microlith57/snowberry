@@ -275,9 +275,12 @@ public class PlacementTool : Tool {
         return RenderPart(decalTree);
     }
 
-    private UIButton CreatePlacementButton(Placement item) =>
-        new(item.Name, Fonts.Regular, 4, 4){
+    private UIButton CreatePlacementButton(Placement item) {
+        UIButton b = new UIButton(item.Name, Fonts.Regular, 4, 4) {
             OnPress = () => curLeftSelection = curLeftSelection != item ? item : null,
             OnRightPress = () => curRightSelection = curRightSelection != item ? item : null
         };
+        placementButtons[item] = b;
+        return b;
+    }
 }
