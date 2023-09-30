@@ -255,10 +255,10 @@ public class PlacementTool : Tool {
             .Where(x => x.Count > 0 && x[0] == "decals")
             .ToList();
         Tree<string> decalTree = Tree<string>.FromPrefixes(decalPaths, "").Children[0];
+        decalTree.Parent = null; // get rid of the empty parent for AggregateUp
 
         UITree RenderPart(Tree<string> part){
-            string label = part.Children.Any() ? part.Value + "/" : part.Value;
-            UITree tree = new(new UILabel(label, Fonts.Regular), collapsed: true){
+            UITree tree = new(new UILabel(part.Value + "/", Fonts.Regular), collapsed: true){
                 NoKb = true,
                 PadUp = 2,
                 PadDown = 2
@@ -266,8 +266,14 @@ public class PlacementTool : Tool {
             foreach(Tree<string> c in part.Children)
                 if(c.Children.Any())
                     tree.Add(RenderPart(c));
-                else
-                    tree.Add(new UIButton(c.Value, Fonts.Regular, 3, 3));
+                else {
+                    UIElement group = new();
+                    group.Add(new UIButton(c.Value, Fonts.Regular, 3, 3));
+                    group.AddRight(new UIImage(GFX.Game[c.AggregateUp((l, r) => l + "/" + r)]));
+                    group.CalculateBounds();
+                    tree.Add(group);
+                }
+
             tree.Layout();
             return tree;
         }
