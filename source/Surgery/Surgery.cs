@@ -72,7 +72,7 @@ public class Surgery : UIScene {
                 OnPress = () => {
                     parent.Children?.Remove(e);
                     ret.RemoveSelf();
-                    (ret.Parent as UITree)?.Layout();
+                    (ret.Parent as UITree)?.LayoutUp();
                 },
                 FG = Color.Red,
                 HoveredFG = Color.Crimson,

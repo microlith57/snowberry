@@ -48,42 +48,34 @@ public class PlacementTool : Tool {
         buttonPane.Add(buttonTree);
         panel.Add(buttonPane);
 
-        // foreach(var item in Placements.All.OrderBy(k => k.Name)){
-        //     var b = CreatePlacementButton(item);
-        //     buttonPane.AddBelow(b);
-        //     placementButtons[item] = b;
-        // }
-        //
-        // panel.Add(buttonPane);
-        //
-        // static bool entityMatcher(Placement entry, string term) => entry.Name.ToLower().Contains(term.ToLower());
-        // static bool modMatcher(Placement entry, string term) {
-        //     var split = entry.EntityName.Split('/');
-        //     return (split.Length >= 2 ? split[0] : "Celeste").Contains(term);
-        // }
-        //
-        // panel.Add(searchBar = new UISearchBar<Placement>(230, entityMatcher) {
-        //     Position = new Vector2(5, height - 20),
-        //     Entries = Placements.All.ToArray(),
-        //     InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
-        //     OnInputChange = s => {
-        //         search = s;
-        //         buttonPane.Scroll = 0;
-        //         int y = 0;
-        //         foreach (var b in placementButtons) {
-        //             var button = b.Value;
-        //             var active = searchBar.Found == null || searchBar.Found.Contains(b.Key);
-        //             button.Visible = active;
-        //             button.active = active;
-        //             if (active) {
-        //                 button.Position.Y = y;
-        //                 y += button.Height;
-        //             }
-        //         }
-        //     }
-        // });
-        // searchBar.AddSpecialMatcher('@', modMatcher, Calc.HexToColor("1b6dcc"));
-        // searchBar.UpdateInput(search);
+        static bool entityMatcher(Placement entry, string term) => entry.Name.ToLower().Contains(term.ToLower());
+        static bool modMatcher(Placement entry, string term) {
+            var split = entry.EntityName.Split('/');
+            return (split.Length >= 2 ? split[0] : "Celeste").Contains(term);
+        }
+
+        panel.Add(searchBar = new UISearchBar<Placement>(230, entityMatcher) {
+            Position = new Vector2(5, height - 20),
+            Entries = Placements.All.ToArray(),
+            InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
+            OnInputChange = s => {
+                search = s;
+                buttonTree.ApplyDown(x => x.Active = x.Visible = false);
+                buttonPane.Scroll = 0;
+                foreach (var b in placementButtons) {
+                    var button = b.Value;
+                    bool active = searchBar.Found == null || searchBar.Found.Contains(b.Key);
+                    if (button.Parent is UITree p) { // not a header button, need to set Active to get hidden
+                        button.Visible = button.Active = active;
+                        p.ApplyUp(x => x.Active |= x.Visible |= active);
+                    } else // header button, get hidden by hiding the entire tree, don't set Active so sub-buttons can force this visible
+                        (button.Parent?.Parent as UITree)?.ApplyUp(x => x.Active |= x.Visible |= active); // weh
+                }
+                buttonTree.LayoutDown();
+            }
+        });
+        searchBar.AddSpecialMatcher('@', modMatcher, Calc.HexToColor("1b6dcc"));
+        searchBar.UpdateInput(search);
 
         return panel;
     }
@@ -231,7 +223,7 @@ public class PlacementTool : Tool {
             PadUp = 2,
             PadDown = 2
         };
-        foreach (var group in Placements.All.Where(x => x.IsTrigger == triggers).GroupBy(x => x.EntityName)) {
+        foreach (var group in Placements.All.Where(x => x.IsTrigger == triggers).OrderBy(x => x.Name).GroupBy(x => x.EntityName)) {
             if (group.Count() == 1)
                 entities.Add(CreatePlacementButton(group.First()));
             else {

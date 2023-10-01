@@ -38,7 +38,6 @@ public class UIButton : UIElement {
         topFill,
         bottomFill,
         mid;
-    public bool active = true; //Whether or not the Button is able to be pressed. Currently implemented poorly.
     public Action OnPress, OnRightPress;
     public bool Underline = false, Strikethrough = false;
 
@@ -124,7 +123,7 @@ public class UIButton : UIElement {
 
         int mouseX = (int)Mouse.Screen.X;
         int mouseY = (int)Mouse.Screen.Y;
-        if (active) {
+        if (Active) {
             hovering = new Rectangle((int)position.X + 1, (int)position.Y + 1, Width - 2, Height - 2).Contains(mouseX, mouseY);
 
             if (hovering && (ConsumeLeftClick() || ConsumeAltClick()))

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -14,6 +15,7 @@ public class UITree : UIElement {
 
     public bool Collapsed = false;
     protected UIElement Header;
+    protected UIButton ToggleButton;
 
     public UITree(UIElement header, bool collapsed = false) : this(header, new(0, 3), new(5, 0), collapsed) {}
 
@@ -22,13 +24,12 @@ public class UITree : UIElement {
         Collapsed = collapsed;
 
         Header = new UIElement();
-        UIButton b = null;
         Header.AddRight(header, headerOffset);
-        Header.AddRight(b = new UIButton(Collapsed ? "\u2190" : "\u2193", Fonts.Regular, 2, 2) {
+        Header.AddRight(ToggleButton = new UIButton(Collapsed ? "\u2190" : "\u2193", Fonts.Regular, 2, 2) {
             OnPress = () => {
                 Collapsed = !Collapsed;
-                b.SetText(Collapsed ? "\u2190" : "\u2193");
-                Layout();
+                ToggleButton.SetText(Collapsed ? "\u2190" : "\u2193");
+                LayoutUp();
             }
         }, buttonOffset);
         Header.CalculateBounds();
@@ -36,6 +37,8 @@ public class UITree : UIElement {
     }
 
     public override void Update(Vector2 position = default) {
+        ToggleButton.Active = Active;
+
         if (UIScene.Instance is not { /* non-null */ } scene) {
             base.Update(position);
             return;
@@ -73,15 +76,31 @@ public class UITree : UIElement {
         } else {
             int i = 0;
             foreach (UIElement e in Children.Except(toRemove)) {
-                e.Position = new(PadLeft, PadUp + i);
-                i += (int)(e.Height + Spacing);
+                if (e.Active) {
+                    e.Position = new(PadLeft, PadUp + i);
+                    i += (int)(e.Height + Spacing);
+                } else
+                    e.Position = new(0);
             }
             CalculateBounds();
         }
         Width += (int)PadRight;
         Height += (int)PadDown;
-        (Parent as UITree)?.Layout();
     }
+
+    public void ApplyUp(Action<UITree> action) {
+        action(this);
+        (Parent as UITree)?.ApplyUp(action);
+    }
+
+    public void ApplyDown(Action<UITree> action) {
+        foreach(UITree tree in Children.OfType<UITree>())
+            tree.ApplyDown(action);
+        action(this);
+    }
+
+    public void LayoutUp() => ApplyUp(x => x.Layout());
+    public void LayoutDown() => ApplyDown(x => x.Layout());
 
     public override bool NestedGrabsKeyboard() => !NoKb && base.NestedGrabsKeyboard();
 }

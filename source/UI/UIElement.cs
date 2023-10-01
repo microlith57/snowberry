@@ -14,7 +14,7 @@ public class UIElement {
 
     public UIElement Parent;
     public List<UIElement> Children = new();
-    public bool Visible = true;
+    public bool Visible = true, Active = true;
     public bool RenderChildren = true;
     public bool Destroyed = false;
 
@@ -32,10 +32,11 @@ public class UIElement {
     public virtual void Update(Vector2 position = default) {
         canModify = false;
         // The last child is rendered last, on top of everything else, and should be the first to consume mouse clicks.
-        for (int i = Children.Count - 1; i >= 0; i--) {
-            UIElement element = Children[i];
-            element.Update(position + element.Position);
-        }
+        if (Active)
+            for (int i = Children.Count - 1; i >= 0; i--) {
+                UIElement element = Children[i];
+                element.Update(position + element.Position);
+            }
 
         canModify = true;
         Children.RemoveAll(e => e == null);
