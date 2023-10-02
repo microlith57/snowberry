@@ -419,17 +419,15 @@ public class Map {
     // Setup autotilers, animated tiles, and the Graphics atlas, based on LevelLoader
     private void SetupGraphics(MapMeta meta){
         string text = meta?.BackgroundTiles;
-        if (string.IsNullOrEmpty(text)) {
+        if (string.IsNullOrEmpty(text))
             text = Path.Combine("Graphics", "BackgroundTiles.xml");
-        }
-
         GFX.BGAutotiler = new Autotiler(text);
-        text = meta?.ForegroundTiles;
-        if (string.IsNullOrEmpty(text)) {
-            text = Path.Combine("Graphics", "ForegroundTiles.xml");
-        }
 
+        text = meta?.ForegroundTiles;
+        if (string.IsNullOrEmpty(text))
+            text = Path.Combine("Graphics", "ForegroundTiles.xml");
         GFX.FGAutotiler = new Autotiler(text);
+
         text = meta?.AnimatedTiles;
         if (string.IsNullOrEmpty(text))
             text = Path.Combine("Graphics", "AnimatedTiles.xml");

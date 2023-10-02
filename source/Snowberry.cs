@@ -45,6 +45,7 @@ public sealed class Snowberry : EverestModule {
         On.Celeste.Editor.MapEditor.ctor += UsePlaytestMap;
         On.Celeste.MapData.StartLevel += DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine += DontEnterPlaytestMap;
+        On.Celeste.AnimatedTiles.Set += DontCrashOnMissingAnimatedTile;
 
         Everest.Events.MainMenu.OnCreateButtons += MainMenu_OnCreateButtons;
         Everest.Events.Level.OnCreatePauseMenuButtons += Level_OnCreatePauseMenuButtons;
@@ -68,6 +69,7 @@ public sealed class Snowberry : EverestModule {
         On.Celeste.Editor.MapEditor.ctor -= UsePlaytestMap;
         On.Celeste.MapData.StartLevel -= DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine -= DontEnterPlaytestMap;
+        On.Celeste.AnimatedTiles.Set -= DontCrashOnMissingAnimatedTile;
 
         Everest.Events.MainMenu.OnCreateButtons -= MainMenu_OnCreateButtons;
         Everest.Events.Level.OnCreatePauseMenuButtons -= Level_OnCreatePauseMenuButtons;
@@ -206,5 +208,10 @@ public sealed class Snowberry : EverestModule {
         SaveData.Instance.LastArea_Safe = AreaKey.Default;
 
         Engine.Scene = new OverworldLoader(Overworld.StartMode.AreaQuit);
+    }
+
+    private void DontCrashOnMissingAnimatedTile(On.Celeste.AnimatedTiles.orig_Set orig, AnimatedTiles self, int x, int y, string name, float scalex, float scaley) {
+        if (self.Bank.AnimationsByName.ContainsKey(name))
+            orig(self, x, y, name, scalex, scaley);
     }
 }
