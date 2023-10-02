@@ -12,6 +12,9 @@ namespace Snowberry.UI;
 
 public class Example : UIScene {
 
+    // on resizing
+    protected List<UIElement> centre = new(), stretch = new();
+
     protected override void BeginContent() {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
@@ -19,10 +22,12 @@ public class Example : UIScene {
         UILabel title = new UILabel("snowberry!", 2);
         title.Position = new((UI.Width - title.Width) / 2f, 15);
         UI.Add(title);
+        centre.Add(title);
 
         UILabel time = new UILabel(() => $"it's {DateTime.Now.ToLongDateString()}, {DateTime.Now.ToLongTimeString()} rn");
         time.Position = new((UI.Width - time.Width) / 2f, 45);
         UI.Add(time);
+        centre.Add(time);
 
         UIElement content = new UIScrollPane {
             Position = new(0, 70),
@@ -32,6 +37,7 @@ public class Example : UIScene {
             TopPadding = 10
         };
         UI.Add(content);
+        stretch.Add(content);
 
         content.AddBelow(new UIButton("hi! click me!", Fonts.Regular), new(10));
         content.AddBelow(new UIButton("no, click me!", Fonts.Regular, 6, 6), new(10));
@@ -226,5 +232,14 @@ public class Example : UIScene {
             }
         };
         content.AddRight(drop2downButton, new(3, 18));
+    }
+
+    protected override void OnScreenResized() {
+        foreach (UIElement e in centre)
+            e.Position = new((UI.Width - e.Width) / 2f, e.Position.Y);
+        foreach(UIElement e in stretch) {
+            e.Width = UI.Width;
+            e.Height = (int)(UI.Height - e.Position.Y);
+        }
     }
 }

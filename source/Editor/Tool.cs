@@ -35,4 +35,6 @@ public abstract class Tool{
     public virtual UIElement CreateActionBar() => null;
 
     public virtual void SuggestCursor(ref MTexture cursor, ref Vector2 justify){}
+
+    public virtual void ResizePanel(int height){}
 }

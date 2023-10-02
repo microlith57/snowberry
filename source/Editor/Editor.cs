@@ -580,6 +580,14 @@ public class Editor : UIScene {
             tool?.SuggestCursor(ref texture, ref justify);
     }
 
+    protected override void OnScreenResized() {
+        Toolbar.Width = UI.Width;
+        ToolPanel.Position = new Vector2(UI.Width - ToolPanel.Width, Toolbar.Height);
+        ToolPanel.Height = UI.Height;
+        ActionBar.Width = UI.Width - ToolPanel.Width;
+        Tool.Tools[Toolbar.CurrentTool].ResizePanel(UI.Height - Toolbar.Height);
+    }
+
     public bool CanTypeShortcut() => !UI.NestedGrabsKeyboard();
 
     public static void TryBackup(Backups.BackupReason reason) {

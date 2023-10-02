@@ -35,12 +35,13 @@ public class TileBrushTool : Tool {
     private static TileGrid holoGrid;
     private static bool holoRetile = false;
 
-    public List<Tileset> FgTilesets => Tileset.FgTilesets;
-    public List<Tileset> BgTilesets => Tileset.BgTilesets;
+    public static List<Tileset> FgTilesets => Tileset.FgTilesets;
+    public static List<Tileset> BgTilesets => Tileset.BgTilesets;
 
     private readonly List<UIButton> fgTilesetButtons = new();
     private readonly List<UIButton> bgTilesetButtons = new();
     private readonly List<UIButton> modeButtons = new();
+    private UIElement tilesetsPanel;
 
     private static bool isPainting;
 
@@ -60,7 +61,7 @@ public class TileBrushTool : Tool {
             GrabsScroll = true,
             Height = height
         };
-        UIScrollPane tilesetsPanel = new UIScrollPane {
+        tilesetsPanel = new UIScrollPane {
             Position = new(0, 5),
             Width = 130,
             Height = height - 5,
@@ -432,5 +433,10 @@ public class TileBrushTool : Tool {
         TileBrushMode displayed = isUsingAlt ? RightMode : LeftMode;
         int xOffset = LeftMode == RightMode ? 48 : (isUsingAlt ? 32 : 16);
         cursor = brushes.GetSubtexture(xOffset, (int)displayed * 16, 16, 16);
+    }
+
+    public override void ResizePanel(int height) {
+        if (tilesetsPanel != null)
+            tilesetsPanel.Height = height - 5;
     }
 }

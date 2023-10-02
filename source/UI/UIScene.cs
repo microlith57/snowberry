@@ -48,6 +48,16 @@ public abstract class UIScene : Scene {
     public override void Update() {
         base.Update();
 
+        if (Engine.ViewWidth / 2 != UI.Width || Engine.ViewHeight / 2 != UI.Height) {
+            UIBuffer.Dispose();
+            UIBuffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, Engine.ViewWidth / 2, Engine.ViewHeight / 2);
+            UI.Width = UIBuffer.Width;
+            UI.Height = UIBuffer.Height;
+            Message.Width = UIBuffer.Width;
+            Message.Height = UIBuffer.Height;
+            OnScreenResized();
+        }
+
         Mouse.WorldLast = Mouse.World;
         Mouse.ScreenLast = Mouse.Screen;
 
@@ -115,4 +125,5 @@ public abstract class UIScene : Scene {
     protected virtual void UpdateContent() {}
     protected virtual Vector2 CalculateMouseWorld(MouseState m) => new Vector2(m.X, m.Y) / 2;
     protected virtual void SuggestCursor(ref MTexture texture, ref Vector2 justify) {}
+    protected virtual void OnScreenResized() {}
 }

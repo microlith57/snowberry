@@ -18,6 +18,7 @@ public class PlacementTool : Tool {
     private bool startedDrag;
     private Placement lastPlacement;
     private UISearchBar<Placement> searchBar;
+    private UIScrollPane buttonPane;
 
     private static string search = "";
 
@@ -32,7 +33,7 @@ public class PlacementTool : Tool {
             Height = height
         };
 
-        var buttonPane = new UIScrollPane{
+        buttonPane = new UIScrollPane{
             Width = 240,
             Background = null,
             Height = height - 30
@@ -280,5 +281,12 @@ public class PlacementTool : Tool {
         };
         placementButtons[item] = b;
         return b;
+    }
+
+    public override void ResizePanel(int height) {
+        if (buttonPane != null)
+            buttonPane.Height = height - 30;
+        if (searchBar != null)
+            searchBar.Position.Y = height - 20;
     }
 }
