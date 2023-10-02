@@ -184,8 +184,8 @@ public class Room {
     }
 
     public void Autotile() {
-        fgTileSprites = GFX.FGAutotiler.GenerateMap(fgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
-        bgTileSprites = GFX.BGAutotiler.GenerateMap(bgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
+        fgTileSprites = GFX.FGAutotiler.GenerateMapStable(fgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
+        bgTileSprites = GFX.BGAutotiler.GenerateMapStable(bgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid.Tiles;
     }
 
     internal List<Selection> GetSelections(
