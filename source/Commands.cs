@@ -34,7 +34,7 @@ internal class Commands {
 
     [Command("editor_surgery", "opens the snowberry surgery screen for low-level map manipulation")]
     internal static void SurgeryCommand(string mapPath) {
-        var file = Util.GetRealPath(mapPath);
+        var file = Util.GetRealPath(mapPath) ?? mapPath;
         if (File.Exists(file))
             Engine.Scene = new Surgery.Surgery(mapPath, BinaryPacker.FromBinary(mapPath));
         else

@@ -138,7 +138,6 @@ public class UIElement {
     public void Clear() {
         foreach (UIElement element in Children)
             element?.Destroy();
-        //Children.Clear();
         RemoveAll(Children);
     }
 
