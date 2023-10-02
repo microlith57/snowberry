@@ -135,10 +135,13 @@ public class UIElement {
         element.Position += new Vector2((right?.Position.X + right?.Width) ?? 0, 0);
     }
 
-    public void Clear() {
+    public void Clear(bool now = false) {
         foreach (UIElement element in Children)
             element?.Destroy();
-        RemoveAll(Children);
+        if (now)
+            Children.Clear();
+        else
+            RemoveAll(Children);
     }
 
     public void RemoveSelf() {

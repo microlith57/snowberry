@@ -157,7 +157,7 @@ public class StylegroundsTool : Tool {
     }
 
     private void AddStylegroundInfo(UIElement panel) {
-        panel.Clear();
+        panel.Clear(now: true);
         var selected = SelectedButton();
         // might not have any stylegrounds
         if(selected != null && Stylegrounds.TryGetValue(selected, out var styleground)){

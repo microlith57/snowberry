@@ -23,7 +23,7 @@ class UIRoomSelectionPanel : UIElement {
     }
 
     public void Refresh() {
-        Clear();
+        Clear(now: true);
         UIElement label;
 
         var offset = new Vector2(4, 3);
