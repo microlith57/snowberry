@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Celeste;
+using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
@@ -124,12 +125,13 @@ public class UILevelRibbon : UIRibbon {
                 pressing = false;
                 if (hover) {
                     if (MInput.Keyboard.CurrentState[Keys.LeftControl] == KeyState.Down || MInput.Keyboard.CurrentState[Keys.RightControl] == KeyState.Down)
-                        Editor.Editor.Open(mode.MapData);
+                        //Editor.Editor.Open(mode.MapData);
+                        TryOpen();
                     else {
                         UIScene.Instance.Message.Clear();
 
                         UIScene.Instance.Message.AddElement(ConfirmLoadMessage(), 0.5f, 0.5f, 0.5f, -0.1f);
-                        var buttons = UIMessage.YesAndNoButtons(() => Editor.Editor.Open(mode.MapData), () => UIScene.Instance.Message.Shown = false, 0, 4, 0.5f, 0f);
+                        var buttons = UIMessage.YesAndNoButtons(TryOpen, () => UIScene.Instance.Message.Shown = false, 0, 4, 0.5f, 0f);
                         UIScene.Instance.Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
 
                         UIScene.Instance.Message.Shown = true;
@@ -146,6 +148,27 @@ public class UILevelRibbon : UIRibbon {
         openLerp = Calc.Approach(openLerp, open.Bit(), Engine.DeltaTime * 2f);
         float openEase = (open ? Ease.ExpoOut : Ease.ExpoIn)(openLerp);
         H = (int)(openEase * h);
+    }
+
+    private void TryOpen(){
+        try{
+            Editor.Editor.Open(mode.MapData);
+        }catch(Exception e){
+            UIScene.Instance.Message.Clear();
+            UILabel errInfo = new UILabel("failed to load map!");
+            errInfo.Position = new(-errInfo.Width / 2, -10);
+            UIButton ok = new UIButton("ok", Fonts.Regular, 4, 4){
+                OnPress = () => UIScene.Instance.Message.Shown = false
+            };
+            ok.Position = new(-ok.Width / 2, 20);
+            var element = UIElement.Regroup(errInfo, ok);
+            Vector2 offset = new Vector2(element.Width / 2f, element.Height);
+            errInfo.Position -= offset;
+            ok.Position -= offset;
+            UIScene.Instance.Message.AddElement(element, 0.5f, 0.5f, 0.5f, -0.1f);
+            UIScene.Instance.Message.Shown = true;
+            Snowberry.Log(LogLevel.Error, $"Failed to load map {mode.MapData.Area}: {e}");
+        }
     }
 
     public override void Render(Vector2 position = default) {
