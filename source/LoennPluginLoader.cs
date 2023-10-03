@@ -139,7 +139,7 @@ public static class LoennPluginLoader {
                                     options[item] = data[item];
 
                             string placementName = ptable["name"] as string;
-                            placementName = LoennText.TryGetValue($"entities.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"Loenn: {plugin.Key} :: {ptable["name"]}";
+                            placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"Loenn: {plugin.Key} :: {ptable["name"]}";
                             Placements.Create(placementName, plugin.Key, options, isTrigger);
                         }
                     }
