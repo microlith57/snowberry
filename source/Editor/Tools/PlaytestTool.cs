@@ -56,13 +56,14 @@ public class PlaytestTool : Tool {
         if (RecInProgress.Get<TimeRecorder>() is { /* non-null */ } timer) {
             maxTime = timer.MaxTime;
 
-            playPauseButton = new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(9, 101, 6, 6), 3, 4);
-            playPauseButton.Key = Keys.Space;
-            playPauseButton.OnPress = () => {
-                playing = !playing;
-                SetPlayPauseIcon();
-            };
-            p.AddRight(playPauseButton, new(6, 8));
+            p.AddRight(playPauseButton = new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(9, 101, 6, 6), 3, 4) {
+                Key = Keys.Space,
+                OnPress = () => {
+                    playing = !playing;
+                    UpdatePlayPauseButton();
+                },
+                ButtonTooltip = Dialog.Clean("SNOWBERRY_EDITOR_PT_PLAY_TT")
+            }, new(6, 8));
 
             p.AddRight(timeSlider = new UISlider {
                 Min = 0,
@@ -80,7 +81,8 @@ public class PlaytestTool : Tool {
                     if (curIdx == -1) curIdx = 0;
                     if (timer.FrameTimes.Count > curIdx + 1)
                         SetTime(timer.FrameTimes[curIdx + 1]);
-                }
+                },
+                ButtonTooltip = Dialog.Clean("SNOWBERRY_EDITOR_PT_NEXT_FRAME_TT")
             });
             frameButtons.AddBelow(new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(20, 105, 8, 4), 2, 2) {
                 Key = Keys.OemComma,
@@ -88,8 +90,10 @@ public class PlaytestTool : Tool {
                     int curIdx = timer.FrameTimes.FindLastIndex(x => x <= time);
                     if (curIdx - 1 >= 0)
                         SetTime(timer.FrameTimes[curIdx - 1]);
-                }
+                },
+                ButtonTooltip = Dialog.Clean("SNOWBERRY_EDITOR_PT_PREV_FRAME_TT")
             });
+            frameButtons.CalculateBounds();
             p.AddRight(frameButtons, new(6, 7));
         }
 
@@ -102,7 +106,7 @@ public class PlaytestTool : Tool {
                 SetTime(time + Engine.DeltaTime, false);
             else {
                 playing = false;
-                SetPlayPauseIcon();
+                UpdatePlayPauseButton();
             }
         }
     }
@@ -130,15 +134,17 @@ public class PlaytestTool : Tool {
         }
     }
 
-    private void SetPlayPauseIcon() =>
+    private void UpdatePlayPauseButton() {
         playPauseButton.SetIcon(UIScene.ActionbarAtlas.GetSubtexture(playing ? 2 : 9, 101, 6, 6));
+        playPauseButton.ButtonTooltip = Dialog.Clean(playing ? "SNOWBERRY_EDITOR_PT_PAUSE_TT" : "SNOWBERRY_EDITOR_PT_PLAY_TT");
+    }
 
     private void SetTime(float newTime, bool pause = true) {
         this.time = newTime;
         timeSlider.Value = newTime;
         if (pause) {
             playing = false;
-            SetPlayPauseIcon();
+            UpdatePlayPauseButton();
         }
     }
 }

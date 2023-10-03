@@ -127,6 +127,11 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 # *** Playtest Tool ***
 	SNOWBERRY_EDITOR_PT_NO_DATA=                no data recorded
 	
+	SNOWBERRY_EDITOR_PT_PLAY_TT=                play (space)
+	SNOWBERRY_EDITOR_PT_PAUSE_TT=               pause (space)
+	SNOWBERRY_EDITOR_PT_NEXT_FRAME_TT=          next frame (.)
+	SNOWBERRY_EDITOR_PT_PREV_FRAME_TT=          previous frame (,)
+	
 	SNOWBERRY_EDITOR_PT_OPTS_SHOW=              show
 	SNOWBERRY_EDITOR_PT_OPTS_RECORD=            record
 	
