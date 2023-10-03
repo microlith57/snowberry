@@ -92,11 +92,10 @@ public static class LoennPluginLoader {
                         Snowberry.Log(LogLevel.Warn, $"Failed to load Loenn plugin at \"{path}\"");
                         Snowberry.Log(LogLevel.Warn, $"Reason: {ex}");
                     }
-                } else if (path.StartsWith("Loenn/lang/en_gb")) {
+                } else if (path.StartsWith("Loenn/lang/") && path.EndsWith("/en_gb.lang")) {
                     string text;
-                    using(var reader = new StreamReader(asset.Stream)) {
+                    using(var reader = new StreamReader(asset.Stream))
                         text = reader.ReadToEnd();
-                    }
 
                     foreach(var entry in text.Split('\n').Select(k => k.Split('#')[0])) {
                         if(!string.IsNullOrWhiteSpace(entry)) {
