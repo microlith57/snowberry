@@ -370,7 +370,11 @@ public class Editor : UIScene {
         Audio.SetMusic(null);
         Audio.SetAmbience(null);
 
+        // use debug save
         SaveData.InitializeDebugMode();
+        // enable variants
+        SaveData.Instance.VariantMode = true;
+        SaveData.Instance.AssistMode = false;
 
         TryAutosave(Backups.BackupReason.OnPlaytest);
 
