@@ -50,6 +50,8 @@ public static class Util {
             return (double)0;
         if (t == typeof(bool))
             return false;
+        if (t == typeof(Color))
+            return Color.White;
         return null;
     }
 

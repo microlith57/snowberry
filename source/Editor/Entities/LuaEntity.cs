@@ -292,7 +292,7 @@ public class LuaEntity : Entity {
         var table = EmptyTable();
         if (table != null)
             foreach (var pair in dict)
-                table[pair.Key] = pair.Value;
+                table[pair.Key] = ObjectToStr(pair.Value);
         return table;
     }
 

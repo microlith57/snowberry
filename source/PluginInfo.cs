@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Xna.Framework;
 using NLua;
 using Snowberry.Editor.Entities;
 
@@ -134,13 +135,9 @@ public class UnknownEntityAttr : PluginOption {
         Key = key;
     }
 
-    public object GetValue(Plugin from) {
-        return ((UnknownEntity)from).Attrs[Key];
-    }
+    public object GetValue(Plugin from) => ((UnknownEntity)from).Attrs[Key];
 
-    public void SetValue(Plugin on, object value) {
-        ((UnknownEntity)on).Attrs[Key] = value;
-    }
+    public void SetValue(Plugin on, object value) => ((UnknownEntity)on).Attrs[Key] = value;
 
     public Type FieldType { get; }
     public string Key { get; }
@@ -207,6 +204,7 @@ public class LoennPluginInfo : PluginInfo {
                             "number" => typeof(float),
                             "integer" => typeof(int),
                             "boolean" => typeof(bool),
+                            "color" => typeof(Color),
                             _ => typeof(string)
                         };
 
@@ -239,7 +237,7 @@ public class LuaEntityOption : PluginOption {
         if (((LuaEntity)from).Values.TryGetValue(Key, out object v))
             return v;
         if (from.Info is LoennPluginInfo lpi && lpi.Defaults.TryGetValue(Key, out var def))
-            return def;
+            return def is string str ? Plugin.StrToObject(FieldType, str) : Convert.ChangeType(def, FieldType);
         return Util.Default(FieldType);
     }
 

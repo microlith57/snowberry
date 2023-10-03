@@ -52,7 +52,7 @@ public abstract class Plugin {
     public string GetTooltipFor(string option) =>
         Info.Options.TryGetValue(option, out PluginOption f)  ? f.Tooltip : null;
 
-    protected static object StrToObject(Type targetType, string raw){
+    public static object StrToObject(Type targetType, string raw){
         if(targetType.IsEnum)
             try {
                 return Enum.Parse(targetType, raw);
@@ -81,7 +81,7 @@ public abstract class Plugin {
         }
     }
 
-    protected static object ObjectToStr(object obj) {
+    public static object ObjectToStr(object obj) {
         return obj switch {
             Color color => color.IntoRgbString(),
             Enum => obj.ToString(),
