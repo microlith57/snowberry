@@ -125,14 +125,13 @@ public class UILevelRibbon : UIRibbon {
                 pressing = false;
                 if (hover) {
                     if (MInput.Keyboard.CurrentState[Keys.LeftControl] == KeyState.Down || MInput.Keyboard.CurrentState[Keys.RightControl] == KeyState.Down)
-                        //Editor.Editor.Open(mode.MapData);
                         TryOpen();
                     else {
                         UIScene.Instance.Message.Clear();
 
-                        UIScene.Instance.Message.AddElement(ConfirmLoadMessage(), 0.5f, 0.5f, 0.5f, -0.1f);
-                        var buttons = UIMessage.YesAndNoButtons(TryOpen, () => UIScene.Instance.Message.Shown = false, 0, 4, 0.5f, 0f);
-                        UIScene.Instance.Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
+                        UIScene.Instance.Message.AddElement(ConfirmLoadMessage(), new(0, -30), hiddenJustifyY: -0.1f);
+                        var buttons = UIMessage.YesAndNoButtons(TryOpen, () => UIScene.Instance.Message.Shown = false);
+                        UIScene.Instance.Message.AddElement(buttons, new(0, 20));
 
                         UIScene.Instance.Message.Shown = true;
                     }
@@ -153,20 +152,8 @@ public class UILevelRibbon : UIRibbon {
     private void TryOpen(){
         try{
             Editor.Editor.Open(mode.MapData);
-        }catch(Exception e){
-            UIScene.Instance.Message.Clear();
-            UILabel errInfo = new UILabel("failed to load map!");
-            errInfo.Position = new(-errInfo.Width / 2, -10);
-            UIButton ok = new UIButton("ok", Fonts.Regular, 4, 4){
-                OnPress = () => UIScene.Instance.Message.Shown = false
-            };
-            ok.Position = new(-ok.Width / 2, 20);
-            var element = UIElement.Regroup(errInfo, ok);
-            Vector2 offset = new Vector2(element.Width / 2f, element.Height);
-            errInfo.Position -= offset;
-            ok.Position -= offset;
-            UIScene.Instance.Message.AddElement(element, 0.5f, 0.5f, 0.5f, -0.1f);
-            UIScene.Instance.Message.Shown = true;
+        }catch(Exception e) {
+            UIMessage.ShowInfoPopup("SNOWBERRY_MAINMENU_LOAD_FAILED", "SNOWBERRY_MAINMENU_LOAD_FAILED_CLOSE");
             Snowberry.Log(LogLevel.Error, $"Failed to load map {mode.MapData.Area}: {e}");
         }
     }
@@ -199,7 +186,7 @@ public class UILevelRibbon : UIRibbon {
             BG = BG,
             BGAccent = BGAccent,
         };
-        ribbon.Position = new Vector2(-ribbon.Width / 2, 0);
+        ribbon.Position = new Vector2(-ribbon.Width / 2, -90);
 
         UILabel msg = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_CONFIRM"));
         msg.Position = new Vector2(-msg.Width / 2, ribbon.Position.Y + ribbon.Height + 4);
@@ -214,14 +201,6 @@ public class UILevelRibbon : UIRibbon {
         };
         tip.Position = new Vector2(-tip.Width / 2, warn.Position.Y + warn.Height);
 
-        var element = Regroup(ribbon, msg, warn, tip);
-
-        Vector2 offset = new Vector2(element.Width / 2f, element.Height);
-        ribbon.Position -= offset;
-        msg.Position -= offset;
-        warn.Position -= offset;
-        tip.Position -= offset;
-
-        return element;
+        return Regroup(ribbon, msg, warn, tip);
     }
 }

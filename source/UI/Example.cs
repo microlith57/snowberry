@@ -85,17 +85,11 @@ public class Example : UIScene {
             OnPress = () => {
                 Message.Clear();
 
-                UILabel label = new UILabel("would you like to Leave");
-                label.Position = new Vector2(0, -20) - new Vector2(label.Width, label.Height) / 2;
-                UIElement i = new();
-                i.Add(label);
-                Message.AddElement(i, 0.5f, 0.5f, 0.5f, -0.1f);
-
-                var buttons = UIMessage.YesAndNoButtons(() => {
+                Message.AddElement(new UILabel("would you like to Leave"), new(0, -20), hiddenJustifyY: -0.1f);
+                Message.AddElement(UIMessage.YesAndNoButtons(() => {
                     Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu);
                     Message.Shown = false;
-                }, () => Message.Shown = false, 0, 4, 0.5f);
-                Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
+                }, () => Message.Shown = false), new(0, 20));
                 Message.Shown = true;
             }
         }, new(10));

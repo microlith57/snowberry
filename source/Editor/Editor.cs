@@ -252,18 +252,12 @@ public class Editor : UIScene {
                     // TODO: validate that it's a valid filename & doesn't already exist
                     UITextField newName = new UITextField(Fonts.Regular, 300);
                     newName.Position = new Vector2(-newName.Width / 2f, -8);
-                    // TODO: this UI code sucks
-                    var element = UIElement.Regroup(info, newName);
-                    Vector2 offset = new Vector2(element.Width / 2f, element.Height);
-                    info.Position -= offset;
-                    newName.Position -= offset;
-                    Message.AddElement(element, 0.5f, 0.5f, 0.5f, -0.1f);
-                    var buttons = UIMessage.YesAndNoButtons(() => {
+                    Message.AddElement(UIElement.Regroup(info, newName), new(0, -30), hiddenJustifyY: -0.1f);
+                    Message.AddElement(UIMessage.YesAndNoButtons(() => {
                         // no point auto-reloading when the map definitely doesn't exist yet
                         BinaryExporter.ExportMapToFile(Map, newName.Value + ".bin");
                         Message.Shown = false;
-                    }, () => Message.Shown = false, 0, 4, 0.5f);
-                    Message.AddElement(buttons, 0.5f, 0.5f, 0.5f, 1.1f);
+                    }, () => Message.Shown = false), new(0, 24));
                     Message.Shown = true;
                 } else {
                     TryBackup(Backups.BackupReason.OnSave);
@@ -296,7 +290,6 @@ public class Editor : UIScene {
 
                     Message.Clear();
 
-                    UILabel title = new UILabel(Dialog.Clean("SNOWBERRY_BACKUPS"));
                     UIScrollPane list = new() {
                         Width = 300,
                         Height = 400
@@ -320,12 +313,10 @@ public class Editor : UIScene {
                         odd = !odd;
                     }
 
-                    UIElement content = new();
-                    content.AddBelow(title, new(-title.Width / 2f, -220));
-                    content.AddBelow(list, new(-list.Width / 2f, 5));
-                    Message.AddElement(content, 0.5f, 0.5f, 0.5f, -0.1f);
+                    Message.AddElement(new UILabel(Dialog.Clean("SNOWBERRY_BACKUPS")), new(0, -220), hiddenJustifyY: -0.1f);
+                    Message.AddElement(list, new(0, -8), hiddenJustifyY: -0.1f);
 
-                    UIButton openFolder = new(Dialog.Clean("SNOWBERRY_BACKUPS_OPEN_MAP_FOLDER"), Fonts.Regular, 3, 3) {
+                    Message.AddElement(new UIButton(Dialog.Clean("SNOWBERRY_BACKUPS_OPEN_MAP_FOLDER"), Fonts.Regular, 3, 3) {
                         OnPress = () => {
                             string folder = Backups.BackupsDirectoryFor(From.Value);
                             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
@@ -335,17 +326,13 @@ public class Editor : UIScene {
                         BG = Calc.HexToColor("ff8c00"),
                         HoveredBG = Calc.HexToColor("e37e02"),
                         PressedBG = Calc.HexToColor("874e07")
-                    };
-                    UIButton done = new(Dialog.Clean("SNOWBERRY_BACKUPS_DONE"), Fonts.Regular, 3, 3) {
+                    }, new(0, 215));
+                    Message.AddElement(new UIButton(Dialog.Clean("SNOWBERRY_BACKUPS_DONE"), Fonts.Regular, 3, 3) {
                         OnPress = () => Message.Shown = false,
                         BG = Color.Red,
                         HoveredBG = Color.Crimson,
                         PressedBG = Color.DarkRed
-                    };
-                    UIElement wrapper = new UIElement();
-                    wrapper.AddBelow(openFolder, new(-openFolder.Width / 2f, 207));
-                    wrapper.AddBelow(done, new(-done.Width / 2f, 7));
-                    Message.AddElement(wrapper, 0.5f, 0.5f, 0.5f, 1.1f);
+                    }, new(0, 238));
 
                     Message.Shown = true;
                 },

@@ -4,7 +4,6 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     EDITOR_MAINMENU= Snowberry
 
 # *** Main Menu ***
-
     SNOWBERRY_MAINMENU_YES=                     yes
     SNOWBERRY_MAINMENU_NO=                      no
     SNOWBERRY_MAINMENU_CLOSE=                   close
@@ -15,6 +14,9 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_MAINMENU_LOAD_CONFIRM=            are you sure you want to open this map?
     SNOWBERRY_MAINMENU_LOAD_UNSAVED=            (all unsaved changes will be lost)
     SNOWBERRY_MAINMENU_LOAD_TIP=                to skip this message, hold CTRL while clicking on the map
+	
+	SNOWBERRY_MAINMENU_LOAD_FAILED=             failed to open map
+	SNOWBERRY_MAINMENU_LOAD_FAILED_CLOSE=       close
 
     SNOWBERRY_MAINMENU_LOADSEARCH=              search map or @mod...
     SNOWBERRY_MAINMENU_LOADSEARCHBAR_NONE=      no results!
@@ -27,11 +29,13 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_MAINMENU_CREDITS=                 by catapillie, leppa, Viv
 
 # *** Editor ***
-
     SNOWBERRY_EDITOR_RETURN=                    return to map
     SNOWBERRY_EDITOR_PLAYTEST=                  playtest
     SNOWBERRY_EDITOR_EXPORT=                    save
-    
+
+	SNOWBERRY_EDITOR_PLAYTEST_NO_ROOMS=         create a room first!
+	SNOWBERRY_EDITOR_PLAYTEST_NO_SPAWNS=        place down a spawn point first!
+
     SNOWBERRY_EDITOR_EXPORT_NEW=                this map doesn't have a name yet! pick a filename
     SNOWBERRY_EDITOR_EXPORT_UNSAVEABLE=         this map came from a zip file or vanilla, and can't be saved over. pick a filename to save it your Mods folder
 
@@ -93,7 +97,6 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_EDITOR_TILE_BRUSH_EYEDROPPER_TT=  eyedropper (K, alt-K)
 
 # *** Room Tool ***
-
     SNOWBERRY_EDITOR_ROOM_NONE_TITLE=           no room selected
     SNOWBERRY_EDITOR_ROOM_CREATE_TITLE=         create room
 	SNOWBERRY_EDITOR_ROOM_SELECTED_TITLE=       selected room:
