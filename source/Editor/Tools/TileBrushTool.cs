@@ -321,7 +321,7 @@ public class TileBrushTool : Tool {
 
                 if (holoRetile) {
                     holoRetile = false;
-                    holoGrid = (fg ? GFX.FGAutotiler : GFX.BGAutotiler).GenerateMap(fg ? holoFgTileMap : holoBgTileMap, new Autotiler.Behaviour() { EdgesExtend = true }).TileGrid;
+                    holoGrid = (fg ? GFX.FGAutotiler : GFX.BGAutotiler).GenerateMapStable(fg ? holoFgTileMap : holoBgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid;
                 }
             }
         }
