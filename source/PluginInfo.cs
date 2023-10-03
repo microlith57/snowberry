@@ -156,6 +156,8 @@ public class LoennPluginInfo : PluginInfo {
     // these properties aren't saved with the rest (handled by snowberry) but affect resizability
     public readonly bool HasWidth, HasHeight;
 
+    public Dictionary<string, object> Defaults = new();
+
     public LoennPluginInfo(string name, LuaTable plugin, bool isTrigger) : base(name, typeof(LuaEntity), null, CelesteEverest.INSTANCE) {
         Plugin = plugin;
         IsTrigger = isTrigger;
@@ -166,6 +168,8 @@ public class LoennPluginInfo : PluginInfo {
                     foreach (var item in data.Keys.OfType<string>())
                         if (!Room.IllegalOptionNames.Contains(item)) {
                             Options[item] = new LuaEntityOption(item, data[item].GetType(), name, isTrigger);
+                            if (!Defaults.ContainsKey(item))
+                                Defaults[item] = data[item];
                         } else {
                             HasWidth |= item == "width";
                             HasHeight |= item == "height";
@@ -178,6 +182,8 @@ public class LoennPluginInfo : PluginInfo {
                         foreach (var item in data.Keys.OfType<string>())
                             if (!Room.IllegalOptionNames.Contains(item)) {
                                 Options[item] = new LuaEntityOption(item, data[item].GetType(), name, isTrigger);
+                                if (!Defaults.ContainsKey(item))
+                                    Defaults[item] = data[item];
                             } else {
                                 HasWidth |= item == "width";
                                 HasHeight |= item == "height";
@@ -230,7 +236,11 @@ public class LuaEntityOption : PluginOption {
     }
 
     public object GetValue(Plugin from) {
-        return ((LuaEntity)from).Values.TryGetValue(Key, out object v) ? v : Util.Default(FieldType);
+        if (((LuaEntity)from).Values.TryGetValue(Key, out object v))
+            return v;
+        if (from.Info is LoennPluginInfo lpi && lpi.Defaults.TryGetValue(Key, out var def))
+            return def;
+        return Util.Default(FieldType);
     }
 
     public void SetValue(Plugin on, object value) {
