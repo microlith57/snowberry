@@ -35,6 +35,7 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 
 	SNOWBERRY_EDITOR_PLAYTEST_NO_ROOMS=         create a room first!
 	SNOWBERRY_EDITOR_PLAYTEST_NO_SPAWNS=        place down a spawn point first!
+	SNOWBERRY_EDITOR_PLAYTEST_OK=               ok!
 
     SNOWBERRY_EDITOR_EXPORT_NEW=                this map doesn't have a name yet! pick a filename
     SNOWBERRY_EDITOR_EXPORT_UNSAVEABLE=         this map came from a zip file or vanilla, and can't be saved over. pick a filename to save it your Mods folder

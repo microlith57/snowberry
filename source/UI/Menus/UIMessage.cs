@@ -87,13 +87,10 @@ public class UIMessage : UIElement {
 
     public static void ShowInfoPopup(string infoKey, string closeKey){
         UIScene.Instance.Message.Clear();
-        UIScene.Instance.Message.AddElement(UIElement.Regroup(
-            new UILabel(Dialog.Clean(infoKey)){
-            Position = new(0, -10)
-        }, new UIButton(Dialog.Clean(closeKey), Fonts.Regular, 4, 4){
+        UIScene.Instance.Message.AddElement(new UILabel(Dialog.Clean(infoKey)), new(0, -10), hiddenJustifyY: -0.1f);
+        UIScene.Instance.Message.AddElement(new UIButton(Dialog.Clean(closeKey), Fonts.Regular, 4, 4){
             OnPress = () => UIScene.Instance.Message.Shown = false,
-            Position = new(0, 20)
-        }), hiddenJustifyY: -0.1f);
+        }, new(0, 20), hiddenJustifyY: -0.1f);
         UIScene.Instance.Message.Shown = true;
     }
 }

@@ -354,6 +354,16 @@ public class Editor : UIScene {
     }
 
     public void BeginPlaytest() {
+        if (Map.Rooms.Count == 0) {
+            UIMessage.ShowInfoPopup("SNOWBERRY_EDITOR_PLAYTEST_NO_ROOMS", "SNOWBERRY_EDITOR_PLAYTEST_OK");
+            return;
+        }
+
+        if (!Map.Rooms.Any(x => x.TrackedEntities.TryGetValue(typeof(Plugin_Player), out var p) && p.Any())) {
+            UIMessage.ShowInfoPopup("SNOWBERRY_EDITOR_PLAYTEST_NO_SPAWNS", "SNOWBERRY_EDITOR_PLAYTEST_OK");
+            return;
+        }
+
         Audio.SetMusic(null);
         Audio.SetAmbience(null);
 
@@ -368,7 +378,7 @@ public class Editor : UIScene {
         generatePlaytestMapData = true;
         PlaytestMapData = new MapData(Map.From);
         PlaytestSession = new Session(Map.From);
-        if (SelectedRoom?.Entities.OfType<Plugin_Player>().FirstOrDefault()?.Position is Vector2 v) {
+        if ((SelectedRoom?.TrackedEntities.TryGetValue(typeof(Plugin_Player), out var players) ?? false) && players.FirstOrDefault() is { Position: var v }) {
             PlaytestSession.RespawnPoint = v;
             PlaytestSession.Level = SelectedRoom.Name;
             PlaytestSession.StartedFromBeginning = false;

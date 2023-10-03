@@ -9,6 +9,10 @@ namespace Snowberry.Editor.Entities;
 [Plugin("player")]
 public class Plugin_Player : Entity{
 
+    public Plugin_Player() {
+        Tracked = true;
+    }
+
     public override void Render(){
         base.Render();
         Facings? facing = GetSpawnFacing();
