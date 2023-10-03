@@ -75,8 +75,7 @@ public static class StableAutotiler {
     }
 
     private static ulong mod(ulong x, ulong m) => (x%m + m)%m;
-    private static ulong pack(int x, int y) => (((ulong)x) << 32) + (ulong)y;
-    private static MTexture Pick(List<MTexture> choices, int x2, int y2) => choices[(int)mod(splitmix64(pack(x2, y2)), (ulong)choices.Count)];
+    private static MTexture Pick(List<MTexture> choices, int x, int y) => choices[(int)mod(splitmix64((((ulong)x) << 32) + (ulong)y), (ulong)choices.Count)];
 
     #region Splitmix64
     /*  Written in 2015 by Sebastiano Vigna (vigna@acm.org)
