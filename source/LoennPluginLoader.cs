@@ -127,7 +127,8 @@ public static class LoennPluginLoader {
                             options[item] = data[item];
 
                     string placementName = placements["name"] as string ?? "";
-                    placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : "Loenn: " + plugin.Key;
+                    placementName = placementName.Replace(" ", ""); // thank you Flaglines and Such. very cool
+                    placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{placements["name"]}";
                     Placements.Create(placementName, plugin.Key, options, isTrigger);
                 } else if (placements.Keys.Count >= 1 && placements[1] is LuaTable) {
                     for (int i = 1; i < placements.Keys.Count + 1; i++) {
@@ -138,7 +139,8 @@ public static class LoennPluginLoader {
                                     options[item] = data[item];
 
                             string placementName = ptable["name"] as string;
-                            placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"Loenn: {plugin.Key} :: {ptable["name"]}";
+                            placementName = placementName.Replace(" ", ""); // lol
+                            placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{ptable["name"]}";
                             Placements.Create(placementName, plugin.Key, options, isTrigger);
                         }
                     }
