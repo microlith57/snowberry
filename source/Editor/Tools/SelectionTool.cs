@@ -32,6 +32,7 @@ public class SelectionTool : Tool {
     // entity resizing
     private static bool resizingX, resizingY, fromLeft, fromTop;
     private static Rectangle oldEntityBounds;
+    private const int resizeMargins = 2;
 
     // paste preview
     private static bool pasting = false;
@@ -153,10 +154,10 @@ public class SelectionTool : Tool {
                     if (solo != null) {
                         if (MInput.Mouse.PressedLeftButton || justMovedMouse) {
                             // TODO: can this be shared between RoomTool & SelectionTool?
-                            fromLeft = Math.Abs(Mouse.World.X - solo.Position.X) <= 4;
-                            resizingX = solo.MinWidth > -1 && (Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= 4 || fromLeft);
-                            fromTop = Math.Abs(Mouse.World.Y - solo.Position.Y) <= 4;
-                            resizingY = solo.MinHeight > -1 && (Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4 || fromTop);
+                            fromLeft = Math.Abs(Mouse.World.X - solo.Position.X) <= resizeMargins;
+                            resizingX = solo.MinWidth > -1 && (Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= resizeMargins || fromLeft);
+                            fromTop = Math.Abs(Mouse.World.Y - solo.Position.Y) <= resizeMargins;
+                            resizingY = solo.MinHeight > -1 && (Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= resizeMargins || fromTop);
                             oldEntityBounds = solo.Bounds;
                         } else if (resizingX || resizingY) {
                             var wSnapped = Mouse.World.RoundTo(8);
@@ -341,10 +342,10 @@ public class SelectionTool : Tool {
             // only have 1 entity selected & at the borders? show resizing tooltips
             Entity solo = GetSoloEntity();
             if (solo != null) {
-                var fromLeft = solo.MinWidth > -1 && Math.Abs(Mouse.World.X - solo.Position.X) <= 4;
-                var fromRight = solo.MinWidth > -1 && Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= 4;
-                var fromTop = solo.MinHeight > -1 && Math.Abs(Mouse.World.Y - solo.Position.Y) <= 4;
-                var fromBottom = solo.MinHeight > -1 && Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= 4;
+                var fromLeft = solo.MinWidth > -1 && Math.Abs(Mouse.World.X - solo.Position.X) <= resizeMargins;
+                var fromRight = solo.MinWidth > -1 && Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= resizeMargins;
+                var fromTop = solo.MinHeight > -1 && Math.Abs(Mouse.World.Y - solo.Position.Y) <= resizeMargins;
+                var fromBottom = solo.MinHeight > -1 && Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= resizeMargins;
                 if (fromLeft || fromRight || fromTop || fromBottom) {
                     if ((fromBottom && fromLeft) || (fromTop && fromRight)) {
                         cursor = UIScene.CursorsAtlas.GetSubtexture(32, 32, 16, 16);
