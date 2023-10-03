@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Xml;
 
-namespace Snowberry; 
+namespace Snowberry;
 
 public static class Fonts {
     public static Font Regular { get; private set; }

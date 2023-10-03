@@ -11,6 +11,9 @@ using Placement = Snowberry.Editor.Placements.Placement;
 namespace Snowberry.Editor.Tools;
 
 public class PlacementTool : Tool {
+
+    private const int width = 240;
+
     private Placement curLeftSelection, curRightSelection;
     private Dictionary<Placement, UIButton> placementButtons = new();
     private Entity preview;
@@ -26,7 +29,7 @@ public class PlacementTool : Tool {
         placementButtons.Clear();
 
         UIElement panel = new(){
-            Width = 240,
+            Width = width,
             Background = Calc.HexToColor("202929") * (185 / 255f),
             GrabsClick = true,
             GrabsScroll = true,
@@ -34,7 +37,7 @@ public class PlacementTool : Tool {
         };
 
         buttonPane = new UIScrollPane{
-            Width = 240,
+            Width = width,
             Background = null,
             Height = height - 30
         };
@@ -55,7 +58,7 @@ public class PlacementTool : Tool {
             return (split.Length >= 2 ? split[0] : "Celeste").Contains(term);
         }
 
-        panel.Add(searchBar = new UISearchBar<Placement>(230, entityMatcher) {
+        panel.Add(searchBar = new UISearchBar<Placement>(width - 10, entityMatcher) {
             Position = new Vector2(5, height - 20),
             Entries = Placements.All.ToArray(),
             InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
@@ -226,14 +229,14 @@ public class PlacementTool : Tool {
         };
         foreach (var group in Placements.All.Where(x => x.IsTrigger == triggers).OrderBy(x => x.Name).GroupBy(x => x.EntityName)) {
             if (group.Count() == 1)
-                entities.Add(CreatePlacementButton(group.First()));
+                entities.Add(CreatePlacementButton(group.First(), width - entities.PadLeft));
             else {
-                UITree subtree = new UITree(CreatePlacementButton(group.First()), new(), new(5, 2), collapsed: true) {
+                UITree subtree = new UITree(CreatePlacementButton(group.First(), width - entities.PadLeft * 2 - 20), new(), new(5, 2), collapsed: true) {
                     PadUp = 2,
                     PadDown = 2
                 };
                 foreach (Placement p in group.Skip(1))
-                    subtree.Add(CreatePlacementButton(p));
+                    subtree.Add(CreatePlacementButton(p, width - entities.PadLeft * 2));
                 subtree.Layout();
                 entities.Add(subtree);
             }
@@ -274,8 +277,8 @@ public class PlacementTool : Tool {
         return RenderPart(decalTree);
     }
 
-    private UIButton CreatePlacementButton(Placement item) {
-        UIButton b = new UIButton(item.Name, Fonts.Regular, 4, 4) {
+    private UIButton CreatePlacementButton(Placement item, float maxWidth) {
+        UIButton b = new UIButton(Fonts.Regular.FitWithSuffix(item.Name, maxWidth - 15), Fonts.Regular, 4, 4) {
             OnPress = () => curLeftSelection = curLeftSelection != item ? item : null,
             OnRightPress = () => curRightSelection = curRightSelection != item ? item : null
         };

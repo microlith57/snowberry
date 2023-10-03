@@ -4,7 +4,7 @@ using Monocle;
 using System;
 using System.Collections.Generic;
 
-namespace Snowberry; 
+namespace Snowberry;
 
 public class Font {
     internal struct Glyph {
@@ -120,5 +120,18 @@ public class Font {
         }
 
         return size - Vector2.UnitX;
+    }
+
+    public string FitWithSuffix(string text, float maxWidth, string suffix = "...") {
+        if (Measure(text).X <= maxWidth)
+            return text;
+
+        string soFar = "";
+        foreach (char c in text) {
+            if (Measure(soFar + c + suffix).X > maxWidth)
+                return soFar + "...";
+            soFar += c;
+        }
+        return soFar;
     }
 }
