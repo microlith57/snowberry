@@ -81,13 +81,11 @@ public abstract class Plugin {
         }
     }
 
-    public static object ObjectToStr(object obj) {
-        return obj switch {
-            Color color => color.IntoRgbString(),
-            Enum => obj.ToString(),
-            char ch => ch.ToString(),
-            Tileset ts => ts.Key.ToString(),
-            _ => obj
-        };
-    }
+    public static object ObjectToStr(object obj) => obj switch {
+        Color color => color.IntoRgbString(),
+        Enum => obj.ToString(),
+        char ch => ch.ToString(),
+        Tileset ts => ts.Key.ToString(),
+        _ => obj
+    };
 }

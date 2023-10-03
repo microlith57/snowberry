@@ -46,6 +46,6 @@ public class UnknownEntity : Entity {
     public override void SaveAttrs(BinaryPacker.Element e) {
         base.SaveAttrs(e);
         foreach (string opt in Attrs.Keys)
-            e.Attributes[opt] = Attrs[opt];
+            e.Attributes[opt] = ObjectToStr(Attrs[opt]);
     }
 }

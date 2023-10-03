@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
+using Celeste.Mod;
 
 namespace Snowberry;
 
@@ -15,7 +15,7 @@ public static class BinaryExporter {
     }
 
     public static void ExportToFile(Element e, string filename) {
-        string output = Path.Combine(Celeste.Mod.Everest.Loader.PathMods, filename);
+        string output = Path.Combine(Everest.Loader.PathMods, filename);
         Directory.CreateDirectory(Path.GetDirectoryName(output));
         using var file = File.OpenWrite(output);
         ExportInto(e, filename, file);
@@ -51,7 +51,7 @@ public static class BinaryExporter {
 
     public static void CreateLookupTable(Element element, Dictionary<string, short> table) {
         void AddValue(string val){
-            if(val != null && !val.Equals("_eid") && !table.ContainsKey(val))
+            if(val != null && !table.ContainsKey(val))
                 table.Add(val, (short)table.Count);
         }
 
@@ -69,36 +69,32 @@ public static class BinaryExporter {
     }
 
     public static void WriteElement(BinaryWriter writer, Element e, Dictionary<string, short> lookup){
-        int attrs = e.Attributes?.Count(k => k.Key != "_eid") ?? 0;
+        int attrs = e.Attributes?.Count ?? 0;
         int children = e.Children?.Count ?? 0;
-        writer.Write(lookup[e.Name ?? "unnamed"]);
+        writer.Write(e.Name != null && lookup.TryGetValue(e.Name, out var v) ? v : lookup["unnamed"]);
         writer.Write((byte)attrs);
         if(e.Attributes != null)
-            foreach(var attr in e.Attributes.Where(attr => !attr.Key.Equals("_eid"))){
+            foreach(var attr in e.Attributes){
                 ParseValue(attr.Value.ToString(), out byte type, out object result);
-                writer.Write(lookup[attr.Key]);
+                writer.Write(lookup.TryGetValue(attr.Key, out var w) ? w : lookup["unnamed"]);
                 writer.Write(type);
-                switch (type){
-                    case 0:
-                        writer.Write((bool)result);
-                        continue;
-                    case 1:
-                        writer.Write((byte)result);
-                        continue;
-                    case 2:
-                        writer.Write((short)result);
-                        continue;
-                    case 3:
-                        writer.Write((int)result);
-                        continue;
-                    case 4:
-                        writer.Write((float)result);
-                        continue;
-                    case 5:
-                        writer.Write(lookup[(string)result]);
-                        continue;
-                    default:
-                        continue;
+                if (type == 0)
+                    writer.Write((bool)result);
+                else if (type == 1)
+                    writer.Write((byte)result);
+                else if (type == 2)
+                    writer.Write((short)result);
+                else if (type == 3)
+                    writer.Write((int)result);
+                else if (type == 4)
+                    writer.Write((float)result);
+                else if (type == 5) {
+                    string strResult = (string)result;
+                    if (!lookup.ContainsKey(strResult)) {
+                        Snowberry.Log(LogLevel.Error, $"Found attribute \"{attr.Value}\" with invalid type \"{attr.Value.GetType()}\"!");
+                        writer.Write(lookup["unnamed"]);
+                    } else
+                        writer.Write(lookup[strResult]);
                 }
             }
 
