@@ -76,6 +76,11 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_BACKUPS_CLEAR_WARNING=            are you sure you want to clear all backups? this can't be undone!
 
 # *** Selection Tool ***
+	SNOWBERRY_EDITOR_SELECT_RECT_TT=            rectangle (R)
+	SNOWBERRY_EDITOR_SELECT_LINE_TT=            line (L)
+	SNOWBERRY_EDITOR_SELECT_LASSO_TT=           lasso (S)
+	SNOWBERRY_EDITOR_SELECT_MAGICWAND_TT=       magic wand (W)
+	
 	SNOWBERRY_EDITOR_SELECT_ENTITIES_TT=        select entities (shift-E)
 	SNOWBERRY_EDITOR_SELECT_TRIGGERS_TT=        select triggers (shift-T)
 	SNOWBERRY_EDITOR_SELECT_FG_DECALS_TT=       select FG decals (shift-F)

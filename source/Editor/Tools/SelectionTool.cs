@@ -20,12 +20,15 @@ public class SelectionTool : Tool {
     private static List<UIButton> modeButtons = new(), toggleButtons = new();
 
     // selection modes
-    private enum SelectionMode {
-        Rect, Line, Lasso, MagicWand
-    }
     private enum SelectionEffect {
         Set, Add, Subtract
     }
+    private enum SelectionMode {
+        Rect, Line, Lasso, MagicWand
+    }
+    private static readonly List<Keys> ModeKeybinds = new() {
+        Keys.R, Keys.L, Keys.S, Keys.W
+    };
 
     private static SelectionMode currentMode = SelectionMode.Rect;
 
@@ -68,7 +71,19 @@ public class SelectionTool : Tool {
         UIElement p = new UIElement();
         Vector2 offset = new Vector2(0, 4);
 
+        modeButtons.Clear();
+        foreach (var mode in Enum.GetValues(typeof(SelectionMode))) {
+            var button = new UIKeyboundButton(SelectionAtlas.GetSubtexture(16 * (int)mode, 0, 16, 16), 3, 3) {
+                OnPress = () => currentMode = (SelectionMode)mode,
+                ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_SELECT_{mode.ToString().ToUpperInvariant()}_TT"),
+                Key = ModeKeybinds[(int)mode]
+            };
+            p.AddRight(button, offset);
+            modeButtons.Add(button);
+        }
+        UIButton.Group(modeButtons);
 
+        p.AddRight(new(){ Width = 1 }, new(4, 0)); // world's best layouting
 
         p.AddRight(CreateToggleButton(0, 32, Keys.E, "ENTITIES", () => selectEntities, s => selectEntities = s), offset);
         p.AddRight(CreateToggleButton(32, 32, Keys.T, "TRIGGERS", () => selectTriggers, s => selectTriggers = s), offset);
@@ -106,6 +121,14 @@ public class SelectionTool : Tool {
             // refreshPanel code gets skipped because there's no room
             Editor.SelectedObjects = null;
             selectionPanel?.Display(null);
+        }
+
+        for (int i = 0; i < modeButtons.Count; i++) {
+            UIButton button = modeButtons[i];
+            if (currentMode == (SelectionMode)i)
+                button.BG = button.PressedBG = button.HoveredBG = Color.Gray;
+            else
+                button.ResetBgColors();
         }
 
         if (pasting) {
