@@ -310,14 +310,6 @@ public class Room {
         // Triggers
         foreach (Entity trigger in Triggers)
             trigger.Render();
-
-        if (this == Editor.SelectedRoom) {
-            if (Editor.SelectionInProgress.HasValue)
-                Draw.Rect(Editor.SelectionInProgress.Value, Color.Blue * 0.25f);
-            if (Editor.SelectedObjects != null)
-                foreach (var rect in Editor.SelectedObjects.Select(s => s.Area()))
-                    Draw.Rect(rect, Color.Blue * 0.25f);
-        }
     }
 
     internal void PostRender() {

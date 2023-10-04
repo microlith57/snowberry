@@ -18,6 +18,7 @@ public class SelectionTool : Tool {
     private static bool selectEntities = true, selectTriggers = true, selectFgDecals = false, selectBgDecals = false, selectFgTiles = false, selectBgTiles = false;
     private static UISelectionPane selectionPanel;
     private static List<UIButton> modeButtons = new(), toggleButtons = new();
+    private static List<Selection> next = new();
 
     // selection modes
     private enum SelectionEffect {
@@ -170,7 +171,7 @@ public class SelectionTool : Tool {
                     int by = (int)Math.Max(Mouse.World.Y, editor.worldClick.Y);
                     Rectangle r = new Rectangle(ax, ay, bx - ax, by - ay);
                     Editor.SelectionInProgress = r;
-                    Editor.SelectedObjects = GetEnabledSelections(r);
+                    next = GetEnabledSelections(r);
                 } else {
                     // if only one entity is selected near the corners, resize
                     Entity solo = GetSoloEntity();
@@ -243,6 +244,15 @@ public class SelectionTool : Tool {
                 }
 
                 refreshPanel = true;
+            }
+
+            if (next.Any() && movedMouse && (MInput.Mouse.ReleasedLeftButton || !canClick)) {
+                Editor.SelectedObjects = CurrentEffect switch {
+                    SelectionEffect.Add => Editor.SelectedObjects.Concat(next).Distinct().ToList(),
+                    SelectionEffect.Subtract => Editor.SelectedObjects.Except(next).ToList(),
+                    _ => next
+                };
+                next.Clear();
             }
 
             Editor.SelectionInProgress = null;
@@ -334,9 +344,24 @@ public class SelectionTool : Tool {
     public override void RenderWorldSpace() {
         base.RenderWorldSpace();
         if (Editor.SelectedRoom != null) {
+            Color nextCol = CurrentEffect switch {
+                SelectionEffect.Add => Color.Green,
+                SelectionEffect.Subtract => Color.Red,
+                _ => Color.Blue
+            };
+            // highlight what's hovered
             foreach (var item in GetEnabledSelections(Mouse.World.ToRect()))
-                if (Editor.SelectedObjects == null || !Editor.SelectedObjects.Contains(item))
-                    Draw.Rect(item.Area(), Color.Blue * 0.15f);
+                Draw.Rect(item.Area(), nextCol * 0.15f);
+            // highlight the selection rect
+            if (Editor.SelectionInProgress.HasValue)
+                Draw.Rect(Editor.SelectionInProgress.Value, nextCol * 0.25f);
+            // highlight already-selected stuff in blue
+            if (Editor.SelectedObjects != null)
+                foreach (var rect in Editor.SelectedObjects.Select(s => s.Area()))
+                    Draw.Rect(rect, Color.Blue * 0.25f);
+            // highlight what's about to get selected
+            foreach (var rect in next.Select(s => s.Area()))
+                Draw.Rect(rect, nextCol * 0.15f);
 
             if (MInput.Mouse.CheckLeftButton && !canSelect && (resizingX || resizingY) && GetSoloEntity() is {} nonNull)
                 DrawUtil.DrawGuidelines(nonNull.Bounds, Color.White);
