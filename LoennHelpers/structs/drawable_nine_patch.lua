@@ -284,11 +284,6 @@ function drawableNinePatch.fromTexture(texture, options, drawX, drawY, drawWidth
     end
 
     local atlas = options.atlas or "Gameplay"
-    --local spriteMeta = atlases.getResource(texture, atlas)
-    --
-    --if not spriteMeta then
-    --    return
-    --end
 
     ninePatch.atlas = atlas
     ninePatch.texture = texture

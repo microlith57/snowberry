@@ -123,4 +123,12 @@ public static class Util {
             new[] { (byte)Math.Round(c.R * f), (byte)Math.Round(c.G * f), (byte)Math.Round(c.B * f), c.A }
         ).Replace("-", string.Empty);
     }
+
+    public static Dictionary<K, V> OrElse<K, V>(this Dictionary<K, V> primary, Dictionary<K, V> fallback) {
+        var result = new Dictionary<K, V>(primary);
+        foreach(KeyValuePair<K,V> p in fallback)
+            if (!result.ContainsKey(p.Key))
+                result[p.Key] = p.Value;
+        return result;
+    }
 }

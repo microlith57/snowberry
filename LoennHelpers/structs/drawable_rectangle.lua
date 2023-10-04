@@ -5,31 +5,48 @@ local require = function(name)
 end
 -- end snowberry header
 
-local drawableSprite = require("structs.drawable_sprite")
 local utils = require("utils")
-
-local texName = "snowberry/1x1"
 
 local drawableRectangle = {}
 
-drawableRectangle.tintingPixelTexture = texName
+local drawableRectangleMt = {}
+drawableRectangleMt.__index = {}
+
+drawableRectangle.tintingPixelTexture = "snowberry/1x1"
 
 -- for now we just Don't
-function drawableRectangle.fromRectangle(mode, x, y, width, height, color, secondaryColor)
-    if type(x) == "table" then -- thanks loenn
-        color = utils.getColor(y)
-        secondaryColor = utils.getColor(width)
+function drawableRectangleMt.__index:getDrawableSprite()
+    return self
+end
 
-        height = x.height or x[4]
-        width = x.width or x[3]
-        y = x.y or x[2]
-        x = x.x or x[1]
+function drawableRectangle.fromRectangle(mode, x, y, width, height, color, secondaryColor)
+    local rectangle = {
+        _type = "drawableRectangle"
+    }
+
+    rectangle.mode = mode
+
+    if type(x) == "table" then
+        rectangle.x = x.x or x[1]
+        rectangle.y = x.y or x[2]
+
+        rectangle.width = x.width or x[3]
+        rectangle.height = x.height or x[4]
+
+        rectangle.color = utils.getColor(y)
+        rectangle.secondaryColor = utils.getColor(width)
+    else
+        rectangle.x = x
+        rectangle.y = y
+
+        rectangle.width = width
+        rectangle.height = height
+
+        rectangle.color = utils.getColor(color)
+        rectangle.secondaryColor = utils.getColor(secondaryColor)
     end
-    
-    local sprite = drawableSprite.fromTexture(texName, { x = x, y = y, color = color })
-    sprite:setScale(width, height)
-    sprite:setJustification(0, 0)
-    return sprite
+
+    return setmetatable(rectangle, drawableRectangleMt)
 end
 
 return drawableRectangle

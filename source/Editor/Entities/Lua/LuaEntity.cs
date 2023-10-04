@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using NLua;
 
-namespace Snowberry.Editor.Entities;
+namespace Snowberry.Editor.Entities.Lua;
 
 public class LuaEntity : Entity {
     private readonly LuaTable plugin;
@@ -19,7 +19,8 @@ public class LuaEntity : Entity {
     // updated on modification
     private Color? color, fillColor, borderColor;
     private string texture, nodeTexture;
-    private List<SpriteWithPos> sprites;
+    //private List<SpriteWithPos> sprites;
+    private LuaSprites sprites;
     private Vector2 justify = Vector2.One * 0.5f, nodeJustify = Vector2.One * 0.5f;
     private NodeLineRenderType nodeLines = NodeLineRenderType.none;
 
@@ -30,6 +31,7 @@ public class LuaEntity : Entity {
         Info = info;
         this.plugin = plugin;
         IsTrigger = isTrigger;
+        sprites = new(Name);
 
         if(CallOrGet<LuaTable>("nodeLimits") is LuaTable limits) {
             MinNodes = (int)Float(limits, 1, 0);
@@ -99,7 +101,7 @@ public class LuaEntity : Entity {
                 ? v
                 : NodeLineRenderType.none;
 
-            sprites = Sprites();
+            sprites.Process(CallOrGetAll("sprite"));
 
             initialized = true;
         }
@@ -137,20 +139,10 @@ public class LuaEntity : Entity {
             Draw.Rect(Position, Width, Height, fill);
             if(borderColor is Color border)
                 Draw.HollowRect(Position, Width, Height, border);
-        } else if(color is Color c) {
+        } else if(color is Color c)
             Draw.Rect(Position, Width, Height, c);
-        }
 
-        foreach(var spr in sprites) {
-            MTexture draw = spr.Texture;
-            if (spr.TexPos != Vector2.Zero || spr.TexSize != -Vector2.One) {
-                float tWidth = spr.TexSize.X < 0 ? spr.Texture.Width - spr.TexPos.X : spr.TexSize.X;
-                float tHeight = spr.TexSize.Y < 0 ? spr.Texture.Height - spr.TexPos.Y : spr.TexSize.Y;
-                draw = spr.Texture.GetSubtexture((int)spr.TexPos.X, (int)spr.TexPos.Y, (int)tWidth, (int)tHeight);
-            }
-
-            draw.DrawJustified(spr.Pos, spr.Justification, spr.Color, spr.Scale, spr.Rotation);
-        }
+        sprites.Render();
     }
 
     protected override IEnumerable<Rectangle> Select() {
@@ -192,67 +184,7 @@ public class LuaEntity : Entity {
         return ret;
     }
 
-    private List<SpriteWithPos> Sprites() {
-        List<SpriteWithPos> ret = new();
-        if(CallOrGetAll("sprite") is object[] sprites)
-            foreach(var item in sprites)
-                if (item is LuaTable sprite) {
-                    // sprites can be returned directly
-                    if (sprite["_type"] != null)
-                        CreateSpriteFromDrawable(sprite, ret);
-                    else
-                        // ... or a table of many
-                        foreach (var k in sprite.Keys)
-                            if (sprite[k] is LuaTable sp)
-                                CreateSpriteFromDrawable(sp, ret);
-                    sprite.Dispose();
-                }
-
-        return ret;
-    }
-
-    private void CreateSpriteFromDrawable(LuaTable sp, List<SpriteWithPos> ret){
-        // normalize ninepatches/lines
-        if(sp["_type"] is "drawableNinePatch" or "drawableLine")
-            if(sp["getDrawableSprite"] is LuaFunction h){
-                sp = h.Call(sp)?.FirstOrDefault() as LuaTable;
-                if(sp == null)
-                    return;
-                foreach(var k2 in sp.Keys)
-                    CreateSpriteFromTable(sp[k2] as LuaTable, ret);
-            }
-
-        CreateSpriteFromTable(sp, ret);
-    }
-
-    private void CreateSpriteFromTable(LuaTable sp, List<SpriteWithPos> ret){
-        if(sp?["meta"] is LuaTable meta && meta["image"] is string image && meta["atlas"] is string atlasName){
-            Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
-            MTexture tex = atlas[image];
-            Vector2 pos = new Vector2(Float(sp, "x", 0), Float(sp, "y", 0));
-            Vector2 just = new Vector2(Float(sp, "justificationX", 0.5f), Float(sp, "justificationY", 0.5f));
-            Vector2 scale = new Vector2(Float(sp, "scaleX"), Float(sp, "scaleY"));
-            float rotation = Float(sp, "rotation", 0);
-            Color spColor = Color.White;
-
-            // offset is both position and origin
-            Vector2 offset = new Vector2(Float(sp, "offsetX", 0), Float(sp, "offsetY", 0));
-            pos -= offset.Rotate(rotation);
-
-            if(sp["color"] is LuaTable ct)
-                spColor = TableColor(ct);
-
-            Vector2 texPos = new Vector2(Float(meta, "texX", 0), Float(meta, "texY", 0));
-            Vector2 texSize = new Vector2(Float(meta, "texW", -1), Float(meta, "texH", -1));
-
-            ret.Add(new SpriteWithPos(tex, pos, scale, spColor, just, rotation, texPos, texSize));
-            sp.Dispose();
-        }
-    }
-
-    private T CallOrGet<T>(string name, T orElse = default) where T : class {
-        return CallOrGetAll(name, orElse).FirstOrDefault() as T;
-    }
+    private T CallOrGet<T>(string name, T orElse = default) where T : class => CallOrGetAll(name, orElse).FirstOrDefault() as T;
 
     private object[] CallOrGetAll(string name, object orElse = default) {
         switch (plugin[name]) {
@@ -272,7 +204,7 @@ public class LuaEntity : Entity {
                 try {
                     return f.Call(room, entity) ?? new[] { orElse };
                 } catch (Exception e) {
-                    Snowberry.LogInfo($"oh no {e}");
+                    Snowberry.Log(LogLevel.Error, $"Failed to call loenn plugin function with exception: {e}");
                     return new[] { orElse };
                 }
             }
@@ -297,7 +229,7 @@ public class LuaEntity : Entity {
     }
 
     private LuaTable WrapEntity() {
-        LuaTable table = WrapTable(Values);
+        LuaTable table = WrapTable(Values.OrElse(((LoennPluginInfo)Info).Defaults));
 
         if (table != null) {
             table["name"] = Name;
@@ -342,35 +274,6 @@ public class LuaEntity : Entity {
         Color color1 = new Color(Float(from, 1), Float(from, 2), Float(from, 3)) * Float(from, 4);
         from.Dispose();
         return color1;
-    }
-
-    private class SpriteWithPos {
-        // IsExternalInit my ass
-        public readonly MTexture Texture;
-        public readonly Vector2 Pos, Scale, Justification;
-        public readonly Color Color;
-        public readonly float Rotation;
-        public readonly Vector2 TexPos, TexSize;
-
-        public SpriteWithPos(
-            MTexture texture,
-            Vector2 pos,
-            Vector2 scale,
-            Color color,
-            Vector2 justification,
-            float rotation,
-            Vector2 texPos,
-            Vector2 texSize
-        ) {
-            Texture = texture;
-            Pos = pos;
-            Scale = scale;
-            Justification = justification;
-            Color = color;
-            Rotation = rotation;
-            TexPos = texPos;
-            TexSize = texSize;
-        }
     }
 
     private enum NodeLineRenderType {

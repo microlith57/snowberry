@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.Xna.Framework;
 using NLua;
 using Snowberry.Editor.Entities;
+using Snowberry.Editor.Entities.Lua;
 
 namespace Snowberry;
 
