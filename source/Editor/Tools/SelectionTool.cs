@@ -97,8 +97,8 @@ public class SelectionTool : Tool {
     }
 
     private static UIButton CreateToggleButton(int icoX, int icoY, Keys toggleBind, string tooltipKey, Func<bool> value, Action<bool> onPress) {
-        MTexture active = Editor.ActionbarAtlas.GetSubtexture(icoX, icoY, 16, 16);
-        MTexture inactive = Editor.ActionbarAtlas.GetSubtexture(icoX + 16, icoY, 16, 16);
+        MTexture active = UIScene.ActionbarAtlas.GetSubtexture(icoX, icoY, 16, 16);
+        MTexture inactive = UIScene.ActionbarAtlas.GetSubtexture(icoX + 16, icoY, 16, 16);
         UIKeyboundButton button = null; // to allow referring to it in OnPress
         button = new UIKeyboundButton(value() ? active : inactive, 3, 3) {
             OnPress = () => {
