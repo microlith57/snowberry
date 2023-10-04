@@ -357,6 +357,10 @@ public class SelectionTool : Tool {
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
         Point mouse = new Point((int)Mouse.World.X, (int)Mouse.World.Y);
 
+        // cursor depending on selection mode and effect
+        justify = new(0, 1);
+        cursor = SelectionAtlas.GetSubtexture((int)currentMode * 16, (1 + (int)CurrentEffect) * 16, 16, 16);
+
         // hovering over a selected entity? and we're not selecting? movement arrow
         if (Editor.SelectedObjects != null && Editor.SelectionInProgress == null && Editor.SelectedObjects.Any(s => s.Contains(mouse))) {
             justify = Vector2.One / 2f;
