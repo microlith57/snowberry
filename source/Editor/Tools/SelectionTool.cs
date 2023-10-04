@@ -219,6 +219,12 @@ public class SelectionTool : Tool {
                 }
         } else {
             if (MInput.Mouse.ReleasedLeftButton && canClick && !movedMouse) {
+                if (CurrentEffect != SelectionEffect.Set) {
+                    movedMouse = true;
+                    next = GetEnabledSelections(Mouse.World.ToRect());
+                    goto applyNext;
+                }
+
                 // releasing double click on a selected entity -> select all of type
                 if (wasDoubleClick && Editor.SelectedRoom != null) {
                     // first get everything under the mouse
@@ -246,6 +252,7 @@ public class SelectionTool : Tool {
                 refreshPanel = true;
             }
 
+            applyNext:
             if (next.Any() && movedMouse && (MInput.Mouse.ReleasedLeftButton || !canClick)) {
                 Editor.SelectedObjects = CurrentEffect switch {
                     SelectionEffect.Add => Editor.SelectedObjects.Concat(next).Distinct().ToList(),
