@@ -20,6 +20,9 @@ public class SelectionTool : Tool {
     private static List<UIButton> modeButtons = new(), toggleButtons = new();
     private static List<Selection> next = new();
 
+    private static Rectangle? SelectionInProgress;
+    private static List<Vector2> PathInProgress;
+
     // selection modes
     private enum SelectionEffect {
         Set, Add, Subtract
@@ -118,9 +121,9 @@ public class SelectionTool : Tool {
         var editor = Editor.Instance;
         bool refreshPanel = false;
 
-        if (Editor.SelectedRoom == null && Editor.SelectedObjects is { Count: > 0 }) {
+        if (Editor.SelectedRoom == null && Editor.SelectedObjects.Count > 0) {
             // refreshPanel code gets skipped because there's no room
-            Editor.SelectedObjects = null;
+            Editor.SelectedObjects = new();
             selectionPanel?.Display(null);
         }
 
@@ -152,7 +155,7 @@ public class SelectionTool : Tool {
             Vector2 world = Mouse.World;
 
             if (MInput.Mouse.PressedLeftButton) {
-                canSelect = !(Editor.SelectedObjects != null && Editor.SelectedObjects.Any(s => s.Contains(mouse)));
+                canSelect = !(Editor.SelectedObjects.Any(s => s.Contains(mouse)));
                 movedMouse = false;
                 wasDoubleClick = Mouse.IsDoubleClick;
             }
@@ -165,13 +168,36 @@ public class SelectionTool : Tool {
 
             if (movedMouse && Editor.SelectedRoom != null)
                 if (canSelect) {
-                    int ax = (int)Math.Min(Mouse.World.X, editor.worldClick.X);
-                    int ay = (int)Math.Min(Mouse.World.Y, editor.worldClick.Y);
-                    int bx = (int)Math.Max(Mouse.World.X, editor.worldClick.X);
-                    int by = (int)Math.Max(Mouse.World.Y, editor.worldClick.Y);
-                    Rectangle r = new Rectangle(ax, ay, bx - ax, by - ay);
-                    Editor.SelectionInProgress = r;
-                    next = GetEnabledSelections(r);
+                    if (currentMode == SelectionMode.Rect) {
+                        int ax = (int)Math.Min(Mouse.World.X, editor.worldClick.X);
+                        int ay = (int)Math.Min(Mouse.World.Y, editor.worldClick.Y);
+                        int bx = (int)Math.Max(Mouse.World.X, editor.worldClick.X);
+                        int by = (int)Math.Max(Mouse.World.Y, editor.worldClick.Y);
+                        Rectangle r = new Rectangle(ax, ay, bx - ax, by - ay);
+                        SelectionInProgress = r;
+                        PathInProgress = null;
+                        next = GetEnabledSelections(r);
+                    } else {
+                        // all other selection tools use paths
+                        PathInProgress ??= new();
+                        SelectionInProgress = null;
+                        // add to the path if the mouse moves a lot
+                        if (PathInProgress.Count == 0 || (PathInProgress.Last() - Mouse.World).LengthSquared() > 7 * 7)
+                            PathInProgress.Add(Mouse.World);
+                        if (currentMode == SelectionMode.Line) {
+                            // note that we never need to remove anything in a line selection
+                            foreach(var s in GetEnabledSelections(Mouse.World.ToRect()).Where(s => !next.Contains(s)))
+                                next.Add(s);
+                        } else if (currentMode == SelectionMode.Lasso) {
+                            // accept any entities that are overlapped by the path or have a centre contained in it
+                            // TODO: accept entities that overlap the path on the way back
+                            // TODO: calculate covering rect for better performance?
+                            //  esp with tile selections in large rooms
+                            next = GetEnabledSelections(null)
+                                .Where(x => PathInProgress.Any(p => x.Contains(p.ToPoint())) || Util.PointInPolygon(x.Area().Center.ToVector2(), PathInProgress))
+                                .ToList();
+                        }
+                    }
                 } else {
                     // if only one entity is selected near the corners, resize
                     Entity solo = GetSoloEntity();
@@ -210,7 +236,7 @@ public class SelectionTool : Tool {
                     Vector2 worldSnapped = noSnap ? Mouse.World : Mouse.World.RoundTo(8);
                     Vector2 worldLastSnapped = noSnap ? Mouse.WorldLast : Mouse.WorldLast.RoundTo(8);
                     Vector2 move = worldSnapped - worldLastSnapped;
-                    foreach (Selection s in Editor.SelectedObjects ?? new()) {
+                    foreach (Selection s in Editor.SelectedObjects) {
                         s.Move(move);
                         SnapIfNecessary(s);
                     }
@@ -253,7 +279,7 @@ public class SelectionTool : Tool {
             }
 
             applyNext:
-            if (next.Any() && movedMouse && (MInput.Mouse.ReleasedLeftButton || !canClick)) {
+            if (movedMouse && (MInput.Mouse.ReleasedLeftButton || !canClick)) {
                 Editor.SelectedObjects = CurrentEffect switch {
                     SelectionEffect.Add => Editor.SelectedObjects.Concat(next).Distinct().ToList(),
                     SelectionEffect.Subtract => Editor.SelectedObjects.Except(next).ToList(),
@@ -262,7 +288,8 @@ public class SelectionTool : Tool {
                 next.Clear();
             }
 
-            Editor.SelectionInProgress = null;
+            SelectionInProgress = null;
+            PathInProgress = null;
         }
 
         if (Editor.SelectedObjects == null)
@@ -360,8 +387,13 @@ public class SelectionTool : Tool {
             foreach (var item in GetEnabledSelections(Mouse.World.ToRect()))
                 Draw.Rect(item.Area(), nextCol * 0.15f);
             // highlight the selection rect
-            if (Editor.SelectionInProgress.HasValue)
-                Draw.Rect(Editor.SelectionInProgress.Value, nextCol * 0.25f);
+            if (SelectionInProgress.HasValue)
+                Draw.Rect(SelectionInProgress.Value, nextCol * 0.25f);
+            if (PathInProgress != null) {
+                if (currentMode == SelectionMode.Lasso)
+                    DrawUtil.DrawPolygon(PathInProgress.ToArray(), nextCol * 0.25f);
+                DrawUtil.Path(PathInProgress, nextCol * 0.25f, 2);
+            }
             // highlight already-selected stuff in blue
             if (Editor.SelectedObjects != null)
                 foreach (var rect in Editor.SelectedObjects.Select(s => s.Area()))
@@ -394,7 +426,7 @@ public class SelectionTool : Tool {
         cursor = SelectionAtlas.GetSubtexture((int)currentMode * 16, (1 + (int)CurrentEffect) * 16, 16, 16);
 
         // hovering over a selected entity? and we're not selecting? movement arrow
-        if (Editor.SelectedObjects != null && Editor.SelectionInProgress == null && Editor.SelectedObjects.Any(s => s.Contains(mouse))) {
+        if (Editor.SelectedObjects != null && SelectionInProgress == null && PathInProgress == null && Editor.SelectedObjects.Any(s => s.Contains(mouse))) {
             justify = Vector2.One / 2f;
             cursor = UIScene.CursorsAtlas.GetSubtexture(16, 16, 16, 16);
 

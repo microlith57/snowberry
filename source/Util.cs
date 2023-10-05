@@ -123,4 +123,30 @@ public static class Util {
             new[] { (byte)Math.Round(c.R * f), (byte)Math.Round(c.G * f), (byte)Math.Round(c.B * f), c.A }
         ).Replace("-", string.Empty);
     }
+
+    // adapted from https://stackoverflow.com/a/39857727
+    // count the number of times a horizontal line from the point intersects the polygon; odd -> inside
+    public static bool PointInPolygon(Vector2 point, List<Vector2> polygon) {
+        if (polygon.Count < 3)
+            return false;
+        bool isInPolygon = false;
+        var lastVertex = polygon[polygon.Count - 1];
+        foreach (var vertex in polygon) {
+            if (/*point.Y.IsBetween(lastVertex.Y, vertex.Y)*/ (point.Y - lastVertex.Y) * (point.Y - vertex.Y) < 0) {
+                double t = (point.Y - lastVertex.Y) / (vertex.Y - lastVertex.Y);
+                double x = t * (vertex.X - lastVertex.X) + lastVertex.X;
+                if (x >= point.X)
+                    isInPolygon = !isInPolygon;
+            } else { // in case the point was exactly equal to a part of the polygon
+                if (point.Y == lastVertex.Y && point.X < lastVertex.X && vertex.Y > point.Y)
+                    isInPolygon = !isInPolygon;
+                if (point.Y == vertex.Y && point.X < vertex.X && lastVertex.Y > point.Y)
+                    isInPolygon = !isInPolygon;
+            }
+
+            lastVertex = vertex;
+        }
+
+        return isInPolygon;
+    }
 }

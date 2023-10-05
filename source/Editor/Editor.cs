@@ -123,10 +123,9 @@ public class Editor : UIScene {
 
     public Map Map { get; private set; }
 
-    internal static Rectangle? SelectionInProgress;
     internal static Room SelectedRoom;
     internal static int SelectedFillerIndex = -1;
-    internal static List<Selection> SelectedObjects;
+    internal static List<Selection> SelectedObjects = new();
 
     internal static DateTime? LastAutosave = null;
 
@@ -521,7 +520,7 @@ public class Editor : UIScene {
             ActionBar.AddRight(ToolActionGroup);
         }
 
-        SelectedObjects = null;
+        SelectedObjects.Clear();
     }
 
     protected override void RenderContent() {

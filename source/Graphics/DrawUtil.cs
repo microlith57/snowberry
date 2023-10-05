@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
+using System.Collections.Generic;
 using Celeste;
+using Snowberry.Triangulator;
 
 namespace Snowberry;
 
@@ -54,6 +56,17 @@ public static class DrawUtil {
         }
     }
 
+    public static void Path(List<Vector2> points, Color color, float thickness = 1) {
+        if (points.Count < 2)
+            return;
+
+        Vector2 current = points[0];
+        for(var i = 1; i < points.Count; i++) {
+            Draw.Line(current, points[i], color, thickness);
+            current = points[i];
+        }
+    }
+
     public static void DrawVerticesWithScissoring<T>(
         Matrix matrix,
         T[] vertices,
@@ -80,6 +93,18 @@ public static class DrawUtil {
             pass.Apply();
             Engine.Instance.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertexCount / 3);
         }
+    }
+
+    public static void DrawPolygon(Vector2[] points, Color color) {
+        // adapted from Frost Helper: https://github.com/JaThePlayer/FrostHelper/blob/aa09b0338c03b6a37921fe0a3d254eaec2bb675d/Code/FrostHelper/Helpers/ArbitraryShapeEntityHelper.cs#L30
+        Triangulator.Triangulator.Triangulate(points, WindingOrder.Clockwise, null, out var verts, out var indices);
+        var fill = new VertexPositionColor[indices.Length];
+        for (int i = 0; i < indices.Length; i++)
+            fill[i] = new VertexPositionColor {
+                Position = new(verts[indices[i]], 0f),
+                Color = color
+            };
+        GFX.DrawVertices(Editor.Editor.Instance.Camera.Matrix, fill, fill.Length);
     }
 
     public static void DrawGuidelines(Rectangle bounds, Color c) {
