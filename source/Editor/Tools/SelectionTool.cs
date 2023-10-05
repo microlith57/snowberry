@@ -257,7 +257,7 @@ public class SelectionTool : Tool {
                 Editor.SelectedObjects = CurrentEffect switch {
                     SelectionEffect.Add => Editor.SelectedObjects.Concat(next).Distinct().ToList(),
                     SelectionEffect.Subtract => Editor.SelectedObjects.Except(next).ToList(),
-                    _ => next
+                    _ => new(next)
                 };
                 next.Clear();
             }
