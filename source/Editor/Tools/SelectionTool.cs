@@ -190,11 +190,21 @@ public class SelectionTool : Tool {
                                 next.Add(s);
                         } else if (currentMode == SelectionMode.Lasso) {
                             // accept any entities that are overlapped by the path or have a centre contained in it
-                            // TODO: accept entities that overlap the path on the way back
+                            // if the last point is too far from the first one, add points along the middle to make sure entities cut that way get selected
+                            List<Vector2> path = PathInProgress;
+                            Vector2 back = (path[0] - path.Last());
+                            if (back.LengthSquared() > 7 * 7) {
+                                path = new(path);
+                                var numPts = back.Length() / 7;
+                                for (int i = 0; i < numPts; i++)
+                                    // note that path.Last() is different each time as we get closer to the start of the path
+                                    path.Add(path.Last() + back / numPts);
+                            }
+
                             // TODO: calculate covering rect for better performance?
                             //  esp with tile selections in large rooms
                             next = GetEnabledSelections(null)
-                                .Where(x => PathInProgress.Any(p => x.Contains(p.ToPoint())) || Util.PointInPolygon(x.Area().Center.ToVector2(), PathInProgress))
+                                .Where(x => path.Any(p => x.Contains(p.ToPoint())) || Util.PointInPolygon(x.Area().Center.ToVector2(), PathInProgress))
                                 .ToList();
                         }
                     }
