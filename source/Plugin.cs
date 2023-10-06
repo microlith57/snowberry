@@ -31,8 +31,12 @@ public abstract class Plugin {
     public virtual void Set(string option, object value) {
         if (Info.Options.TryGetValue(option, out PluginOption f)) {
             object v;
+            // TODO: this is stupid
+            //  - really StrToObject should (and does!) handle all of these
             if (f.FieldType == typeof(char))
                 v = value.ToString()[0];
+            else if (f.FieldType == typeof(Color))
+                v = Monocle.Calc.HexToColor(value.ToString());
             else if (f.FieldType == typeof(Tileset))
                 v = Tileset.ByKey(value.ToString()[0], false);
             else
