@@ -22,11 +22,19 @@ function fakeTilesHelper.getEntitySpriteFunction(materialKey, blendKey, layer, c
 end
 
 function fakeTilesHelper.getFieldInformation(materialKey, layer)
-    return {
-        [materialKey] = {
-            fieldType = "snowberry:tileset"
+    return function()
+        return {
+            [materialKey] = {
+                fieldType = "snowberry:tileset"
+            }
         }
-    }
+    end
+end
+
+-- TODO: when loenn dropdowns are implemented, make this actually look at the map's tilesets (?)
+-- ...but we don't dynamically look at field info, so it wouldn't work (?)
+function fakeTilesHelper.getTilesOptions(layer)
+    return {}
 end
 
 return fakeTilesHelper

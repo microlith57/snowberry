@@ -190,9 +190,13 @@ public class LoennPluginInfo : PluginInfo {
             }
         }
 
-        if (plugin["fieldInformation"] is LuaTable fieldInfos) {
-            foreach (var fieldKey in fieldInfos.Keys) {
-                if (fieldKey is string fieldName && fieldInfos[fieldKey] is LuaTable fieldInfo) {
+        // field info may be a function, but we don't dynamically call this
+        object fieldInfos = plugin["fieldInformation"];
+        if (fieldInfos is LuaFunction fn)
+            fieldInfos = fn.Call(LuaEntity.EmptyTable()).FirstOrDefault();
+        if (fieldInfos is LuaTable fieldInfosTbl) {
+            foreach (var fieldKey in fieldInfosTbl.Keys) {
+                if (fieldKey is string fieldName && fieldInfosTbl[fieldKey] is LuaTable fieldInfo) {
                     if (!Room.IllegalOptionNames.Contains(fieldName)) {
                         // fieldType: integer, color, boolean, number, string (default)
                         // minimumValue, maximumValue

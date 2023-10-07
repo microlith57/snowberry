@@ -163,9 +163,8 @@ public static class LoennPluginLoader {
                     {text}
                     """;
 
-        if (Everest.LuaLoader.Context.GetFunction("selene.parse")?.Call(text)?.FirstOrDefault() is string proc) {
-            return Everest.LuaLoader.Context.DoString(proc, path);
-        }
+        if (Everest.LuaLoader.Context.GetFunction("selene.parse")?.Call(text)?.FirstOrDefault() is string proc)
+            return Everest.LuaLoader.Context.DoString(proc, asset.Source.Name + ":" + path);
 
         Snowberry.Log(LogLevel.Error, $"Failed to parse Selene syntax in {path}");
         return null;

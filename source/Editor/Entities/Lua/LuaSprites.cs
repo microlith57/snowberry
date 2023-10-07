@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Celeste;
+using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 using NLua;
@@ -118,7 +119,6 @@ internal sealed class LuaSprites {
                 SecondaryColor = rectSecondaryColor
             };
         } else if (type == "tileGrid") {
-            Snowberry.LogInfo("got a tile grid!");
             VirtualMap<MTexture> matrix = (VirtualMap<MTexture>)table["matrix"];
             float x = Float(table, "x"), y = Float(table, "y");
             Color gridColor = Color.White;
@@ -132,7 +132,7 @@ internal sealed class LuaSprites {
             };
         }
 
-        Snowberry.LogInfo($"got unknown sprite type {type}");
+        Snowberry.Log(LogLevel.Error, $"Got unknown sprite type {type}");
 
         return null; // weh
     }

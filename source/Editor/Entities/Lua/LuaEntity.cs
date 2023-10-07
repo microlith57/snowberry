@@ -215,7 +215,7 @@ public class LuaEntity : Entity {
         }
     }
 
-    private static LuaTable EmptyTable() {
+    public static LuaTable EmptyTable() {
         Everest.LuaLoader.Context.NewTable("snowberry_it");
         return Everest.LuaLoader.Context.DoString("return snowberry_it").FirstOrDefault() as LuaTable;
     }
