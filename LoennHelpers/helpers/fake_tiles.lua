@@ -31,6 +31,20 @@ function fakeTilesHelper.getFieldInformation(materialKey, layer)
     end
 end
 
+function fakeTilesHelper.addTileFieldInformation(fieldInformation, materialKey, layer, room, entity)
+    return function()
+        if type(fieldInformation) == "function" then
+            fieldInformation = fieldInformation(room, entity)
+        end
+
+        fieldInformation[materialKey] = {
+            fieldType = "snowberry:tileset"
+        }
+
+        return fieldInformation
+    end
+end
+
 -- TODO: when loenn dropdowns are implemented, make this actually look at the map's tilesets (?)
 -- ...but we don't dynamically look at field info, so it wouldn't work (?)
 function fakeTilesHelper.getTilesOptions(layer)
