@@ -450,6 +450,7 @@ public class Room {
                 Name = trigger.Name,
                 Children = new List<Element>(),
                 Attributes = new Dictionary<string, object> {
+                    ["id"] = trigger.EntityID,
                     ["x"] = trigger.X - X * 8,
                     ["y"] = trigger.Y - Y * 8,
                     ["width"] = trigger.Width,
