@@ -171,8 +171,8 @@ public class LoennPluginInfo : PluginInfo {
                             HasWidth |= item == "width";
                             HasHeight |= item == "height";
                         }
-            } else if (placements.Keys.Count >= 1 && placements[1] is LuaTable) {
-                for (int i = 1; i < placements.Keys.Count + 1; i++) {
+            } else if (placements.Keys.Count >= 1) {
+                foreach (var i in placements.Keys) {
                     if (placements[i] is not LuaTable ptable)
                         continue;
                     if (ptable["data"] is LuaTable data)

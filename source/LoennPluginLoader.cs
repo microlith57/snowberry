@@ -45,7 +45,8 @@ public static class LoennPluginLoader {
         Dictionary<string, LuaTable> plugins = new();
         HashSet<string> triggers = new();
 
-        ReCrawlForLua();
+        if(!Everest.Content.Mods.SelectMany(x => x.List).Any(asset => asset.PathVirtual.Replace('\\', '/').StartsWith("Loenn/")))
+            ReCrawlForLua();
 
         foreach(IGrouping<ModContent, ModAsset> modAssets in Everest.Content.Mods
                     .SelectMany(mod => mod.List.Select(asset => (mod, asset)))
@@ -70,7 +71,7 @@ public static class LoennPluginLoader {
                                         plugins[name] = table;
                                         if (path.StartsWith("Loenn/triggers/"))
                                             triggers.Add(name);
-                                        Snowberry.LogInfo($"Loaded Loenn plugin for \"{name}\"");
+                                        Snowberry.LogInfo($"Loaded Loenn plugin for \"{name}\" from \"{path}\"");
                                         any = true;
                                     } else {
                                         Snowberry.Log(LogLevel.Warn, $"A nameless entity was found at \"{path}\"");
@@ -130,17 +131,18 @@ public static class LoennPluginLoader {
                     placementName = placementName.Replace(" ", ""); // thank you Flaglines and Such. very cool
                     placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{placements["name"]}";
                     Placements.Create(placementName, plugin.Key, options, isTrigger);
-                } else if (placements.Keys.Count >= 1 && placements[1] is LuaTable) {
-                    for (int i = 1; i < placements.Keys.Count + 1; i++) {
+                } else if (placements.Keys.Count >= 1) {
+                    foreach (var i in placements.Keys) {
                         Dictionary<string, object> options = new();
-                        if (placements[i] is LuaTable ptable && ptable.Keys.OfType<string>().Contains("name")) {
+                        // thank you Eevee Helper, very cool
+                        if (placements[i] is LuaTable ptable && (i is "default" || ptable.Keys.OfType<string>().Contains("name"))) {
                             if (ptable["data"] is LuaTable data)
                                 foreach (var item in data.Keys.OfType<string>())
                                     options[item] = data[item];
 
-                            string placementName = ptable["name"] as string;
+                            string placementName = ptable["name"] as string ?? "default";
                             placementName = placementName.Replace(" ", ""); // lol
-                            placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{ptable["name"]}";
+                            placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{ptable["name"] ?? "default"}";
                             Placements.Create(placementName, plugin.Key, options, isTrigger);
                         }
                     }
