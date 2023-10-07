@@ -200,7 +200,7 @@ internal sealed class LuaSprites {
         public Vector2 Position, Scale, Justification;
         public float Rotation;
 
-        protected internal override void Draw() => Texture.Draw(Position, new(), Color);
+        protected internal override void Draw() => Texture.DrawJustified(Position, Justification, Color, Scale, Rotation);
     }
 
     // TODO
