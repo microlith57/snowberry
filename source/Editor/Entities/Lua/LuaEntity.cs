@@ -90,6 +90,11 @@ public class LuaEntity : Entity {
             texture = CallOrGet<string>("texture");
             nodeTexture = CallOrGet<string>("nodeTexture");
 
+            if (texture?.StartsWith("@Internal@/") == true)
+                texture = "plugins/Snowberry/" + texture.Substring("@Internal@/".Length);
+            if (nodeTexture?.StartsWith("@Internal@/") == true)
+                nodeTexture = "plugins/Snowberry/" + nodeTexture.Substring("@Internal@/".Length);
+
             var justifyTable = CallOrGet<LuaTable>("justification");
             if (justifyTable != null)
                 justify = new Vector2(Float(justifyTable, 1, 0.5f), Float(justifyTable, 2, 0.5f));

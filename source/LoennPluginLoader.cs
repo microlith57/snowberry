@@ -204,6 +204,9 @@ public static class LoennPluginLoader {
         atlasName ??= "Gameplay";
         Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
 
+        if (textureName.StartsWith("@Internal@/"))
+            textureName = "plugins/Snowberry/" + textureName.Substring("@Internal@/".Length);
+
         if (!atlas.Has(textureName))
             return null;
 
