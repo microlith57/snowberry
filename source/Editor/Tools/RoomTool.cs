@@ -124,8 +124,8 @@ public class RoomTool : Tool {
         if (canClick) {
             if (curRoom == null && Editor.SelectedFillerIndex == -1) {
                 if (MInput.Mouse.CheckLeftButton) {
-                    var lastPress = (Editor.Instance.worldClick / 8).Ceiling() * 8;
-                    var mpos = (Mouse.World / 8).Ceiling() * 8;
+                    var lastPress = Editor.Instance.worldClick.RoundTo(8);
+                    var mpos = Mouse.World.RoundTo(8);
                     int ax = (int)Math.Min(mpos.X, lastPress.X);
                     int ay = (int)Math.Min(mpos.Y, lastPress.Y);
                     int bx = (int)Math.Max(mpos.X, lastPress.X);
