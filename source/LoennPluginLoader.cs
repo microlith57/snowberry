@@ -294,4 +294,11 @@ public static class LoennPluginLoader {
 
         return null;
     }
+
+    // invoked via lua
+    public static VirtualMap<MTexture> Autotile(string layer, object key, float width, float height) {
+        bool fg = layer.Equals("tilesFg", StringComparison.InvariantCultureIgnoreCase);
+        char keyC = key.ToString()[0];
+        return (fg ? GFX.FGAutotiler : GFX.BGAutotiler).GenerateBoxStable(keyC, (int)(width / 8f), (int)(height / 8f)).TileGrid.Tiles;
+    }
 }

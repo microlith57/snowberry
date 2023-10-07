@@ -18,6 +18,7 @@ internal sealed class LuaSprites {
     }
 
     public void Process(object[] sprites) {
+        drawables.Clear();
         if (sprites != null)
             foreach (var item in sprites.OfType<LuaTable>().SelectMany(Normalize))
                 // sprites can be returned directly
@@ -116,7 +117,22 @@ internal sealed class LuaSprites {
                 Mode = rectMode,
                 SecondaryColor = rectSecondaryColor
             };
+        } else if (type == "tileGrid") {
+            Snowberry.LogInfo("got a tile grid!");
+            VirtualMap<MTexture> matrix = (VirtualMap<MTexture>)table["matrix"];
+            float x = Float(table, "x"), y = Float(table, "y");
+            Color gridColor = Color.White;
+            if (table["color"] is LuaTable ct)
+                gridColor = TableColor(ct);
+
+            return new TileGrid {
+                Color = gridColor,
+                Position = new(x, y),
+                Tiles = matrix,
+            };
         }
+
+        Snowberry.LogInfo($"got unknown sprite type {type}");
 
         return null; // weh
     }
@@ -214,10 +230,14 @@ internal sealed class LuaSprites {
     }
 
     internal sealed class TileGrid : Drawable {
-        public VirtualMap<MTexture> Textures;
+        public Vector2 Position;
+        public VirtualMap<MTexture> Tiles;
 
         protected internal override void Draw() {
-
+            if (Tiles != null)
+                for (int x = 0; x < Tiles.Columns; x++)
+                    for (int y = 0; y < Tiles.Rows; y++)
+                        Tiles[x, y]?.Draw(Position + new Vector2(x, y) * 8, Vector2.Zero, Color);
         }
     }
 }

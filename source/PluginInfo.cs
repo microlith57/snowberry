@@ -206,6 +206,7 @@ public class LoennPluginInfo : PluginInfo {
                             "integer" => typeof(int),
                             "boolean" => typeof(bool),
                             "color" => typeof(Color),
+                            "snowberry:tileset" => typeof(Tileset),
                             _ => typeof(string)
                         };
 
