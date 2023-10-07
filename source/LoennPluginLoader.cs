@@ -81,7 +81,7 @@ public static class LoennPluginLoader {
                             }
 
                         if (!any) {
-                            Snowberry.LogInfo($"No plugins were loaded from \"{path}\"");
+                            Snowberry.LogInfo($"No plugins were loaded from \"{curMod}: {path}\"");
                         }
                     } catch (Exception e) {
                         string ex = e.ToString();
