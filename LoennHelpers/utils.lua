@@ -432,6 +432,31 @@ function utils.round(n, decimals)
     end
 end
 
+function utils.isCallable(f)
+    local argType = type(f)
+
+    if argType == "function" then
+        return true
+
+    elseif argType == "table" then
+        local metatable = getmetatable(f)
+
+        if metatable and metatable.__call then
+            return true
+        end
+    end
+
+    return false
+end
+
+function utils.callIfFunction(f, ...)
+    if utils.isCallable(f) then
+        return f(...)
+    end
+
+    return f
+end
+
 function utils.filter(predicate, data)
     local res = {}
 

@@ -262,23 +262,24 @@ public static class LoennPluginLoader {
         if (curModName == null || filename == null)
             return null;
 
-        string target = $"Loenn/{filename.Replace('.', '/')}";
+        string targetFile = $"Loenn/{filename.Replace('.', '/')}";
+        string targetId = $"{curModName}::{targetFile}";
 
         try {
-            if (reqCache.TryGetValue(target, out var library))
+            if (reqCache.TryGetValue(targetId, out var library))
                 return library;
 
             foreach (var asset in Everest.Content.Mods
                          .Where(mod => mod.Name == curModName)
                          .SelectMany(mod => mod.List)
                          .Where(asset => asset.Type == typeof(AssetTypeLua))
-                         .Where(asset => asset.PathVirtual.Replace('\\', '/') == target))
-                return reqCache[target] = RunAsset(asset, target)?.FirstOrDefault() as LuaTable;
+                         .Where(asset => asset.PathVirtual.Replace('\\', '/') == targetFile))
+                return reqCache[targetId] = RunAsset(asset, targetFile)?.FirstOrDefault() as LuaTable;
 
-            return reqCache[target] = null;
+            return reqCache[targetId] = null;
         } catch (Exception e) {
             Snowberry.Log(LogLevel.Error, $"Error running Loenn library {modName}/{filename}: {e}");
-            return reqCache[target] = null;
+            return reqCache[targetId] = null;
         }
     }
 

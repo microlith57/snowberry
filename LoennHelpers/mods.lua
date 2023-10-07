@@ -2,6 +2,8 @@
 
 local mods = {}
 
+mods.internalModContent = "@Internal@"
+
 -- wrap on the lua-side so mod can be autofilled with nil
 function mods.requireFromPlugin(name, mod)
     local lib = sb_loader.RequireFromMods(name, mod or "")
