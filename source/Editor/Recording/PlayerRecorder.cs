@@ -19,6 +19,10 @@ public class PlayerRecorder : Recorder{
         SmhInterop.RunWithSkin(() => {
             Sprite = new PlayerSprite(PlayerSpriteMode.Madeline);
             Hair = new PlayerHair(Sprite);
+            // mods like Gravity Helper expect a non-null entity here, though they place no requirements on what it is
+            Monocle.Entity dummy = new();
+            Sprite.Added(dummy);
+            Hair.Added(dummy);
         });
     }
 
