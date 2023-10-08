@@ -12,7 +12,8 @@ public abstract class Recorder{
         () => new TimeRecorder(),
         () => new PlayerRecorder(),
         () => new HitboxesRecorder(),
-        () => new CameraRecorder()
+        () => new CameraRecorder(),
+        () => new FlagsRecorder()
     };
 
     public abstract void UpdateInGame(Level l, float time);

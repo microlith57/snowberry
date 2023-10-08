@@ -539,16 +539,6 @@ public class Editor : UIScene {
     protected override void RenderContent() {
         var tool = Map == null ? null : Tool.Tools[Toolbar.CurrentTool];
 
-        #region Tool Rendering
-
-        if (tool != null) {
-            Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
-            tool.RenderScreenSpace();
-            Draw.SpriteBatch.End();
-        }
-
-        #endregion
-
         #region Map Rendering
 
         Engine.Instance.GraphicsDevice.SetRenderTarget(Camera.Buffer);
@@ -576,6 +566,16 @@ public class Editor : UIScene {
 
         // HQRender
         Map?.HQRender(Camera);
+
+        #endregion
+
+        #region Tool Rendering
+
+        if (tool != null) {
+            Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.CreateScale(2));
+            tool.RenderScreenSpace();
+            Draw.SpriteBatch.End();
+        }
 
         #endregion
     }
