@@ -289,7 +289,7 @@ public class SelectionTool : Tool {
             }
 
             applyNext:
-            if (movedMouse && (MInput.Mouse.ReleasedLeftButton || !canClick)) {
+            if (movedMouse && (MInput.Mouse.ReleasedLeftButton || !canClick) && (((object)SelectionInProgress ?? PathInProgress) != null)) {
                 Editor.SelectedObjects = CurrentEffect switch {
                     SelectionEffect.Add => Editor.SelectedObjects.Concat(next).Distinct().ToList(),
                     SelectionEffect.Subtract => Editor.SelectedObjects.Except(next).ToList(),
