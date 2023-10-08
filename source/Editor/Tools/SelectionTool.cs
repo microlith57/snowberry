@@ -206,6 +206,10 @@ public class SelectionTool : Tool {
                             next = GetEnabledSelections(null)
                                 .Where(x => path.Any(p => x.Contains(p.ToPoint())) || Util.PointInPolygon(x.Area().Center.ToVector2(), PathInProgress))
                                 .ToList();
+                        } else if (currentMode == SelectionMode.MagicWand) {
+                            // note that we never need to remove anything in a magic wand selection
+                            foreach(var s in MagicWand().Where(s => !next.Contains(s)))
+                                next.Add(s);
                         }
                     }
                 } else {
@@ -262,18 +266,9 @@ public class SelectionTool : Tool {
                 }
 
                 // releasing double click on a selected entity -> select all of type
-                if (wasDoubleClick && Editor.SelectedRoom != null) {
-                    // first get everything under the mouse
-                    var at = Editor.SelectedRoom.GetSelections(Mouse.World.ToRect(), selectEntities, selectTriggers /* nothing else does anything here */);
-                    // then get all types of those entities
-                    HashSet<string> entityTypes = new(at.OfType<EntitySelection>().Select(x => x.Entity.Name));
-                    // clear the current selection
-                    Editor.SelectedObjects = new();
-                    // add back all entities of the same type
-                    foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => entityTypes.Contains(entity.Name)))
-                        if (entity.SelectionRectangles is { Length: > 0 } rs)
-                            Editor.SelectedObjects.AddRange(rs.Select((_, i) => new EntitySelection(entity, i - 1)).ToList());
-                } else {
+                if (wasDoubleClick && Editor.SelectedRoom != null)
+                    Editor.SelectedObjects = MagicWand();
+                else {
                     // releasing click on a selected object -> cycle selection
                     var at = GetEnabledSelections(Mouse.World.ToRect());
                     Selection first = Editor.SelectedObjects is { Count: > 0 } es ? es[0] : null;
@@ -514,6 +509,19 @@ public class SelectionTool : Tool {
 
     private static List<Selection> GetEnabledSelections(Rectangle? r) =>
         Editor.SelectedRoom?.GetSelections(r, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles) ?? new();
+
+    private static List<Selection> MagicWand() {
+        // first get everything under the mouse
+        var at = Editor.SelectedRoom.GetSelections(Mouse.World.ToRect(), selectEntities, selectTriggers /* nothing else does anything here */);
+        // then get all types of those entities
+        HashSet<string> entityTypes = new(at.OfType<EntitySelection>().Select(x => x.Entity.Name));
+        // add all entities of the same type
+        List<Selection> into = new();
+        foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => entityTypes.Contains(entity.Name)))
+            if (entity.SelectionRectangles is { Length: > 0 } rs)
+                into.AddRange(rs.Select((_, i) => new EntitySelection(entity, i - 1)).ToList());
+        return into;
+    }
 
     private static SelectionEffect CurrentEffect =>
         MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl) ? SelectionEffect.Add :
