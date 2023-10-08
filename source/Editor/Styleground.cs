@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.Stylegrounds;
 using System.Text.RegularExpressions;
+using Snowberry.Editor.Recording;
+using Snowberry.Editor.Tools;
 using static Celeste.BinaryPacker;
 
 namespace Snowberry.Editor;
@@ -61,7 +63,11 @@ public class Styleground : Plugin {
 
     public bool IsVisible(Room room) {
         if (!string.IsNullOrWhiteSpace(Flag)) {
-            return false;
+            if (Editor.Instance?.CurrentTool is PlaytestTool pt && RecInProgress.Get<FlagsRecorder>() is { /* non-null */ } flags) {
+                if (flags.GetFlagAt(Flag, pt.Now) is not true)
+                    return false;
+            } else
+                return false;
         }
 
         string roomName = room?.Name ?? "";

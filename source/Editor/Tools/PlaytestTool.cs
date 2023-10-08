@@ -134,6 +134,8 @@ public class PlaytestTool : Tool {
         }
     }
 
+    public float Now => time;
+
     private void UpdatePlayPauseButton() {
         playPauseButton.SetIcon(UIScene.ActionbarAtlas.GetSubtexture(playing ? 2 : 9, 101, 6, 6));
         playPauseButton.ButtonTooltip = Dialog.Clean(playing ? "SNOWBERRY_EDITOR_PT_PAUSE_TT" : "SNOWBERRY_EDITOR_PT_PLAY_TT");

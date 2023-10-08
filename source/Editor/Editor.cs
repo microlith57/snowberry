@@ -474,7 +474,7 @@ public class Editor : UIScene {
             }
 
             // tool updating
-            var tool = Tool.Tools[Toolbar.CurrentTool];
+            var tool = CurrentTool;
             tool.Update(canClick);
 
             // keybinds
@@ -503,9 +503,7 @@ public class Editor : UIScene {
         }
     }
 
-    protected override Vector2 CalculateMouseWorld(MouseState m) {
-        return Vector2.Transform(Camera.Buffer == null ? new(m.X, m.Y) : mousePos, Camera.Inverse).Floor();
-    }
+    protected override Vector2 CalculateMouseWorld(MouseState m) => Vector2.Transform(Camera.Buffer == null ? new(m.X, m.Y) : mousePos, Camera.Inverse).Floor();
 
     public void SwitchTool(int toolIdx) {
         ToolPanel?.RemoveSelf();
@@ -536,8 +534,10 @@ public class Editor : UIScene {
         SelectedObjects.Clear();
     }
 
+    public Tool CurrentTool => Tool.Tools[Toolbar.CurrentTool];
+
     protected override void RenderContent() {
-        var tool = Map == null ? null : Tool.Tools[Toolbar.CurrentTool];
+        var tool = Map == null ? null : CurrentTool;
 
         #region Map Rendering
 
@@ -581,7 +581,7 @@ public class Editor : UIScene {
     }
 
     protected override void SuggestCursor(ref MTexture texture, ref Vector2 justify) {
-        var tool = Map == null ? null : Tool.Tools[Toolbar.CurrentTool];
+        var tool = Map == null ? null : CurrentTool;
         bool canClick = UI.CanClickThrough() && !Message.Shown;
         bool middlePan = Snowberry.Settings.MiddleClickPan;
         var panning = (middlePan && MInput.Mouse.CheckMiddleButton || !middlePan && MInput.Mouse.CheckRightButton) && canClick;

@@ -58,6 +58,22 @@ public class FlagsRecorder : Recorder {
 
     public override void RenderWorldSpace(float time) {}
 
+    public bool? GetFlagAt(string flag, float time) {
+        foreach (var stateSet in States) {
+            if(stateSet.flag == flag) {
+                bool? value = null;
+                foreach (var state in stateSet.snapshots.AsEnumerable().Reverse())
+                    if (state.time <= time) {
+                        value = state.value; break;
+                    }
+
+                return value;
+            }
+        }
+
+        return null;
+    }
+
     private static string Display(bool b) => Dialog.Clean(b switch {
         true => "SNOWBERRY_EDITOR_PT_FLAG_TRUE",
         false => "SNOWBERRY_EDITOR_PT_FLAG_FALSE"
