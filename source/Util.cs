@@ -124,6 +124,14 @@ public static class Util {
         ).Replace("-", string.Empty);
     }
 
+    public static Dictionary<K, V> OrElse<K, V>(this Dictionary<K, V> primary, Dictionary<K, V> fallback) {
+        var result = new Dictionary<K, V>(primary);
+        foreach(KeyValuePair<K,V> p in fallback)
+            if (!result.ContainsKey(p.Key))
+                result[p.Key] = p.Value;
+        return result;
+    }
+
     // adapted from https://stackoverflow.com/a/39857727
     // count the number of times a horizontal line from the point intersects the polygon; odd -> inside
     public static bool PointInPolygon(Vector2 point, List<Vector2> polygon) {

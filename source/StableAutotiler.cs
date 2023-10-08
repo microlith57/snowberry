@@ -16,6 +16,9 @@ public static class StableAutotiler {
     public static Autotiler.Generated GenerateMapStable(this Autotiler self, VirtualMap<char> mapData, Autotiler.Behaviour behaviour) =>
         self.GenerateStable(mapData, 0, 0, mapData.Columns, mapData.Rows, false, '0', behaviour);
 
+    public static Autotiler.Generated GenerateBoxStable(this Autotiler self, char id, int tilesX, int tilesY) =>
+        self.GenerateStable(null, 0, 0, tilesX, tilesY, true, id, new Autotiler.Behaviour());
+
     public static Autotiler.Generated GenerateStable(
         this Autotiler self,
         VirtualMap<char> mapData,

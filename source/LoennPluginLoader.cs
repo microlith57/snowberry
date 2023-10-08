@@ -59,29 +59,30 @@ public static class LoennPluginLoader {
                     try {
                         var pluginTables = RunAsset(asset, path);
                         bool any = false;
-                        foreach (var p in pluginTables) {
-                            if (p is LuaTable pluginTable) {
-                                List<LuaTable> pluginsFromScript = new(){ pluginTable };
-                                // returning multiple plugins at once
-                                if (pluginTable["name"] == null)
-                                    pluginsFromScript = pluginTable.Values.OfType<LuaTable>().ToList();
+                        if (pluginTables != null)
+                            foreach (var p in pluginTables) {
+                                if (p is LuaTable pluginTable) {
+                                    List<LuaTable> pluginsFromScript = new() { pluginTable };
+                                    // returning multiple plugins at once
+                                    if (pluginTable["name"] == null)
+                                        pluginsFromScript = pluginTable.Values.OfType<LuaTable>().ToList();
 
-                                foreach (var table in pluginsFromScript) {
-                                    if (table["name"] is string name) {
-                                        plugins[name] = table;
-                                        if (path.StartsWith("Loenn/triggers/"))
-                                            triggers.Add(name);
-                                        Snowberry.LogInfo($"Loaded Loenn plugin for \"{name}\" from \"{path}\"");
-                                        any = true;
-                                    } else {
-                                        Snowberry.Log(LogLevel.Warn, $"A nameless entity was found at \"{path}\"");
+                                    foreach (var table in pluginsFromScript) {
+                                        if (table["name"] is string name) {
+                                            plugins[name] = table;
+                                            if (path.StartsWith("Loenn/triggers/"))
+                                                triggers.Add(name);
+                                            Snowberry.LogInfo($"Loaded Loenn plugin for \"{name}\"");
+                                            any = true;
+                                        } else {
+                                            Snowberry.Log(LogLevel.Warn, $"A nameless entity was found at \"{path}\"");
+                                        }
                                     }
                                 }
                             }
-                        }
 
                         if (!any) {
-                            Snowberry.LogInfo($"No plugins were loaded from \"{path}\"");
+                            Snowberry.LogInfo($"No plugins were loaded from \"{curMod}: {path}\"");
                         }
                     } catch (Exception e) {
                         string ex = e.ToString();
@@ -152,9 +153,8 @@ public static class LoennPluginLoader {
 
     private static object[] RunAsset(ModAsset asset, string path){
         string text;
-        using(var reader = new StreamReader(asset.Stream)){
+        using(var reader = new StreamReader(asset.Stream))
             text = reader.ReadToEnd();
-        }
 
         // `require` searchers are broken, yaaaaaaay
         text = $"""
@@ -165,9 +165,8 @@ public static class LoennPluginLoader {
                     {text}
                     """;
 
-        if (Everest.LuaLoader.Context.GetFunction("selene.parse")?.Call(text)?.FirstOrDefault() is string proc) {
-            return Everest.LuaLoader.Context.DoString(proc, path);
-        }
+        if (Everest.LuaLoader.Context.GetFunction("selene.parse")?.Call(text)?.FirstOrDefault() is string proc)
+            return Everest.LuaLoader.Context.DoString(proc, asset.Source.Name + ":" + path);
 
         Snowberry.Log(LogLevel.Error, $"Failed to parse Selene syntax in {path}");
         return null;
@@ -206,6 +205,9 @@ public static class LoennPluginLoader {
     public static object LuaGetImage(string textureName, string atlasName) {
         atlasName ??= "Gameplay";
         Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
+
+        if (textureName.StartsWith("@Internal@/"))
+            textureName = "plugins/Snowberry/" + textureName.Substring("@Internal@/".Length);
 
         if (!atlas.Has(textureName))
             return null;
@@ -262,23 +264,24 @@ public static class LoennPluginLoader {
         if (curModName == null || filename == null)
             return null;
 
-        string target = $"Loenn/{filename.Replace('.', '/')}";
+        string targetFile = $"Loenn/{filename.Replace('.', '/')}";
+        string targetId = $"{curModName}::{targetFile}";
 
         try {
-            if (reqCache.TryGetValue(target, out var library))
+            if (reqCache.TryGetValue(targetId, out var library))
                 return library;
 
             foreach (var asset in Everest.Content.Mods
                          .Where(mod => mod.Name == curModName)
                          .SelectMany(mod => mod.List)
                          .Where(asset => asset.Type == typeof(AssetTypeLua))
-                         .Where(asset => asset.PathVirtual.Replace('\\', '/') == target))
-                return reqCache[target] = RunAsset(asset, target)?.FirstOrDefault() as LuaTable;
+                         .Where(asset => asset.PathVirtual.Replace('\\', '/') == targetFile))
+                return reqCache[targetId] = RunAsset(asset, targetFile)?.FirstOrDefault() as LuaTable;
 
-            return reqCache[target] = null;
+            return reqCache[targetId] = null;
         } catch (Exception e) {
             Snowberry.Log(LogLevel.Error, $"Error running Loenn library {modName}/{filename}: {e}");
-            return reqCache[target] = null;
+            return reqCache[targetId] = null;
         }
     }
 
@@ -295,5 +298,12 @@ public static class LoennPluginLoader {
         }
 
         return null;
+    }
+
+    // invoked via lua
+    public static VirtualMap<MTexture> Autotile(string layer, object key, float width, float height) {
+        bool fg = layer.Equals("tilesFg", StringComparison.InvariantCultureIgnoreCase);
+        char keyC = key.ToString()[0];
+        return (fg ? GFX.FGAutotiler : GFX.BGAutotiler).GenerateBoxStable(keyC, (int)(width / 8f), (int)(height / 8f)).TileGrid.Tiles;
     }
 }
