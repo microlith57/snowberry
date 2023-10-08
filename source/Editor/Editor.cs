@@ -138,6 +138,9 @@ public class Editor : UIScene {
     internal static Session PlaytestSession;
     internal static MapData PlaytestMapData;
 
+    private static Vector2? lastPosition = null;
+    private static float? lastZoom = null;
+
     public static int VanillaLevelID { get; private set; }
     public static AreaKey? From;
 
@@ -157,8 +160,10 @@ public class Editor : UIScene {
 
         if (rte)
             RecInProgress.FinishRecording();
-        else
+        else {
             RecInProgress.DiscardRecording();
+            lastPosition = null; lastZoom = null;
+        }
 
         Map map = null;
         if (data != null) {
@@ -182,6 +187,7 @@ public class Editor : UIScene {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
         Audio.Stop(Audio.CurrentMusicEventInstance);
         RecInProgress.DiscardRecording();
+        lastPosition = null; lastZoom = null;
 
         Snowberry.LogInfo("Opening new map in level editor");
         // Also empties the target's metadata.
@@ -353,6 +359,9 @@ public class Editor : UIScene {
     }
 
     public void BeginPlaytest() {
+        lastPosition = Camera.Position;
+        lastZoom = Camera.Zoom;
+
         if (Map.Rooms.Count == 0) {
             UIMessage.ShowInfoPopup("SNOWBERRY_EDITOR_PLAYTEST_NO_ROOMS", "SNOWBERRY_EDITOR_PLAYTEST_OK");
             return;
@@ -397,6 +406,10 @@ public class Editor : UIScene {
 
     protected override void BeginContent() {
         Camera = new BufferCamera();
+        if (lastZoom is { /* non-null */ } zoom)
+            Camera.Zoom = zoom;
+        if (lastPosition is { /* non-null */ } pos)
+            Camera.Position = pos;
 
         if (Map == null)
             MenuUI();
