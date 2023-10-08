@@ -32,7 +32,6 @@ internal sealed class LuaSprites {
                             drawables.Add(FromTable(sp));
                     item.Dispose();
                 }
-
     }
 
     public void Render() {
