@@ -261,12 +261,13 @@ public class SelectionTool : Tool {
             if (MInput.Mouse.ReleasedLeftButton && canClick && !movedMouse) {
                 if (CurrentEffect != SelectionEffect.Set) {
                     movedMouse = true;
-                    next = GetEnabledSelections(Mouse.World.ToRect());
+                    next = currentMode == SelectionMode.MagicWand ? MagicWand() : GetEnabledSelections(Mouse.World.ToRect());
+                    SelectionInProgress ??= new();
                     goto applyNext;
                 }
 
                 // releasing double click on a selected entity -> select all of type
-                if (wasDoubleClick && Editor.SelectedRoom != null)
+                if ((wasDoubleClick || currentMode == SelectionMode.MagicWand) && Editor.SelectedRoom != null)
                     Editor.SelectedObjects = MagicWand();
                 else {
                     // releasing click on a selected object -> cycle selection
