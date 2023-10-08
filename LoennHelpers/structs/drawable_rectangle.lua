@@ -6,6 +6,7 @@ end
 -- end snowberry header
 
 local utils = require("utils")
+local drawableSprite = require("structs.drawable_sprite")
 
 local drawableRectangle = {}
 
@@ -14,9 +15,54 @@ drawableRectangleMt.__index = {}
 
 drawableRectangle.tintingPixelTexture = "snowberry/1x1"
 
--- for now we just Don't
+local function getDrawableSpriteForRectangle(x, y, width, height, color)
+    local data = {}
+
+    data.x = x
+    data.y = y
+
+    data.scaleX = width
+    data.scaleY = height
+
+    data.justificationX = 0
+    data.justificationY = 0
+
+    data.color = utils.getColor(color)
+
+    return drawableSprite.fromInternalTexture(drawableRectangle.tintingPixelTexture, data)
+end
+
 function drawableRectangleMt.__index:getDrawableSprite()
-    return self
+    local mode = self.mode or "fill"
+
+    if mode == "fill" then
+        return getDrawableSpriteForRectangle(self.x, self.y, self.width, self.height, self.color)
+
+    elseif mode == "line" then
+        return {
+            getDrawableSpriteForRectangle(self.x + 1, self.y, self.width - 2, 1, self.color),
+            getDrawableSpriteForRectangle(self.x + 1, self.y + self.height - 1, self.width - 2, 1, self.color),
+            getDrawableSpriteForRectangle(self.x, self.y, 1, self.height, self.color),
+            getDrawableSpriteForRectangle(self.x + self.width - 1, self.y, 1, self.height, self.color)
+        }
+
+    elseif mode == "bordered" then
+        -- Simplified if only the border is visible
+        if self.width <= 2 or self.height <= 2 then
+            return {
+                getDrawableSpriteForRectangle(self.x, self.y, self.width, self.height, self.secondaryColor)
+            }
+
+        else
+            return {
+                getDrawableSpriteForRectangle(self.x + 1, self.y + 1, self.width - 2, self.height - 2, self.color),
+                getDrawableSpriteForRectangle(self.x + 1, self.y, self.width - 2, 1, self.secondaryColor),
+                getDrawableSpriteForRectangle(self.x + 1, self.y + self.height - 1, self.width - 2, 1, self.secondaryColor),
+                getDrawableSpriteForRectangle(self.x, self.y, 1, self.height, self.secondaryColor),
+                getDrawableSpriteForRectangle(self.x + self.width - 1, self.y, 1, self.height, self.secondaryColor)
+            }
+        end
+    end
 end
 
 function drawableRectangle.fromRectangle(mode, x, y, width, height, color, secondaryColor)
