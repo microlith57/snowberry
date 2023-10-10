@@ -214,7 +214,18 @@ public class LoennPluginInfo : PluginInfo {
                             _ => typeof(string)
                         };
 
-                        Options[fieldName] = new LuaEntityOption(fieldName, fieldType, name, isTrigger);
+                        LuaEntityOption option = new LuaEntityOption(fieldName, fieldType, name, isTrigger);
+                        Options[fieldName] = option;
+
+                        if (fieldInfo["options"] is LuaTable options) {
+                            option.Options = new();
+                            foreach (object key in options.Keys)
+                                if (key is string k && options[key] is { /* non-null anything */ } v)
+                                    option.Options[k] = v;
+                        }
+
+                        if (fieldInfo["editable"] is false)
+                            option.Editable = false;
                     } else {
                         HasWidth |= fieldName == "width";
                         HasHeight |= fieldName == "height";
@@ -232,6 +243,11 @@ public class LoennPluginInfo : PluginInfo {
 }
 
 public class LuaEntityOption : PluginOption {
+
+    // store as strings for "simplicity", pass through StrToObject when necessary
+    public Dictionary<string, object> Options = null;
+    public bool Editable = true;
+
     public LuaEntityOption(string key, Type t, string entityName, bool isTrigger) {
         Key = key;
         FieldType = t;

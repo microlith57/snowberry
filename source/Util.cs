@@ -157,4 +157,10 @@ public static class Util {
 
         return isInPolygon;
     }
+
+    public static K LookupName<K, V>(this Dictionary<K, V> dict, V value, K fallback) {
+        // clown language
+        var pairs = dict.Where(pair => pair.Value.ToString().Equals(value.ToString()));
+        return pairs.Any() ? pairs.FirstOrDefault().Key : fallback;
+    }
 }

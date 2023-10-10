@@ -46,8 +46,15 @@ public class UIPluginOptionList : UIElement {
         int spacing = 13;
         foreach (var option in Plugin.Info.Options) {
             object value = option.Value.GetValue(Plugin);
+
+            if (Plugin.CreateOptionUi(option.Key) is (UIElement i, int height)) {
+                UIOption ui = new UIOption(option.Key, i, Plugin.GetTooltipFor(option.Key));
+                Add(ui);
+                ui.Position.Y = l;
+                l += height;
+            }
             // TODO: this is kind of silly
-            if (option.Value.FieldType == typeof(bool)) {
+            else if (option.Value.FieldType == typeof(bool)) {
                 UIOption ui;
                 Add(ui = BoolOption(option.Key, (bool)value, Plugin));
                 ui.Position.Y = l;

@@ -7,6 +7,7 @@ using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 using NLua;
+using Snowberry.UI;
 
 namespace Snowberry.Editor.Entities.Lua;
 
@@ -218,6 +219,43 @@ public class LuaEntity : Entity {
             default:
                 return new[] { orElse };
         }
+    }
+
+    public override (UIElement, int height)? CreateOptionUi(string optionName) {
+        if (Info.Options[optionName] is LuaEntityOption { Options: { /* non-null */ } options, Editable: var editable }) {
+            var value = Get(optionName);
+
+            // it's like UIPluginOptionList but evil
+            UITextField text = null;
+            UIButton button = null;
+            button = new UIButton(editable ? "\uF036" : options.LookupName(value, value.ToString()) + " \uF036", Fonts.Regular, 2, 2) {
+                OnPress = () => {
+                    var dropdown = new UIDropdown(Fonts.Regular, options
+                        .Select(x => new UIDropdown.DropdownEntry(x.Key, () => {
+                            Set(optionName, x.Value);
+                            string displayName = options.LookupName(x.Value, x.Value.ToString());
+                            if (!editable)
+                                button.SetText(displayName + " \uF036");
+                            else
+                                text.UpdateInput(displayName);
+                        })).ToArray()) {
+                            Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos()
+                        };
+
+                    Editor.Instance.ToolPanel.Add(dropdown);
+                }
+            };
+
+            if (editable) {
+                text = new UITextField(Fonts.Regular, 200);
+                button.Position.X += text.Width + 3;
+                return (UIElement.Regroup(text, button), 19);
+            }
+
+            return (button, 19);
+        }
+
+        return base.CreateOptionUi(optionName);
     }
 
     public static LuaTable EmptyTable() {

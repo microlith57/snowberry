@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using Snowberry.Editor;
+using Snowberry.UI;
 
 namespace Snowberry;
 
@@ -54,7 +55,9 @@ public abstract class Plugin {
         Info.Options.TryGetValue(option, out PluginOption f) ? ObjectToStr(f.GetValue(this)) : null;
 
     public string GetTooltipFor(string option) =>
-        Info.Options.TryGetValue(option, out PluginOption f)  ? f.Tooltip : null;
+        Info.Options.TryGetValue(option, out PluginOption f) ? f.Tooltip : null;
+
+    public virtual (UIElement, int height)? CreateOptionUi(string optionName) => null;
 
     public static object StrToObject(Type targetType, string raw){
         if(targetType.IsEnum)
