@@ -95,6 +95,7 @@ public static class DrawUtil {
         }
     }
 
+    // intended for gameplay
     public static void DrawPolygon(Vector2[] points, Color color) {
         // adapted from Frost Helper: https://github.com/JaThePlayer/FrostHelper/blob/aa09b0338c03b6a37921fe0a3d254eaec2bb675d/Code/FrostHelper/Helpers/ArbitraryShapeEntityHelper.cs#L30
         Triangulator.Triangulator.Triangulate(points, WindingOrder.Clockwise, null, out var verts, out var indices);
@@ -105,6 +106,23 @@ public static class DrawUtil {
                 Color = color
             };
         GFX.DrawVertices(Editor.Editor.Instance.Camera.Matrix, fill, fill.Length);
+    }
+
+    // intended for UI
+    public static void DrawGradientRectV(Vector2 position, float width, float height, Color top, Color bottom) {
+        if (top == bottom) {
+            Draw.Rect(position, width, height, top);
+            return;
+        }
+
+        GFX.DrawVertices(Matrix.Identity, new VertexPositionColor[6] {
+            new(new(position, 0), top),
+            new(new(position + new Vector2(width, 0), 0), top),
+            new(new(position + new Vector2(width, height), 0), bottom),
+            new(new(position, 0), top),
+            new(new(position + new Vector2(width, height), 0), bottom),
+            new(new(position + new Vector2(0, height), 0), bottom),
+        }, 6);
     }
 
     public static void DrawGuidelines(Rectangle bounds, Color c) {
