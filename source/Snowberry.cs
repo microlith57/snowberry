@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Monocle;
+using Snowberry.Editor;
 using Snowberry.Editor.Recording;
 
 namespace Snowberry;
@@ -82,15 +83,35 @@ public sealed class Snowberry : EverestModule {
 
         foreach (EverestModule module in Everest.Modules) {
             Assembly asm = module.GetType().Assembly;
-            foreach (Type type in asm.GetTypesSafe().Where(t => !t.IsAbstract && typeof(SnowberryModule).IsAssignableFrom(t))) {
+            var types = asm.GetTypesSafe();
+            SnowberryModule sm = null;
+
+            foreach (Type type in types.Where(t => !t.IsAbstract && typeof(SnowberryModule).IsAssignableFrom(t))) {
+                if (sm != null) {
+                    Log(LogLevel.Warn, $"Mod '{module.Metadata.Name}' contains extra Snowberry module at '{type.FullName}' that will be ignored!");
+                    continue;
+                }
+
                 ConstructorInfo ctor = type.GetConstructor(new Type[] {});
                 if (ctor != null) {
-                    SnowberryModule editorModule = (SnowberryModule)ctor.Invoke(new object[] {});
+                    sm = (SnowberryModule)ctor.Invoke(new object[] {});
+                    PluginInfo.GenerateFromAssembly(asm, sm);
+                    modules.Add(sm);
+                    Log(LogLevel.Info, $"Successfully loaded Snowberry module '{sm.Name}' from '{module.Metadata.Name}'");
+                }
+            }
 
-                    PluginInfo.GenerateFromAssembly(asm, editorModule);
-
-                    modules.Add(editorModule);
-                    Log(LogLevel.Info, $"Successfully loaded Snowberry Module '{editorModule.Name}'");
+            if (sm != null) {
+                if (module.GetType() != typeof(Snowberry)) {
+                    foreach (Type type in types.Where(t => !t.IsAbstract && typeof(Tool).IsAssignableFrom(t))) {
+                        ConstructorInfo ctor = type.GetConstructor(new Type[] {});
+                        if (ctor != null) {
+                            Tool pluginTool = (Tool)ctor.Invoke(new object[] {});
+                            pluginTool.Owner = sm;
+                            Tool.Tools.Add(pluginTool);
+                            Log(LogLevel.Info, $"Loaded plugin tool '{pluginTool.GetName()}' from {module.Metadata.Name}");
+                        }
+                    }
                 }
             }
         }

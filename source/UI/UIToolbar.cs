@@ -33,6 +33,10 @@ public class UIToolbar : UIElement {
             int copy = i; // thanks lambdas, very cool
             toolButton.OnPress = () => editor.SwitchTool(copy);
             toolButton.Position = new Vector2(Position.X + Width + 3, Position.Y + 5);
+
+            if (tool.Owner != null)
+                toolButton.Color2 = tool.Owner.Color;
+
             Width += toolButton.Width + 3;
             Add(toolButton);
             toolButtons.Add(toolButton);

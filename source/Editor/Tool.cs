@@ -8,7 +8,7 @@ namespace Snowberry.Editor;
 
 public abstract class Tool{
 
-    public static IList<Tool> Tools = new List<Tool> {
+    public static readonly IList<Tool> BaseTools = new List<Tool> {
         new SelectionTool(),
         new TileBrushTool(),
         new RoomTool(),
@@ -18,9 +18,13 @@ public abstract class Tool{
         new PlaytestTool()
     };
 
+    public static readonly IList<Tool> Tools = new List<Tool>(BaseTools);
+
     public static readonly Color LeftSelectedBtnBg = Calc.HexToColor("274292");
     public static readonly Color RightSelectedBtnBg = Calc.HexToColor("922727");
     public static readonly Color BothSelectedBtnBg = Calc.HexToColor("7d2792");
+
+    internal SnowberryModule Owner = null;
 
     public abstract string GetName();
 
