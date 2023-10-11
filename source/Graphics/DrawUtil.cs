@@ -115,14 +115,19 @@ public static class DrawUtil {
             return;
         }
 
-        GFX.DrawVertices(Matrix.Identity, new VertexPositionColor[6] {
+        // has very weird colour blending
+        /*GFX.DrawVertices(Matrix.Identity, new VertexPositionColor[6] {
             new(new(position, 0), top),
             new(new(position + new Vector2(width, 0), 0), top),
             new(new(position + new Vector2(width, height), 0), bottom),
             new(new(position, 0), top),
             new(new(position + new Vector2(width, height), 0), bottom),
             new(new(position + new Vector2(0, height), 0), bottom),
-        }, 6);
+        }, 6);*/
+
+        for (int i = 0; i < height; i++) {
+            Draw.Rect(position + new Vector2(0, i), width, 1, Color.Lerp(top, bottom, i / (height - 1)));
+        }
     }
 
     public static void DrawGuidelines(Rectangle bounds, Color c) {
