@@ -247,7 +247,7 @@ public class LuaEntity : Entity {
             };
 
             if (editable) {
-                text = new UITextField(Fonts.Regular, 200);
+                text = new UITextField(Fonts.Regular, 80);
                 button.Position.X += text.Width + 3;
                 return (UIElement.Regroup(text, button), 19);
             }
