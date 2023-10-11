@@ -25,7 +25,8 @@ public class UIKeyboundButton : UIButton {
         bool primaryAlt;
         if ((Ctrl == MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl))
         && ((primaryAlt = (Alt == MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt))) || AltClickWithAlt)
-        && (Shift == MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift))) {
+        && (Shift == MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift))
+        && !UIScene.Instance.UI.NestedGrabsKeyboard() /* AKA CanTypeShortcut */) {
             var action = OnKbPress ?? (primaryAlt ? OnPress : OnRightPress);
             // when you first press the button, run on-press action
             if(MInput.Keyboard.Pressed(Key))
