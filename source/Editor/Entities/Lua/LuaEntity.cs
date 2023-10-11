@@ -222,7 +222,7 @@ public class LuaEntity : Entity {
     }
 
     public override (UIElement, int height)? CreateOptionUi(string optionName) {
-        if (Info.Options[optionName] is LuaEntityOption { Options: { /* non-null */ } options, Editable: var editable }) {
+        if (Info.Options[optionName] is LuaEntityOption { Options: { Count: > 0 } options, Editable: var editable }) {
             var value = Get(optionName);
 
             // it's like UIPluginOptionList but evil
