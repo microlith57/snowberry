@@ -238,9 +238,8 @@ public class LuaEntity : Entity {
                                 button.SetText(displayName + " \uF036");
                             else
                                 text.UpdateInput(displayName);
-                        })).ToArray()) {
-                            Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos()
-                        };
+                        })).ToArray());
+                    dropdown.Position = button.GetBoundsPos() + new Vector2(-dropdown.Width, button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos();
 
                     Editor.Instance.ToolPanel.Add(dropdown);
                 }
