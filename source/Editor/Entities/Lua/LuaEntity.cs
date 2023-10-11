@@ -239,7 +239,7 @@ public class LuaEntity : Entity {
                             else
                                 text.UpdateInput(displayName);
                         })).ToArray());
-                    dropdown.Position = button.GetBoundsPos() + new Vector2(-dropdown.Width, button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos();
+                    dropdown.Position = button.GetBoundsPos() + new Vector2(button.Width - dropdown.Width, button.Height + 2) - Editor.Instance.ToolPanel.GetBoundsPos();
 
                     Editor.Instance.ToolPanel.Add(dropdown);
                 }
