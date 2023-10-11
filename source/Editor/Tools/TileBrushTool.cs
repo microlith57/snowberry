@@ -52,6 +52,10 @@ public class TileBrushTool : Tool {
     }
 
     public override UIElement CreatePanel(int height) {
+        // TODO: use newer UI style
+        // instead of just adding everything to one big panel, actually group stuff and deduplicate code between FG/BG
+        // and manually specify less hopefully
+
         bgTilesetButtons.Clear();
         fgTilesetButtons.Clear();
         UIElement panel = new UIElement {
@@ -90,10 +94,16 @@ public class TileBrushTool : Tool {
                 Position = new Vector2(i % 2 == 0 ? 12 : 8 * 3 + 52, (i / 2) * (8 * 3 + 30) + fgLabel.Height + 20)
             };
             button.Height += 10;
-            var label = new UILabel(item.Path.Split('/').Last(), Fonts.Pico8);
             tilesetsPanel.Add(button);
+
+            var label = new UILabel(item.Path.Split('/').Last(), Fonts.Pico8);
             label.Position += new Vector2(button.Position.X + (button.Width - Fonts.Pico8.Measure(label.Value()).X) / 2, 8 * 3 + 13 + button.Position.Y);
             tilesetsPanel.Add(label);
+
+            var idLabel = new UILabel(() => MInput.Keyboard.Check(Keys.I) ? item.Key.ToString() : "");
+            idLabel.Position += new Vector2(button.Position.X + button.Width - 7, button.Position.Y + 5);
+            tilesetsPanel.Add(idLabel);
+
             i++;
             fgTilesetButtons.Add(button);
         }
@@ -121,10 +131,16 @@ public class TileBrushTool : Tool {
                 Position = new Vector2(i % 2 == 0 ? 12 : 8 * 3 + 52, (i / 2) * (8 * 3 + 30) + (bgLabel.Position.Y) + 20)
             };
             button.Height += 10;
-            var label = new UILabel(item.Path.Split('/').Last(), Fonts.Pico8);
             tilesetsPanel.Add(button);
+
+            var label = new UILabel(item.Path.Split('/').Last(), Fonts.Pico8);
             label.Position += new Vector2(button.Position.X + (button.Width - Fonts.Pico8.Measure(label.Value()).X) / 2, 8 * 3 + 13 + button.Position.Y);
             tilesetsPanel.Add(label);
+
+            var idLabel = new UILabel(() => MInput.Keyboard.Check(Keys.I) ? item.Key.ToString() : "");
+            idLabel.Position += new Vector2(button.Position.X + button.Width - 7, button.Position.Y + 5);
+            tilesetsPanel.Add(idLabel);
+
             i++;
             bgTilesetButtons.Add(button);
         }
