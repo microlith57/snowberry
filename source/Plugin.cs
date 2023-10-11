@@ -34,11 +34,11 @@ public abstract class Plugin {
             object v;
             // TODO: this is stupid
             //  - really StrToObject should (and does!) handle all of these
-            if (f.FieldType == typeof(char))
+            if (f.FieldType == typeof(char) && value is not char)
                 v = value.ToString()[0];
-            else if (f.FieldType == typeof(Color))
+            else if (f.FieldType == typeof(Color) && value is not Color)
                 v = Monocle.Calc.HexToColor(value.ToString());
-            else if (f.FieldType == typeof(Tileset))
+            else if (f.FieldType == typeof(Tileset) && value is not Tileset)
                 v = Tileset.ByKey(value.ToString()[0], false);
             else
                 v = value is string str ? StrToObject(f.FieldType, str) : Convert.ChangeType(value, f.FieldType);

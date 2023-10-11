@@ -61,7 +61,7 @@ public class UIPluginOptionList : UIElement {
                 l += spacing;
             } else if (option.Value.FieldType == typeof(Color)) {
                 UIOption ui;
-                Add(ui = ColorOption(option.Key, value as Color? ?? Color.Bisque, Plugin));
+                Add(ui = ColorOption(option.Key, (value is Color c ? c : Color.White), Plugin));
                 ui.Position.Y = l;
                 l += 91;
             } else if (option.Value.FieldType == typeof(int)) {
