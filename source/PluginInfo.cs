@@ -220,8 +220,8 @@ public class LoennPluginInfo : PluginInfo {
                         if (fieldInfo["options"] is LuaTable options) {
                             option.Options = new();
                             foreach (object key in options.Keys)
-                                if (key is string k && options[key] is { /* non-null anything */ } v)
-                                    option.Options[k] = v;
+                                if (options[key] is { /* non-null anything */ } v)
+                                    option.Options[key as string ?? v.ToString()] = v;
                         }
 
                         if (fieldInfo["editable"] is false)
