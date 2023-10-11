@@ -222,7 +222,7 @@ public class PlacementTool : Tool {
     }
 
     private UITree CreateEntitiesTree(bool triggers = false) {
-        UITree entities = new(new UILabel(triggers ? "triggers" : "entities"), true) {
+        UITree entities = new(new UILabel(triggers ? "triggers" : "entities")) {
             NoKb = true,
             PadUp = 2,
             PadDown = 2
