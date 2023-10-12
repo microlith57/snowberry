@@ -478,20 +478,25 @@ public class Editor : UIScene {
             tool.Update(canClick);
 
             // keybinds
-            if (CanTypeShortcut() && (MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl))) {
-                bool save = false;
+            if ((MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl)) && CanTypeShortcut()) {
+                bool saveSettings = false;
                 if (MInput.Keyboard.Pressed(Keys.F)) {
                     Snowberry.Settings.FancyRender = !Snowberry.Settings.FancyRender;
-                    save = true;
+                    saveSettings = true;
                 }
 
                 if (MInput.Keyboard.Pressed(Keys.L)) {
                     Snowberry.Settings.StylegroundsPreview = !Snowberry.Settings.StylegroundsPreview;
-                    save = true;
+                    saveSettings = true;
                 }
 
-                if (save)
+                if (saveSettings)
                     Snowberry.Instance.SaveSettings();
+
+                if (MInput.Keyboard.Pressed(Keys.Z))
+                    UndoRedo.Undo();
+                if (MInput.Keyboard.Pressed(Keys.Y))
+                    UndoRedo.Redo();
             }
 
             // autosaving

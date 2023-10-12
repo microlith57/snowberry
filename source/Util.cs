@@ -117,6 +117,9 @@ public static class Util {
     public static string IntoRgbString(this Color c) =>
         $"{c.R.ToHex()}{c.G.ToHex()}{c.B.ToHex()}".ToLower();
 
+    public static IEnumerable<T> ConcatN<T>(IEnumerable<T> start, params T[] next) =>
+        start.Concat(next); // the actual work is done by the compiler's interpretation of `params`
+
     public static string IntoRgbaString(this Color c) {
         float f = (255f / c.A);
         return c.A == 0 ? "00000000" : BitConverter.ToString(

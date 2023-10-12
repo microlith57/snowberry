@@ -101,10 +101,9 @@ public class UndoRedo{
         InProgress.BackupRedoState();
         ActionLog.Add(InProgress);
         CurActionIndex++;
+        Snowberry.LogInfo("completed: " + InProgress.Name);
         InProgress = null;
     }
-
-    public static void CancelAction() => InProgress?.Undo();
 
     private static void TrimLog(){
         if(CurActionIndex != ActionLog.Count - 1)
@@ -113,7 +112,9 @@ public class UndoRedo{
     }
 
     public static void Undo(){
-        if(CurActionIndex > -1){
+        if (InProgress != null)
+            InProgress.Undo();
+        else if(CurActionIndex > -1){
             ActionLog[CurActionIndex].Undo();
             Snowberry.LogInfo("undid: " + ActionLog[CurActionIndex].Name);
             CurActionIndex--;
