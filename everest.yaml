@@ -1,5 +1,5 @@
 - Name: Snowberry
-  Version: 0.0.10
+  Version: 0.0.11
   DLL: bin/Snowberry.dll
   Dependencies:
     - Name: Everest
