@@ -11,69 +11,50 @@ namespace Snowberry.Editor.Entities;
 public class Plugin_Gondola : Entity {
     [Option("active")] public bool Active = true;
 
-    private Image top = new Image(GFX.Game["objects/gondola/top"]);
-    private Image front = new Image(GFX.Game["objects/gondola/front"]);
-    private Image back = new Image(GFX.Game["objects/gondola/back"]);
-    private Image lever = new Image(GFX.Game["objects/gondola/lever00"]);
-    private Image anchorLeft = new Image(GFX.Game["objects/gondola/cliffsideLeft"]);
-    private Image anchorRight = new Image(GFX.Game["objects/gondola/cliffsideRight"]);
+    private MTexture top = GFX.Game["objects/gondola/top"];
+    private MTexture front = GFX.Game["objects/gondola/front"];
+    private MTexture back = GFX.Game["objects/gondola/back"];
+    private MTexture lever = GFX.Game["objects/gondola/lever00"];
+    private MTexture anchorLeft = GFX.Game["objects/gondola/cliffsideLeft"];
+    private MTexture anchorRight = GFX.Game["objects/gondola/cliffsideRight"];
 
     public override int MinNodes => 1;
     public override int MaxNodes => 1;
 
     public Vector2 Start => Position;
     public Vector2 Destination => Nodes.Count > 0 ? Nodes[0] : Position;
-    public Vector2 GondolaPosition => Active ? Start : Position;
+    public Vector2 GondolaPosition => (Active ? Start : Position) - new Vector2(0, 52f);
 
-    public Plugin_Gondola() {
-        top.Origin = new Vector2(top.Width / 2f, 12f);
-        front.Origin = new Vector2(front.Width / 2f, 12f);
-        back.Origin = new Vector2(back.Width / 2f, 12f);
-        lever.Origin = new Vector2(lever.Width / 2f, 12f);
-        anchorLeft.JustifyOrigin(0f, 1f);
-        anchorRight.JustifyOrigin(0, 0.5f);
-        anchorRight.Scale.X = -1f;
-    }
-
-    // A mix of hardcoding and relying on the images so no-one is happy
+    // A mix of hardcoding and relying on the textures so no-one is happy
     protected override IEnumerable<Rectangle> Select() =>
     new Rectangle[] {
         RectOnAbsolute(new Vector2(front.Width - 6f, front.Height - 23f),
-            front.Position - front.Origin + new Vector2(3f, 23f)),
+            GondolaPosition + new Vector2(3f - top.Width / 2f, 11f)),
         RectOnAbsolute(new Vector2(anchorRight.Width, anchorRight.Height - 22f),
-            anchorRight.Position - anchorRight.Origin - new Vector2(anchorRight.Width, -8f))
+            Destination - new Vector2(-144f + anchorRight.Width, 104f - 8f + anchorRight.Height / 2f))
     };
 
     public override void Render() {
         base.Render();
 
-        // Update lever visibility
-        lever.Visible = Active;
+        back.Draw(GondolaPosition, new Vector2(back.Width / 2f, 12f));
+        front.Draw(GondolaPosition, new Vector2(front.Width / 2f, 12f));
+        if(Active) lever.Draw(GondolaPosition, new Vector2(lever.Width / 2f, 12f));
 
-        // Update positions
-        top.Position = GondolaPosition - new Vector2(0, 52f);
-        front.Position = top.Position;
-        back.Position = top.Position;
-        lever.Position = top.Position;
-        anchorLeft.Position = Start + new Vector2(-124f, 0);
-        anchorRight.Position = Destination + new Vector2(144f, -104f);
 
-        // Update rotation
-        top.Rotation = Calc.Angle(Start, Destination);
-
-        back.Render();
-        front.Render();
-        lever.Render();
+        float topRotation = Calc.Angle(Start, Destination);
 
         // Celeste uses (Destination - Start).SafeNormalise() instead of Vector2.UnitX.Rotate(top.Rotation)
-        Draw.Line(anchorLeft.Position + new Vector2(40f, -12f),
-            top.Position - 6f * Vector2.UnitX.Rotate(top.Rotation), Color.Black, 2);
-        Draw.Line(top.Position + 6f * Vector2.UnitX.Rotate(top.Rotation),
-            anchorRight.Position + new Vector2(-40f, -3f), Color.Black, 2);
+        Draw.Line(Start + new Vector2(-84f, -12f),
+            GondolaPosition - 6f * Vector2.UnitX.Rotate(topRotation), Color.Black, 2);
+        Draw.Line(GondolaPosition + 6f * Vector2.UnitX.Rotate(topRotation),
+            Destination + new Vector2(104f, -101f), Color.Black, 2);
 
-        top.Render();
-        anchorLeft.Render();
-        anchorRight.Render();
+
+        top.Draw(GondolaPosition, new Vector2(top.Width / 2f, 12f), Color.White, 1, topRotation);
+
+        anchorLeft.DrawJustified(Start + new Vector2(-124f, 0), new Vector2(0, 1f));
+        anchorRight.DrawJustified(Destination + new Vector2(144f, -104f), new Vector2(0, 0.5f), Color.White, new Vector2(-1f, 1f));
     }
 
     public static void AddPlacements() {
