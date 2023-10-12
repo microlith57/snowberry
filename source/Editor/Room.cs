@@ -580,7 +580,14 @@ public class Room {
         e.Dirty = true;
     }
 
-    public bool IsEntityTypeDirty(Type t) {
-        return DirtyTrackedEntities.ContainsKey(t) && DirtyTrackedEntities[t];
-    }
+    public bool IsEntityTypeDirty(Type t) => DirtyTrackedEntities.ContainsKey(t) && DirtyTrackedEntities[t];
+
+    public UndoRedo.Snapshotter<(VirtualMap<char> fg, VirtualMap<char> bg)> STiles => new(
+        () => (fgTileMap.Clone(), bgTileMap.Clone()),
+        data => {
+            fgTileMap = data.fg;
+            bgTileMap = data.bg;
+            Autotile();
+        }
+    );
 }

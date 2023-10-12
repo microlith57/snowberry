@@ -194,7 +194,9 @@ public class TileBrushTool : Tool {
         if (canClick && (MInput.Mouse.PressedLeftButton || (middlePan && MInput.Mouse.PressedRightButton))) {
             if (mode != TileBrushMode.Eyedropper) {
                 isPainting = true;
-            } else if(Editor.SelectedRoom != null) {
+                if (Editor.SelectedRoom != null)
+                    UndoRedo.BeginAction("edit tiles", Editor.SelectedRoom.STiles);
+            } else if (Editor.SelectedRoom != null) {
                 Vector2 tilePos = new((float)Math.Floor(Mouse.World.X / 8) * 8, (float)Math.Floor(Mouse.World.Y / 8) * 8);
                 bool lookBg = MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift);
                 char at = Editor.SelectedRoom.GetTile(!lookBg, tilePos);
@@ -216,10 +218,10 @@ public class TileBrushTool : Tool {
                         } else if (holoSetTiles[x, y])
                             retile |= Editor.SelectedRoom.SetBgTile(x, y, holoBgTileMap[x, y]);
 
-            if (retile) {
+            if (retile)
                 Editor.SelectedRoom.Autotile();
-            }
-
+            if (isPainting)
+                UndoRedo.CompleteAction();
             isPainting = false;
             holoFgTileMap = null;
             holoBgTileMap = null;
