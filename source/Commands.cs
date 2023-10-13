@@ -41,6 +41,11 @@ internal class Commands {
             Engine.Commands.Log($"could not find map file {mapPath ?? "null"}");
     }
 
+    [Command("editor_mixer", "opens the snowberry audio mixer screen for testing audio")]
+    internal static void UIMixerCommand() {
+        Engine.Scene = new Mixer.Mixer();
+    }
+
     [Command("editor_ui_bounds", "toggles displaying the bounds of all snowberry UI elements")]
     internal static void UIBoundsCommand() {
         UIScene.DebugShowUIBounds = !UIScene.DebugShowUIBounds;
