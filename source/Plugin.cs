@@ -31,21 +31,22 @@ public abstract class Plugin {
     // overriden by generic plugins
     public virtual void Set(string option, object value) {
         if (Info.Options.TryGetValue(option, out PluginOption f)) {
-            object v;
-            // TODO: this is stupid
-            //  - really StrToObject should (and does!) handle all of these
-            if (f.FieldType == typeof(char) && value is not char)
-                v = value.ToString()[0];
-            else if (f.FieldType == typeof(Color) && value is not Color)
-                v = Monocle.Calc.HexToColor(value.ToString());
-            else if (f.FieldType == typeof(Tileset) && value is not Tileset)
-                v = Tileset.ByKey(value.ToString()[0], false);
-            else
-                v = value is string str ? StrToObject(f.FieldType, str) : Convert.ChangeType(value, f.FieldType);
             try {
+                // TODO: this is stupid
+                //  - really StrToObject should (and does!) handle all of thesec
+                object v;
+                if (f.FieldType == typeof(char) && value is not char)
+                    v = value.ToString()[0];
+                else if (f.FieldType == typeof(Color) && value is not Color)
+                    v = Monocle.Calc.HexToColor(value.ToString());
+                else if (f.FieldType == typeof(Tileset) && value is not Tileset)
+                    v = Tileset.ByKey(value.ToString()[0], false);
+                else
+                    v = value is string str ? StrToObject(f.FieldType, str) : Convert.ChangeType(value, f.FieldType);
                 f.SetValue(this, v);
             } catch (ArgumentException e) {
-                Snowberry.Log(LogLevel.Warn, "Tried to set field " + option + " to an invalid value " + v);
+                Snowberry.Log(LogLevel.Warn,
+                    $"Tried to set field {option} to an invalid value {value} ({value?.GetType().FullName ?? "null"})");
                 Snowberry.Log(LogLevel.Warn, e.ToString());
             }
         }
