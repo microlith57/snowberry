@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
@@ -226,6 +227,14 @@ public class Example : UIScene {
             }
         };
         content.AddRight(drop2downButton, new(3, 18));
+
+        UIKnob knob = new UIKnob {
+            Min = 1,
+            Max = 100,
+            Value = 30
+        };
+        content.AddRight(knob, new(60, 40));
+        content.AddRight(new UILabel(() => knob.Value.ToString(CultureInfo.InvariantCulture)), new(0, 40));
     }
 
     protected override void OnScreenResized() {
