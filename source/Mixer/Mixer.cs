@@ -109,14 +109,20 @@ public class Mixer : UIScene {
         };
         eventPanel.AddBelow(new UILabel(Audio.GetEventName(e)), new(5));
         e.getParameterCount(out int count);
-        for (int i = 0; i < count; i++) {
-            e.getParameterByIndex(i, out PARAMETER_DESCRIPTION param);
+        IEnumerable<PARAMETER_DESCRIPTION> parameters = Enumerable.Range(0, count)
+            .Select(x => {
+                e.getParameterByIndex(x, out var p);
+                return p;
+            })
+            .OrderBy(x => x.name);
+        foreach (var param in parameters) {
             UIElement local = new(); UISlider slider;
             local.AddRight(new UILabel(param.name), new(5));
             local.AddRight(slider = new UISlider {
                 Value = param.defaultvalue,
                 Min = param.minimum,
                 Max = param.maximum,
+                Width = 140,
                 OnInputChanged = v => instance.setParameterValue(param.name, v)
             }, new(7, 2));
             local.AddRight(new UILabel(() => slider.Value.ToString(CultureInfo.CurrentCulture)), new(10, 5));
