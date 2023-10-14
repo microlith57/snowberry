@@ -102,7 +102,9 @@ public class Mixer : UIScene {
     }
 
     private void StartPlaying(EventDescription e) {
-        EventInstance instance = Audio.Play(Audio.GetEventName(e));
+        if (e.createInstance(out var instance) != FmodResult.OK)
+            return;
+        instance.start();
 
         UIElement eventPanel = new(){
             Background = Color.DarkGreen
@@ -138,9 +140,9 @@ public class Mixer : UIScene {
                 Relist();
             }
         }, new(5));
-        // eventPanel.AddBelow(new UIButton("replay", Fonts.Regular, 2, 2) {
-        //     OnPress = () => instance.setTimelinePosition(0)
-        // }, new(5));
+        eventPanel.AddBelow(new UIButton("replay", Fonts.Regular, 2, 2) {
+            OnPress = () => instance.start()
+        }, new(5));
         eventPanel.CalculateBounds();
         eventPanel.Width += 5;
         eventPanel.Height += 5;
