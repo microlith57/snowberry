@@ -5,10 +5,10 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor;
 using Snowberry.Editor.Tools;
-using Snowberry.UI.Menus;
+using Snowberry.UI.Controls;
 using WindController = Celeste.WindController;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Menus;
 
 class UIRoomSelectionPanel : UIElement {
     public Color BG = Calc.HexToColor("202929") * 0.5f;

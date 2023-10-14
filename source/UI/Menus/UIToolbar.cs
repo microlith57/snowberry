@@ -3,8 +3,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor;
+using Snowberry.UI.Controls;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Menus;
 
 public class UIToolbar : UIElement {
     public Color BG = Calc.HexToColor("202929");

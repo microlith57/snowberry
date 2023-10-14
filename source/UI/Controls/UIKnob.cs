@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Controls;
 
 // it's like UISlider but for music
 public class UIKnob : UIElement {

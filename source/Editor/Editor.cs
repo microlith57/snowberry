@@ -13,8 +13,8 @@ using Monocle;
 using Snowberry.Editor.Entities;
 using Snowberry.Editor.Recording;
 using Snowberry.UI;
+using Snowberry.UI.Controls;
 using Snowberry.UI.Menus;
-using Snowberry.UI.Menus.MainMenu;
 
 namespace Snowberry.Editor;
 

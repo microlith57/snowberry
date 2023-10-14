@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Controls;
 
 public class UITextField : UIElement {
 

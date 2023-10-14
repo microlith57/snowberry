@@ -4,6 +4,7 @@ using Monocle;
 using System;
 using Microsoft.Xna.Framework.Input;
 using Snowberry.UI;
+using Snowberry.UI.Menus;
 
 namespace Snowberry.Editor.Tools;
 

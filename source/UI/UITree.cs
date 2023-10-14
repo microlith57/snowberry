@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Snowberry.UI.Controls;
 
 namespace Snowberry.UI;
 

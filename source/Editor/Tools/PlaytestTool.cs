@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.Editor.Recording;
 using Snowberry.UI;
+using Snowberry.UI.Controls;
 
 namespace Snowberry.Editor.Tools;
 

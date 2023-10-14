@@ -4,6 +4,7 @@ using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Snowberry.UI;
+using Snowberry.UI.Controls;
 
 namespace Snowberry.Editor.Recording;
 

@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 
-namespace Snowberry.UI.Menus.MainMenu;
+namespace Snowberry.UI.Menus;
 
 public class UILevelRibbon : UIRibbon {
     private readonly UILevelSelector selector;

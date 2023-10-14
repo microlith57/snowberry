@@ -2,8 +2,9 @@
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Snowberry.UI.Controls;
 
-namespace Snowberry.UI.Menus.MainMenu;
+namespace Snowberry.UI.Menus;
 
 public class UILevelSelector : UIElement {
     public float LevelRibbonAnim;

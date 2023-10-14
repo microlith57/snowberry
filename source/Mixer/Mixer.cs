@@ -6,6 +6,7 @@ using FMOD;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Snowberry.UI;
+using Snowberry.UI.Controls;
 
 namespace Snowberry.Mixer;
 

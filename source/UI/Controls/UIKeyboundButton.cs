@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Controls;
 
 public class UIKeyboundButton : UIButton {
 

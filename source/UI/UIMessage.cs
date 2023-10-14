@@ -4,6 +4,7 @@ using Celeste;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
+using Snowberry.UI.Controls;
 
 namespace Snowberry.UI.Menus;
 

@@ -4,7 +4,7 @@ using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Controls;
 
 public class UIButton : UIElement {
     private readonly Vector2 space, minSize;

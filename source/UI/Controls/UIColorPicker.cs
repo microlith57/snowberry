@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Controls;
 
 public class UIColorPicker : UIElement {
     private readonly int wheelWidth;

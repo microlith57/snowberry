@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Snowberry.Editor;
-using Snowberry.UI.Menus;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Menus;
 
 public class UISelectionPane : UIScrollPane{
 

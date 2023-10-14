@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.UI;
+using Snowberry.UI.Controls;
 using Snowberry.UI.Menus;
 using static Snowberry.Editor.Triggers.Plugin_ChangeInventoryTrigger;
 

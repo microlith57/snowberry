@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor;
 using Snowberry.Editor.Tools;
+using Snowberry.UI.Controls;
 using Snowberry.UI.Menus;
 
 namespace Snowberry.UI;

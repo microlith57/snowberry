@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.UI.Menus.MainMenu; 
+namespace Snowberry.UI.Menus;
 
 public class UIMainMenuButtons : UIElement {
     public Color Color = Util.Colors.White;

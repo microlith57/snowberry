@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Snowberry.Editor;
+using Snowberry.UI.Controls;
 
 namespace Snowberry.UI.Menus;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 
-namespace Snowberry.UI; 
+namespace Snowberry.UI.Controls;
 
 public class UISearchBar<T> : UITextField {
     public T[] Entries;
@@ -91,7 +91,7 @@ public class UISearchBar<T> : UITextField {
         foreach (T entry in Entries) {
             bool matched = false;
             foreach (var terms in search) {
-                // try 'AND' seq. of terms 
+                // try 'AND' seq. of terms
                 bool m = true;
                 foreach (var term in terms) {
                     bool check = term.Item1 == null ? termMatcher(entry, term.Item2) : specialChars[term.Item1.Value].Item1(entry, term.Item2);

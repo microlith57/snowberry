@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using NLua;
 using Snowberry.UI;
+using Snowberry.UI.Controls;
 
 namespace Snowberry.Editor.Entities.Lua;
 
