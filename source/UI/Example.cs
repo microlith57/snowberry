@@ -8,6 +8,7 @@ using Monocle;
 using Snowberry.Editor;
 using Snowberry.Editor.Tools;
 using Snowberry.UI.Controls;
+using Snowberry.UI.Layout;
 using Snowberry.UI.Menus;
 
 namespace Snowberry.UI;
@@ -35,7 +36,7 @@ public class Example : UIScene {
             Position = new(0, 70),
             Width = UI.Width,
             Height = UI.Height - 70,
-            BG = Color.Cyan * 0.2f,
+            Background = Color.Cyan * 0.2f,
             TopPadding = 10
         };
         UI.Add(content);
@@ -173,7 +174,7 @@ public class Example : UIScene {
             Width = searchDemoWidth,
             Height = 300,
             TopPadding = 5,
-            BG = Color.White * 0.5f
+            Background = Color.White * 0.5f
         };
         List<(string value, UIElement display)> elements = new();
         foreach (string s in thingsToSearch) {

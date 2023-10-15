@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
+using Snowberry.UI.Layout;
 using Placement = Snowberry.Editor.Placements.Placement;
 
 namespace Snowberry.Editor.Tools;

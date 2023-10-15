@@ -97,6 +97,14 @@ public static class Util {
     public static Rectangle Multiply(this Rectangle r, int factor) =>
         new(r.X * factor, r.Y * factor, r.Width * factor, r.Height * factor);
 
+    public static Rectangle Intersect(this Rectangle r, Rectangle other) {
+        int newLeft = Math.Max(r.Left, other.Left),
+            newTop = Math.Max(r.Top, other.Top),
+            newRight = Math.Min(r.Right, other.Right),
+            newBottom = Math.Min(r.Bottom, other.Bottom);
+        return new Rectangle(newLeft, newTop, newRight - newLeft, newBottom - newTop);
+    }
+
     public static Point ToPoint(this Vector2 v) =>
         new((int)v.X, (int)v.Y);
 

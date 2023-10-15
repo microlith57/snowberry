@@ -4,10 +4,10 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.UI.Controls;
 
-namespace Snowberry.UI;
+namespace Snowberry.UI.Layout;
 
 // Evil element that controls its own layouting
-public class UITree : UIElement {
+public class UITree : UICutoutElement {
     public float PadLeft = 5, PadRight = 5, PadUp = 5, PadDown = 5;
     public float Spacing = 5;
 
@@ -21,7 +21,6 @@ public class UITree : UIElement {
     public UITree(UIElement header, bool collapsed = false) : this(header, new(0, 3), new(5, 0), collapsed) {}
 
     public UITree(UIElement header, Vector2 headerOffset, Vector2 buttonOffset, bool collapsed = false) {
-        RenderChildren = false;
         Collapsed = collapsed;
 
         Header = new UIElement();
@@ -40,29 +39,14 @@ public class UITree : UIElement {
     public override void Update(Vector2 position = default) {
         ToggleButton.Active = Active;
 
-        if (UIScene.Instance is not { /* non-null */ } scene) {
-            base.Update(position);
-            return;
-        }
-
         // relies on Relayout sending hidden entities to 9999,9999 but that's like fine yknow
-        bool mouseClicked = scene.MouseClicked;
-        scene.MouseClicked = mouseClicked || !new Rectangle((int)position.X, (int)position.Y, Width, Height).Contains(Mouse.Screen.ToPoint());
         base.Update(position);
-        scene.MouseClicked = mouseClicked;
     }
 
     public override void Render(Vector2 position = default) {
         // note that we're responsible for drawing *all* children, but not e.g. backgrounds or bounds
         base.Render(position);
 
-        if (Collapsed)
-            Header.Render(position + Header.Position);
-        else {
-            var screenBounds = UIScene.Instance?.UI?.Bounds ?? Rectangle.Empty;
-            foreach (var element in Children.Where(element => element.Visible && element.Bounds.Intersects(screenBounds)))
-                element.Render(position + element.Position);
-        }
         Draw.Rect(position + new Vector2(0, PadUp), 1, Height - PadUp - PadDown, Color.White);
         Draw.Rect(position + new Vector2(1, PadUp + 1), 1, Height - PadUp - PadDown - 2, Color.Gray);
     }

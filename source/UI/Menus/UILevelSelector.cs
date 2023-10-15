@@ -3,6 +3,7 @@ using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.UI.Controls;
+using Snowberry.UI.Layout;
 
 namespace Snowberry.UI.Menus;
 
@@ -21,7 +22,6 @@ public class UILevelSelector : UIElement {
         UIScrollPane levelScrollPane = new UIScrollPane {
             Height = Parent.Height - 30,
             Position = new Vector2(-16, 22),
-            BG = Color.Transparent,
             Background = Color.Transparent,
             ShowScrollBar = false
         };

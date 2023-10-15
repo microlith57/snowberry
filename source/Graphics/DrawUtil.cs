@@ -31,7 +31,7 @@ public static class DrawUtil {
             RasterizerState rasterizerState = Engine.Instance.GraphicsDevice.RasterizerState;
             if (!Engine.Instance.GraphicsDevice.RasterizerState.ScissorTestEnable)
                 Engine.Instance.GraphicsDevice.RasterizerState = new RasterizerState { ScissorTestEnable = true, CullMode = CullMode.None };
-            Draw.SpriteBatch.GraphicsDevice.ScissorRectangle = rect.ClampTo(bounds);
+            Draw.SpriteBatch.GraphicsDevice.ScissorRectangle = rect.ClampTo(bounds).Intersect(scissor);
 
             Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Engine.Instance.GraphicsDevice.RasterizerState, null, matrix ?? Matrix.Identity);
             action();
