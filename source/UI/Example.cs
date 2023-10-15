@@ -237,6 +237,20 @@ public class Example : UIScene {
         };
         content.AddRight(knob, new(60, 40));
         content.AddRight(new UILabel(() => knob.Value.ToString(CultureInfo.InvariantCulture)), new(0, 40));
+
+        UIPopOut hover = new UIPopOut {
+            Width = 110,
+            Height = 80
+        };
+        UIScrollPane pane = new UIScrollPane {
+            Width = 110 - 6,
+            Height = 80 - 17,
+            Background = Color.DarkOrange
+        };
+        for (int i = 0; i < 25; i++)
+            pane.AddBelow(new UILabel(i.ToString), new(5));
+        hover.Add(pane);
+        UI.Add(hover);
     }
 
     protected override void OnScreenResized() {
