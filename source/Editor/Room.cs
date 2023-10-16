@@ -588,6 +588,7 @@ public class Room {
             fgTileMap = data.fg;
             bgTileMap = data.bg;
             Autotile();
-        }
+        },
+        this
     );
 }

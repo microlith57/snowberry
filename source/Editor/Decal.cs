@@ -40,5 +40,5 @@ public class Decal {
         texture.DrawCentered(offset + Position, Color, Scale, Rotation);
     }
 
-    public UndoRedo.Snapshotter<Vector2> SPosition() => new(() => Position, p => Position = p);
+    public UndoRedo.Snapshotter<Vector2> SPosition() => new(() => Position, p => Position = p, this);
 }

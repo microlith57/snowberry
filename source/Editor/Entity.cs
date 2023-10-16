@@ -270,7 +270,8 @@ public abstract class Entity : Plugin {
             Width = tuple.width;
             Height = tuple.height;
             SetNodes(tuple.nodes);
-        }
+        },
+        this
     );
 
     #endregion
