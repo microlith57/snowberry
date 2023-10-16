@@ -17,6 +17,9 @@ public abstract class Selection {
 
     public abstract Rectangle Area();
 
+    // SelectionTool handles deduplicating these properly
+    public abstract UndoRedo.Snapshotter Snapshotter();
+
     public bool Contains(Point p) => Area().Contains(p);
 }
 
@@ -41,16 +44,14 @@ public class EntitySelection : Selection {
             Entity.MoveNode(Index, amount);
     }
 
-    public void SetWidth(int width) => Entity.SetWidth(width);
-
-    public void SetHeight(int height) => Entity.SetHeight(height);
-
     public override void RemoveSelf() {
         Entity.Room.RemoveEntity(Entity);
         Entity.Room.MarkEntityDirty(Entity); // tracked entities
     }
 
     public override Rectangle Area() => Entity.SelectionRectangles[Index + 1];
+
+    public override UndoRedo.Snapshotter Snapshotter() => Entity.SBounds();
 
     public override bool Equals(object obj) => obj is EntitySelection s && s.Entity.Equals(Entity) && s.Index == Index;
 
@@ -81,6 +82,8 @@ public class DecalSelection : Selection {
     }
 
     public override Rectangle Area() => Decal.Bounds;
+
+    public override UndoRedo.Snapshotter Snapshotter() => Decal.SPosition();
 
     public override bool Equals(object obj) => obj is DecalSelection ds && ds.Decal == Decal;
 
@@ -121,6 +124,8 @@ public class TileSelection : Selection {
         SetTileDelayed((int)(Position.X - Room.Position.X), (int)(Position.Y - Room.Position.Y), Fg, '0');
 
     public override Rectangle Area() => new Rectangle(Position.X, Position.Y, 1, 1).Multiply(8);
+
+    public override UndoRedo.Snapshotter Snapshotter() => Room.STiles();
 
     public override bool Equals(object obj) =>
         obj is TileSelection ts && ts.Position == Position && ts.Fg == Fg && ts.Room == Room;

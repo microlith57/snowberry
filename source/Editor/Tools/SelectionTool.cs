@@ -469,12 +469,15 @@ public class SelectionTool : Tool {
     }
 
     private void Nudge(Vector2 by) {
-        foreach (Selection s in Editor.SelectedObjects) {
-            s.Move(by);
-            SnapIfNecessary(s);
+        if (Editor.SelectedObjects.Count > 0) {
+            UndoRedo.BeginAction("nudge objects", Editor.SelectedObjects.Select(x => x.Snapshotter()));
+            foreach (Selection s in Editor.SelectedObjects) {
+                s.Move(by);
+                SnapIfNecessary(s);
+            }
+            TileSelection.FinishMove();
+            UndoRedo.CompleteAction();
         }
-
-        TileSelection.FinishMove();
     }
 
     private static Selection GetSoloSelection() =>

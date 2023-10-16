@@ -11,16 +11,19 @@ public static class UndoRedo{
     public interface Snapshotter{
         public object SnapshotRaw();
         public void ApplyRaw(object o);
+        public object Key { get; }
     }
 
     // and then what's actually exposed
     public class Snapshotter<T> : Snapshotter{
         public readonly Func<T> Snapshot;
         public readonly Action<T> Apply;
+        public object Key { get; }
 
-        public Snapshotter(Func<T> snapshot, Action<T> apply){
+        public Snapshotter(Func<T> snapshot, Action<T> apply, object key = null){
             Snapshot = snapshot;
             Apply = apply;
+            Key = key;
         }
 
         public Snapshotter<(T, U)> And<U>(Snapshotter<U> other) => new(
@@ -28,7 +31,8 @@ public static class UndoRedo{
             tuple => {
                 Apply(tuple.Item1);
                 other.Apply(tuple.Item2);
-            }
+            },
+            (Key, other.Key)
         );
 
         public object SnapshotRaw() => Snapshot();
@@ -36,6 +40,10 @@ public static class UndoRedo{
     }
 
     public static Snapshotter<object> OfAction(Action a) => new(() => null, _ => a());
+
+    public static IEnumerable<Snapshotter> Unique(IEnumerable<Snapshotter> snapshotters) =>
+        snapshotters.GroupBy(x => x.Key)
+            .SelectMany(IEnumerable<Snapshotter> (x) => x.Key == null ? x : new[] { x.First() });
 
     public class EditorAction{
         public string Name;
@@ -87,6 +95,7 @@ public static class UndoRedo{
     }
 
     public static void BeginAction(string name, IEnumerable<Snapshotter> snapshotters) {
+        snapshotters = Unique(snapshotters);
         // either you have some undone actions (and nothing in progress)
         // or you have an in progress action (and are at the end of the log)
         // so the order these happen doesn't matter

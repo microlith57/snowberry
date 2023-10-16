@@ -259,4 +259,19 @@ public abstract class Entity : Plugin {
     }
 
     #endregion
+
+    #region Snapshotters
+
+    // everything that might be affected by simply dragging while selected
+    public UndoRedo.Snapshotter<(Vector2 pos, int width, int height, List<Vector2> nodes)> SBounds() => new(
+        () => (Position, Width, Height, Nodes.ToList()),
+        tuple => {
+            Position = tuple.pos;
+            Width = tuple.width;
+            Height = tuple.height;
+            SetNodes(tuple.nodes);
+        }
+    );
+
+    #endregion
 }
