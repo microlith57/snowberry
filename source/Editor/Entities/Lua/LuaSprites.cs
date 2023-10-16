@@ -221,14 +221,14 @@ internal sealed class LuaSprites {
     }
 
     // TODO
-    internal sealed class NinePatch : Drawable {
+    /*internal sealed class NinePatch : Drawable {
         public MTexture Texture;
         public Rectangle Area;
 
         protected internal override void Draw() {
 
         }
-    }
+    }*/
 
     internal sealed class TileGrid : Drawable {
         public Vector2 Position;

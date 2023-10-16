@@ -29,7 +29,7 @@ public class UIMessage : UIElement {
     private float lerp;
     public bool Shown;
 
-    public new void Clear() {
+    public void Clear() {
         base.Clear();
         msgs.Clear();
     }
