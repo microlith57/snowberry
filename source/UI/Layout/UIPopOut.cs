@@ -38,6 +38,9 @@ public class UIPopOut : UICutoutElement {
         base.Render(position);
     }
 
+    public int ContentWidth => Width - SidePadding * 2;
+    public int ContentHeight => Height - TopPadding - SidePadding;
+
     private Vector2 ContentStart() => new(SidePadding, TopPadding);
 
     // TODO: a

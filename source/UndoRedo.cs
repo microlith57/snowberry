@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Snowberry;
 
-public class UndoRedo{
+public static class UndoRedo{
 
     // thanks C#!! very cool!!
     // type erased form of Snapshotter to allow hetrogenous collections
@@ -65,6 +65,8 @@ public class UndoRedo{
         }
     }
 
+    public static event Action OnChange;
+
     // the list of actions that have been completed and possibly undone
     // does *not* include the current in-progress action
     private static readonly List<EditorAction> ActionLog = new();
@@ -73,6 +75,12 @@ public class UndoRedo{
     private static int CurActionIndex = -1;
     // the current in-progress action
     private static EditorAction InProgress = null;
+
+    public static void Reset() {
+        ActionLog.Clear();
+        CurActionIndex = -1;
+        InProgress = null;
+    }
 
     public static void BeginAction(string name, params Snapshotter[] snapshotters) {
         BeginAction(name, snapshotters.AsEnumerable());
@@ -92,6 +100,8 @@ public class UndoRedo{
         InProgress = new EditorAction(name);
         foreach(var snapshotter in snapshotters)
             InProgress.States.Add((snapshotter, snapshotter.SnapshotRaw(), null));
+
+        TriggerChange();
     }
 
     public static void CompleteAction(){
@@ -103,6 +113,8 @@ public class UndoRedo{
         CurActionIndex++;
         Snowberry.LogInfo("completed: " + InProgress.Name);
         InProgress = null;
+
+        TriggerChange();
     }
 
     private static void TrimLog(){
@@ -119,6 +131,7 @@ public class UndoRedo{
             Snowberry.LogInfo("undid: " + ActionLog[CurActionIndex].Name);
             CurActionIndex--;
         }
+        TriggerChange();
     }
 
     public static void Redo(){
@@ -127,8 +140,13 @@ public class UndoRedo{
             ActionLog[CurActionIndex].Redo();
             Snowberry.LogInfo("redid: " + ActionLog[CurActionIndex].Name);
         }
+        TriggerChange();
     }
 
     // it would kind of suck if anyone modified this improperly
     public static IReadOnlyList<EditorAction> ViewLog() => ActionLog.AsReadOnly();
+    public static EditorAction ViewInProgress() => InProgress;
+    public static int ViewCurActionIdx() => CurActionIndex;
+
+    private static void TriggerChange() => OnChange?.Invoke();
 }

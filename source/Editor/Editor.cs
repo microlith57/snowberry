@@ -133,6 +133,7 @@ public class Editor : UIScene {
     public UIToolbar Toolbar;
     public UIElement ToolPanel, ToolPanelContainer;
     public UIElement ActionBar, ToolActionGroup;
+    public UIScrollPane HistoryLog;
 
     // TODO: potentially replace with just setting the MapData of Playtest
     private static bool generatePlaytestMapData = false;
@@ -153,6 +154,7 @@ public class Editor : UIScene {
         Instance = this;
 
         SaveData.InitializeDebugMode();
+        UndoRedo.Reset();
     }
 
     internal static void Open(MapData data, bool rte = false) {
@@ -418,9 +420,30 @@ public class Editor : UIScene {
             MappingUI();
     }
 
+    protected override void PostBeginContent() {
+        base.PostBeginContent();
+
+        UIPopOut historyWindow = new() {
+            Title = Dialog.Clean("SNOWBERRY_EDITOR_HISTORY"),
+            Width = 120,
+            Height = 100
+        };
+        historyWindow.Add(HistoryLog = new UIScrollPane {
+            Width = historyWindow.ContentWidth,
+            Height = historyWindow.ContentHeight,
+            Background = Color.Black
+        });
+
+        Overlay.Add(historyWindow);
+
+        UndoRedo.OnChange += UpdateLog;
+        UpdateLog();
+    }
+
     public override void End() {
         base.End();
         Camera.Buffer?.Dispose();
+        UndoRedo.OnChange -= UpdateLog;
     }
 
     protected override void UpdateContent() {
@@ -538,6 +561,31 @@ public class Editor : UIScene {
         }
 
         SelectedObjects.Clear();
+    }
+
+    private void UpdateLog() {
+        HistoryLog.Clear(now: true);
+        var log = UndoRedo.ViewLog();
+        for (var idx = 0; idx < log.Count; idx++)
+            HistoryLog.AddBelow(RenderAction(log[idx], idx <= UndoRedo.ViewCurActionIdx(), idx % 2 == 0));
+        if (UndoRedo.ViewInProgress() is { /* non-null */ } inProgress)
+            HistoryLog.AddBelow(RenderAction(inProgress, null, true));
+        HistoryLog.ClampToBottom();
+    }
+
+    private UIElement RenderAction(UndoRedo.EditorAction action, bool? done, bool odd) {
+        UIElement box = new() {
+            Width = HistoryLog.Width,
+            Height = 12,
+            Background = done switch {
+                true => Color.DarkGreen,
+                false => Color.DarkRed,
+                null => Color.Gray
+            } * (odd ? 0.5f : 0.25f)
+        };
+        box.AddRight(new UILabel(action.Name), new(1));
+
+        return box;
     }
 
     public Tool CurrentTool => Tool.Tools[Toolbar.CurrentTool];

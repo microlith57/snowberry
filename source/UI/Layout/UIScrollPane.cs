@@ -66,6 +66,16 @@ public class UIScrollPane : UICutoutElement {
         return (high != null ? high.Position.Y - TopPadding : 0, low != null ? low.Position.Y + low.Height + BottomPadding : 0);
     }
 
+    public void ClampToBottom() {
+        var hilo = HighLow();
+        Scroll = Clamp(Height - hilo.lo, Height - hilo.lo, -hilo.hi);
+    }
+
+    public void ClampToTop() {
+        var hilo = HighLow();
+        Scroll = Clamp(-hilo.hi, Height - hilo.lo, -hilo.hi);
+    }
+
     // MathHelper.clamp, but we check constraints the other way around,
     // so scrollpanes with few elements get stuck to the top instead of bottom
     public static float Clamp(float value, float min, float max) {

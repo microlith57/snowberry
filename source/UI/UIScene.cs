@@ -20,6 +20,7 @@ public abstract class UIScene : Scene {
     public RenderTarget2D UIBuffer;
     public UIElement UI = new();
     public UIMessage Message;
+    public UIElement Overlay;
     public bool MouseClicked = false;
 
     public static UIScene Instance => (Engine.Scene as UIScene);
@@ -37,6 +38,13 @@ public abstract class UIScene : Scene {
             Width = UI.Width,
             Height = UI.Height
         });
+
+        UI.Add(Overlay = new UIElement {
+            Width = UI.Width,
+            Height = UI.Height
+        });
+
+        PostBeginContent();
     }
 
     public override void End() {
@@ -55,6 +63,8 @@ public abstract class UIScene : Scene {
             UI.Height = UIBuffer.Height;
             Message.Width = UIBuffer.Width;
             Message.Height = UIBuffer.Height;
+            Overlay.Width = UIBuffer.Width;
+            Overlay.Height = UIBuffer.Height;
             OnScreenResized();
         }
 
@@ -121,6 +131,7 @@ public abstract class UIScene : Scene {
     }
 
     protected virtual void BeginContent() {}
+    protected virtual void PostBeginContent() {}
     protected virtual void RenderContent() {}
     protected virtual void UpdateContent() {}
     protected virtual Vector2 CalculateMouseWorld(MouseState m) => new Vector2(m.X, m.Y) / 2;

@@ -56,6 +56,8 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 
     SNOWBERRY_EDITOR_UTIL_FOREGROUND=           foreground
     SNOWBERRY_EDITOR_UTIL_BACKGROUND=           background
+    
+    SNOWBERRY_EDITOR_HISTORY=                   history
 
 # *** Backups Menu ***
 	SNOWBERRY_BACKUPS=                          backups
