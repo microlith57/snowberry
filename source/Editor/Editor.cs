@@ -423,21 +423,23 @@ public class Editor : UIScene {
     protected override void PostBeginContent() {
         base.PostBeginContent();
 
-        UIPopOut historyWindow = new() {
-            Title = Dialog.Clean("SNOWBERRY_EDITOR_HISTORY"),
-            Width = 120,
-            Height = 100
-        };
-        historyWindow.Add(HistoryLog = new UIScrollPane {
-            Width = historyWindow.ContentWidth,
-            Height = historyWindow.ContentHeight,
-            Background = Color.Black
-        });
+        if (Map != null) {
+            UIPopOut historyWindow = new() {
+                Title = Dialog.Clean("SNOWBERRY_EDITOR_HISTORY"),
+                Width = 120,
+                Height = 100
+            };
+            historyWindow.Add(HistoryLog = new UIScrollPane {
+                Width = historyWindow.ContentWidth,
+                Height = historyWindow.ContentHeight,
+                Background = Color.Black
+            });
 
-        Overlay.Add(historyWindow);
+            Overlay.Add(historyWindow);
 
-        UndoRedo.OnChange += UpdateLog;
-        UpdateLog();
+            UndoRedo.OnChange += UpdateLog;
+            UpdateLog();
+        }
     }
 
     public override void End() {
