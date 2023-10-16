@@ -427,7 +427,9 @@ public class Editor : UIScene {
             UIPopOut historyWindow = new() {
                 Title = Dialog.Clean("SNOWBERRY_EDITOR_HISTORY"),
                 Width = 120,
-                Height = 100
+                Height = 100,
+                GrabsClick = true,
+                GrabsScroll = true
             };
             historyWindow.Add(HistoryLog = new UIScrollPane {
                 Width = historyWindow.ContentWidth,
