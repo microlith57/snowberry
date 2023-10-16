@@ -53,6 +53,10 @@ public class SelectionTool : Tool {
     // double click
     private static bool wasDoubleClick = false;
 
+    // undoable selection moving
+    // TODO: turn this whole thing into a damn state machine already
+    private static bool MoveInProgress = false;
+
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_SELECT");
 
     public override UIElement CreatePanel(int height) {
@@ -252,12 +256,19 @@ public class SelectionTool : Tool {
                     Vector2 worldSnapped = noSnap ? Mouse.World : Mouse.World.RoundTo(8);
                     Vector2 worldLastSnapped = noSnap ? Mouse.WorldLast : Mouse.WorldLast.RoundTo(8);
                     Vector2 move = worldSnapped - worldLastSnapped;
-                    foreach (Selection s in Editor.SelectedObjects) {
-                        s.Move(move);
-                        SnapIfNecessary(s);
-                    }
+                    if (move != Vector2.Zero) {
+                        if (!MoveInProgress) {
+                            UndoRedo.BeginAction("move objects", Editor.SelectedObjects.Select(x => x.Snapshotter()));
+                            MoveInProgress = true;
+                        }
 
-                    TileSelection.FinishMove();
+                        foreach (Selection s in Editor.SelectedObjects) {
+                            s.Move(move);
+                            SnapIfNecessary(s);
+                        }
+
+                        TileSelection.FinishMove();
+                    }
                 }
         } else {
             if (MInput.Mouse.ReleasedLeftButton && canClick && !movedMouse) {
@@ -298,6 +309,11 @@ public class SelectionTool : Tool {
 
             SelectionInProgress = null;
             PathInProgress = null;
+
+            if (MoveInProgress) {
+                UndoRedo.CompleteAction();
+                MoveInProgress = false;
+            }
         }
 
         if (Editor.SelectedObjects == null)
