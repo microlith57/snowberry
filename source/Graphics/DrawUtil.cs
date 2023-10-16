@@ -97,6 +97,9 @@ public static class DrawUtil {
 
     // intended for gameplay
     public static void DrawPolygon(Vector2[] points, Color color) {
+        if (points.Length < 3)
+            return;
+
         // adapted from Frost Helper: https://github.com/JaThePlayer/FrostHelper/blob/aa09b0338c03b6a37921fe0a3d254eaec2bb675d/Code/FrostHelper/Helpers/ArbitraryShapeEntityHelper.cs#L30
         Triangulator.Triangulator.Triangulate(points, WindingOrder.Clockwise, null, out var verts, out var indices);
         var fill = new VertexPositionColor[indices.Length];
