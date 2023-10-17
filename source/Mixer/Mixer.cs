@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Celeste;
@@ -122,12 +123,16 @@ public class Mixer : UIScene {
         foreach (var param in parameters) {
             UIElement local = new(); UISlider slider;
             local.AddRight(new UILabel(param.name), new(5));
-            local.AddRight(slider = new UISlider {
+            local.AddRight(slider = new SeekedSlider {
                 Value = param.defaultvalue,
                 Min = param.minimum,
                 Max = param.maximum,
                 Width = 140,
-                OnInputChanged = v => instance.setParameterValue(param.name, v)
+                OnInputChanged = v => instance.setParameterValue(param.name, v),
+                SeekValue = () => {
+                    instance.getParameterValue(param.name, out _, out float v);
+                    return v;
+                }
             }, new(7, 2));
             local.AddRight(new UILabel(() => slider.Value.ToString(CultureInfo.CurrentCulture)), new(10, 5));
             local.CalculateBounds();
@@ -158,6 +163,20 @@ public class Mixer : UIScene {
         foreach ((EventInstance, UIElement elem) value in Playing) {
             value.elem.Position.Y = y;
             y += value.elem.Height + 5;
+        }
+    }
+
+    internal class SeekedSlider : UISlider {
+
+        internal Func<float> SeekValue;
+
+        public override void Render(Vector2 position = default) {
+            var oldValue = Value; // the ol' bait and switch
+            Value = SeekValue();
+            UIButton.DrawButtonBg(HandleRect(), pressed, Color.Orange);
+            Value = oldValue;
+
+            base.Render(position);
         }
     }
 }
