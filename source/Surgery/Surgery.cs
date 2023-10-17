@@ -32,11 +32,11 @@ public class Surgery : UIScene {
         };
 
         topBar.AddRight(new UILabel("snowberry", Fonts.Regular, 2), new(8, 8));
-        topBar.AddRight(new UILabel("surgery", Fonts.Bold, 2) {
+        topBar.AddRight(new UILabel(Dialog.Clean("SNOWBERRY_SURGERY_TITLE"), Fonts.Bold, 2) {
             Underline = true,
             FG = Color.Red
         }, new(8, 8));
-        topBar.AddRight(new UILabel($"on {path}", Fonts.Regular) {
+        topBar.AddRight(new UILabel($"{Dialog.Clean("SNOWBERRY_SURGERY_PATHING")} {path}", Fonts.Regular) {
             FG = Color.Gray
         }, new(8, 20));
 
@@ -70,7 +70,7 @@ public class Surgery : UIScene {
         UITree ret = new(header);
 
         if(parent != null){
-            ret.AddRight(new UIButton("delete", Fonts.Regular) {
+            ret.AddRight(new UIButton(Dialog.Clean("SNOWBERRY_SURGERY_DELETE"), Fonts.Regular) {
                 OnPress = () => {
                     parent.Children?.Remove(e);
                     ret.RemoveSelf();
