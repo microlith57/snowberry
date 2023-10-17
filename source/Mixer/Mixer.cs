@@ -6,6 +6,7 @@ using Celeste;
 using FMOD;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
+using Monocle;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
 using Snowberry.UI.Layout;
@@ -46,7 +47,11 @@ public class Mixer : UIScene {
         topBar.AddRight(new UILabel("snowberry", Fonts.Regular, 2), new(8, 8));
         topBar.AddRight(new UILabel("mixer", Fonts.Bold, 2) {
             FG = Color.Blue
-        }, new(8, 8));
+        }, new(8));
+
+        topBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
+            OnPress = () => Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu)
+        }, new(8));
 
         UI.Add(topBar);
 

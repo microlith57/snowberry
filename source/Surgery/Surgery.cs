@@ -2,6 +2,7 @@
 using System.IO;
 using Celeste;
 using Microsoft.Xna.Framework;
+using Monocle;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
 using Snowberry.UI.Layout;
@@ -45,6 +46,10 @@ public class Surgery : UIScene {
             OnPress = () => BinaryExporter.ExportToFile(elem, mapName.Value + ".bin")
         }, new(40, 8));
         topBar.AddRight(mapName, new(8, 14));
+
+        topBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
+            OnPress = () => Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu)
+        }, new(8));
 
         UI.Add(topBar);
 
