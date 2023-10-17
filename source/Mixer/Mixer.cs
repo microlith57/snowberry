@@ -45,7 +45,7 @@ public class Mixer : UIScene {
         };
 
         topBar.AddRight(new UILabel("snowberry", Fonts.Regular, 2), new(8, 8));
-        topBar.AddRight(new UILabel("mixer", Fonts.Bold, 2) {
+        topBar.AddRight(new UILabel(Dialog.Clean("SNOWBERRY_MIXER_TITLE"), Fonts.Bold, 2) {
             FG = Color.Blue
         }, new(8));
 
@@ -62,7 +62,7 @@ public class Mixer : UIScene {
             Height = UI.Height - HeaderHeight,
             Background = Color.DarkCyan * 0.5f
         };
-        var bigTree = new UITree(new UILabel("all music"));
+        var bigTree = new UITree(new UILabel(Dialog.Clean("SNOWBERRY_MIXER_TREEHEADING")));
 
         foreach ((string name, List<EventDescription> events) bank in audio) {
             var bankTree = new UITree(new UILabel(bank.name));
@@ -143,7 +143,7 @@ public class Mixer : UIScene {
             local.CalculateBounds();
             eventPanel.AddBelow(local, new(5));
         }
-        eventPanel.AddBelow(new UIButton("stop", Fonts.Regular, 2, 2) {
+        eventPanel.AddBelow(new UIButton(Dialog.Clean("SNOWBERRY_MIXER_STOP"), Fonts.Regular, 2, 2) {
             OnPress = () => {
                 Playing.RemoveAll(x => x.Item1 == instance);
                 eventPanel.RemoveSelf();
@@ -152,7 +152,7 @@ public class Mixer : UIScene {
                 Relist();
             }
         }, new(5));
-        eventPanel.AddBelow(new UIButton("replay", Fonts.Regular, 2, 2) {
+        eventPanel.AddBelow(new UIButton(Dialog.Clean("SNOWBERRY_MIXER_REPLAY"), Fonts.Regular, 2, 2) {
             OnPress = () => instance.start()
         }, new(5));
         eventPanel.CalculateBounds();

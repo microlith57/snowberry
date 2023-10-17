@@ -171,6 +171,19 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_STYLEGROUNDS_STARDUST=            stardust
     SNOWBERRY_STYLEGROUNDS_PLANETS=             planets
 
+# *** Mixer ***
+    
+    SNOWBERRY_MIXER_TITLE=               mixer
+    SNOWBERRY_MIXER_TREEHEADING=         all music
+    SNOWBERRY_MIXER_STOP=                stop
+    SNOWBERRY_MIXER_REPLAY=              replay
+
+# *** Surgery ***
+    
+    SNOWBERRY_SURGERY_TITLE=              surgery
+    SNOWBERRY_SURGERY_PATHING=            on
+    SNOWBERRY_SURGERY_DELETE=             delete
+
 # *** Error Messages ***
     
     SNOWBERRY_PLAYTEST_MAP_POSTCARD=            This might be out of the way, but it's not a collectable!{n}{n}This map is used to implement some {+SNOWBERRY_SNOWBERRY} features, and has no real content.
