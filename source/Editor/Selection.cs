@@ -17,7 +17,6 @@ public abstract class Selection {
 
     public abstract Rectangle Area();
 
-    // SelectionTool handles deduplicating these properly
     public abstract UndoRedo.Snapshotter Snapshotter();
 
     public bool Contains(Point p) => Area().Contains(p);

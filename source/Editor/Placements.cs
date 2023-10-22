@@ -2,13 +2,14 @@
 
 namespace Snowberry.Editor;
 
-public class Placements {
+public static class Placements {
+
     public class Placement {
-        public string Name, EntityName;
+        public readonly string Name, EntityName;
 
-        public Dictionary<string, object> Defaults;
+        public readonly Dictionary<string, object> Defaults;
 
-        public bool IsTrigger;
+        public readonly bool IsTrigger;
 
         public Placement(string name, string entityName, Dictionary<string, object> defaults, bool isTrigger) {
             Name = name;
@@ -25,7 +26,7 @@ public class Placements {
         }
     }
 
-    public static List<Placement> All = new();
+    public static readonly List<Placement> All = new();
 
     public static void Create(string placementName, string entityName, Dictionary<string, object> defaults = null, bool trigger = false) {
         All.Add(new Placement(placementName, entityName, defaults ?? new Dictionary<string, object>(), trigger));
