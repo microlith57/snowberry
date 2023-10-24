@@ -47,7 +47,7 @@ public class PlacementTool : Tool {
 
         buttonTree.Add(CreateEntitiesTree());
         buttonTree.AddBelow(CreateEntitiesTree(true));
-        //buttonTree.AddBelow(CreateDecalsTree());
+        buttonTree.AddBelow(CreateDecalsTree());
 
         buttonTree.Layout();
 
@@ -256,7 +256,7 @@ public class PlacementTool : Tool {
         Tree<string> decalTree = Tree<string>.FromPrefixes(decalPaths, "").Children[0];
         decalTree.Parent = null; // get rid of the empty parent for AggregateUp
 
-        UITree RenderPart(Tree<string> part){
+        UITree RenderPart(Tree<string> part, float maxWidth){
             UITree tree = new(new UILabel(part.Value + "/", Fonts.Regular)){
                 NoKb = true,
                 PadUp = 2,
@@ -264,10 +264,11 @@ public class PlacementTool : Tool {
             };
             foreach(Tree<string> c in part.Children)
                 if(c.Children.Any())
-                    tree.Add(RenderPart(c));
+                    tree.Add(RenderPart(c, maxWidth - tree.PadLeft));
                 else {
                     UIElement group = new();
-                    group.Add(new UIButton(c.Value, Fonts.Regular, 3, 3));
+                    Placement fake = new Placements.DecalPlacement(c.Value, "weh", c.AggregateUp((s, s1) => s + "/" + s1).Substring("decals/".Length));
+                    group.Add(CreatePlacementButton(fake, maxWidth));
                     group.AddRight(new UIImage(GFX.Game[c.AggregateUp((l, r) => l + "/" + r)]));
                     group.CalculateBounds();
                     tree.Add(group);
@@ -277,7 +278,7 @@ public class PlacementTool : Tool {
             return tree;
         }
 
-        return RenderPart(decalTree);
+        return RenderPart(decalTree, width);
     }
 
     private UIButton CreatePlacementButton(Placement item, float maxWidth) {

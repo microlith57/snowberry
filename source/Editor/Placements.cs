@@ -41,6 +41,21 @@ public static class Placements {
         }
     }
 
+    public class DecalPlacement : Placement {
+
+        public string Name { get; }
+        public string ModName { get; }
+        public string DecalPath { get; }
+
+        public DecalPlacement(string name, string modName, string decalPath) {
+            Name = name;
+            ModName = modName;
+            DecalPath = decalPath;
+        }
+
+        public Placeable Build(Room room) => new Decal(room, DecalPath);
+    }
+
     public static readonly List<Placement> All = new();
 
     public static void Create(string placementName, string entityName, Dictionary<string, object> defaults = null, bool trigger = false) {
