@@ -233,15 +233,15 @@ public class SelectionTool : Tool {
                             var wSnapped = Mouse.World.RoundTo(8);
                             if (resizingX) {
                                 // compare against the opposite edge
-                                solo.SetWidth(Math.Max((int)Math.Round((fromLeft ? oldEntityBounds.Right - world.X : world.X - solo.X) / 8f) * 8, solo.MinWidth));
+                                solo.Width = Math.Max((int)Math.Round((fromLeft ? oldEntityBounds.Right - world.X : world.X - solo.X) / 8f) * 8, solo.MinWidth);
                                 if (fromLeft)
-                                    solo.SetPosition(new((int)Math.Floor(wSnapped.X), solo.Y));
+                                    solo.Position = new((int)Math.Floor(wSnapped.X), solo.Y);
                             }
 
                             if (resizingY) {
-                                solo.SetHeight(Math.Max((int)Math.Round((fromTop ? oldEntityBounds.Bottom - world.Y : world.Y - solo.Y) / 8f) * 8, solo.MinHeight));
+                                solo.Height = Math.Max((int)Math.Round((fromTop ? oldEntityBounds.Bottom - world.Y : world.Y - solo.Y) / 8f) * 8, solo.MinHeight);
                                 if (fromTop)
-                                    solo.SetPosition(new(solo.X, (int)Math.Floor(wSnapped.Y)));
+                                    solo.Position = new(solo.X, (int)Math.Floor(wSnapped.Y));
                             }
 
                             // TODO: don't snap offgrid entities while resizing, except with AggressiveSnap
@@ -518,7 +518,7 @@ public class SelectionTool : Tool {
 
     private static void SnapIfNecessary(Entity e, bool ignoreCtrl = false) {
         if (Snowberry.Settings.AggressiveSnap && (ignoreCtrl || !MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl))) {
-            e.SetPosition(e.Position.RoundTo(8));
+            e.Position = e.Position.RoundTo(8);
             for (var idx = 0; idx < e.Nodes.Count; idx++)
                 e.SetNode(idx, e.Nodes[idx].RoundTo(8));
         }

@@ -18,7 +18,7 @@ public class PlacementTool : Tool {
 
     private Placement curLeftSelection, curRightSelection;
     private Dictionary<Placement, UIButton> placementButtons = new();
-    private Entity preview;
+    private Placeable preview;
     private Vector2? lastPress;
     private bool startedDrag;
     private Placement lastPlacement;
@@ -55,10 +55,7 @@ public class PlacementTool : Tool {
         panel.Add(buttonPane);
 
         static bool entityMatcher(Placement entry, string term) => entry.Name.ToLower().Contains(term.ToLower());
-        static bool modMatcher(Placement entry, string term) {
-            var split = entry.EntityName.Split('/');
-            return (split.Length >= 2 ? split[0] : "Celeste").Contains(term);
-        }
+        static bool modMatcher(Placement entry, string term) => entry.ModName.ToLower().Contains(term.ToLower());
 
         panel.Add(searchBar = new UISearchBar<Placement>(width - 10, entityMatcher) {
             Position = new Vector2(5, height - 20),
@@ -93,17 +90,15 @@ public class PlacementTool : Tool {
 
         Placement selection = (middlePan && (MInput.Mouse.CheckRightButton || (middlePan && MInput.Mouse.ReleasedRightButton)) || !middlePan && MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt)) ? curRightSelection : curLeftSelection;
         if ((MInput.Mouse.ReleasedLeftButton || (middlePan && MInput.Mouse.ReleasedRightButton)) && canClick && selection != null && Editor.SelectedRoom != null) {
-            Entity toAdd = selection.Build(Editor.SelectedRoom);
-            UpdateEntity(toAdd);
-            if (toAdd.Name != "player")
-                toAdd.EntityID = AllocateId();
-            Editor.SelectedRoom.AddEntity(toAdd);
+            Placeable toAdd = selection.Build(Editor.SelectedRoom);
+            UpdatePlaceable(toAdd);
+            toAdd.AddToRoom(Editor.SelectedRoom);
         }
 
         RefreshPreview(lastPlacement != selection);
         lastPlacement = selection;
         if (preview != null)
-            UpdateEntity(preview);
+            UpdatePlaceable(preview);
 
         if (MInput.Mouse.PressedLeftButton || (middlePan && MInput.Mouse.PressedRightButton))
             lastPress = Mouse.World;
@@ -144,10 +139,12 @@ public class PlacementTool : Tool {
             preview = null;
     }
 
-    private void UpdateEntity(Entity e) {
+    private void UpdatePlaceable(Placeable p) {
         var ctrl = MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl);
         Vector2 mpos = ctrl ? Mouse.World : Mouse.World.RoundTo(8);
-        UpdateSize(e, mpos);
+
+        if (p is Resizable r)
+            UpdateSize(r, mpos);
 
         if (lastPress != null) {
             Vector2 cPress = ctrl ? lastPress.Value : lastPress.Value.RoundTo(8);
@@ -157,58 +154,62 @@ public class PlacementTool : Tool {
             }
 
             float newX = mpos.X, newY = mpos.Y;
-            // resizable entities should never move down/right of their original spot
-            if (e.MinWidth != -1) newX = Math.Min(newX, cPress.X);
-            if (e.MinHeight != -1) newY = Math.Min(newY, cPress.Y);
-            // nodes entities should never move, their node does
-            if (e.MinWidth == -1 && e.MinHeight == -1 && e.MinNodes > 0) {
-                newX = cPress.X;
-                newY = cPress.Y;
-            }
-
-            e.SetPosition(new Vector2(newX, newY));
-        } else
-            e.SetPosition(mpos);
-
-        e.ResetNodes();
-        while (e.Nodes.Count < e.MinNodes) {
-            Vector2 ePosition;
-            if (e.MinWidth == -1 && e.MinHeight == -1 && lastPress != null && startedDrag) {
-                Vector2 cPress = ctrl ? lastPress.Value : lastPress.Value.RoundTo(8);
-                // distribute nodes along line
-                float fraction = (e.Nodes.Count + 1) / (float)e.MinNodes;
-                ePosition = cPress + (mpos - cPress) * fraction;
-            } else {
-                ePosition = (e.Nodes.Count > 0 ? e.Nodes.Last() : e.Position) + Vector2.UnitX * 24;
-            }
-
-            e.AddNode(ePosition);
-        }
-
-        e.ApplyDefaults();
-        e.Initialize();
-    }
-
-    private void UpdateSize(Entity e, Vector2 mpos) {
-        if (lastPress != null && (MInput.Mouse.CheckLeftButton || MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedLeftButton || MInput.Mouse.ReleasedRightButton)) {
-            Vector2 cPress = lastPress.Value.RoundTo(8);
-            if (e.MinWidth > -1) {
-                if (mpos.X < cPress.X) {
-                    e.SetWidth((int)Math.Round((cPress.X - mpos.X) / 8f) * 8 + e.MinWidth);
-                } else {
-                    e.SetWidth(Math.Max((int)Math.Round((mpos.X - cPress.X) / 8f) * 8, e.MinWidth));
+            if(p is Resizable rx){ // resizable entities should never move down/right of their original spot
+                if (rx.MinWidth != -1) newX = Math.Min(newX, cPress.X);
+                if (rx.MinHeight != -1) newY = Math.Min(newY, cPress.Y);
+                // nodes entities should never move, their node does
+                if (p is Entity { MinWidth: -1, MinHeight: -1, MinNodes: > 0 }) {
+                    newX = cPress.X;
+                    newY = cPress.Y;
                 }
             }
-            if (e.MinHeight > -1) {
-                if (mpos.Y < cPress.Y) {
-                    e.SetHeight((int)Math.Round((cPress.Y - mpos.Y) / 8f) * 8 + e.MinHeight);
+
+            p.Position = new Vector2(newX, newY);
+        } else
+            p.Position = mpos;
+
+        if(p is Entity e){
+            e.ResetNodes();
+            while (e.Nodes.Count < e.MinNodes) {
+                Vector2 ePosition;
+                if (e.MinWidth == -1 && e.MinHeight == -1 && lastPress != null && startedDrag) {
+                    Vector2 cPress = ctrl ? lastPress.Value : lastPress.Value.RoundTo(8);
+                    // distribute nodes along line
+                    float fraction = (e.Nodes.Count + 1) / (float)e.MinNodes;
+                    ePosition = cPress + (mpos - cPress) * fraction;
                 } else {
-                    e.SetHeight(Math.Max((int)Math.Round((mpos.Y - cPress.Y) / 8f) * 8, e.MinHeight));
+                    ePosition = (e.Nodes.Count > 0 ? e.Nodes.Last() : p.Position) + Vector2.UnitX * 24;
+                }
+
+                e.AddNode(ePosition);
+            }
+
+            e.ApplyDefaults();
+            e.Initialize();
+        }
+    }
+
+    private void UpdateSize(Resizable p, Vector2 mpos) {
+        if (lastPress != null && (MInput.Mouse.CheckLeftButton || MInput.Mouse.CheckRightButton || MInput.Mouse.ReleasedLeftButton || MInput.Mouse.ReleasedRightButton)) {
+            Vector2 cPress = lastPress.Value.RoundTo(8);
+            if (p.MinWidth > -1) {
+                if (mpos.X < cPress.X) {
+                    p.Width = (int)Math.Round((cPress.X - mpos.X) / 8f) * 8 + p.MinWidth;
+                } else {
+                    p.Width = Math.Max((int)Math.Round((mpos.X - cPress.X) / 8f) * 8, p.MinWidth);
+                }
+            }
+
+            if (p.MinHeight > -1) {
+                if (mpos.Y < cPress.Y) {
+                    p.Height = (int)Math.Round((cPress.Y - mpos.Y) / 8f) * 8 + p.MinHeight;
+                } else {
+                    p.Height = Math.Max((int)Math.Round((mpos.Y - cPress.Y) / 8f) * 8, p.MinHeight);
                 }
             }
         } else {
-            e.SetWidth(e.MinWidth != -1 ? e.MinWidth : 0);
-            e.SetHeight(e.MinHeight != -1 ? e.MinHeight : 0);
+            p.Width = p.MinWidth != -1 ? p.MinWidth : 0;
+            p.Height = p.MinHeight != -1 ? p.MinHeight : 0;
         }
     }
 
@@ -217,8 +218,8 @@ public class PlacementTool : Tool {
         if (preview != null) {
             Calc.PushRandom(preview.GetHashCode());
             preview.Render();
-            if (lastPress != null)
-                DrawUtil.DrawGuidelines(preview.Bounds, Color.White);
+            if (lastPress != null && preview is Resizable rx)
+                DrawUtil.DrawGuidelines(rx.Bounds(), Color.White);
             Calc.PopRandom();
         }
     }
@@ -229,7 +230,7 @@ public class PlacementTool : Tool {
             PadUp = 2,
             PadDown = 2
         };
-        foreach (var group in Placements.All.Where(x => x.IsTrigger == triggers).OrderBy(x => x.Name).GroupBy(x => x.EntityName)) {
+        foreach (var group in Placements.All.OfType<Placements.EntityPlacement>().Where(x => x.IsTrigger == triggers).OrderBy(x => x.Name).GroupBy(x => x.EntityName)) {
             if (group.Count() == 1)
                 entities.Add(CreatePlacementButton(group.First(), width - entities.PadLeft));
             else {
@@ -256,7 +257,7 @@ public class PlacementTool : Tool {
         decalTree.Parent = null; // get rid of the empty parent for AggregateUp
 
         UITree RenderPart(Tree<string> part){
-            UITree tree = new(new UILabel(part.Value + "/", Fonts.Regular), collapsed: true){
+            UITree tree = new(new UILabel(part.Value + "/", Fonts.Regular)){
                 NoKb = true,
                 PadUp = 2,
                 PadDown = 2

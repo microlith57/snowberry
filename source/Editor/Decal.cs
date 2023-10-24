@@ -6,13 +6,16 @@ using System.IO;
 
 namespace Snowberry.Editor;
 
-public class Decal {
+public class Decal : Placeable{
+
+    public Room Room { get; set; }
+    public Vector2 Position { get; set; }
+
     private MTexture texture;
-    public Vector2 Position;
     public Vector2 Scale;
-    public Room Room;
     public float Rotation = 0;
     public Color Color = Color.White;
+    public bool Fg;
 
     public string Texture { get; private set; }
 
@@ -36,8 +39,13 @@ public class Decal {
         Color = Calc.HexToColorWithAlpha(data.ColorHex);
     }
 
-    internal void Render(Vector2 offset) {
-        texture.DrawCentered(offset + Position, Color, Scale, Rotation);
+    public void Render() {
+        texture.DrawCentered(Room.Position * 8 + Position, Color, Scale, Rotation);
+    }
+
+    public void AddToRoom(Room room) {
+        Room = room;
+        (Fg ? room.FgDecals : room.BgDecals).Add(this);
     }
 
     public UndoRedo.Snapshotter<Vector2> SPosition() => new(() => Position, p => Position = p, this);

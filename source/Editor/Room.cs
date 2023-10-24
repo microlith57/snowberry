@@ -133,7 +133,7 @@ public class Room {
         // Player Spawnpoints (excluded from LevelData.Entities)
         foreach (Vector2 spawn in data.Spawns) {
             Entity s = Entity.Create("player", this);
-            s.SetPosition(spawn);
+            s.Position = spawn;
             AddEntity(s);
         }
 
@@ -287,7 +287,7 @@ public class Room {
 
         // BgDecals
         foreach (Decal decal in BgDecals)
-            decal.Render(offset);
+            decal.Render();
 
         // Entities
         Calc.PushRandom(GetHashCode());
@@ -305,7 +305,7 @@ public class Room {
 
         // FgDecals
         foreach (Decal decal in FgDecals)
-            decal.Render(offset);
+            decal.Render();
 
         // Triggers
         foreach (Entity trigger in Triggers)

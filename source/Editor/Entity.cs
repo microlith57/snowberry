@@ -5,19 +5,48 @@ using Monocle;
 using System.Collections.Generic;
 using System.Linq;
 using Snowberry.Editor.Entities;
+using Snowberry.Editor.Tools;
 
 namespace Snowberry.Editor;
 
-public abstract class Entity : Plugin {
-    public Room Room { get; private set; }
+public abstract class Entity : Plugin, Resizable {
+
+    public Room Room { get; set; }
+
+    private Vector2 _position;
+    public Vector2 Position {
+        get => _position;
+        set {
+            if(value != Position)
+                Room?.MarkEntityDirty(this);
+
+            _position = value;
+            updateSelection = true;
+        }
+    }
+
+    private int _width, _height;
+    public int Width {
+        get => _width;
+        set {
+            _width = value;
+            updateSelection = true;
+            Room?.MarkEntityDirty(this);
+        }
+    }
+    public int Height {
+        get => _height;
+        set {
+            _height = value;
+            updateSelection = true;
+            Room?.MarkEntityDirty(this);
+        }
+    }
 
     public int EntityID = 0;
 
-    public Vector2 Position { get; private set; }
     public int X => (int)Position.X;
     public int Y => (int)Position.Y;
-    public int Width { get; private set; }
-    public int Height { get; private set; }
     public Vector2 Origin { get; private set; }
     public virtual bool IsTrigger => false;
 
@@ -52,14 +81,6 @@ public abstract class Entity : Plugin {
 
             return selectionRectangles;
         }
-    }
-
-    public void SetPosition(Vector2 position) {
-        if(position != Position)
-            Room?.MarkEntityDirty(this);
-
-        Position = position;
-        updateSelection = true;
     }
 
     public void Move(Vector2 amount) {
@@ -112,18 +133,6 @@ public abstract class Entity : Plugin {
         Room?.MarkEntityDirty(this);
     }
 
-    public virtual void SetWidth(int width) {
-        Width = width;
-        updateSelection = true;
-        Room?.MarkEntityDirty(this);
-    }
-
-    public virtual void SetHeight(int height) {
-        Height = height;
-        updateSelection = true;
-        Room?.MarkEntityDirty(this);
-    }
-
     public override void Set(string option, object value) {
         base.Set(option, value);
         updateSelection = true;
@@ -171,6 +180,12 @@ public abstract class Entity : Plugin {
     public virtual void Render() { }
     public virtual void RenderBefore() { }
     public virtual void HQRender() { }
+
+    public void AddToRoom(Room room) {
+        room.AddEntity(this);
+        if (Name != "player")
+            EntityID = PlacementTool.AllocateId();
+    }
 
     private static readonly Sprite carrier = new(GFX.SpriteBank.Atlas, "strawberry");
 
