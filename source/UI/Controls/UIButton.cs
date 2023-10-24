@@ -121,7 +121,7 @@ public class UIButton : UIElement {
     }
 
     public override void Update(Vector2 position = default) {
-        base.Update();
+        base.Update(position);
 
         int mouseX = (int)Mouse.Screen.X;
         int mouseY = (int)Mouse.Screen.Y;

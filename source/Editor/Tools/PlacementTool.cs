@@ -16,14 +16,17 @@ public class PlacementTool : Tool {
 
     private const int width = 240;
 
-    private Placement curLeftSelection, curRightSelection;
     private Dictionary<Placement, UIButton> placementButtons = new();
-    private Placeable preview;
-    private Vector2? lastPress;
-    private bool startedDrag;
-    private Placement lastPlacement;
     private UISearchBar<Placement> searchBar;
     private UIScrollPane buttonPane;
+
+    private Placement curLeftSelection, curRightSelection, lastLeftSelection, lastRightSelection;
+
+    private Placeable preview;
+    private Placement lastPreviewedPlacement;
+
+    private Vector2? lastPress;
+    private bool startedDrag;
 
     private static string search = "";
 
@@ -95,8 +98,8 @@ public class PlacementTool : Tool {
             toAdd.AddToRoom(Editor.SelectedRoom);
         }
 
-        RefreshPreview(lastPlacement != selection);
-        lastPlacement = selection;
+        RefreshPreview(lastPreviewedPlacement != selection);
+        lastPreviewedPlacement = selection;
         if (preview != null)
             UpdatePlaceable(preview);
 
@@ -107,19 +110,35 @@ public class PlacementTool : Tool {
             startedDrag = false;
         }
 
-        foreach (var item in placementButtons) {
-            var button = item.Value;
-            if (item.Key.Equals(curLeftSelection) && item.Key.Equals(curRightSelection))
-                button.BG = button.PressedBG = button.HoveredBG = BothSelectedBtnBg;
-            else if (item.Key.Equals(curLeftSelection))
-                button.BG = button.PressedBG = button.HoveredBG = LeftSelectedBtnBg;
-            else if (item.Key.Equals(curRightSelection))
-                button.BG = button.PressedBG = button.HoveredBG = RightSelectedBtnBg;
-            else {
-                button.BG = UIButton.DefaultBG;
-                button.HoveredBG = UIButton.DefaultHoveredBG;
-                button.PressedBG = UIButton.DefaultPressedBG;
-            }
+        if (lastLeftSelection != curLeftSelection) {
+            UpdateButtonAppearance(lastLeftSelection);
+            UpdateButtonAppearance(curLeftSelection);
+        }
+        if (lastRightSelection != curRightSelection) {
+            UpdateButtonAppearance(lastRightSelection);
+            UpdateButtonAppearance(curRightSelection);
+        }
+        lastLeftSelection = curLeftSelection;
+        lastRightSelection = curRightSelection;
+    }
+
+    private void UpdateButtonAppearance(Placement p) {
+        if (p == null)
+            return;
+        var button = placementButtons[p];
+        if (button == null)
+            return;
+
+        if(p.Equals(curLeftSelection) && p.Equals(curRightSelection))
+            button.BG = button.PressedBG = button.HoveredBG = BothSelectedBtnBg;
+        else if(p.Equals(curLeftSelection))
+            button.BG = button.PressedBG = button.HoveredBG = LeftSelectedBtnBg;
+        else if(p.Equals(curRightSelection))
+            button.BG = button.PressedBG = button.HoveredBG = RightSelectedBtnBg;
+        else{
+            button.BG = UIButton.DefaultBG;
+            button.HoveredBG = UIButton.DefaultHoveredBG;
+            button.PressedBG = UIButton.DefaultPressedBG;
         }
     }
 
