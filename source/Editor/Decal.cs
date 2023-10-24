@@ -49,17 +49,21 @@ public class Decal : Placeable{
         (Fg ? room.FgDecals : room.BgDecals).Add(this);
     }
 
-    private static MTexture LookupTex(string tex) {
-        // messy, see Celeste.Decal.orig_ctor
+    private static MTexture LookupTex(string tex) =>
+        // grab first variant of decal
+        GFX.Game.GetAtlasSubtextures(Sanitize(tex, false))[0];
+
+    public static string Sanitize(string tex, bool hasPfix){
+        // see Celeste.Decal.orig_ctor
         // remove any extention like .png
         string ext = Path.GetExtension(tex);
         string plainPath = (ext.Length > 0 ? tex.Replace(ext, "") : tex);
-        // put it in decals/ and fix any backslashes
-        string ctxPath = ("decals/" + plainPath).Replace("\\", "/");
+        // put it in decals/ if necessary
+        string pfixPath = hasPfix ? plainPath : "decals/" + plainPath;
+        // fix any backslashes
+        string ctxPath = pfixPath.Replace("\\", "/");
         // remove any numeric suffix
-        string basePath = Regex.Replace(ctxPath, "\\d+$", "");
-        // grab first variant of decal
-        return GFX.Game.GetAtlasSubtextures(basePath)[0];
+        return Regex.Replace(ctxPath, "\\d+$", "");
     }
 
     public UndoRedo.Snapshotter<Vector2> SPosition() => new(() => Position, p => Position = p, this);

@@ -250,8 +250,9 @@ public class PlacementTool : Tool {
 
     private UITree CreateDecalsTree() {
         List<List<string>> decalPaths = GFX.Game.Textures.Keys
+            .Where(x => x.StartsWith("decals/"))
+            .Select(x => Decal.Sanitize(x, true))
             .Select(x => x.Split('/').ToList())
-            .Where(x => x.Count > 0 && x[0] == "decals")
             .ToList();
         Tree<string> decalTree = Tree<string>.FromPrefixes(decalPaths, "").Children[0];
         decalTree.Parent = null; // get rid of the empty parent for AggregateUp
@@ -267,9 +268,10 @@ public class PlacementTool : Tool {
                     tree.Add(RenderPart(c, maxWidth - tree.PadLeft));
                 else {
                     UIElement group = new();
-                    Placement fake = new Placements.DecalPlacement(c.Value, "weh", c.AggregateUp((s, s1) => s + "/" + s1).Substring("decals/".Length));
+                    string path = c.AggregateUp((s, s1) => s + "/" + s1);
+                    Placement fake = new Placements.DecalPlacement(c.Value, "weh", path.Substring("decals/".Length));
                     group.Add(CreatePlacementButton(fake, maxWidth));
-                    group.AddRight(new UIImage(GFX.Game[c.AggregateUp((l, r) => l + "/" + r)]));
+                    group.AddRight(new UIImage(GFX.Game.GetAtlasSubtextures(path)[0]));
                     group.CalculateBounds();
                     tree.Add(group);
                 }
