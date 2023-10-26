@@ -36,7 +36,7 @@ public class Decal : Placeable {
 
         Texture = data.Texture;
         tex = LookupTex(Texture);
-        Position = data.Position - Room.Position * 8;
+        Position = data.Position + Room.Position * 8;
         Scale = data.Scale;
         Rotation = data.Rotation;
         Color = Calc.HexToColorWithAlpha(data.ColorHex);
