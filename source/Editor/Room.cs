@@ -481,8 +481,8 @@ public class Room {
         foreach (var decal in FgDecals) {
             fgDecalsElem.Children.Add(new Element {
                 Attributes = new Dictionary<string, object> {
-                    ["x"] = decal.Position.X,
-                    ["y"] = decal.Position.Y,
+                    ["x"] = decal.Position.X - X * 8,
+                    ["y"] = decal.Position.Y - Y * 8,
                     ["scaleX"] = decal.Scale.X,
                     ["scaleY"] = decal.Scale.Y,
                     ["texture"] = decal.Texture,
@@ -500,8 +500,8 @@ public class Room {
         foreach (var decal in BgDecals) {
             bgDecalsElem.Children.Add(new Element {
                 Attributes = new Dictionary<string, object> {
-                    ["x"] = decal.Position.X,
-                    ["y"] = decal.Position.Y,
+                    ["x"] = decal.Position.X - X * 8,
+                    ["y"] = decal.Position.Y - Y * 8,
                     ["scaleX"] = decal.Scale.X,
                     ["scaleY"] = decal.Scale.Y,
                     ["texture"] = decal.Texture,

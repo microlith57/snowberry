@@ -23,7 +23,7 @@ public class Decal : Placeable {
 
     public string Texture { get; private set; }
 
-    public Rectangle Bounds => new((int)(Position.X - Math.Abs(tex.Width * Scale.X) / 2 + Room.X * 8), (int)(Position.Y - Math.Abs(tex.Height * Scale.Y) / 2 + Room.Y * 8), (int)Math.Abs(tex.Width * Scale.X), (int)Math.Abs(tex.Height * Scale.Y));
+    public Rectangle Bounds => new((int)(Position.X - Math.Abs(tex.Width * Scale.X) / 2), (int)(Position.Y - Math.Abs(tex.Height * Scale.Y) / 2), (int)Math.Abs(tex.Width * Scale.X), (int)Math.Abs(tex.Height * Scale.Y));
 
     internal Decal(Room room, string texture) {
         Room = room;
@@ -36,14 +36,14 @@ public class Decal : Placeable {
 
         Texture = data.Texture;
         tex = LookupTex(Texture);
-        Position = data.Position;
+        Position = data.Position - Room.Position * 8;
         Scale = data.Scale;
         Rotation = data.Rotation;
         Color = Calc.HexToColorWithAlpha(data.ColorHex);
     }
 
     public void Render() {
-        tex.DrawCentered(Room.Position * 8 + Position, Color, Scale, Rotation);
+        tex.DrawCentered(Position, Color, Scale, Rotation);
     }
 
     public void AddToRoom(Room room) {

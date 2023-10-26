@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Linq;
 using Microsoft.Xna.Framework.Input;
 using Snowberry.UI;
 using Snowberry.UI.Menus;
@@ -72,10 +73,11 @@ public class RoomTool : Tool {
                     curRoom.Bounds.Y = (int)(world + offset).Y;
                     foreach (var e in curRoom.AllEntities) {
                         e.Move(diff * 8);
-                        for (int i = 0; i < e.Nodes.Count; i++) {
+                        for (int i = 0; i < e.Nodes.Count; i++)
                             e.MoveNode(i, diff * 8);
-                        }
                     }
+                    foreach(Decal decal in curRoom.BgDecals.Concat(curRoom.FgDecals))
+                        decal.Position += diff * 8;
                 } else {
                     int dx = 0, dy = 0;
                     if (resizingX) {

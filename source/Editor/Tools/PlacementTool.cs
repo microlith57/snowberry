@@ -83,6 +83,9 @@ public class PlacementTool : Tool {
         searchBar.AddSpecialMatcher('@', modMatcher, Calc.HexToColor("1b6dcc"));
         searchBar.UpdateInput(search);
 
+        UpdateButtonAppearance(curLeftSelection);
+        UpdateButtonAppearance(curRightSelection);
+
         return panel;
     }
 
