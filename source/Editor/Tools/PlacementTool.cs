@@ -123,10 +123,7 @@ public class PlacementTool : Tool {
     }
 
     private void UpdateButtonAppearance(Placement p) {
-        if (p == null)
-            return;
-        var button = placementButtons[p];
-        if (button == null)
+        if (p == null || !placementButtons.TryGetValue(p, out var button) || button == null)
             return;
 
         if(p.Equals(curLeftSelection) && p.Equals(curRightSelection))
