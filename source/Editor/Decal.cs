@@ -59,7 +59,7 @@ public class Decal : Placeable {
         // see Celeste.Decal.orig_ctor
         // remove any extention like .png
         string ext = Path.GetExtension(tex);
-        string plainPath = (ext.Length > 0 ? tex.Substring(tex.Length - ext.Length) : tex);
+        string plainPath = (ext.Length > 0 ? tex.Substring(0, tex.Length - ext.Length) : tex);
         // put it in decals/ if necessary
         string pfixPath = hasPfix ? plainPath : "decals/" + plainPath;
         // fix any backslashes
