@@ -62,7 +62,7 @@ public class PlacementTool : Tool {
 
         panel.Add(searchBar = new UISearchBar<Placement>(width - 10, entityMatcher) {
             Position = new Vector2(5, height - 20),
-            Entries = Placements.All.ToArray(),
+            Entries = placementButtons.Keys.ToArray(), // TODO: again, placements should not be so fake
             InfoText = Dialog.Clean("SNOWBERRY_MAINMENU_LOADSEARCH"),
             OnInputChange = s => {
                 search = s;
