@@ -282,7 +282,7 @@ public class PlacementTool : Tool {
                 PadUp = 2,
                 PadDown = 2
             };
-            foreach(Tree<string> c in part.Children)
+            foreach(Tree<string> c in part.Children.OrderBy(x => x.Value))
                 if(c.Children.Any())
                     tree.Add(RenderPart(c, maxWidth - tree.PadLeft));
                 else {
