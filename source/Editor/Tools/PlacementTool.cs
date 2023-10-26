@@ -290,7 +290,7 @@ public class PlacementTool : Tool {
                     string path = c.AggregateUp((s, s1) => s + "/" + s1);
                     Placement fake = new Placements.DecalPlacement(c.Value, "weh", path.Substring("decals/".Length));
                     group.Add(CreatePlacementButton(fake, maxWidth));
-                    group.AddRight(new UIImage(GFX.Game.GetAtlasSubtextures(path)[0]));
+                    group.AddRight(new UIImage(GFX.Game.GetAtlasSubtextures(path)[0]).ScaleToFit(new(24, 24)), new(3, 0));
                     group.CalculateBounds();
                     tree.Add(group);
                 }

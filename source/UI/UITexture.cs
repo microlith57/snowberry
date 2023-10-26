@@ -22,7 +22,7 @@ public class UIImage : UIElement {
     }
 
     public UIImage ScaleToFit(Vector2 space) {
-        Scale = Math.Min(space.X / Texture.Width, space.Y / Texture.Height);
+        Scale = Math.Min(1, Math.Min(space.X / Texture.Width, space.Y / Texture.Height));
         AdjustBounds();
         return this;
     }
