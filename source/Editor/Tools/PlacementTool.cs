@@ -266,7 +266,7 @@ public class PlacementTool : Tool {
 
     private UITree CreateDecalsTree() {
         List<List<string>> decalPaths = GFX.Game.Textures.Keys
-            .Where(x => x.StartsWith("decals/"))
+            .Where(x => x.StartsWith("decals/", StringComparison.Ordinal))
             .Select(x => Decal.Sanitize(x, true))
             .Select(x => x.Split('/').ToList())
             .ToList();
@@ -285,6 +285,7 @@ public class PlacementTool : Tool {
                 else {
                     UIElement group = new();
                     string path = c.AggregateUp((s, s1) => s + "/" + s1);
+                    // TODO: this *needs* to be not fake
                     Placement fake = new Placements.DecalPlacement(c.Value, "weh", path.Substring("decals/".Length));
                     group.Add(CreatePlacementButton(fake, maxWidth));
                     group.AddRight(new UIImage(GFX.Game.GetAtlasSubtextures(path)[0]).ScaleToFit(new(24, 24)), new(3, 0));

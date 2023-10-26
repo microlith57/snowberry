@@ -7,7 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace Snowberry.Editor;
 
-public class Decal : Placeable{
+public class Decal : Placeable {
+
+    private static readonly Regex StripDigits = new Regex("\\d+$", RegexOptions.Compiled);
 
     public Room Room { get; set; }
     public Vector2 Position { get; set; }
@@ -57,13 +59,13 @@ public class Decal : Placeable{
         // see Celeste.Decal.orig_ctor
         // remove any extention like .png
         string ext = Path.GetExtension(tex);
-        string plainPath = (ext.Length > 0 ? tex.Replace(ext, "") : tex);
+        string plainPath = (ext.Length > 0 ? tex.Substring(tex.Length - ext.Length) : tex);
         // put it in decals/ if necessary
         string pfixPath = hasPfix ? plainPath : "decals/" + plainPath;
         // fix any backslashes
         string ctxPath = pfixPath.Replace("\\", "/");
         // remove any numeric suffix
-        return Regex.Replace(ctxPath, "\\d+$", "");
+        return StripDigits.Replace(ctxPath, "");
     }
 
     public UndoRedo.Snapshotter<Vector2> SPosition() => new(() => Position, p => Position = p, this);
