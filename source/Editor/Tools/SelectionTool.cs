@@ -223,12 +223,15 @@ public class SelectionTool : Tool {
                     Entity solo = GetSoloEntity();
                     if (solo != null) {
                         if (MInput.Mouse.PressedLeftButton || justMovedMouse) {
+                            // unambiguous start of resizing
                             // TODO: can this be shared between RoomTool & SelectionTool?
                             fromLeft = Math.Abs(Mouse.World.X - solo.Position.X) <= resizeMargins;
                             resizingX = solo.MinWidth > -1 && (Math.Abs(Mouse.World.X - (solo.Position.X + solo.Width)) <= resizeMargins || fromLeft);
                             fromTop = Math.Abs(Mouse.World.Y - solo.Position.Y) <= resizeMargins;
                             resizingY = solo.MinHeight > -1 && (Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= resizeMargins || fromTop);
                             oldEntityBounds = solo.Bounds;
+                            if (resizingX || resizingY)
+                                UndoRedo.BeginAction("resize objects", solo.SBounds());
                         } else if (resizingX || resizingY) {
                             var wSnapped = Mouse.World.RoundTo(8);
                             if (resizingX) {
@@ -307,13 +310,13 @@ public class SelectionTool : Tool {
                 next.Clear();
             }
 
+            if (MoveInProgress || resizingX || resizingY)
+                UndoRedo.CompleteAction();
+
             SelectionInProgress = null;
             PathInProgress = null;
-
-            if (MoveInProgress) {
-                UndoRedo.CompleteAction();
-                MoveInProgress = false;
-            }
+            MoveInProgress = false;
+            resizingX = resizingY = false;
         }
 
         if (Editor.SelectedObjects == null)
