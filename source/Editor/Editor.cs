@@ -133,6 +133,8 @@ public class Editor : UIScene {
     public UIToolbar Toolbar;
     public UIElement ToolPanel, ToolPanelContainer;
     public UIElement ActionBar, ToolActionGroup;
+
+    public UIPopOut HistoryWindow;
     public UIScrollPane HistoryLog;
 
     // TODO: potentially replace with just setting the MapData of Playtest
@@ -349,6 +351,13 @@ public class Editor : UIScene {
             }, new(6, 4));
         }
 
+        ActionBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(32, 96, 16, 16), 3, 3) {
+            OnPress = () => {
+                bool active = !HistoryWindow.Active;
+                HistoryWindow.Active = HistoryWindow.Visible = active;
+            }
+        }, new(6, 4));
+
         UI.AddBelow(new UILabel(() => $"Room: {SelectedRoom?.Name ?? (SelectedFillerIndex > -1 ? $"(filler: {SelectedFillerIndex})" : "(none)")}"), new(10));
 
         // anchor the tool panel under Message
@@ -424,20 +433,24 @@ public class Editor : UIScene {
         base.PostBeginContent();
 
         if (Map != null) {
-            UIPopOut historyWindow = new() {
+            HistoryWindow = new() {
                 Title = Dialog.Clean("SNOWBERRY_EDITOR_HISTORY"),
                 Width = 120,
                 Height = 100,
                 GrabsClick = true,
-                GrabsScroll = true
+                GrabsScroll = true,
+                // hidden by default
+                Active = false,
+                Visible = false
             };
-            historyWindow.Add(HistoryLog = new UIScrollPane {
-                Width = historyWindow.ContentWidth,
-                Height = historyWindow.ContentHeight,
+            HistoryWindow.Add(HistoryLog = new UIScrollPane {
+                Width = HistoryWindow.ContentWidth,
+                Height = HistoryWindow.ContentHeight,
                 Background = Color.Black
             });
 
-            Overlay.Add(historyWindow);
+            Overlay.Add(HistoryWindow);
+            // HistoryWindow.Update();
 
             UndoRedo.OnChange += UpdateLog;
             UpdateLog();
