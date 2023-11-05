@@ -125,7 +125,7 @@ public static class Util {
     public static string IntoRgbString(this Color c) =>
         $"{c.R.ToHex()}{c.G.ToHex()}{c.B.ToHex()}".ToLower();
 
-    public static IEnumerable<T> ConcatN<T>(IEnumerable<T> start, params T[] next) =>
+    public static IEnumerable<T> ConcatN<T>(this IEnumerable<T> start, params T[] next) =>
         start.Concat(next); // the actual work is done by the compiler's interpretation of `params`
 
     public static string IntoRgbaString(this Color c) {

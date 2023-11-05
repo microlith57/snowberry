@@ -340,6 +340,17 @@ public class SelectionTool : Tool {
                     var item = Editor.SelectedObjects[idx];
                     if (item is EntitySelection { Entity: var e, Index: var oldIdx } && (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1)) {
                         if (!seen.Contains(e)) {
+                            if (seen.Count == 0)
+                                UndoRedo.BeginAction("add nodes", Editor.SelectedObjects
+                                    .OfType<EntitySelection>()
+                                    .Where(x => x.Entity.Nodes.Count < x.Entity.MaxNodes || x.Entity.MaxNodes == -1)
+                                    .Select(x => x.Snapshotter())
+                                    .ConcatN(UndoRedo.OfAction(() => {
+                                        // TODO: would be better to only deselect things that no longer exist
+                                        Editor.SelectedObjects.Clear();
+                                        selectionPanel?.Display(null);
+                                    })));
+
                             int newNodeIdx = oldIdx + 1;
                             Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
                             e.AddNode(oldPos + new Vector2(24, 0), newNodeIdx);
@@ -350,6 +361,9 @@ public class SelectionTool : Tool {
                         Editor.SelectedObjects.Remove(item);
                     }
                 }
+
+                if (seen.Count > 0)
+                    UndoRedo.CompleteAction();
             } else if (MInput.Keyboard.Pressed(Keys.Escape)) { // Esc to deselect all & cancel paste
                 if (Editor.SelectedObjects.Count > 0)
                     refreshPanel = true;
