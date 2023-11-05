@@ -20,6 +20,8 @@ public class UIPopOut : UICutoutElement {
 
     public override void Update(Vector2 position = default) {
         base.Update(position);
+        if (!Active)
+            return;
 
         if (MInput.Mouse.PressedLeftButton
             && new Rectangle((int)position.X, (int)position.Y, Width, TopPadding).Contains(Mouse.Screen.ToPoint()))
