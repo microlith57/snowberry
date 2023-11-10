@@ -340,16 +340,13 @@ public class SelectionTool : Tool {
                     var item = Editor.SelectedObjects[idx];
                     if (item is EntitySelection { Entity: var e, Index: var oldIdx } && (e.Nodes.Count < e.MaxNodes || e.MaxNodes == -1)) {
                         if (!seen.Contains(e)) {
-                            if (seen.Count == 0)
+                            if (seen.Count == 0) {
                                 UndoRedo.BeginAction("add nodes", Editor.SelectedObjects
                                     .OfType<EntitySelection>()
                                     .Where(x => x.Entity.Nodes.Count < x.Entity.MaxNodes || x.Entity.MaxNodes == -1)
                                     .Select(x => x.Snapshotter())
-                                    .ConcatN(UndoRedo.OfAction(() => {
-                                        // TODO: would be better to only deselect things that no longer exist
-                                        Editor.SelectedObjects.Clear();
-                                        selectionPanel?.Display(null);
-                                    })));
+                                    .ConcatN(CheckSelection()));
+                            }
 
                             int newNodeIdx = oldIdx + 1;
                             Vector2 oldPos = oldIdx == -1 ? e.Position : e.Nodes[oldIdx];
@@ -566,4 +563,11 @@ public class SelectionTool : Tool {
         MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl) ? SelectionEffect.Add :
         MInput.Keyboard.Check(Keys.LeftAlt, Keys.RightAlt) ? SelectionEffect.Subtract :
         SelectionEffect.Set;
+
+    private static UndoRedo.Snapshotter CheckSelection() =>
+        UndoRedo.OfAction(() => {
+            // TODO: would be better to only deselect things that no longer exist
+            Editor.SelectedObjects.Clear();
+            selectionPanel?.Display(null);
+        });
 }
