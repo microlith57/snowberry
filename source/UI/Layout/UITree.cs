@@ -60,14 +60,20 @@ public class UITree : UICutoutElement {
             Height = (int)((Header.Position.Y + Header.Height));
         } else {
             int i = 0;
+            float right = 0, bottom = 0;
             foreach (UIElement e in Children.Except(toRemove)) {
                 if (e.Active) {
                     e.Position = new(PadLeft, PadUp + i);
                     i += (int)(e.Height + Spacing);
+                    right = Math.Max(right, e.Width + e.Position.X);
+                    bottom = Math.Max(bottom, e.Height + e.Position.Y);
                 } else
                     e.Position = new(0);
             }
-            CalculateBounds();
+            //CalculateBounds();
+            // we already know our bounds *pretty* well actually!
+            Width = (int)right;
+            Height = (int)bottom;
         }
         Width += (int)PadRight;
         Height += (int)PadDown;
