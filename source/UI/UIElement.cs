@@ -231,16 +231,15 @@ public class UIElement {
     public void CalculateBounds() {
         // based on the bounds of children
         if (Children.Count > 0) {
-            int right = int.MinValue, bottom = int.MinValue;
+            float right = 0, bottom = 0;
 
-            foreach (var bounds in Children.Select(el => el.Bounds)) {
-                if (bounds.Right > right) right = bounds.Right;
-                if (bounds.Bottom > bottom) bottom = bounds.Bottom;
+            foreach(var child in Children) {
+                right = Math.Max(right, child.Width + child.Position.X);
+                bottom = Math.Max(bottom, child.Height + child.Position.Y);
             }
 
-            // bounds already include parents bounds
-            Width = (right - Bounds.X);
-            Height = (bottom - Bounds.Y);
+            Width = (int)right;
+            Height = (int)bottom;
         }
     }
 
