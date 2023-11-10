@@ -69,13 +69,19 @@ public class PlacementTool : Tool {
                 buttonTree.ApplyDown(x => x.Active = x.Visible = false);
                 buttonPane.Scroll = 0;
                 foreach (var b in placementButtons) {
-                    var button = b.Value;
+                    UIElement elem = b.Value;
                     bool active = searchBar.Found == null || searchBar.Found.Contains(b.Key);
-                    if (button.Parent is UITree p) { // not a header button, need to set Active to get hidden
-                        button.Visible = button.Active = active;
+                    if (b.Key is Placements.DecalPlacement) {
+                        // TODO: also! a bandaid
+                        // but i'm sick of thinking about this any longer than actually mandatory
+                        elem = elem.Parent;
+                    }
+
+                    if (elem.Parent is UITree p) { // not a header button, need to set Active to get hidden
+                        elem.Visible = elem.Active = active;
                         p.ApplyUp(x => x.Active |= x.Visible |= active);
                     } else // header button, get hidden by hiding the entire tree, don't set Active so sub-buttons can force this visible
-                        (button.Parent?.Parent as UITree)?.ApplyUp(x => x.Active |= x.Visible |= active); // weh
+                        (elem.Parent?.Parent as UITree)?.ApplyUp(x => x.Active |= x.Visible |= active); // weh
                 }
                 buttonTree.LayoutDown();
             }
