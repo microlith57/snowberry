@@ -1,12 +1,14 @@
 ﻿using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using System;
+using JetBrains.Annotations;
 using Snowberry.Editor;
 using Snowberry.UI;
 
 namespace Snowberry;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+[MeansImplicitUse]
 public class PluginAttribute : Attribute {
     internal readonly string Name;
 
@@ -16,6 +18,7 @@ public class PluginAttribute : Attribute {
 }
 
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+[MeansImplicitUse]
 public class OptionAttribute : Attribute {
     internal readonly string Name;
 
