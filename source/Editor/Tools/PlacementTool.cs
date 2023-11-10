@@ -30,6 +30,8 @@ public class PlacementTool : Tool {
 
     private static string search = "";
 
+    public static bool DecalsAreFg = false;
+
     public override UIElement CreatePanel(int height) {
         placementButtons.Clear();
 
@@ -93,6 +95,32 @@ public class PlacementTool : Tool {
         UpdateButtonAppearance(curRightSelection);
 
         return panel;
+    }
+
+    public override UIElement CreateActionBar() {
+        UIElement p = new UIElement();
+        Vector2 offset = new Vector2(0, 4);
+
+        p.AddRight(CreateToggleButton(0, 112, Keys.F, "DECALS_FG", () => DecalsAreFg, s => DecalsAreFg = s), offset);
+
+        return p;
+    }
+
+    // TODO: also some ugly copy-paste from SelectionTool - need to generify tooltip and get rid of toggleButtons to share it
+    private static UIButton CreateToggleButton(int icoX, int icoY, Keys toggleBind, string tooltipKey, Func<bool> value, Action<bool> onPress) {
+        MTexture active = UIScene.ActionbarAtlas.GetSubtexture(icoX, icoY, 16, 16);
+        MTexture inactive = UIScene.ActionbarAtlas.GetSubtexture(icoX + 16, icoY, 16, 16);
+        UIKeyboundButton button = null; // to allow referring to it in OnPress
+        button = new UIKeyboundButton(value() ? active : inactive, 3, 3) {
+            OnPress = () => {
+                onPress(!value());
+                button.SetIcon(value() ? active : inactive);
+            },
+            Shift = true,
+            Key = toggleBind,
+            ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_PLACEMENT_{tooltipKey}_TT")
+        };
+        return button;
     }
 
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_ENTITIES");

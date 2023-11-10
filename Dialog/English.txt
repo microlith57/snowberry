@@ -135,6 +135,9 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_EDITOR_ROOM_OPTS_DDS=             disable down transition
 	SNOWBERRY_EDITOR_ROOM_OPTS_WIND=            wind pattern
 
+# *** Placement Tool ***
+	SNOWBERRY_EDITOR_PLACEMENT_DECALS_FG_TT=    place decals in foreground (shift-F)
+
 # *** Playtest Tool ***
 	SNOWBERRY_EDITOR_PT_NO_DATA=                no data recorded
 	

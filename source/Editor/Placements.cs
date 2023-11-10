@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Snowberry.Editor.Tools;
 
 namespace Snowberry.Editor;
 
@@ -53,7 +54,9 @@ public static class Placements {
             DecalPath = decalPath;
         }
 
-        public Placeable Build(Room room) => new Decal(room, DecalPath);
+        public Placeable Build(Room room) => new Decal(room, DecalPath) {
+            Fg = PlacementTool.DecalsAreFg
+        };
     }
 
     public static readonly List<Placement> All = new();
