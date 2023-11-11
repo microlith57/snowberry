@@ -65,7 +65,7 @@ public static class CopyPaste{
                 sb.Append("\"").Append(attr.Value).Append("\"");
             else if(attr.Value is List<BinaryPacker.Element> es)
                 if(es.Count > 0)
-                    sb.Append("{").Append(es.Select(MarshallToTable).Aggregate((l, r) => l + ", " + r)).Append("}");
+                    sb.Append("{").Append(string.Join(", ", es.Select(MarshallToTable))).Append("}");
                 else
                     sb.Append("{}");
             else
