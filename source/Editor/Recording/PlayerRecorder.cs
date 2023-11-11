@@ -71,7 +71,7 @@ public class PlayerRecorder : Recorder{
         UIElement orig = base.CreateOptionsPane();
         // it's kind of like if UIPluginOptionList was evil
         UIButton button = null;
-        button = new UIButton(Dialog.Clean($"SNOWBERRY_EDITOR_PT_SKIN_MADELINE") + " \uF036", Fonts.Regular, 2, 2) {
+        button = new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_PT_SKIN_MADELINE") + " \uF036", Fonts.Regular, 2, 2) {
             OnPress = () => {
                 List<UIDropdown.DropdownEntry> entries = new();
                 foreach (PlayerSpriteMode sm in Enum.GetValues(typeof(PlayerSpriteMode)).OfType<PlayerSpriteMode>()) {
