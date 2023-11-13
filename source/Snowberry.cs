@@ -129,7 +129,7 @@ public sealed class Snowberry : EverestModule {
     // from Collab Utils 2, adjusted for Snowberry
     private void Level_OnCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
         int buttonIdx(string label) =>
-            menu.GetItems().FindIndex(item =>
+            menu.Items.FindIndex(item =>
                 item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean(label));
 
         if (level.Session.Area.SID == PlaytestSid) {

@@ -444,8 +444,8 @@ public class Map {
                 string key = spriteDatum.Key;
                 SpriteData value = spriteDatum.Value;
                 if (spriteBank.SpriteData.TryGetValue(key, out SpriteData value2)) {
-                    IDictionary animations = value2.Sprite.GetAnimations();
-                    foreach (DictionaryEntry item2 in (IDictionary)value.Sprite.GetAnimations())
+                    IDictionary animations = value2.Sprite.Animations;
+                    foreach (DictionaryEntry item2 in (IDictionary)value.Sprite.Animations)
                         animations[item2.Key] = item2.Value;
 
                     value2.Sources.AddRange(value.Sources);

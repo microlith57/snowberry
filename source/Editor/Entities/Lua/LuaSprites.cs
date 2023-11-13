@@ -9,14 +9,10 @@ using NLua;
 
 namespace Snowberry.Editor.Entities.Lua;
 
-internal sealed class LuaSprites {
+internal sealed class LuaSprites(string entityName) {
 
-    private readonly string entityName; // for diagnostics
+    // for diagnostics
     private readonly List<Drawable> drawables = new();
-
-    public LuaSprites(string entityName) {
-        this.entityName = entityName;
-    }
 
     public void Process(object[] sprites) {
         drawables.Clear();

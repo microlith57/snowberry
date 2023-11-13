@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Snowberry.Collections;
 using static Snowberry.UI.UIDropdown;
 
 namespace Snowberry.UI;
