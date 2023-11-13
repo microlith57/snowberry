@@ -28,7 +28,7 @@ public class UIButton : UIElement {
 
     public Color? Color2 = null;
 
-    public String ButtonTooltip;
+    public string ButtonTooltip;
     public bool HasLeft = true, HasRight = true;
 
     private float lerp;
@@ -164,7 +164,7 @@ public class UIButton : UIElement {
         Color fg = Color.Lerp(hovering ? HoveredFG : FG, PressedFG, lerp);
         if (text != null && font != null) {
             font.Draw(text, at, Vector2.One, fg);
-            Vector2 textArea = font.Measure(this.text);
+            Vector2 textArea = font.Measure(text);
             if (Underline)
                 Draw.Rect(at + new Vector2(-2, textArea.Y), textArea.X + 4, 1, FG);
             if (Strikethrough)

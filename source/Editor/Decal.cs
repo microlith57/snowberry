@@ -7,10 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Snowberry.Editor;
 
-public class Decal : Placeable {
-
-    private static readonly Regex StripDigits = new Regex("\\d+$", RegexOptions.Compiled);
-
+public partial class Decal : Placeable {
     public Room Room { get; set; }
     public Vector2 Position { get; set; }
 
@@ -27,8 +24,8 @@ public class Decal : Placeable {
 
     internal Decal(Room room, string texture) {
         Room = room;
-        this.Texture = texture;
-        this.tex = LookupTex(texture);
+        Texture = texture;
+        tex = LookupTex(texture);
     }
 
     internal Decal(Room room, DecalData data) {
@@ -58,15 +55,18 @@ public class Decal : Placeable {
     public static string Sanitize(string tex, bool hasPfix){
         // see Celeste.Decal.orig_ctor
         // remove any extention like .png
-        string ext = Path.GetExtension(tex);
-        string plainPath = (ext.Length > 0 ? tex.Substring(0, tex.Length - ext.Length) : tex);
+        var ext = Path.GetExtension(tex);
+        var plainPath = ext.Length > 0 ? tex[..^ext.Length] : tex;
         // put it in decals/ if necessary
-        string pfixPath = hasPfix ? plainPath : "decals/" + plainPath;
+        var pfixPath = hasPfix ? plainPath : "decals/" + plainPath;
         // fix any backslashes
-        string ctxPath = pfixPath.Replace("\\", "/");
+        var ctxPath = pfixPath.Replace("\\", "/");
         // remove any numeric suffix
-        return StripDigits.Replace(ctxPath, "");
+        return StripDigits().Replace(ctxPath, "");
     }
 
     public UndoRedo.Snapshotter<Vector2> SPosition() => new(() => Position, p => Position = p, this);
+
+    [GeneratedRegex("\\d+$", RegexOptions.Compiled)]
+    private static partial Regex StripDigits();
 }

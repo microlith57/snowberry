@@ -12,10 +12,10 @@ namespace Snowberry.UI;
 
 // Segmented UIButton that hovers and clicks different entries separately
 public class UIDropdown : UIElement {
-    public class DropdownEntry {
-        public string Label;
+    public class DropdownEntry(string label, Action onPress, Action onAltPress = null) {
+        public string Label = label;
         public MTexture Icon;
-        public Action OnPress, OnAlternatePress;
+        public Action OnPress = onPress, OnAlternatePress = onAltPress;
         public object Tag;
         public Color FG = UIButton.DefaultFG;
         public Color BG = UIButton.DefaultBG;
@@ -23,12 +23,6 @@ public class UIDropdown : UIElement {
         public Color PressedBG = UIButton.DefaultPressedBG;
         public Color HoveredFG = UIButton.DefaultHoveredFG;
         public Color HoveredBG = UIButton.DefaultHoveredBG;
-
-        public DropdownEntry(string label, Action onPress, Action onAltPress = null) {
-            Label = label;
-            OnPress = onPress;
-            OnAlternatePress = onAltPress;
-        }
     }
 
     private readonly Vector2 spacing = new(4);
@@ -138,7 +132,7 @@ public class UIDropdown : UIElement {
         for (int i = 0; i < Entries.Count; i++) {
             DropdownEntry entry = Entries[i];
             var ePos = position + Vector2.UnitY * YPosFor(i);
-            var press = (pressIdx == i) ? 1 : 0;
+            var press = pressIdx == i ? 1 : 0;
             var bg = ColorForEntry(i);
             float h = font.Measure(entry.Label).Y;
             float textOffset = 0;
@@ -150,7 +144,7 @@ public class UIDropdown : UIElement {
             mid.Draw(new Vector2(ePos.X + Width, ePos.Y + h - 4), Vector2.Zero, bg, new Vector2(-1, 1));
             Draw.Rect(new Vector2(ePos.X, ePos.Y + 4), Width, h + 4, Color.Black);
             Draw.Rect(new Vector2(ePos.X + 1, ePos.Y + 4), Width - 2, h + 4, bg);
-            Color fg = Color.Lerp((hoverIdx == i) ? entry.HoveredFG : entry.FG, entry.PressedFG, lerps[i]);
+            Color fg = Color.Lerp(hoverIdx == i ? entry.HoveredFG : entry.FG, entry.PressedFG, lerps[i]);
             entry.Icon?.Draw(ePos + new Vector2(4 + press, entry.Icon.Height));
             font.Draw(entry.Label, ePos + new Vector2(4 + press + textOffset, 5), Vector2.One, fg);
         }

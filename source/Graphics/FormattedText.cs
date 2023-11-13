@@ -5,38 +5,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Snowberry; 
+namespace Snowberry;
 
-public class FormattedText {
-    private static readonly Regex commandMatch = new Regex(@"^{((?:[^{}\n])*)}");
-    private static readonly Regex colorCmd = new Regex(@"^\s*#?[a-fA-F0-9]{6}\s*");
-    private static readonly Regex colorPopCmd = new Regex(@"^\s*#<<\s*");
+public partial class FormattedText {
+    private readonly (char?, Color)[] characters;
 
-    private readonly Tuple<char?, Color>[] characters;
+    public FormattedText(string expr) {
+        var colors = new Stack<Color>();
+        var characters = new List<(char?, Color)>();
 
-    private FormattedText(string expr) {
-        Stack<Color> colors = new Stack<Color>();
-        List<Tuple<char?, Color>> characters = new List<Tuple<char?, Color>>();
-
-        bool esc = false;
-        for (int i = 0; i < expr.Length; i++) {
-            char c = expr[i];
+        var esc = false;
+        for (var i = 0; i < expr.Length; i++) {
+            var c = expr[i];
             if (c == '\\') {
                 esc = true;
                 continue;
             }
 
             if (!esc) {
-                Match cmdMatch = commandMatch.Match(expr.Substring(i));
+                var cmdMatch = CommandRegex().Match(expr.Substring(i));
                 if (cmdMatch.Success) {
-                    string cmd = cmdMatch.Groups[1].Value;
+                    var cmd = cmdMatch.Groups[1].Value;
 
-                    if (colorCmd.IsMatch(cmd)) {
+                    if (ColourCommandRegex().IsMatch(cmd))
                         colors.Push(Calc.HexToColor(cmd.Trim()));
-                    } else if (colorPopCmd.IsMatch(cmd)) {
-                        if (colors.Count != 0) colors.Pop();
+                    else if (ColourPopCommandRegex().IsMatch(cmd)) {
+                        if (colors.Count != 0)
+                            colors.Pop();
                     } else
-                        characters.Add(Tuple.Create<char?, Color>(null, colors.Count == 0 ? Color.White : colors.Peek()));
+                        characters.Add((null, colors.Count == 0 ? Color.White : colors.Peek()));
 
                     i += cmdMatch.Length - 1;
                     continue;
@@ -45,20 +42,20 @@ public class FormattedText {
 
             esc = false;
 
-            characters.Add(Tuple.Create<char?, Color>(c, colors.Count == 0 ? Color.White : colors.Peek()));
+            characters.Add((c, colors.Count == 0 ? Color.White : colors.Peek()));
         }
 
         this.characters = characters.ToArray();
     }
 
     public string Format(out Color[] colors, params object[] values) {
-        string formatted = "";
-        List<Color> colorList = new List<Color>();
-        int v = 0;
+        var formatted = "";
+        var colorList = new List<Color>();
+        var v = 0;
         foreach (var pair in characters) {
             if (pair.Item1 == null) {
                 if (v < values.Length) {
-                    string insert = values[v]?.ToString() ?? "null";
+                    var insert = values[v]?.ToString() ?? "null";
                     formatted += insert;
                     colorList.AddRange(Enumerable.Repeat(pair.Item2, insert.Length));
                     v++;
@@ -73,7 +70,10 @@ public class FormattedText {
         return formatted;
     }
 
-    public static FormattedText Parse(string expression) {
-        return new FormattedText((string)expression.Clone());
-    }
+    [GeneratedRegex("^{((?:[^{}\\n])*)}")]
+    private static partial Regex CommandRegex();
+    [GeneratedRegex(@"^\s*#?[a-fA-F0-9]{6}\s*")]
+    private static partial Regex ColourCommandRegex();
+    [GeneratedRegex(@"^\s*#<<\s*")]
+    private static partial Regex ColourPopCommandRegex();
 }

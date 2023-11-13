@@ -69,7 +69,7 @@ public class Mixer : UIScene {
             foreach (EventDescription e in bank.events.OrderBy(Audio.GetEventName)) {
                 UIElement track = new();
                 track.Add(new UILabel(Audio.GetEventName(e)));
-                track.AddRight(new UIButton(UIScene.ActionbarAtlas.GetSubtexture(9, 101, 6, 6), 3, 4) {
+                track.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(9, 101, 6, 6), 3, 4) {
                     OnPress = () => StartPlaying(e)
                 }, new(3, -2));
                 track.CalculateBounds();

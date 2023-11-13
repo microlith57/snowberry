@@ -35,7 +35,7 @@ public class UISearchBar<T> : UITextField {
     }
 
     public void AddSpecialMatcher(char mode, TermMatcher specialMatcher, Color displayColor) {
-        specialChars.Add(mode, Tuple.Create(specialMatcher, displayColor, new Regex($"\\{mode}[^\\s,]+")));
+        specialChars.Add(mode, Tuple.Create(specialMatcher, displayColor, new Regex($@"\{mode}[^\s,]+")));
     }
 
     protected override void OnInputUpdate(string input) {
@@ -75,7 +75,7 @@ public class UISearchBar<T> : UITextField {
                     if (t.Length != 0) {
                         char c = t[0];
                         if (t.Length > 1 && specialChars.ContainsKey(c))
-                            l.Add(Tuple.Create<char?, string>(c, t.Substring(1)));
+                            l.Add(Tuple.Create<char?, string>(c, t[1..]));
                         else
                             l.Add(Tuple.Create<char?, string>(null, t));
                     }

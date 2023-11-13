@@ -9,7 +9,7 @@ namespace Snowberry;
 
 public static class SmhInterop {
 
-    private static readonly EverestModuleMetadata SmhMeta = new EverestModuleMetadata{ Name = "SkinModHelper", Version = new(0, 6, 1) };
+    private static readonly EverestModuleMetadata SmhMeta = new() { Name = "SkinModHelper", Version = new(0, 6, 1) };
 
     public static List<(string id, string key)> PlayerSkinIds = new();
 

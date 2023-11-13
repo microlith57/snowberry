@@ -34,7 +34,7 @@ public class UIColorPicker : UIElement {
             Line = Color.Transparent,
             LineSelected = Color.Transparent,
             BG = Color.Transparent,
-            BGSelected = Color.Transparent,
+            BGSelected = Color.Transparent
         });
 
         a = alpha ?? color.A / 255f;

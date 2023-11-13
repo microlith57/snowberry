@@ -10,7 +10,7 @@ using WindController = Celeste.WindController;
 
 namespace Snowberry.UI.Menus;
 
-class UIRoomSelectionPanel : UIElement {
+partial class UIRoomSelectionPanel : UIElement {
     public Color BG = Calc.HexToColor("202929") * 0.5f;
 
     public UIRoomSelectionPanel() {
@@ -63,14 +63,14 @@ class UIRoomSelectionPanel : UIElement {
             });
             label.Position = Vector2.UnitX * (Width / 2 - label.Width / 2);
 
-            string newName = "";
+            var newName = "";
             UILabel newNameInvalid, newNameTaken;
             UIButton newRoom;
 
             AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_NAME"), newName, text => newName = text), offset);
 
             AddBelow(newRoom = new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_CREATE_ROOM"), Fonts.Regular, 2, 2) {
-                Position = new Vector2(4, 4),
+                Position = new Vector2(4, 4)
             });
             Add(newNameInvalid = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_INVALID_NAME")) {
                 Position = new Vector2(newRoom.Position.X + newRoom.Width + 5, newRoom.Position.Y + 3),
@@ -83,7 +83,7 @@ class UIRoomSelectionPanel : UIElement {
             newRoom.OnPress = () => {
                 newNameInvalid.FG = newNameTaken.FG = Color.Transparent;
                 // validate room name
-                if (newName.Length <= 0 || Regex.Match(newName, "[0-9a-zA-Z\\-_ ]+").Length != newName.Length)
+                if (newName.Length <= 0 || RoomNameRegex().Match(newName).Length != newName.Length)
                     newNameInvalid.FG = Color.Red;
                 else if (Editor.Editor.Instance.Map.Rooms.Exists(it => it.Name.Equals(newName)))
                     newNameTaken.FG = Color.Red;
@@ -113,8 +113,7 @@ class UIRoomSelectionPanel : UIElement {
             return;
         }
 
-        int spacing = Fonts.Regular.LineHeight + 2;
-        Room room = Editor.Editor.SelectedRoom;
+        var room = Editor.Editor.SelectedRoom;
 
         Add(label = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_SELECTED_TITLE")) {
             FG = Color.DarkKhaki,
@@ -122,14 +121,14 @@ class UIRoomSelectionPanel : UIElement {
         });
         label.Position = Vector2.UnitX * (Width / 2 - label.Width / 2);
 
-        string name = room.Name;
+        var name = room.Name;
         UILabel nameInvalid, nameTaken;
         UIButton updateName;
 
         AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_NAME"), room.Name, text => name = text), offset);
 
         AddBelow(updateName = new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_UPDATE_NAME"), Fonts.Regular, 2, 2) {
-            Position = new Vector2(4, 4),
+            Position = new Vector2(4, 4)
         });
         Add(nameInvalid = new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_INVALID_NAME")) {
             Position = new Vector2(updateName.Position.X + updateName.Width + 5, updateName.Position.Y + 3),
@@ -142,7 +141,7 @@ class UIRoomSelectionPanel : UIElement {
         updateName.OnPress = () => {
             nameInvalid.FG = nameTaken.FG = Color.Transparent;
             // validate room name
-            if (name.Length <= 0 || Regex.Match(name, "[0-9a-zA-Z\\-_ ]+").Length != name.Length)
+            if (name.Length <= 0 || RoomNameRegex().Match(name).Length != name.Length)
                 nameInvalid.FG = Color.Red;
             else if (room.Map.Rooms.Exists(it => it.Name.Equals(name)))
                 nameTaken.FG = Color.Red;
@@ -159,10 +158,10 @@ class UIRoomSelectionPanel : UIElement {
         AddBelow(UIPluginOptionList.LiteralValueOption<int>(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_MUSIC_PROG"), room.MusicProgress.ToString(), prog => room.MusicProgress = prog), offset);
         AddBelow(UIPluginOptionList.LiteralValueOption<int>(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_AMBIENCE_PROG"), room.AmbienceProgress.ToString(), prog => room.AmbienceProgress = prog), offset);
 
-        Vector2 titleOffset = new Vector2(12, 8);
+        var titleOffset = new Vector2(12, 8);
         AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_MUSIC_LAYERS")), titleOffset);
         UIElement layers = new();
-        for (int i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
             var c = i;
             layers.AddRight(UIPluginOptionList.BoolOption((c + 1).ToString(), room.MusicLayers[c], val => room.MusicLayers[c] = val), new(6, 0));
         }
@@ -181,7 +180,7 @@ class UIRoomSelectionPanel : UIElement {
         AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_UNDERWATER"), room.Underwater, val => room.Underwater = val), offset);
         AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_SPACE"), room.Space, val => room.Space = val), offset);
         AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_DDS"), room.DisableDownTransition, val => room.DisableDownTransition = val), offset);
-        AddBelow(UIPluginOptionList.DropdownOption<WindController.Patterns>(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_WIND"), room.WindPattern, it => room.WindPattern = it), offset);
+        AddBelow(UIPluginOptionList.DropdownOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_WIND"), room.WindPattern, it => room.WindPattern = it), offset);
 
         AddBelow(new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_DELETE"), Fonts.Regular, 4, 4) {
             FG = Color.Red,
@@ -194,4 +193,7 @@ class UIRoomSelectionPanel : UIElement {
             }
         }, new Vector2(4, 12));
     }
+
+    [GeneratedRegex("[0-9a-zA-Z\\-_ ]+")]
+    private static partial Regex RoomNameRegex();
 }

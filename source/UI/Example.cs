@@ -84,7 +84,7 @@ public class Example : UIScene {
         };
         content.AddBelow(third, new(10 + (first.Width - third.Width) / 2f, 5));
 
-        content.AddBelow(new UIButton(UIScene.ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
+        content.AddBelow(new UIButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
             OnPress = () => {
                 Message.Clear();
 
@@ -189,9 +189,8 @@ public class Example : UIScene {
             OnInputChange = _ => {
                 searchable.Scroll = 0;
                 int y = 5;
-                foreach (var b in elements) {
-                    var label = b.display;
-                    var active = searchBar.Found == null || searchBar.Found.Contains(b.value);
+                foreach ((string value, UIElement label) in elements) {
+                    var active = searchBar.Found == null || searchBar.Found.Contains(value);
                     label.Visible = active;
                     if (active) {
                         label.Position.Y = y;
@@ -218,7 +217,7 @@ public class Example : UIScene {
                 UIMultiDropdown<string> dd = new UIMultiDropdown<string>(theBigOne, x => {
                     return new UIDropdown.DropdownEntry(x.Value + (x.Children.Count > 0 ? "/" : ""), null) {
                         OnPress = () => {
-                            string entire = x.AggregateUp((l, r) => l + "/" + r).Substring(1);
+                            string entire = x.AggregateUp((l, r) => l + "/" + r)[1..];
                             text.UpdateInput(entire);
                         }
                     };

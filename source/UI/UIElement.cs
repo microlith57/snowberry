@@ -118,7 +118,7 @@ public class UIElement {
             if (low == null || item.Position.Y > low.Position.Y)
                 low = item;
         Add(element);
-        element.Position += new Vector2(0, (low?.Position.Y + low?.Height) ?? 0);
+        element.Position += new Vector2(0, low?.Position.Y + low?.Height ?? 0);
     }
 
     public void AddRight(UIElement element, Vector2 offset) {
@@ -132,7 +132,7 @@ public class UIElement {
             if (right == null || item.Position.X > right.Position.X)
                 right = item;
         Add(element);
-        element.Position += new Vector2((right?.Position.X + right?.Width) ?? 0, 0);
+        element.Position += new Vector2(right?.Position.X + right?.Width ?? 0, 0);
     }
 
     public void Clear(bool now = false) {

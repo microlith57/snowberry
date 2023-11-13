@@ -63,7 +63,7 @@ public static class Util {
         long absBytes = Math.Abs(bytes);
         int place = Convert.ToInt32(Math.Floor(Math.Log(absBytes, 1024)));
         double num = Math.Round(absBytes / Math.Pow(1024, place), 1);
-        return (Math.Sign(bytes) * num) + suffixes[place];
+        return Math.Sign(bytes) * num + suffixes[place];
     }
 
     // adapted from https://stackoverflow.com/a/468131
@@ -77,7 +77,7 @@ public static class Util {
         if (!string.IsNullOrEmpty(directoryName))
             path = Path.Combine(directoryName, path);
         if (path.StartsWith(Everest.Content.PathContentOrig))
-            path = path.Substring(Everest.Content.PathContentOrig.Length + 1);
+            path = path[(Everest.Content.PathContentOrig.Length + 1)..];
         path = path.Replace('\\', '/');
         return path;
     }
@@ -129,7 +129,7 @@ public static class Util {
         start.Concat(next); // the actual work is done by the compiler's interpretation of `params`
 
     public static string IntoRgbaString(this Color c) {
-        float f = (255f / c.A);
+        float f = 255f / c.A;
         return c.A == 0 ? "00000000" : BitConverter.ToString(
             new[] { (byte)Math.Round(c.R * f), (byte)Math.Round(c.G * f), (byte)Math.Round(c.B * f), c.A }
         ).Replace("-", string.Empty);
@@ -138,8 +138,7 @@ public static class Util {
     public static Dictionary<K, V> OrElse<K, V>(this Dictionary<K, V> primary, Dictionary<K, V> fallback) {
         var result = new Dictionary<K, V>(primary);
         foreach(KeyValuePair<K,V> p in fallback)
-            if (!result.ContainsKey(p.Key))
-                result[p.Key] = p.Value;
+            result.TryAdd(p.Key, p.Value);
         return result;
     }
 
@@ -149,7 +148,7 @@ public static class Util {
         if (polygon.Count < 3)
             return false;
         bool isInPolygon = false;
-        var lastVertex = polygon[polygon.Count - 1];
+        var lastVertex = polygon[^1];
         foreach (var vertex in polygon) {
             if (/*point.Y.IsBetween(lastVertex.Y, vertex.Y)*/ (point.Y - lastVertex.Y) * (point.Y - vertex.Y) < 0) {
                 double t = (point.Y - lastVertex.Y) / (vertex.Y - lastVertex.Y);

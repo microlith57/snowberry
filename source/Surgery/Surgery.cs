@@ -11,15 +11,7 @@ namespace Snowberry.Surgery;
 
 using Element = BinaryPacker.Element;
 
-public class Surgery : UIScene {
-
-    private string path;
-    private Element elem;
-
-    public Surgery(string path, Element elem) {
-        this.path = path;
-        this.elem = elem;
-    }
+public class Surgery(string path, Element elem) : UIScene {
 
     protected override void BeginContent() {
         SurgeryUi();
@@ -96,7 +88,7 @@ public class Surgery : UIScene {
                     FG = Color.Gray
                 }, new(4, 0));
                 var text = (kvp.Value ?? "null").ToString();
-                attr.AddRight(new UILabel(text.Contains("\n") ? "..." : text), new(4, 0));
+                attr.AddRight(new UILabel(text.Contains('\n') ? "..." : text), new(4, 0));
                 attr.CalculateBounds();
 
                 ret.AddBelow(attr, new(8, 2));

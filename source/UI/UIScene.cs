@@ -23,7 +23,7 @@ public abstract class UIScene : Scene {
     public UIElement Overlay;
     public bool MouseClicked = false;
 
-    public static UIScene Instance => (Engine.Scene as UIScene);
+    public static UIScene Instance => Engine.Scene as UIScene;
 
     public override void Begin() {
         base.Begin();
@@ -107,7 +107,7 @@ public abstract class UIScene : Scene {
             for(int i = 0; i < array.Length; i++) {
                 string line = array[i];
                 var tooltipArea = Fonts.Regular.Measure(line);
-                var at = Mouse.Screen.Floor() - new Vector2((tooltipArea.X + 8), -(tooltipArea.Y + 6) * i);
+                var at = Mouse.Screen.Floor() - new Vector2(tooltipArea.X + 8, -(tooltipArea.Y + 6) * i);
                 Draw.Rect(at, tooltipArea.X + 8, tooltipArea.Y + 6, Color.Black * 0.8f);
                 Fonts.Regular.Draw(line, at + new Vector2(4, 3), Vector2.One, Color.White);
             }

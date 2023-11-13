@@ -9,22 +9,14 @@ namespace Snowberry;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 [MeansImplicitUse]
-public class PluginAttribute : Attribute {
-    internal readonly string Name;
-
-    public PluginAttribute(string entityName) {
-        Name = entityName;
-    }
+public class PluginAttribute(string Name) : Attribute {
+    internal readonly string Name = Name;
 }
 
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Field)]
 [MeansImplicitUse]
-public class OptionAttribute : Attribute {
-    internal readonly string Name;
-
-    public OptionAttribute(string optionName) {
-        Name = optionName;
-    }
+public class OptionAttribute(string optionName) : Attribute {
+    internal readonly string Name = optionName;
 }
 
 public abstract class Plugin {

@@ -56,8 +56,8 @@ public class UITree : UICutoutElement {
             foreach (UIElement e in Children) // just make sure they're not inside our bounds during Update
                 e.Position = new(9999);
             Header.Position = new(PadLeft, PadUp);
-            Width = (int)((Header.Position.X + Header.Width));
-            Height = (int)((Header.Position.Y + Header.Height));
+            Width = (int)(Header.Position.X + Header.Width);
+            Height = (int)(Header.Position.Y + Header.Height);
         } else {
             int i = 0;
             float right = 0, bottom = 0;

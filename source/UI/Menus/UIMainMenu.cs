@@ -56,7 +56,7 @@ public class UIMainMenu : UIElement {
                     load.SetText(mainmenuload, stayCentered: true);
                     create.SetText(mainmenuclose, stayCentered: true);
                 }
-            },
+            }
         };
 
         load = new UIButton(mainmenuload, Fonts.Regular, 5, 4) {
@@ -79,7 +79,7 @@ public class UIMainMenu : UIElement {
             PressedBG = Util.Colors.White,
             PressedFG = Util.Colors.Red,
             HoveredBG = Util.Colors.DarkRed,
-            OnPress = () => state = States.Exiting,
+            OnPress = () => state = States.Exiting
         };
 
         create.Position = new Vector2(-create.Width / 2, 0);
@@ -154,7 +154,7 @@ public class UIMainMenu : UIElement {
         Add(authors = new UIRibbon(Dialog.Clean("SNOWBERRY_MAINMENU_CREDITS")) {
             Position = new Vector2(0, 8),
             BG = rib,
-            BGAccent = acc,
+            BGAccent = acc
         });
         Add(version = new UIRibbon($"ver{Snowberry.Instance.Metadata.VersionString}") {
             Position = new Vector2(0, 23),

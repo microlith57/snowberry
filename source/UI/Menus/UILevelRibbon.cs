@@ -41,7 +41,7 @@ public class UILevelRibbon : UIRibbon {
             AreaMode.Normal => "A",
             AreaMode.BSide => "B",
             AreaMode.CSide => "C",
-            _ => "X",
+            _ => "X"
         };
         raw = mode.MapData.Filename;
         SetText(Name);
@@ -91,12 +91,7 @@ public class UILevelRibbon : UIRibbon {
         }
     }
 
-    private bool HoveringChildren() {
-        foreach (UIElement child in Children)
-            if (child is UILevelRibbon lvl && lvl.hover)
-                return true;
-        return false;
-    }
+    private bool HoveringChildren() => Children.Any(child => child is UILevelRibbon { hover: true });
 
     public override void Update(Vector2 position = default) {
         base.Update(position);
@@ -115,7 +110,7 @@ public class UILevelRibbon : UIRibbon {
                     if (!HoveringChildren()) {
                         openLerp = open.Bit();
                         open = !open;
-                        SetText((open ? '\uF036' : '\uF034') + Text.Substring(1));
+                        SetText((open ? '\uF036' : '\uF034') + Text[1..]);
                     }
                 } else if (Parent is not UILevelRibbon lvl || lvl.open) {
                     pressing = true;
@@ -192,12 +187,12 @@ public class UILevelRibbon : UIRibbon {
         msg.Position = new Vector2(-msg.Width / 2, ribbon.Position.Y + ribbon.Height + 4);
 
         UILabel warn = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_UNSAVED")) {
-            FG = Util.Colors.CloudLightGray,
+            FG = Util.Colors.CloudLightGray
         };
         warn.Position = new Vector2(-warn.Width / 2, msg.Position.Y + msg.Height);
 
         UILabel tip = new UILabel(Dialog.Clean("SNOWBERRY_MAINMENU_LOAD_TIP")) {
-            FG = Util.Colors.CloudLightGray,
+            FG = Util.Colors.CloudLightGray
         };
         tip.Position = new Vector2(-tip.Width / 2, warn.Position.Y + warn.Height);
 

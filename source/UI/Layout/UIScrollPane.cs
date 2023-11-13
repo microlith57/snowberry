@@ -24,7 +24,7 @@ public class UIScrollPane : UICutoutElement {
             var hilo = HighLow();
             float minScroll = Height - hilo.lo, maxScroll = -hilo.hi;
             if (minScroll < maxScroll) { // otherwise, we can't scroll at all
-                float offscreen = (maxScroll - minScroll);
+                float offscreen = maxScroll - minScroll;
                 // we would like to keep the blank area = offscreen area, so dragging appears to linearly move things
                 // until we get to very small sizes, then we need to just rely on a minimum
                 float thumbSize = Math.Max(Height - offscreen, 12);

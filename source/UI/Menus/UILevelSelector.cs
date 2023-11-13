@@ -39,7 +39,7 @@ public class UILevelSelector : UIElement {
                 Position = new Vector2(-10, y),
                 FG = area.TitleTextColor,
                 BG = area.TitleBaseColor,
-                BGAccent = area.TitleAccentColor,
+                BGAccent = area.TitleAccentColor
             });
 
             if (lvl.W > Width)

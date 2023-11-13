@@ -16,7 +16,7 @@ public class UITextField : UIElement {
 
     public Action<string> OnInputChange;
     public string Value { get; private set; }
-    public int ValueWidth => widthAtIndex[widthAtIndex.Length - 1];
+    public int ValueWidth => widthAtIndex[^1];
     private int[] widthAtIndex;
     public readonly Font Font;
 
@@ -59,14 +59,14 @@ public class UITextField : UIElement {
             selection = charIndex = nextCharIndex;
             timeOffset = Engine.Scene.TimeActive;
         } else if (!char.IsControl(c) && (AllowedCharacters == null || AllowedCharacters.Contains(c))) {
-            UpdateInput(Value.Substring(0, a) + c + Value.Substring(b));
+            UpdateInput(Value[..a] + c + Value[b..]);
             selection = charIndex = a + 1;
             timeOffset = Engine.Scene.TimeActive;
         }
     }
 
     private void InsertString(int from, int to, string str = null) {
-        UpdateInput(Value.Substring(0, from) + str + Value.Substring(to));
+        UpdateInput(Value[..from] + str + Value[to..]);
     }
 
     public void UpdateInput(string str) {
@@ -78,7 +78,7 @@ public class UITextField : UIElement {
             w += (int)Font.Measure(Value[i]).X + 1;
         }
 
-        widthAtIndex[widthAtIndex.Length - 1] = w;
+        widthAtIndex[^1] = w;
         OnInputUpdate(Value);
     }
 

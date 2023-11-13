@@ -42,7 +42,7 @@ public class PluginInfo {
     }
 
     public virtual T Instantiate<T>() where T : Plugin {
-        T plugin = (T)ctor.Invoke(new object[] { });
+        T plugin = (T)ctor.Invoke(Array.Empty<object>());
         plugin.Info = this;
         plugin.Name = name;
         return plugin;
@@ -59,7 +59,7 @@ public class PluginInfo {
                     continue;
                 }
 
-                ConstructorInfo ctor = t.GetConstructor(new Type[] { });
+                ConstructorInfo ctor = t.GetConstructor(Array.Empty<Type>());
                 if (ctor == null) {
                     Snowberry.Log(LogLevel.Warn, $"'{pl.Name}' does not have a parameterless constructor, skipping...");
                     continue;
@@ -82,7 +82,7 @@ public class PluginInfo {
                 MethodInfo addPlacements = t.GetMethod("AddPlacements");
                 if (addPlacements != null) {
                     if (addPlacements.GetParameters().Length == 0) {
-                        addPlacements.Invoke(null, new object[0]);
+                        addPlacements.Invoke(null, Array.Empty<object>());
                     } else {
                         Snowberry.Log(LogLevel.Warn, $"Found entity plugin with invalid AddPlacements (has parameters)! skipping... (Type: {t})");
                     }
@@ -166,8 +166,7 @@ public class LoennPluginInfo : PluginInfo {
                     foreach (var item in data.Keys.OfType<string>())
                         if (!Room.IllegalOptionNames.Contains(item)) {
                             Options[item] = new LuaEntityOption(item, data[item].GetType(), name, isTrigger);
-                            if (!Defaults.ContainsKey(item))
-                                Defaults[item] = data[item];
+                            Defaults.TryAdd(item, data[item]);
                         } else {
                             HasWidth |= item == "width";
                             HasHeight |= item == "height";
@@ -180,8 +179,7 @@ public class LoennPluginInfo : PluginInfo {
                         foreach (var item in data.Keys.OfType<string>())
                             if (!Room.IllegalOptionNames.Contains(item)) {
                                 Options[item] = new LuaEntityOption(item, data[item].GetType(), name, isTrigger);
-                                if (!Defaults.ContainsKey(item))
-                                    Defaults[item] = data[item];
+                                Defaults.TryAdd(item, data[item]);
                             } else {
                                 HasWidth |= item == "width";
                                 HasHeight |= item == "height";

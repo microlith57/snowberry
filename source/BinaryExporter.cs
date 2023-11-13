@@ -30,10 +30,8 @@ public static class BinaryExporter {
     public static void ExportInto(Element e, string name, Stream into) {
         var values = new Dictionary<string, short>();
         CreateLookupTable(e, values);
-        if (!values.ContainsKey("innerText"))
-            values.Add("innerText", (short)values.Count);
-        if (!values.ContainsKey("unnamed"))
-            values.Add("unnamed", (short)values.Count);
+        values.TryAdd("innerText", (short)values.Count);
+        values.TryAdd("unnamed", (short)values.Count);
 
         var writer = new BinaryWriter(into);
 
@@ -51,8 +49,8 @@ public static class BinaryExporter {
 
     public static void CreateLookupTable(Element element, Dictionary<string, short> table) {
         void AddValue(string val){
-            if(val != null && !table.ContainsKey(val))
-                table.Add(val, (short)table.Count);
+            if(val != null)
+                table.TryAdd(val, (short)table.Count);
         }
 
         AddValue(element.Name);

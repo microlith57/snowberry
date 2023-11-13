@@ -6,20 +6,10 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.UI.Controls;
 
-namespace Snowberry.UI.Menus;
+namespace Snowberry.UI;
 
 public class UIMessage : UIElement {
-    private class Msg {
-        private UIElement element;
-        private Vector2 initialOffset, displayJustify, hiddenJustify;
-
-        public Msg(UIElement element, Vector2 displayJustify, Vector2 hiddenJustify, Vector2 initialOffset) {
-            this.element = element;
-            this.displayJustify = displayJustify;
-            this.hiddenJustify = hiddenJustify;
-            this.initialOffset = initialOffset;
-        }
-
+    private class Msg(UIElement element, Vector2 displayJustify, Vector2 hiddenJustify, Vector2 initialOffset) {
         public void UpdateElement(int w, int h, float lerp) =>
             element.Position = initialOffset + (new Vector2(w - element.Width, h - element.Height) * Vector2.Lerp(hiddenJustify, displayJustify, lerp)).Round();
     }
@@ -71,7 +61,7 @@ public class UIMessage : UIElement {
             PressedBG = Util.Colors.White,
             PressedFG = Util.Colors.Blue,
             HoveredBG = Util.Colors.DarkBlue,
-            OnPress = yesPress,
+            OnPress = yesPress
         };
         UIButton no = new UIButton(Dialog.Clean("SNOWBERRY_MAINMENU_NO"), Fonts.Regular, 4, 6) {
             FG = Util.Colors.White,
@@ -80,7 +70,7 @@ public class UIMessage : UIElement {
             PressedFG = Util.Colors.Red,
             HoveredBG = Util.Colors.DarkRed,
             Position = new Vector2(yes.Position.X + yes.Width + 4, yes.Position.Y),
-            OnPress = noPress,
+            OnPress = noPress
         };
 
         return Regroup(yes, no);
@@ -90,7 +80,7 @@ public class UIMessage : UIElement {
         UIScene.Instance.Message.Clear();
         UIScene.Instance.Message.AddElement(new UILabel(Dialog.Clean(infoKey)), new(0, -10), hiddenJustifyY: -0.1f);
         UIScene.Instance.Message.AddElement(new UIButton(Dialog.Clean(closeKey), Fonts.Regular, 4, 4){
-            OnPress = () => UIScene.Instance.Message.Shown = false,
+            OnPress = () => UIScene.Instance.Message.Shown = false
         }, new(0, 20), hiddenJustifyY: -0.1f);
         UIScene.Instance.Message.Shown = true;
     }

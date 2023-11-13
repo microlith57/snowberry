@@ -92,9 +92,9 @@ public sealed class Snowberry : EverestModule {
                     continue;
                 }
 
-                ConstructorInfo ctor = type.GetConstructor(new Type[] {});
+                ConstructorInfo ctor = type.GetConstructor(Array.Empty<Type>());
                 if (ctor != null) {
-                    sm = (SnowberryModule)ctor.Invoke(new object[] {});
+                    sm = (SnowberryModule)ctor.Invoke(Array.Empty<object>());
                     PluginInfo.GenerateFromAssembly(asm, sm);
                     modules.Add(sm);
                     Log(LogLevel.Info, $"Successfully loaded Snowberry module '{sm.Name}' from '{module.Metadata.Name}'");
@@ -104,9 +104,9 @@ public sealed class Snowberry : EverestModule {
             if (sm != null) {
                 if (module.GetType() != typeof(Snowberry)) {
                     foreach (Type type in types.Where(t => !t.IsAbstract && typeof(Tool).IsAssignableFrom(t))) {
-                        ConstructorInfo ctor = type.GetConstructor(new Type[] {});
+                        ConstructorInfo ctor = type.GetConstructor(Array.Empty<Type>());
                         if (ctor != null) {
-                            Tool pluginTool = (Tool)ctor.Invoke(new object[] {});
+                            Tool pluginTool = (Tool)ctor.Invoke(Array.Empty<object>());
                             pluginTool.Owner = sm;
                             Tool.Tools.Add(pluginTool);
                             Log(LogLevel.Info, $"Loaded plugin tool '{pluginTool.GetName()}' from {module.Metadata.Name}");

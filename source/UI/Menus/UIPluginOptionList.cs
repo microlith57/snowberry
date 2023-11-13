@@ -44,11 +44,11 @@ public class UIPluginOptionList : UIElement {
 
     public void Refresh() {
         int l = 0;
-        int spacing = 13;
+        const int spacing = 13;
         foreach (var option in Plugin.Info.Options) {
             object value = option.Value.GetValue(Plugin);
 
-            if (Plugin.CreateOptionUi(option.Key) is (UIElement i, int height)) {
+            if (Plugin.CreateOptionUi(option.Key) is (UIElement i, var height)) {
                 UIOption ui = new UIOption(option.Key, i, Plugin.GetTooltipFor(option.Key));
                 Add(ui);
                 ui.Position.Y = l;
@@ -62,7 +62,7 @@ public class UIPluginOptionList : UIElement {
                 l += spacing;
             } else if (option.Value.FieldType == typeof(Color)) {
                 UIOption ui;
-                Add(ui = ColorOption(option.Key, (value is Color c ? c : Color.White), Plugin));
+                Add(ui = ColorOption(option.Key, value is Color c ? c : Color.White, Plugin));
                 ui.Position.Y = l;
                 l += 91;
             } else if (option.Value.FieldType == typeof(int)) {

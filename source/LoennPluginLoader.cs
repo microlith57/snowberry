@@ -8,7 +8,6 @@ using Monocle;
 using MonoMod.Utils;
 using NLua;
 using NLua.Exceptions;
-using Snowberry.Editor;
 using Snowberry.Editor.Placements;
 
 namespace Snowberry;
@@ -208,7 +207,7 @@ public static class LoennPluginLoader {
         Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
 
         if (textureName.StartsWith("@Internal@/"))
-            textureName = "plugins/Snowberry/" + textureName.Substring("@Internal@/".Length);
+            textureName = "plugins/Snowberry/" + textureName["@Internal@/".Length..];
 
         if (!atlas.Has(textureName))
             return null;

@@ -35,7 +35,7 @@ public class UISlider : UIElement {
         if (pressed) {
             var oldValue = Value;
             // min + variance * percentage
-            Value = MathHelper.Clamp((Min + (Max - Min) * ((Mouse.Screen.X - position.X) / Width)), Min, Max);
+            Value = MathHelper.Clamp(Min + (Max - Min) * ((Mouse.Screen.X - position.X) / Width), Min, Max);
             if (oldValue != Value)
                 OnInputChanged?.Invoke(Value);
         }
@@ -52,6 +52,6 @@ public class UISlider : UIElement {
         UIButton.DrawButtonBg(handle, pressed, curBg);
     }
 
-    protected Rectangle HandleRect() => new(Bounds.X + (int)(Percent * Width - (HandleWidth / 2f)), Bounds.Y, HandleWidth, HandleHeight);
+    protected Rectangle HandleRect() => new(Bounds.X + (int)(Percent * Width - HandleWidth / 2f), Bounds.Y, HandleWidth, HandleHeight);
     protected float Percent => (Value - Min) / (Max - Min);
 }

@@ -10,8 +10,8 @@ public class UICheckBox : UIButton {
 
     new public Action<bool> OnPress;
 
-    new public Color FG = Calc.HexToColor("db2323");
-    new public Color BG = Calc.HexToColor("1d1d21");
+    public new Color FG = Calc.HexToColor("db2323");
+    public new Color BG = Calc.HexToColor("1d1d21");
     public Color CheckedFG = Color.LimeGreen;
     public Color CheckedBG = Calc.HexToColor("1d1d21");
 
