@@ -87,10 +87,6 @@ public static class Backups{
         file.Save(Path.Combine(dir, $"backup-{now:yyyy'-'MM'-'dd'-'HH'-'mm'-'ss'-'fff}-{reason.ToString()}.zip"));
     }
 
-    public static void RestoreBackup(Backup b){
-        // TODO: not sure what the best way of doing this is
-    }
-
     public static string BackupsDirectory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "snowberry", "backups");
 

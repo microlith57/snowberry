@@ -88,7 +88,9 @@ public class Styleground : Plugin {
         foreach (string text in array) {
             if (text.Equals(roomName)) {
                 return true;
-            } else if (text.Contains("*")) {
+            }
+
+            if (text.Contains('*')) {
                 string pattern = "^" + Regex.Escape(text).Replace("\\*", ".*") + "$";
                 if (Regex.IsMatch(roomName, pattern)) {
                     return true;

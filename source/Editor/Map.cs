@@ -122,12 +122,7 @@ public class Map {
         Snowberry.Log(LogLevel.Info, $"Loaded {FGStylegrounds.Count} foreground and {BGStylegrounds.Count} background stylegrounds.");
     }
 
-    internal Room GetRoomAt(Point at) {
-        foreach (Room room in Rooms)
-            if (new Rectangle(room.X * 8, room.Y * 8, room.Width * 8, room.Height * 8).Contains(at))
-                return room;
-        return null;
-    }
+    internal Room GetRoomAt(Point at) => Rooms.FirstOrDefault(room => new Rectangle(room.X * 8, room.Y * 8, room.Width * 8, room.Height * 8).Contains(at));
 
     internal int GetFillerIndexAt(Point at) {
         for (int i = 0; i < Fillers.Count; i++) {
@@ -440,9 +435,7 @@ public class Map {
         text = meta?.Sprites;
         if (!string.IsNullOrEmpty(text)) {
             SpriteBank spriteBank = GFX.SpriteBank;
-            foreach (KeyValuePair<string, SpriteData> spriteDatum in new SpriteBank(GFX.Game, GetSanitized(text)).SpriteData) {
-                string key = spriteDatum.Key;
-                SpriteData value = spriteDatum.Value;
+            foreach ((string key, SpriteData value) in new SpriteBank(GFX.Game, GetSanitized(text)).SpriteData) {
                 if (spriteBank.SpriteData.TryGetValue(key, out SpriteData value2)) {
                     IDictionary animations = value2.Sprite.Animations;
                     foreach (DictionaryEntry item2 in (IDictionary)value.Sprite.Animations)

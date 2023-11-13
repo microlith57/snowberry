@@ -40,7 +40,7 @@ internal sealed class LuaSprites(string entityName) {
         if (type == "drawableSprite") {
             if(table["meta"] is LuaTable meta && meta["image"] is string image && meta["atlas"] is string atlasName){
                 if (image.StartsWith("@Internal@/"))
-                    image = "plugins/Snowberry/" + image.Substring("@Internal@/".Length);
+                    image = "plugins/Snowberry/" + image["@Internal@/".Length..];
                 Atlas atlas = atlasName.ToLowerInvariant().Equals("gui") ? GFX.Gui : atlasName.ToLowerInvariant().Equals("misc") ? GFX.Misc : GFX.Game;
                 MTexture tex = atlas[image];
                 Vector2 pos = new Vector2(Float(table, "x", 0), Float(table, "y", 0));
@@ -125,7 +125,7 @@ internal sealed class LuaSprites(string entityName) {
             return new TileGrid {
                 Color = gridColor,
                 Position = new(x, y),
-                Tiles = matrix,
+                Tiles = matrix
             };
         }
 

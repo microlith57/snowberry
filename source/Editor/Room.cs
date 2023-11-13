@@ -13,7 +13,7 @@ namespace Snowberry.Editor;
 
 using Element = BinaryPacker.Element;
 
-public class Room {
+public partial class Room {
     public string Name;
 
     public Rectangle Bounds;
@@ -63,7 +63,6 @@ public class Room {
     public readonly Dictionary<Type, bool> DirtyTrackedEntities = new();
 
     public static readonly HashSet<string> IllegalOptionNames = new(){ "id", "x", "y", "width", "height", "originX", "originY", "nodes" };
-    private static readonly Regex tileSplitter = new("\\r\\n|\\n\\r|\\n|\\r");
 
     internal Room(string name, Rectangle bounds, Map map) {
         Name = name;
@@ -102,13 +101,13 @@ public class Room {
         WindPattern = data.WindPattern;
 
         // BgTiles
-        string[] array = tileSplitter.Split(data.Bg);
+        string[] array = TileSplitter().Split(data.Bg);
         for (int i = 0; i < array.Length; i++)
             for (int j = 0; j < array[i].Length; j++)
                 bgTileMap[j, i] = array[i][j];
 
         // FgTiles
-        string[] array2 = tileSplitter.Split(data.Solids);
+        string[] array2 = TileSplitter().Split(data.Solids);
         for (int i = 0; i < array2.Length; i++)
             for (int j = 0; j < array2[i].Length; j++)
                 fgTileMap[j, i] = array2[i][j];
@@ -245,12 +244,12 @@ public class Room {
                     if (fgTiles) {
                         char c = GetFgTile(at * 8);
                         if (c != '0')
-                            result.Add(new TileSelection((at).ToPoint(), true, this));
+                            result.Add(new TileSelection(at.ToPoint(), true, this));
                     }
                     if (bgTiles) {
                         char c = GetBgTile(at * 8);
                         if (c != '0')
-                            result.Add(new TileSelection((at).ToPoint(), false, this));
+                            result.Add(new TileSelection(at.ToPoint(), false, this));
                     }
                 }
             }
@@ -516,7 +515,7 @@ public class Room {
             for (int x = 0; x < fgTileMap.Columns; x++)
                 fgTilesTxt.Append(fgTileMap[x, y]);
 
-            fgTilesTxt.Append("\n");
+            fgTilesTxt.Append('\n');
         }
 
         StringBuilder bgTilesTxt = new StringBuilder();
@@ -524,7 +523,7 @@ public class Room {
             for (int x = 0; x < bgTileMap.Columns; x++)
                 bgTilesTxt.Append(bgTileMap[x, y]);
 
-            bgTilesTxt.Append("\n");
+            bgTilesTxt.Append('\n');
         }
 
         Element fgSolidsElem = new Element {
@@ -566,8 +565,8 @@ public class Room {
         Entities.Remove(e);
         Triggers.Remove(e);
         Type tracking = e.GetType();
-        if (e.Tracked && TrackedEntities.ContainsKey(tracking)) {
-            TrackedEntities[tracking].Remove(e);
+        if (e.Tracked && TrackedEntities.TryGetValue(tracking, out var value)) {
+            value.Remove(e);
             if (TrackedEntities[tracking].Count == 0)
                 TrackedEntities.Remove(tracking);
         }
@@ -591,4 +590,7 @@ public class Room {
         },
         this
     );
+
+    [GeneratedRegex(@"\r\n|\n\r|\n|\r")]
+    private static partial Regex TileSplitter();
 }

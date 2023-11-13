@@ -11,7 +11,7 @@ namespace Snowberry.Editor.Triggers;
 [Plugin("windAttackTrigger")]
 [Plugin("birdPathTrigger")]
 [Plugin("everest/completeAreaTrigger")]
-public class Trigger : Entity {
+public partial class Trigger : Entity {
     protected virtual Color Color { get; } = Calc.HexToColor("0c5f7a");
     protected string Text { get; private set; }
 
@@ -22,7 +22,7 @@ public class Trigger : Entity {
 
     public override void Initialize() {
         base.Initialize();
-        Text = string.Join(" ", Regex.Split(char.ToUpper(Name[0]) + Name.Substring(1), @"(?=[A-Z])")).Trim();
+        Text = string.Join(" ", CapitalsRegex().Split(char.ToUpper(Name[0]) + Name[1..])).Trim();
     }
 
     public override void Render() {
@@ -44,4 +44,7 @@ public class Trigger : Entity {
         Placements.EntityPlacementProvider.Create("Bird Path Trigger", "birdPathTrigger", trigger: true);
         Placements.EntityPlacementProvider.Create("Complete Area Trigger (Everest)", "everest/completeAreaTrigger", trigger: true);
     }
+
+    [GeneratedRegex("(?=[A-Z])")]
+    private static partial Regex CapitalsRegex();
 }

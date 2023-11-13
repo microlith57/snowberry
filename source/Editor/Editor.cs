@@ -519,7 +519,7 @@ public class Editor : UIScene {
             tool.Update(canClick);
 
             // keybinds
-            if ((MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl)) && CanTypeShortcut()) {
+            if (MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl) && CanTypeShortcut()) {
                 bool saveSettings = false;
                 if (MInput.Keyboard.Pressed(Keys.F)) {
                     Snowberry.Settings.FancyRender = !Snowberry.Settings.FancyRender;

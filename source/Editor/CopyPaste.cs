@@ -47,7 +47,7 @@ public static class CopyPaste{
             entity.SaveAttrs(elem);
             clipboard.Append(MarshallToTable(elem)).Append(",\n");
         }
-        clipboard.Append("}");
+        clipboard.Append('}');
         return clipboard.ToString();
     }
 
@@ -58,14 +58,14 @@ public static class CopyPaste{
 
         StringBuilder sb = new("{\n");
         foreach(var attr in e.Attributes){
-            sb.Append("\t").Append(attr.Key).Append(" = ");
+            sb.Append('\t').Append(attr.Key).Append(" = ");
             if(attr.Value is string s)
-                sb.Append("\"").Append(s.Escape()).Append("\"");
+                sb.Append('"').Append(s.Escape()).Append('"');
             else if(attr.Value.GetType().IsEnum)
-                sb.Append("\"").Append(attr.Value).Append("\"");
+                sb.Append('"').Append(attr.Value).Append('"');
             else if(attr.Value is List<BinaryPacker.Element> es)
                 if(es.Count > 0)
-                    sb.Append("{").Append(string.Join(", ", es.Select(MarshallToTable))).Append("}");
+                    sb.Append('{').Append(string.Join(", ", es.Select(MarshallToTable))).Append('}');
                 else
                     sb.Append("{}");
             else
@@ -73,7 +73,7 @@ public static class CopyPaste{
             sb.Append(",\n");
         }
 
-        sb.Append("}");
+        sb.Append('}');
 
         return sb.ToString();
     }
@@ -98,7 +98,7 @@ public static class CopyPaste{
             // comma separated list of entities, possibly ending in another comma
             while(rest.Length > 0){
                 if(startsWith(","))
-                    rest = rest.Substring(1); // take off the comma
+                    rest = rest[1..]; // take off the comma
                 if(!startsWith("{")){
                     if(rest.Length == 0)
                         break; // took off the trailing comma and now we're done
@@ -115,7 +115,7 @@ public static class CopyPaste{
             expect("{");
             EntityData data = new(){
                 Values = new(),
-                Nodes = new Vector2[0]
+                Nodes = Array.Empty<Vector2>()
             };
             bool isTrigger = false;
 
@@ -154,7 +154,7 @@ public static class CopyPaste{
             }
 
             // then get rid of the closing brace
-            rest = rest.Substring(1);
+            rest = rest[1..];
             return (data, isTrigger);
         }
 
@@ -165,7 +165,7 @@ public static class CopyPaste{
             if(!isIdStart(rest.First()))
                 throw new ArgumentException($"Failed to paste, expected an identifier but got \"{rest.First()}\"");
             string id = rest.TakeWhile(isIdChar).IntoString();
-            rest = rest.Substring(id.Length);
+            rest = rest[id.Length..];
             return id;
         }
 
@@ -181,11 +181,11 @@ public static class CopyPaste{
                     if(escaping){
                         escaping = false;
                         if(next == '\\')
-                            v.Append("\\");
+                            v.Append('\\');
                         else if(next == 'n')
-                            v.Append("\n");
+                            v.Append('\n');
                         else if(next == 't')
-                            v.Append("\t");
+                            v.Append('\t');
                         else if(next == '"')
                             v.Append('"');
                     }else if(next == '\\')
@@ -193,15 +193,15 @@ public static class CopyPaste{
                     else
                         v.Append(next);
 
-                    rest = rest.Substring(1);
+                    rest = rest[1..];
                 }
-                rest = rest.Substring(1);
+                rest = rest[1..];
                 return v.ToString();
             }
 
             if(startsWith("-") || char.IsDigit(rest.First())){
                 var v = rest.First() + rest.Skip(1).TakeWhile(c => char.IsDigit(c) || c is '.').IntoString();
-                rest = rest.Substring(v.Length);
+                rest = rest[v.Length..];
                 if(isIdChar(rest.First()))
                     throw new ArgumentException("Failed to paste, found a letter at the end of a numeric value");
                 return v;
@@ -209,7 +209,7 @@ public static class CopyPaste{
 
             string kw;
             if(startsWithIgnoreCase(kw = "true") || startsWithIgnoreCase(kw = "false") || startsWithIgnoreCase(kw = "nil")){
-                rest = rest.Substring(kw.Length);
+                rest = rest[kw.Length..];
                 if(isIdChar(rest.First()))
                     throw new ArgumentException("Failed to paste, found a letter at the end of a keyword value");
                 return kw;
@@ -247,12 +247,12 @@ public static class CopyPaste{
         private void expect(string c){
             if(!startsWith(c))
                 throw new ArgumentException($"Failed to paste, expected \"{c}\" but got \"{rest.Take(c.Length).IntoString()}\"");
-            rest = rest.Substring(c.Length);
+            rest = rest[c.Length..];
         }
 
         private void removeIfPresent(string c){
             if(startsWith(c))
-                rest = rest.Substring(c.Length);
+                rest = rest[c.Length..];
         }
 
         private bool startsWith(string c){
@@ -280,7 +280,7 @@ internal static class ParseExt{
                 '"' => "\\\"",
                 '\n' => "\\n",
                 '\t' => "\\t",
-                '\\' => "\\\\",
+                '\\' => @"\\",
                 _ => c
             });
 

@@ -12,7 +12,7 @@ using Snowberry.UI.Controls;
 
 namespace Snowberry.Editor.Entities.Lua;
 
-public class LuaEntity : Entity {
+public partial class LuaEntity : Entity {
     private readonly LuaTable plugin;
     private bool initialized = false;
 
@@ -74,11 +74,11 @@ public class LuaEntity : Entity {
         base.Render();
 
         if (IsTrigger) {
-            Rectangle rect = new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
+            var rect = new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
             Draw.Rect(rect, UnknownEntity.TriggerColor * 0.3f);
             Draw.HollowRect(rect, UnknownEntity.TriggerColor);
 
-            triggerText ??= string.Join(" ", Regex.Split(char.ToUpper(Name[0]) + Name.Substring(1), @"(?=[A-Z])")).Trim();
+            triggerText ??= string.Join(" ", CapitalsRegex().Split(char.ToUpper(Name[0]) + Name[1..])).Trim();
 
             Fonts.Pico8.Draw(triggerText, new Vector2(rect.X + rect.Width / 2f, rect.Y + rect.Height / 2f), Vector2.One, Vector2.One * 0.5f, Color.Black);
             return;
@@ -93,9 +93,9 @@ public class LuaEntity : Entity {
             nodeTexture = CallOrGet<string>("nodeTexture");
 
             if (texture?.StartsWith("@Internal@/") == true)
-                texture = "plugins/Snowberry/" + texture.Substring("@Internal@/".Length);
+                texture = "plugins/Snowberry/" + texture["@Internal@/".Length..];
             if (nodeTexture?.StartsWith("@Internal@/") == true)
-                nodeTexture = "plugins/Snowberry/" + nodeTexture.Substring("@Internal@/".Length);
+                nodeTexture = "plugins/Snowberry/" + nodeTexture["@Internal@/".Length..];
 
             var justifyTable = CallOrGet<LuaTable>("justification");
             if (justifyTable != null)
@@ -116,14 +116,14 @@ public class LuaEntity : Entity {
         if(Nodes.Count > 0){
             switch (nodeLines) {
                 case NodeLineRenderType.line:
-                    Vector2 prev = Position;
-                    foreach (Vector2 node in Nodes) {
+                    var prev = Position;
+                    foreach (var node in Nodes) {
                         DrawUtil.DottedLine(prev, node, Color.White * 0.5f, 8, 4);
                         prev = node;
                     }
                     break;
                 case NodeLineRenderType.fan:
-                    foreach (Vector2 node in Nodes)
+                    foreach (var node in Nodes)
                         DrawUtil.DottedLine(Position, node, Color.White * 0.5f, 8, 4);
                     break;
                 case NodeLineRenderType.circle:
@@ -154,7 +154,7 @@ public class LuaEntity : Entity {
 
     protected override IEnumerable<Rectangle> Select() {
         // if the entity has a custom selection function, try to use it
-        List<Rectangle> ret = CallOrGetAll("selection")
+        var ret = CallOrGetAll("selection")
             .OfType<LuaTable>()
             .Where(x => x["_type"] is "rectangle")
             .Select(t => new Rectangle(
@@ -166,7 +166,7 @@ public class LuaEntity : Entity {
 
         // fill in the gaps with selections derived from sprites
         if (ret.Count == 0 && texture != null) {
-            MTexture tex = GFX.Game[texture];
+            var tex = GFX.Game[texture];
             ret.Add(RectOnRelative(new(tex.Width, tex.Height), justify: justify));
         }
 
@@ -177,13 +177,13 @@ public class LuaEntity : Entity {
         // note that `nodeTexture` might be non-null while `texture` itself is null
         // so we need the default main selection box to be added before the textured node selections
         if ((nodeTexture ?? texture) != null) {
-            MTexture tex = GFX.Game[nodeTexture ?? texture];
-            for (int i = ret.Count; i < Nodes.Count + 1; i++)
+            var tex = GFX.Game[nodeTexture ?? texture];
+            for (var i = ret.Count; i < Nodes.Count + 1; i++)
                 ret.Add(RectOnAbsolute(new(tex.Width, tex.Height), position: Nodes[i - 1], justify: nodeJustify));
         }
 
         // and then fallbacks for nodes
-        for (int i = ret.Count; i < Nodes.Count + 1; i++) {
+        for (var i = ret.Count; i < Nodes.Count + 1; i++) {
             var node = Nodes[i - 1];
             ret.Add(new Rectangle((int)node.X - 3, (int)node.Y - 3, 6, 6));
         }
@@ -196,8 +196,8 @@ public class LuaEntity : Entity {
     private object[] CallOrGetAll(string name, object orElse = default) {
         switch (plugin[name]) {
             case LuaFunction f: {
-                using LuaTable entity = WrapEntity();
-                using LuaTable room = EmptyTable();
+                using var entity = WrapEntity();
+                using var room = EmptyTable();
                 room["tilesFg"] = EmptyTable();
                 room["tilesBg"] = EmptyTable();
                 room["entities"] = EmptyTable();
@@ -234,7 +234,7 @@ public class LuaEntity : Entity {
                     var dropdown = new UIDropdown(Fonts.Regular, options
                         .Select(x => new UIDropdown.DropdownEntry(x.Key, () => {
                             Set(optionName, x.Value);
-                            string displayName = options.LookupName(x.Value, x.Value.ToString());
+                            var displayName = options.LookupName(x.Value, x.Value.ToString());
                             if (!editable)
                                 button.SetText(displayName + " \uF036");
                             else
@@ -272,7 +272,7 @@ public class LuaEntity : Entity {
     }
 
     private LuaTable WrapEntity() {
-        LuaTable table = WrapTable(Values.OrElse(((LoennPluginInfo)Info).Defaults));
+        var table = WrapTable(Values.OrElse(((LoennPluginInfo)Info).Defaults));
 
         if (table != null) {
             table["name"] = Name;
@@ -284,7 +284,7 @@ public class LuaEntity : Entity {
 
             for (var idx = 0; idx < Nodes.Count; idx++) {
                 var node = Nodes[idx];
-                LuaTable nodeTable = EmptyTable();
+                var nodeTable = EmptyTable();
                 nodeTable["x"] = node.X;
                 nodeTable["y"] = node.Y;
 
@@ -299,7 +299,7 @@ public class LuaEntity : Entity {
         if(index is int ix) // lua tables prefer longs
             return Float(from, (long)ix, def);
         if(from.Keys.OfType<T>().Any(k => k.Equals(index))) {
-            object value = from[index];
+            var value = from[index];
             return value switch {
                 float f => f,
                 int i => i,
@@ -314,7 +314,7 @@ public class LuaEntity : Entity {
     }
 
     private Color TableColor(LuaTable from) {
-        Color color1 = new Color(Float(from, 1), Float(from, 2), Float(from, 3)) * Float(from, 4);
+        var color1 = new Color(Float(from, 1), Float(from, 2), Float(from, 3)) * Float(from, 4);
         from.Dispose();
         return color1;
     }
@@ -322,4 +322,7 @@ public class LuaEntity : Entity {
     private enum NodeLineRenderType {
         line, fan, circle, none
     }
+
+    [GeneratedRegex("(?=[A-Z])")]
+    private static partial Regex CapitalsRegex();
 }

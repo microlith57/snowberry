@@ -1,4 +1,5 @@
-﻿using Celeste;
+﻿using System.Linq;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
@@ -115,17 +116,15 @@ public class PlaytestTool : Tool {
     public override void RenderWorldSpace() {
         base.RenderWorldSpace();
 
-        foreach (Recorder r in RecInProgress.Recorders)
-            if (r.GetSettings().show)
-                r.RenderWorldSpace(time);
+        foreach(var r in RecInProgress.Recorders.Where(r => r.GetSettings().show))
+            r.RenderWorldSpace(time);
     }
 
     public override void RenderScreenSpace() {
         base.RenderScreenSpace();
 
-        foreach (Recorder r in RecInProgress.Recorders)
-            if (r.GetSettings().show)
-                r.RenderScreenSpace(time);
+        foreach(var r in RecInProgress.Recorders.Where(r => r.GetSettings().show))
+            r.RenderScreenSpace(time);
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
