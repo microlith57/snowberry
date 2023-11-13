@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("seekerStatue")]
 public class Plugin_SeekerStatue : Entity {
@@ -21,6 +21,6 @@ public class Plugin_SeekerStatue : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Seeker Statue", "seekerStatue");
+        Placements.EntityPlacementProvider.Create("Seeker Statue", "seekerStatue");
     }
 }

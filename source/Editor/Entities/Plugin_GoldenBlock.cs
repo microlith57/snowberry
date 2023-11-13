@@ -22,6 +22,6 @@ public class Plugin_GoldBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Golden Block", "goldenBlock");
+        Placements.EntityPlacementProvider.Create("Golden Block", "goldenBlock");
     }
 }

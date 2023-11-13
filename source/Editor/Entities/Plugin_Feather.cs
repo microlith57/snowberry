@@ -21,7 +21,7 @@ public class Plugin_Feather : Entity{
     }
 
     public static void AddPlacements(){
-        Placements.Create("Feather", "infiniteStar");
-        Placements.Create("Feather (Shielded)", "infiniteStar", new Dictionary<string, object>() { { "shielded", true } });
+        Placements.EntityPlacementProvider.Create("Feather", "infiniteStar");
+        Placements.EntityPlacementProvider.Create("Feather (Shielded)", "infiniteStar", new Dictionary<string, object>() { { "shielded", true } });
     }
 }

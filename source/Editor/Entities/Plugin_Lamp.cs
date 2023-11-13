@@ -1,7 +1,7 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("lamp")]
 public class Plugin_Lamp : Entity {
@@ -14,6 +14,6 @@ public class Plugin_Lamp : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Lamp", "lamp");
+        Placements.EntityPlacementProvider.Create("Lamp", "lamp");
     }
 }

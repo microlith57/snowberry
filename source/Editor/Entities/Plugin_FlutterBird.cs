@@ -25,6 +25,6 @@ public class Plugin_FlutterBird : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Flutterbird", "flutterbird");
+        Placements.EntityPlacementProvider.Create("Flutterbird", "flutterbird");
     }
 }

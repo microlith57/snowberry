@@ -66,8 +66,8 @@ public class Plugin_ClutterBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Clutter Blocks (Towels)", "redBlocks");
-        Placements.Create("Clutter Blocks (Books)", "greenBlocks");
-        Placements.Create("Clutter Blocks (Boxes)", "yellowBlocks");
+        Placements.EntityPlacementProvider.Create("Clutter Blocks (Towels)", "redBlocks");
+        Placements.EntityPlacementProvider.Create("Clutter Blocks (Books)", "greenBlocks");
+        Placements.EntityPlacementProvider.Create("Clutter Blocks (Boxes)", "yellowBlocks");
     }
 }

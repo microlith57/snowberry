@@ -17,7 +17,7 @@ public class Plugin_MusicFadeTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Music Fade Trigger", "musicFadeTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Music Fade Trigger", "musicFadeTrigger", trigger: true);
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")] // match MusicFadeTrigger

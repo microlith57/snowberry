@@ -30,6 +30,6 @@ public class Plugin_Tentacles : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Tentacles", "tentacles");
+        Placements.EntityPlacementProvider.Create("Tentacles", "tentacles");
     }
 }

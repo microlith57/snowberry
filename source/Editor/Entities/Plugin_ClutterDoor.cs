@@ -23,6 +23,6 @@ public class Plugin_ClutterDoor : Entity {
 
     public static void AddPlacements() {
         foreach (var colour in new[]{ Colors.Red, Colors.Green, Colors.Yellow, Colors.Lightning })
-            Placements.Create($"Clutter Door ({colour})", "clutterDoor", new() { ["type"] = colour.ToString() });
+            Placements.EntityPlacementProvider.Create($"Clutter Door ({colour})", "clutterDoor", new() { ["type"] = colour.ToString() });
     }
 }

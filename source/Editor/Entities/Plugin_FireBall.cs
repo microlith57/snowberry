@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("fireBall")]
 public class Plugin_FireBall : Entity {
@@ -33,6 +33,6 @@ public class Plugin_FireBall : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Fireball", "fireBall");
+        Placements.EntityPlacementProvider.Create("Fireball", "fireBall");
     }
 }

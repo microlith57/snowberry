@@ -24,6 +24,6 @@ public class Plugin_WhiteBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("White Block", "whiteblock");
+        Placements.EntityPlacementProvider.Create("White Block", "whiteblock");
     }
 }

@@ -26,6 +26,6 @@ public class Plugin_SummitCloud : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Summit Cloud", "summitCloud");
+        Placements.EntityPlacementProvider.Create("Summit Cloud", "summitCloud");
     }
 }

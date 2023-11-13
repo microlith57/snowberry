@@ -122,6 +122,6 @@ public class Plugin_Lightning : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Lightning", "lightning");
+        Placements.EntityPlacementProvider.Create("Lightning", "lightning");
     }
 }

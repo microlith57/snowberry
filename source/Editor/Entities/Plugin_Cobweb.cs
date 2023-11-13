@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("cobweb")]
 public class Plugin_Cobweb : Entity {
@@ -21,6 +21,6 @@ public class Plugin_Cobweb : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Cobweb", "cobweb");
+        Placements.EntityPlacementProvider.Create("Cobweb", "cobweb");
     }
 }

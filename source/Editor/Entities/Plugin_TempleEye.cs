@@ -22,6 +22,6 @@ public class Plugin_TempleEye : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Temple Eye", "templeEye");
+        Placements.EntityPlacementProvider.Create("Temple Eye", "templeEye");
     }
 }

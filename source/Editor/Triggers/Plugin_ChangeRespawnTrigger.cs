@@ -7,6 +7,6 @@ public class Plugin_ChangeRespawnTrigger : Trigger {
     public override int MaxNodes => 1;
 
     public new static void AddPlacements() {
-        Placements.Create("Change Respawn Trigger", "changeRespawnTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Change Respawn Trigger", "changeRespawnTrigger", trigger: true);
     }
 }

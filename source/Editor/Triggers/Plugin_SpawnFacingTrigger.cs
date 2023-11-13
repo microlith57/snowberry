@@ -18,6 +18,6 @@ public class Plugin_SpawnFacingTrigger : Trigger{
     }
 
     public new static void AddPlacements(){
-        Placements.Create("Spawn Facing Trigger", "spawnFacingTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Spawn Facing Trigger", "spawnFacingTrigger", trigger: true);
     }
 }

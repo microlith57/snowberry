@@ -63,7 +63,7 @@ public class Plugin_MoveBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Move Block", "moveBlock");
-        Placements.Create("Move Block (Steerable)", "moveBlock", new() { ["canSteer"] = true });
+        Placements.EntityPlacementProvider.Create("Move Block", "moveBlock");
+        Placements.EntityPlacementProvider.Create("Move Block (Steerable)", "moveBlock", new() { ["canSteer"] = true });
     }
 }

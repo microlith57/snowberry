@@ -23,6 +23,6 @@ public class Plugin_KevinsPC : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Kevin's PC", "kevins_pc");
+        Placements.EntityPlacementProvider.Create("Kevin's PC", "kevins_pc");
     }
 }

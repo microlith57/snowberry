@@ -1,7 +1,7 @@
 ﻿using Celeste;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("cloud")]
 public class Plugin_Cloud : Entity {
@@ -16,7 +16,7 @@ public class Plugin_Cloud : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Cloud", "cloud");
-        Placements.Create("Cloud (Fragile)", "cloud", new Dictionary<string, object>() { { "fragile", true } });
+        Placements.EntityPlacementProvider.Create("Cloud", "cloud");
+        Placements.EntityPlacementProvider.Create("Cloud (Fragile)", "cloud", new Dictionary<string, object>() { { "fragile", true } });
     }
 }

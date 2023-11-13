@@ -22,6 +22,6 @@ public class Plugin_Slider : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Slider", "slider");
+        Placements.EntityPlacementProvider.Create("Slider", "slider");
     }
 }

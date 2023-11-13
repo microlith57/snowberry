@@ -14,6 +14,6 @@ public class Plugin_WindTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Wind Trigger", "windTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Wind Trigger", "windTrigger", trigger: true);
     }
 }

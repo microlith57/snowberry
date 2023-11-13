@@ -22,6 +22,6 @@ public class Plugin_CutsceneNode : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Cutscene Node", "cutsceneNode");
+        Placements.EntityPlacementProvider.Create("Cutscene Node", "cutsceneNode");
     }
 }

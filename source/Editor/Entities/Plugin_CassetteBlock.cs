@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("cassetteBlock")]
 public class Plugin_CassetteBlock : Entity {
@@ -36,9 +36,9 @@ public class Plugin_CassetteBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Cassette Block (Blue)", "cassetteBlock", new Dictionary<string, object>() { { "index", 0 } });
-        Placements.Create("Cassette Block (Pink)", "cassetteBlock", new Dictionary<string, object>() { { "index", 1 } });
-        Placements.Create("Cassette Block (Yellow)", "cassetteBlock", new Dictionary<string, object>() { { "index", 2 } });
-        Placements.Create("Cassette Block (Green)", "cassetteBlock", new Dictionary<string, object>() { { "index", 3 } });
+        Placements.EntityPlacementProvider.Create("Cassette Block (Blue)", "cassetteBlock", new Dictionary<string, object>() { { "index", 0 } });
+        Placements.EntityPlacementProvider.Create("Cassette Block (Pink)", "cassetteBlock", new Dictionary<string, object>() { { "index", 1 } });
+        Placements.EntityPlacementProvider.Create("Cassette Block (Yellow)", "cassetteBlock", new Dictionary<string, object>() { { "index", 2 } });
+        Placements.EntityPlacementProvider.Create("Cassette Block (Green)", "cassetteBlock", new Dictionary<string, object>() { { "index", 3 } });
     }
 }

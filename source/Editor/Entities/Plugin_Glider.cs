@@ -37,6 +37,6 @@ public class Plugin_Glider : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Jellyfish", "glider");
+        Placements.EntityPlacementProvider.Create("Jellyfish", "glider");
     }
 }

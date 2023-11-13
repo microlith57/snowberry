@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("templeMirrorPortal")]
 public class Plugin_TempleMirrorPortal : Entity {
@@ -23,6 +23,6 @@ public class Plugin_TempleMirrorPortal : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Temple Mirror Portal", "templeMirrorPortal");
+        Placements.EntityPlacementProvider.Create("Temple Mirror Portal", "templeMirrorPortal");
     }
 }

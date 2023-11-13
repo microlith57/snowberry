@@ -138,7 +138,7 @@ public class Plugin_ZipMover : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Zip Mover (Normal)", "zipMover");
-        Placements.Create("Zip Mover (Moon)", "zipMover", new Dictionary<string, object>() { { "theme", "Moon" } });
+        Placements.EntityPlacementProvider.Create("Zip Mover (Normal)", "zipMover");
+        Placements.EntityPlacementProvider.Create("Zip Mover (Moon)", "zipMover", new Dictionary<string, object>() { { "theme", "Moon" } });
     }
 }

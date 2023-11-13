@@ -9,7 +9,7 @@ public class Plugin_Plateau : Entity {
 
     public override void Render() {
         base.Render();
-        
+
         GFX.Game["scenery/fallplateau"].DrawCentered(Position);
     }
 
@@ -18,6 +18,6 @@ public class Plugin_Plateau : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Plateau", "plateau");
+        Placements.EntityPlacementProvider.Create("Plateau", "plateau");
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("npc")]
 public class Plugin_NPC : Entity {
@@ -54,6 +54,6 @@ public class Plugin_NPC : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("NPC", "npc");
+        Placements.EntityPlacementProvider.Create("NPC", "npc");
     }
 }

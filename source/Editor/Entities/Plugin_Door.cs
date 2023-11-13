@@ -21,8 +21,8 @@ public class Plugin_Door : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Door (Wood)", "door", new(){ ["type"] = "wood" });
-        Placements.Create("Door (Metal)", "door", new(){ ["type"] = "metal" });
+        Placements.EntityPlacementProvider.Create("Door (Wood)", "door", new(){ ["type"] = "wood" });
+        Placements.EntityPlacementProvider.Create("Door (Metal)", "door", new(){ ["type"] = "metal" });
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")] // must exactly match

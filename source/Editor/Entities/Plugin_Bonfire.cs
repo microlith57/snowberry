@@ -18,6 +18,6 @@ public class Plugin_Bonfire : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Campfire", "bonfire");
+        Placements.EntityPlacementProvider.Create("Campfire", "bonfire");
     }
 }

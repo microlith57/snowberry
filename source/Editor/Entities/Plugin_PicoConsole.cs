@@ -18,6 +18,6 @@ public class Plugin_PicoConsole : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Pico8 Console", "picoconsole");
+        Placements.EntityPlacementProvider.Create("Pico8 Console", "picoconsole");
     }
 }

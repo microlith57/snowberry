@@ -22,6 +22,6 @@ public class Plugin_RisingLava : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Rising Lava", "risingLava");
+        Placements.EntityPlacementProvider.Create("Rising Lava", "risingLava");
     }
 }

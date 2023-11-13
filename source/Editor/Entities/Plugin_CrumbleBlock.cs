@@ -29,6 +29,6 @@ public class Plugin_CrumbleBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Crumble Blocks", "crumbleBlock");
+        Placements.EntityPlacementProvider.Create("Crumble Blocks", "crumbleBlock");
     }
 }

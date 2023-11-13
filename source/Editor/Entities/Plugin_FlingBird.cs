@@ -51,7 +51,7 @@ public class Plugin_FlingBird : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Fling Bird", "flingBird");
+        Placements.EntityPlacementProvider.Create("Fling Bird", "flingBird");
     }
 
     protected Vector2? NextBirdPos() {

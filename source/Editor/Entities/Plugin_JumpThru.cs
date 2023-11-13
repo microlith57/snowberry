@@ -37,8 +37,8 @@ public class Plugin_JumpThru : Entity {
     public static void AddPlacements() {
         string[] types = { "Wood", "Cliffside", "Core", "Dream", "Moon", "Reflection", "Temple" };
         foreach (var type in types)
-            Placements.Create($"Jump-thru ({type})", "jumpThru", new Dictionary<string, object> { { "texture", type.ToLower() } });
+            Placements.EntityPlacementProvider.Create($"Jump-thru ({type})", "jumpThru", new Dictionary<string, object> { { "texture", type.ToLower() } });
         // they all follow a nice pattern except this one
-        Placements.Create($"Jump-thru (Temple B)", "jumpThru", new Dictionary<string, object> { { "texture", "templeB" } });
+        Placements.EntityPlacementProvider.Create($"Jump-thru (Temple B)", "jumpThru", new Dictionary<string, object> { { "texture", "templeB" } });
     }
 }

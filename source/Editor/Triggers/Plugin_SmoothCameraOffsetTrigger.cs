@@ -25,6 +25,6 @@ public class Plugin_SmoothCameraOffsetTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Smooth Camera Offset Trigger (Everest)", "everest/smoothCameraOffsetTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Smooth Camera Offset Trigger (Everest)", "everest/smoothCameraOffsetTrigger", trigger: true);
     }
 }

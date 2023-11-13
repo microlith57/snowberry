@@ -31,6 +31,6 @@ public class Plugin_HangingLamp : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Hanging Lamp", "hanginglamp");
+        Placements.EntityPlacementProvider.Create("Hanging Lamp", "hanginglamp");
     }
 }

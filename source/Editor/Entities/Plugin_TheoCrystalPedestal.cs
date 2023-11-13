@@ -18,6 +18,6 @@ public class Plugin_TheoCrystalPedestal : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Theo Crystal Pedestal", "theoCrystalPedestal");
+        Placements.EntityPlacementProvider.Create("Theo Crystal Pedestal", "theoCrystalPedestal");
     }
 }

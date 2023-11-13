@@ -58,6 +58,6 @@ public class Plugin_Gondola : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Gondola", "gondola");
+        Placements.EntityPlacementProvider.Create("Gondola", "gondola");
     }
 }

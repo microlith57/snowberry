@@ -23,7 +23,7 @@ public class Plugin_LockBlock : Entity {
 
     public static void AddPlacements() {
         foreach (var type in new[]{ "Wood", "Temple A", "Temple B", "Moon" })
-            Placements.Create($"Locked Door ({type})", "lockBlock", new() { ["sprite"] = type.ToLowerInvariant().Replace(' ', '_') });
+            Placements.EntityPlacementProvider.Create($"Locked Door ({type})", "lockBlock", new() { ["sprite"] = type.ToLowerInvariant().Replace(' ', '_') });
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")] // must exactly match

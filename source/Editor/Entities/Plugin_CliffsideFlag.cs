@@ -25,6 +25,6 @@ public class Plugin_CliffsideFlag : Entity {
     public MTexture GetTexture() => GFX.Game.GetAtlasSubtexturesAt("scenery/cliffside/flag", Index);
 
     public static void AddPlacements() {
-        Placements.Create("Cliffside Flag", "cliffside_flag");
+        Placements.EntityPlacementProvider.Create("Cliffside Flag", "cliffside_flag");
     }
 }

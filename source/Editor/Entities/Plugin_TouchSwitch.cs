@@ -17,6 +17,6 @@ public class Plugin_TouchSwitch : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Touch Switch", "touchSwitch");
+        Placements.EntityPlacementProvider.Create("Touch Switch", "touchSwitch");
     }
 }

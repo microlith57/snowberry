@@ -5,6 +5,7 @@ using Celeste;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
+using Snowberry.Editor.Placements;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
 using Snowberry.UI.Layout;
@@ -73,7 +74,7 @@ public class PlacementTool : Tool {
                 foreach (var b in placementButtons) {
                     UIElement elem = b.Value;
                     bool active = searchBar.Found == null || searchBar.Found.Contains(b.Key);
-                    if (b.Key is Placements.DecalPlacement) {
+                    if (b.Key is DecalPlacement) {
                         // TODO: also! a bandaid
                         // but i'm sick of thinking about this any longer than actually mandatory
                         elem = elem.Parent;
@@ -283,7 +284,7 @@ public class PlacementTool : Tool {
             PadUp = 2,
             PadDown = 2
         };
-        foreach (var group in Placements.All.OfType<Placements.EntityPlacement>().Where(x => x.IsTrigger == triggers).OrderBy(x => x.Name).GroupBy(x => x.EntityName)) {
+        foreach (var group in EntityPlacementProvider.All.Where(x => x.IsTrigger == triggers).OrderBy(x => x.Name).GroupBy(x => x.EntityName)) {
             if (group.Count() == 1)
                 entities.Add(CreatePlacementButton(group.First(), width - entities.PadLeft));
             else {
@@ -291,7 +292,7 @@ public class PlacementTool : Tool {
                     PadUp = 2,
                     PadDown = 2
                 };
-                foreach (Placement p in group.Skip(1))
+                foreach (EntityPlacement p in group.Skip(1))
                     subtree.Add(CreatePlacementButton(p, width - entities.PadLeft * 2));
                 subtree.Layout();
                 entities.Add(subtree);

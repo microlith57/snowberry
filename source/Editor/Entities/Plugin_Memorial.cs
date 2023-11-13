@@ -24,7 +24,7 @@ public class Plugin_Memorial : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Memorial", "memorial");
-        Placements.Create("Memorial (Everest)", "everest/memorial");
+        Placements.EntityPlacementProvider.Create("Memorial", "memorial");
+        Placements.EntityPlacementProvider.Create("Memorial (Everest)", "everest/memorial");
     }
 }

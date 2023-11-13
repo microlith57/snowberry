@@ -26,6 +26,6 @@ public class Plugin_ResortMirror : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Resort Mirror", "resortmirror");
+        Placements.EntityPlacementProvider.Create("Resort Mirror", "resortmirror");
     }
 }

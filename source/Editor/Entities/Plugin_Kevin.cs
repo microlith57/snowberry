@@ -31,6 +31,6 @@ public class Plugin_Kevin : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Kevin", "crushBlock");
+        Placements.EntityPlacementProvider.Create("Kevin", "crushBlock");
     }
 }

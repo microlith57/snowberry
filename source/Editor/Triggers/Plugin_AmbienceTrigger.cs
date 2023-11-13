@@ -16,6 +16,6 @@ public class Plugin_AmbienceTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Ambience Trigger (Everest)", "everest/ambienceTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Ambience Trigger (Everest)", "everest/ambienceTrigger", trigger: true);
     }
 }

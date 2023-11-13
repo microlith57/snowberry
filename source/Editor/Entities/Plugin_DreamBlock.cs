@@ -142,6 +142,6 @@ public class Plugin_DreamBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Dream Block", "dreamBlock");
+        Placements.EntityPlacementProvider.Create("Dream Block", "dreamBlock");
     }
 }

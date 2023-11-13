@@ -16,6 +16,6 @@ public class Plugin_NegaBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Nega Block", "negaBlock");
+        Placements.EntityPlacementProvider.Create("Nega Block", "negaBlock");
     }
 }

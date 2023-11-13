@@ -10,6 +10,6 @@ public class Plugin_FriendlyGhost : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Oshiro Boss", "friendlyGhost");
+        Placements.EntityPlacementProvider.Create("Oshiro Boss", "friendlyGhost");
     }
 }

@@ -23,6 +23,6 @@ public class Plugin_StarClimbGraphicsController : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Star Climb Graphics Controller (Everest)", "everest/starClimbGraphicsController");
+        Placements.EntityPlacementProvider.Create("Star Climb Graphics Controller (Everest)", "everest/starClimbGraphicsController");
     }
 }

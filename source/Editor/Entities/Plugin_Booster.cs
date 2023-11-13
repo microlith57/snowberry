@@ -14,7 +14,7 @@ public class Plugin_Booster : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Booster (Green)", "booster", new Dictionary<string, object>() { { "red", false } });
-        Placements.Create("Booster (Red)", "booster", new Dictionary<string, object>() { { "red", true } });
+        Placements.EntityPlacementProvider.Create("Booster (Green)", "booster", new Dictionary<string, object>() { { "red", false } });
+        Placements.EntityPlacementProvider.Create("Booster (Red)", "booster", new Dictionary<string, object>() { { "red", true } });
     }
 }

@@ -35,6 +35,6 @@ public class Plugin_BounceBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Bounce Block", "bounceBlock");
+        Placements.EntityPlacementProvider.Create("Bounce Block", "bounceBlock");
     }
 }

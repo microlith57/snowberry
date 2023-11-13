@@ -13,6 +13,6 @@ public class Plugin_BlackHoleStrengthTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Black Hole Strength Trigger", "blackholeStrengthTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Black Hole Strength Trigger", "blackholeStrengthTrigger", trigger: true);
     }
 }

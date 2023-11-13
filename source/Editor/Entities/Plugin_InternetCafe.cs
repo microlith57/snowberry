@@ -25,6 +25,6 @@ public class Plugin_InternetCafe : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Internet Cafe", "waveDashTutorialMachine");
+        Placements.EntityPlacementProvider.Create("Internet Cafe", "waveDashTutorialMachine");
     }
 }

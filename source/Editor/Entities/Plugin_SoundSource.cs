@@ -22,6 +22,6 @@ public class Plugin_SoundSource : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Sound Source", "soundSource");
+        Placements.EntityPlacementProvider.Create("Sound Source", "soundSource");
     }
 }

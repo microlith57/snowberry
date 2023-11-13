@@ -69,6 +69,6 @@ public class Plugin_Spikes : Entity {
         string[] types = { "Default", "Outline", "Cliffside", "Reflection" };
         foreach (var type in types)
             foreach (var dir in directions)
-                Placements.Create($"Spikes ({dir}, {type})", "spikes" + dir, new Dictionary<string, object>() { { "type", type.ToLower() } });
+                Placements.EntityPlacementProvider.Create($"Spikes ({dir}, {type})", "spikes" + dir, new Dictionary<string, object>() { { "type", type.ToLower() } });
     }
 }

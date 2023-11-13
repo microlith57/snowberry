@@ -33,6 +33,6 @@ public class Plugin_Clothesline : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Clothesline", "clothesline");
+        Placements.EntityPlacementProvider.Create("Clothesline", "clothesline");
     }
 }

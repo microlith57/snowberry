@@ -52,6 +52,6 @@ public class Plugin_MovingPlatform : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Moving Platform", "movingPlatform");
+        Placements.EntityPlacementProvider.Create("Moving Platform", "movingPlatform");
     }
 }

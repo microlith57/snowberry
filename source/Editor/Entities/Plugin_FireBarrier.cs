@@ -20,6 +20,6 @@ public class Plugin_FireBarrier : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Fire Barrier", "fireBarrier");
+        Placements.EntityPlacementProvider.Create("Fire Barrier", "fireBarrier");
     }
 }

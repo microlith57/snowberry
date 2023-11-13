@@ -15,6 +15,6 @@ public class Plugin_RespawnTargetTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Respawn Target Trigger", "respawnTargetTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Respawn Target Trigger", "respawnTargetTrigger", trigger: true);
     }
 }

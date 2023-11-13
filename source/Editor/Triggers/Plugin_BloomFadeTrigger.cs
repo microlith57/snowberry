@@ -16,6 +16,6 @@ public class Plugin_BloomFadeTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Bloom Fade Trigger", "bloomFadeTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Bloom Fade Trigger", "bloomFadeTrigger", trigger: true);
     }
 }

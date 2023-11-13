@@ -12,6 +12,6 @@ public class Plugin_Trapdoor : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Trapdoor", "trapdoor");
+        Placements.EntityPlacementProvider.Create("Trapdoor", "trapdoor");
     }
 }

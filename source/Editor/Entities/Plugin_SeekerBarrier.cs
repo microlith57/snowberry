@@ -107,6 +107,6 @@ public class Plugin_SeekerBarrier : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Seeker Barrier", "seekerBarrier");
+        Placements.EntityPlacementProvider.Create("Seeker Barrier", "seekerBarrier");
     }
 }

@@ -30,7 +30,7 @@ public class Plugin_GoldenBerry : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Golden Berry", "goldenBerry");
-        Placements.Create("Dashless Golden Berry", "memorialTextController");
+        Placements.EntityPlacementProvider.Create("Golden Berry", "goldenBerry");
+        Placements.EntityPlacementProvider.Create("Dashless Golden Berry", "memorialTextController");
     }
 }

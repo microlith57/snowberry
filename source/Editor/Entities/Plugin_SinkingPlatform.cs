@@ -59,6 +59,6 @@ public class Plugin_SinkingPlatform : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Sinking Platform", "sinkingPlatform");
+        Placements.EntityPlacementProvider.Create("Sinking Platform", "sinkingPlatform");
     }
 }

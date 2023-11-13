@@ -17,6 +17,6 @@ public class Plugin_ClutterCabinet : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Clutter Cabinet", "clutterCabinet");
+        Placements.EntityPlacementProvider.Create("Clutter Cabinet", "clutterCabinet");
     }
 }

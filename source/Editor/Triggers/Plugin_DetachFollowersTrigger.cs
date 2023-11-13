@@ -17,6 +17,6 @@ public class Plugin_DetachFollowersTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Detach Followers Trigger", "detachFollowersTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Detach Followers Trigger", "detachFollowersTrigger", trigger: true);
     }
 }

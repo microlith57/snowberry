@@ -29,6 +29,6 @@ public class Plugin_TempleGate : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Temple Gate", "templeGate");
+        Placements.EntityPlacementProvider.Create("Temple Gate", "templeGate");
     }
 }

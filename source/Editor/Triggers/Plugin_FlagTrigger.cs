@@ -19,7 +19,7 @@ public class Plugin_FlagTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Flag (Everest)", "everest/flagTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Flag (Everest)", "everest/flagTrigger", trigger: true);
     }
 
     public enum Modes{

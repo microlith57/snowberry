@@ -17,6 +17,6 @@ public class Plugin_DreamHeart : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Crystal Heart (Dream)", "dreamHeartGem");
+        Placements.EntityPlacementProvider.Create("Crystal Heart (Dream)", "dreamHeartGem");
     }
 }

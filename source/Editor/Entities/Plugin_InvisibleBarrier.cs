@@ -18,6 +18,6 @@ public class Plugin_InvisibleBarrier : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Invisible Barrier", "invisibleBarrier");
+        Placements.EntityPlacementProvider.Create("Invisible Barrier", "invisibleBarrier");
     }
 }

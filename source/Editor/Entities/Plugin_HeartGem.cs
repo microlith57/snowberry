@@ -28,6 +28,6 @@ public class Plugin_HeartGem : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Crystal Heart", "blackGem");
+        Placements.EntityPlacementProvider.Create("Crystal Heart", "blackGem");
     }
 }

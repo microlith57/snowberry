@@ -1,7 +1,7 @@
 ﻿using Celeste;
 using Microsoft.Xna.Framework;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("payphone")]
 public class Plugin_Payphone : Entity {
@@ -11,6 +11,6 @@ public class Plugin_Payphone : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Payphone", "payphone");
+        Placements.EntityPlacementProvider.Create("Payphone", "payphone");
     }
 }

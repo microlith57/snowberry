@@ -36,7 +36,7 @@ public class Plugin_Hahaha : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Hahaha", "hahaha");
+        Placements.EntityPlacementProvider.Create("Hahaha", "hahaha");
     }
 
     public void DrawHahahas(Vector2 pos, float opacity) {

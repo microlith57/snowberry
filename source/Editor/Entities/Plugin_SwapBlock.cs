@@ -115,7 +115,7 @@ public class Plugin_SwapBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Swap Block (Normal)", "swapBlock", new Dictionary<string, object>() { { "theme", "Normal" } });
-        Placements.Create("Swap Block (Moon)", "swapBlock", new Dictionary<string, object>() { { "theme", "Moon" } });
+        Placements.EntityPlacementProvider.Create("Swap Block (Normal)", "swapBlock", new Dictionary<string, object>() { { "theme", "Normal" } });
+        Placements.EntityPlacementProvider.Create("Swap Block (Moon)", "swapBlock", new Dictionary<string, object>() { { "theme", "Moon" } });
     }
 }

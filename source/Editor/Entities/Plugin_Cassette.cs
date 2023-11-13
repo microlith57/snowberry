@@ -30,6 +30,6 @@ public class Plugin_Cassette : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Cassette", "cassette");
+        Placements.EntityPlacementProvider.Create("Cassette", "cassette");
     }
 }

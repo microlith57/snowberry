@@ -17,6 +17,6 @@ public class Plugin_AmbienceParameterTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Ambience Parameter Trigger", "ambienceParamTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Ambience Parameter Trigger", "ambienceParamTrigger", trigger: true);
     }
 }

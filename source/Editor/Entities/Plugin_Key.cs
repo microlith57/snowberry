@@ -15,6 +15,6 @@ public class Plugin_Key : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Key", "key");
+        Placements.EntityPlacementProvider.Create("Key", "key");
     }
 }

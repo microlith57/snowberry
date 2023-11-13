@@ -9,6 +9,7 @@ using MonoMod.Utils;
 using NLua;
 using NLua.Exceptions;
 using Snowberry.Editor;
+using Snowberry.Editor.Placements;
 
 namespace Snowberry;
 
@@ -131,7 +132,7 @@ public static class LoennPluginLoader {
                     string placementName = placements["name"] as string ?? "";
                     placementName = placementName.Replace(" ", ""); // thank you Flaglines and Such. very cool
                     placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{placements["name"]}";
-                    Placements.Create(placementName, plugin.Key, options, isTrigger);
+                    EntityPlacementProvider.Create(placementName, plugin.Key, options, isTrigger);
                 } else if (placements.Keys.Count >= 1) {
                     foreach (var i in placements.Keys) {
                         Dictionary<string, object> options = new();
@@ -144,7 +145,7 @@ public static class LoennPluginLoader {
                             string placementName = ptable["name"] as string ?? "default";
                             placementName = placementName.Replace(" ", ""); // lol
                             placementName = LoennText.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{ptable["name"] ?? "default"}";
-                            Placements.Create(placementName, plugin.Key, options, isTrigger);
+                            EntityPlacementProvider.Create(placementName, plugin.Key, options, isTrigger);
                         }
                     }
                 }

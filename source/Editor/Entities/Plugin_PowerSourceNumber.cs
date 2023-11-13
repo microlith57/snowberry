@@ -22,6 +22,6 @@ public class Plugin_PowerSourceNumber : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Power Source Number", "powerSourceNumber");
+        Placements.EntityPlacementProvider.Create("Power Source Number", "powerSourceNumber");
     }
 }

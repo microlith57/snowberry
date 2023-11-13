@@ -55,7 +55,7 @@ public class Plugin_CoreModeToggle : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Core Mode Toggle", "coreModeToggle");
+        Placements.EntityPlacementProvider.Create("Core Mode Toggle", "coreModeToggle");
     }
 
     public enum CoreToggleMode {

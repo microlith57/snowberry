@@ -36,6 +36,6 @@ public class Plugin_IntroCar : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Intro Car", "introCar");
+        Placements.EntityPlacementProvider.Create("Intro Car", "introCar");
     }
 }

@@ -15,6 +15,6 @@ public class Plugin_CoreModeTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Core Mode Trigger (Everest)", "everest/coreModeTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Core Mode Trigger (Everest)", "everest/coreModeTrigger", trigger: true);
     }
 }

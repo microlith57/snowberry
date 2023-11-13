@@ -43,8 +43,8 @@ public class Plugin_Strawberry : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Strawberry", "strawberry");
-        Placements.Create("Strawberry (Winged)", "strawberry", new Dictionary<string, object>() { { "winged", true } });
-        Placements.Create("Moon Berry", "strawberry", new Dictionary<string, object>() { { "moon", true } });
+        Placements.EntityPlacementProvider.Create("Strawberry", "strawberry");
+        Placements.EntityPlacementProvider.Create("Strawberry (Winged)", "strawberry", new Dictionary<string, object>() { { "winged", true } });
+        Placements.EntityPlacementProvider.Create("Moon Berry", "strawberry", new Dictionary<string, object>() { { "moon", true } });
     }
 }

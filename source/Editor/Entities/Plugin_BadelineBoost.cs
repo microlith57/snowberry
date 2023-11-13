@@ -41,6 +41,6 @@ public class Plugin_BadelineBoost : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Badeline Boost", "badelineBoost");
+        Placements.EntityPlacementProvider.Create("Badeline Boost", "badelineBoost");
     }
 }

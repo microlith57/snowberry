@@ -90,9 +90,9 @@ public class Plugin_Spinner : Entity {
     public static void AddPlacements() {
         string[] types = { "Blue", "Red", "Purple", "Rainbow" };
         foreach (var type in types)
-            Placements.Create($"Spinner ({type})", "spinner", new() { ["color"] = type });
+            Placements.EntityPlacementProvider.Create($"Spinner ({type})", "spinner", new() { ["color"] = type });
 
-        Placements.Create("Dust Sprite", "spinner", new() { ["dust"] = true });
+        Placements.EntityPlacementProvider.Create("Dust Sprite", "spinner", new() { ["dust"] = true });
     }
 
     public static CrystalColor? GetColorForVanillaMap() {
@@ -173,9 +173,9 @@ public class Plugin_TrackSpinner : Plugin_MovingSpinner {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Moving Blade", "trackSpinner");
-        Placements.Create("Moving Dust", "trackSpinner", new() { ["dust"] = true });
-        Placements.Create("Moving Star", "trackSpinner", new() { ["star"] = true });
+        Placements.EntityPlacementProvider.Create("Moving Blade", "trackSpinner");
+        Placements.EntityPlacementProvider.Create("Moving Dust", "trackSpinner", new() { ["dust"] = true });
+        Placements.EntityPlacementProvider.Create("Moving Star", "trackSpinner", new() { ["star"] = true });
     }
 }
 
@@ -189,8 +189,8 @@ public class Plugin_RotateSpinner : Plugin_MovingSpinner {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Rotating Blade", "rotateSpinner");
-        Placements.Create("Rotating Dust", "rotateSpinner", new() { ["dust"] = true });
-        Placements.Create("Rotating Star", "rotateSpinner", new() { ["star"] = true });
+        Placements.EntityPlacementProvider.Create("Rotating Blade", "rotateSpinner");
+        Placements.EntityPlacementProvider.Create("Rotating Dust", "rotateSpinner", new() { ["dust"] = true });
+        Placements.EntityPlacementProvider.Create("Rotating Star", "rotateSpinner", new() { ["star"] = true });
     }
 }

@@ -27,6 +27,6 @@ public class Plugin_SummitCheckpoint : Entity{
     }
 
     public static void AddPlacements() {
-        Placements.Create("Summit Checkpoint", "summitcheckpoint");
+        Placements.EntityPlacementProvider.Create("Summit Checkpoint", "summitcheckpoint");
     }
 }

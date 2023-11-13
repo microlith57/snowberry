@@ -34,6 +34,6 @@ public class Plugin_Bumper : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Bumper", "bigSpinner");
+        Placements.EntityPlacementProvider.Create("Bumper", "bigSpinner");
     }
 }

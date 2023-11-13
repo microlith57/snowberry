@@ -40,6 +40,6 @@ public class Plugin_Waterfall : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Waterfall", "waterfall");
+        Placements.EntityPlacementProvider.Create("Waterfall", "waterfall");
     }
 }

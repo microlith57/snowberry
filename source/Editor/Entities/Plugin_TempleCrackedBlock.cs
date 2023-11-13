@@ -27,6 +27,6 @@ public class Plugin_TempleCrackedBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Temple Cracked Block", "templeCrackedBlock");
+        Placements.EntityPlacementProvider.Create("Temple Cracked Block", "templeCrackedBlock");
     }
 }

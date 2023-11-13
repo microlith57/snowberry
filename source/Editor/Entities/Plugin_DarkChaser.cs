@@ -15,7 +15,7 @@ public class Plugin_DarkChaser : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Badeline Chaser", "darkChaser");
+        Placements.EntityPlacementProvider.Create("Badeline Chaser", "darkChaser");
     }
 
     protected override IEnumerable<Rectangle> Select() {
@@ -39,6 +39,6 @@ public class Plugin_DarkChaserEnd : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Chaser Barrier", "darkChaserEnd");
+        Placements.EntityPlacementProvider.Create("Chaser Barrier", "darkChaserEnd");
     }
 }

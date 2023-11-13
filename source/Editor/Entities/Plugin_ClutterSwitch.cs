@@ -23,6 +23,6 @@ public class Plugin_ClutterSwitch : Entity {
 
     public static void AddPlacements() {
         foreach (var colour in new[]{ Colors.Red, Colors.Green, Colors.Yellow, Colors.Lightning })
-            Placements.Create($"Clutter Switch ({colour})", "colorSwitch", new() { ["type"] = colour.ToString() });
+            Placements.EntityPlacementProvider.Create($"Clutter Switch ({colour})", "colorSwitch", new() { ["type"] = colour.ToString() });
     }
 }

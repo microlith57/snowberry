@@ -26,6 +26,6 @@ public class Plugin_SummitBackgroundManager : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Summit Background Manager", "summitBackgroundManager");
+        Placements.EntityPlacementProvider.Create("Summit Background Manager", "summitBackgroundManager");
     }
 }

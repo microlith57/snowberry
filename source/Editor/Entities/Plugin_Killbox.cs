@@ -22,6 +22,6 @@ public class Plugin_Killbox : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Killbox", "killbox");
+        Placements.EntityPlacementProvider.Create("Killbox", "killbox");
     }
 }

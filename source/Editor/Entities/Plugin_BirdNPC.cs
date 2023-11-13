@@ -64,6 +64,6 @@ public class Plugin_BirdNPC : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Bird NPC", "birdNpc");
+        Placements.EntityPlacementProvider.Create("Bird NPC", "birdNpc");
     }
 }

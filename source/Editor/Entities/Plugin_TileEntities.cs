@@ -65,7 +65,7 @@ public class Plugin_IntroCrusher : Plugin_TileEntity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Intro Crusher", "introCrusher");
+        Placements.EntityPlacementProvider.Create("Intro Crusher", "introCrusher");
     }
 }
 
@@ -80,7 +80,7 @@ public class Plugin_BadelineBossFallingBlock : Plugin_TileEntityBase {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Boss Falling Block", "finalBossFallingBlock");
+        Placements.EntityPlacementProvider.Create("Boss Falling Block", "finalBossFallingBlock");
     }
 }
 
@@ -90,8 +90,8 @@ public class Plugin_FakeWall : Plugin_TileEntity {
     protected override float Alpha => 0.7f;
 
     public static void AddPlacements() {
-        Placements.Create("Fake Wall", "fakeWall");
-        Placements.Create("Coverup Wall", "coverupWall");
+        Placements.EntityPlacementProvider.Create("Fake Wall", "fakeWall");
+        Placements.EntityPlacementProvider.Create("Coverup Wall", "coverupWall");
     }
 }
 
@@ -101,7 +101,7 @@ public class Plugin_FakeBlock : Plugin_FakeWall {
     [Option("playTransitionReveal")] public bool PlayTransitionReveal = false;
 
     public new static void AddPlacements() {
-        Placements.Create("Fake Block", "fakeBlock");
+        Placements.EntityPlacementProvider.Create("Fake Block", "fakeBlock");
     }
 }
 
@@ -132,7 +132,7 @@ public class Plugin_ExitBlock : Plugin_TileEntityBase {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Exit Block", "exitBlock");
+        Placements.EntityPlacementProvider.Create("Exit Block", "exitBlock");
     }
 }
 
@@ -142,7 +142,7 @@ public class Plugin_ConditionBlock : Plugin_FakeWall {
     [Option("conditionID")] public string ConditionID = "1:1";
 
     public new static void AddPlacements() {
-        Placements.Create("Condition Block", "conditionBlock");
+        Placements.EntityPlacementProvider.Create("Condition Block", "conditionBlock");
     }
 }
 
@@ -151,7 +151,7 @@ public class Plugin_FloatySpaceBlock : Plugin_TileEntity {
     [Option("disableSpawnOffset")] public bool DisableOffset = false;
 
     public static void AddPlacements() {
-        Placements.Create("Floaty Space Block", "floatySpaceBlock");
+        Placements.EntityPlacementProvider.Create("Floaty Space Block", "floatySpaceBlock");
     }
 }
 
@@ -166,7 +166,7 @@ public class Plugin_CrumbleWallOnRumble : Plugin_TileEntity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Crumble Wall on Rumble", "crumbleWallOnRumble");
+        Placements.EntityPlacementProvider.Create("Crumble Wall on Rumble", "crumbleWallOnRumble");
     }
 }
 
@@ -177,7 +177,7 @@ public class Plugin_DashBlock : Plugin_TileEntity {
     [Option("permanent")] public bool Permanent = false;
 
     public static void AddPlacements() {
-        Placements.Create("Dash Block", "dashBlock");
+        Placements.EntityPlacementProvider.Create("Dash Block", "dashBlock");
     }
 }
 
@@ -187,6 +187,6 @@ public class Plugin_FallingBlock : Plugin_TileEntity {
     [Option("behind")] public bool Behind = false;
 
     public static void AddPlacements() {
-        Placements.Create("Falling Block", "fallingBlock");
+        Placements.EntityPlacementProvider.Create("Falling Block", "fallingBlock");
     }
 }

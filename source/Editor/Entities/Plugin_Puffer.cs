@@ -18,6 +18,6 @@ public class Plugin_Puffer : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Puffer", "eyebomb");
+        Placements.EntityPlacementProvider.Create("Puffer", "eyebomb");
     }
 }

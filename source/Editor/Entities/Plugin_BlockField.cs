@@ -19,6 +19,6 @@ public class Plugin_BlockField : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Strawberry Blockfield", "blockField");
+        Placements.EntityPlacementProvider.Create("Strawberry Blockfield", "blockField");
     }
 }

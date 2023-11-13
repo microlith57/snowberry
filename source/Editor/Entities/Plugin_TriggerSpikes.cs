@@ -78,6 +78,6 @@ public class Plugin_TriggerSpikes : Entity {
 
     public static void AddPlacements() {
         foreach (var dir in new[]{ "Up", "Down", "Left", "Right" })
-            Placements.Create($"Trigger Spikes ({dir}, Dust)", "triggerSpikes" + dir);
+            Placements.EntityPlacementProvider.Create($"Trigger Spikes ({dir}, Dust)", "triggerSpikes" + dir);
     }
 }

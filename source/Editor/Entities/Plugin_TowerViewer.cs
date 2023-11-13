@@ -30,6 +30,6 @@ public class Plugin_Watchtower : Entity{
     }
 
     public static void AddPlacements(){
-        Placements.Create("Watchtower", "towerviewer");
+        Placements.EntityPlacementProvider.Create("Watchtower", "towerviewer");
     }
 }

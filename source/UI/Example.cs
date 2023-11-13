@@ -5,6 +5,7 @@ using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Snowberry.Collections;
 using Snowberry.Editor;
 using Snowberry.Editor.Tools;
 using Snowberry.UI.Controls;

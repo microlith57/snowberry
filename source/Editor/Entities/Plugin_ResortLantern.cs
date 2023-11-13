@@ -24,6 +24,6 @@ public class Plugin_ResortLantern : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Resort Lantern", "resortLantern");
+        Placements.EntityPlacementProvider.Create("Resort Lantern", "resortLantern");
     }
 }

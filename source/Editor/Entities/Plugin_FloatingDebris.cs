@@ -1,7 +1,7 @@
 ﻿using Celeste;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("floatingDebris")]
 public class Plugin_FloatingDebris : Entity {
@@ -18,6 +18,6 @@ public class Plugin_FloatingDebris : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Floating Debris", "floatingDebris");
+        Placements.EntityPlacementProvider.Create("Floating Debris", "floatingDebris");
     }
 }

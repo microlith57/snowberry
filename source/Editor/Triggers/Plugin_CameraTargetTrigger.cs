@@ -20,6 +20,6 @@ public class Plugin_CameraTargetTrigger : Trigger {
     }
 
     public new static void AddPlacements() {
-        Placements.Create("Camera Target Trigger", "cameraTargetTrigger", trigger: true);
+        Placements.EntityPlacementProvider.Create("Camera Target Trigger", "cameraTargetTrigger", trigger: true);
     }
 }

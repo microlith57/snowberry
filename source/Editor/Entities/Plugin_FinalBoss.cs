@@ -41,6 +41,6 @@ public class Plugin_FinalBoss : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Badeline Boss", "finalBoss");
+        Placements.EntityPlacementProvider.Create("Badeline Boss", "finalBoss");
     }
 }

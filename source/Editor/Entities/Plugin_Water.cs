@@ -46,6 +46,6 @@ public class Plugin_Water : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Water", "water");
+        Placements.EntityPlacementProvider.Create("Water", "water");
     }
 }

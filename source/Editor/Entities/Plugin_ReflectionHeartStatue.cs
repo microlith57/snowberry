@@ -53,6 +53,6 @@ public class Plugin_ReflectionHeartStatue : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Reflection Heart Statue", "reflectionHeartStatue");
+        Placements.EntityPlacementProvider.Create("Reflection Heart Statue", "reflectionHeartStatue");
     }
 }

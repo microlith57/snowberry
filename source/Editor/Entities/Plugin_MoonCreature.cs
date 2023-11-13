@@ -1,4 +1,4 @@
-﻿namespace Snowberry.Editor.Entities; 
+﻿namespace Snowberry.Editor.Entities;
 
 [Plugin("moonCreature")]
 public class Plugin_MoonCreature : Entity {
@@ -10,6 +10,6 @@ public class Plugin_MoonCreature : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Moon Creature", "moonCreature");
+        Placements.EntityPlacementProvider.Create("Moon Creature", "moonCreature");
     }
 }

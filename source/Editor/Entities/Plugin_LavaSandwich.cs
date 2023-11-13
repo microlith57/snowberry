@@ -20,6 +20,6 @@ public class Plugin_LavaSandwich : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Sandwich Lava", "sandwichLava");
+        Placements.EntityPlacementProvider.Create("Sandwich Lava", "sandwichLava");
     }
 }

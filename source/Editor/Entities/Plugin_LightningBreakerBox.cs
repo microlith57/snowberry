@@ -24,6 +24,6 @@ public class Plugin_LightningBreakerBox : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Lightning Breaker Box", "lightningBlock");
+        Placements.EntityPlacementProvider.Create("Lightning Breaker Box", "lightningBlock");
     }
 }

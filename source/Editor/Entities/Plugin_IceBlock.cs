@@ -20,6 +20,6 @@ public class Plugin_IceBlock : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Ice Block", "iceBlock");
+        Placements.EntityPlacementProvider.Create("Ice Block", "iceBlock");
     }
 }

@@ -38,6 +38,6 @@ public class Plugin_FlingBirdIntro : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Fling Bird Intro", "flingBirdIntro");
+        Placements.EntityPlacementProvider.Create("Fling Bird Intro", "flingBirdIntro");
     }
 }

@@ -35,6 +35,6 @@ public class Plugin_Flagline : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Flagline", "cliffflag");
+        Placements.EntityPlacementProvider.Create("Flagline", "cliffflag");
     }
 }

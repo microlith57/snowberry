@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("wire")]
 public class Plugin_Wire : Entity {
@@ -23,6 +23,6 @@ public class Plugin_Wire : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Wire", "wire");
+        Placements.EntityPlacementProvider.Create("Wire", "wire");
     }
 }

@@ -20,7 +20,7 @@ public class Plugin_Refill : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Refill", "refill");
-        Placements.Create("Double Refill", "refill", new Dictionary<string, object>() { { "twoDash", true } });
+        Placements.EntityPlacementProvider.Create("Refill", "refill");
+        Placements.EntityPlacementProvider.Create("Double Refill", "refill", new Dictionary<string, object>() { { "twoDash", true } });
     }
 }

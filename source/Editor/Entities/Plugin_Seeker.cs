@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("seeker")]
 public class Plugin_Seeker : Entity {
@@ -23,7 +23,7 @@ public class Plugin_Seeker : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Seeker", "seeker");
+        Placements.EntityPlacementProvider.Create("Seeker", "seeker");
     }
 }
 
@@ -35,6 +35,6 @@ public class Plugin_PlayerSeeker : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Player Seeker", "playerSeeker");
+        Placements.EntityPlacementProvider.Create("Player Seeker", "playerSeeker");
     }
 }

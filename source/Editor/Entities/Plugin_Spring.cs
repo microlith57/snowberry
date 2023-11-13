@@ -33,8 +33,8 @@ public class Plugin_Spring : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Spring (Up)", "spring");
-        Placements.Create("Spring (Left)", "wallSpringRight");
-        Placements.Create("Spring (Right)", "wallSpringLeft");
+        Placements.EntityPlacementProvider.Create("Spring (Up)", "spring");
+        Placements.EntityPlacementProvider.Create("Spring (Left)", "wallSpringRight");
+        Placements.EntityPlacementProvider.Create("Spring (Right)", "wallSpringLeft");
     }
 }

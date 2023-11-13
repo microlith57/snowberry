@@ -32,7 +32,7 @@ public class Plugin_FakeHeart : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Fake Heart", "fakeHeart");
+        Placements.EntityPlacementProvider.Create("Fake Heart", "fakeHeart");
     }
 
     public enum HeartColors {

@@ -29,6 +29,6 @@ public class Plugin_ForegroundDebris : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Foreground Debris", "foregroundDebris");
+        Placements.EntityPlacementProvider.Create("Foreground Debris", "foregroundDebris");
     }
 }

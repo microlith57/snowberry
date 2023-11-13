@@ -27,6 +27,6 @@ public class Plugin_RidgeGate : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Ridge Gate", "ridgeGate");
+        Placements.EntityPlacementProvider.Create("Ridge Gate", "ridgeGate");
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Snowberry.Editor.Entities; 
+namespace Snowberry.Editor.Entities;
 
 [Plugin("torch")]
 public class Plugin_Torch : Entity {
@@ -13,7 +13,7 @@ public class Plugin_Torch : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Torch", "torch", new Dictionary<string, object>() { { "red", false } });
-        Placements.Create("Torch (Lit)", "torch", new Dictionary<string, object>() { { "startLit", true } });
+        Placements.EntityPlacementProvider.Create("Torch", "torch", new Dictionary<string, object>() { { "red", false } });
+        Placements.EntityPlacementProvider.Create("Torch (Lit)", "torch", new Dictionary<string, object>() { { "startLit", true } });
     }
 }

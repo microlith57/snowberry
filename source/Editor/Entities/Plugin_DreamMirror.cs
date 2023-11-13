@@ -26,6 +26,6 @@ public class Plugin_DreamMirror : Entity {
     }
 
     public static void AddPlacements() {
-        Placements.Create("Dream Mirror", "dreammirror");
+        Placements.EntityPlacementProvider.Create("Dream Mirror", "dreammirror");
     }
 }
