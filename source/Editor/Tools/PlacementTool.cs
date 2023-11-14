@@ -17,17 +17,17 @@ public class PlacementTool : Tool {
 
     private const int width = 240;
 
-    private Dictionary<Placement, UIButton> placementButtons = new();
-    private UISearchBar<Placement> searchBar;
-    private UIScrollPane buttonPane;
+    private static Dictionary<Placement, UIButton> placementButtons = new();
+    private static UISearchBar<Placement> searchBar;
+    private static UIScrollPane buttonPane;
 
-    private Placement curLeftSelection, curRightSelection, lastLeftSelection, lastRightSelection;
+    private static Placement curLeftSelection, curRightSelection, lastLeftSelection, lastRightSelection;
 
-    private Placeable preview;
-    private Placement lastPreviewedPlacement;
+    private static Placeable preview;
+    private static Placement lastPreviewedPlacement;
 
-    private Vector2? lastPress;
-    private bool startedDrag;
+    private static Vector2? lastPress;
+    private static bool startedDrag;
 
     private static string search = "";
 
@@ -51,9 +51,9 @@ public class PlacementTool : Tool {
         };
         var buttonTree = new UITree(new UILabel("placements"));
 
-        buttonTree.Add(CreateEntitiesTree());
-        buttonTree.AddBelow(CreateEntitiesTree(true));
-        buttonTree.AddBelow(CreateDecalsTree());
+        foreach (PlacementProvider p in PlacementProvider.All)
+            foreach (UITree tree in p.BuildTree(width))
+                buttonTree.AddBelow(tree);
 
         buttonTree.Layout();
 
@@ -278,67 +278,7 @@ public class PlacementTool : Tool {
         }
     }
 
-    private UITree CreateEntitiesTree(bool triggers = false) {
-        UITree entities = new(new UILabel(triggers ? "triggers" : "entities")) {
-            NoKb = true,
-            PadUp = 2,
-            PadDown = 2
-        };
-        foreach (var group in EntityPlacementProvider.All.Where(x => x.IsTrigger == triggers).OrderBy(x => x.Name).GroupBy(x => x.EntityName)) {
-            if (group.Count() == 1)
-                entities.Add(CreatePlacementButton(group.First(), width - entities.PadLeft));
-            else {
-                UITree subtree = new UITree(CreatePlacementButton(group.First(), width - entities.PadLeft * 2 - 20), new(), new(5, 2), collapsed: true) {
-                    PadUp = 2,
-                    PadDown = 2
-                };
-                foreach (EntityPlacement p in group.Skip(1))
-                    subtree.Add(CreatePlacementButton(p, width - entities.PadLeft * 2));
-                subtree.Layout();
-                entities.Add(subtree);
-            }
-        }
-        entities.Layout();
-        return entities;
-    }
-
-    private UITree CreateDecalsTree() {
-        List<List<string>> decalPaths = GFX.Game.Textures.Keys
-            .Where(x => x.StartsWith("decals/", StringComparison.Ordinal))
-            .Select(x => Decal.Sanitize(x, true))
-            .Select(x => x.Split('/').ToList())
-            .ToList();
-        Tree<string> decalTree = Tree<string>.FromPrefixes(decalPaths, "").Children[0];
-        decalTree.Parent = null; // get rid of the empty parent for AggregateUp
-
-        UITree RenderPart(Tree<string> part, float maxWidth){
-            UITree tree = new(new UILabel(part.Value + "/", Fonts.Regular)){
-                NoKb = true,
-                PadUp = 2,
-                PadDown = 2
-            };
-            foreach(Tree<string> c in part.Children.OrderBy(x => x.Value))
-                if(c.Children.Any())
-                    tree.Add(RenderPart(c, maxWidth - tree.PadLeft));
-                else {
-                    UIElement group = new();
-                    string path = c.AggregateUp((s, s1) => s + "/" + s1);
-                    // TODO: this *needs* to be not fake
-                    Placement fake = new Placements.DecalPlacement(c.Value, "weh", path.Substring("decals/".Length));
-                    group.Add(CreatePlacementButton(fake, maxWidth));
-                    group.AddRight(new UIImage(GFX.Game.GetAtlasSubtextures(path)[0]).ScaleToFit(new(24, 24)), new(3, 0));
-                    group.CalculateBounds();
-                    tree.Add(group);
-                }
-
-            tree.Layout();
-            return tree;
-        }
-
-        return RenderPart(decalTree, width);
-    }
-
-    private UIButton CreatePlacementButton(Placement item, float maxWidth) {
+    public static UIButton CreatePlacementButton(Placement item, float maxWidth) {
         UIButton b = new UIButton(Fonts.Regular.FitWithSuffix(item.Name, maxWidth - 15), Fonts.Regular, 4, 4) {
             OnPress = () => curLeftSelection = curLeftSelection != item ? item : null,
             OnRightPress = () => curRightSelection = curRightSelection != item ? item : null

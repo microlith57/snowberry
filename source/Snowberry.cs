@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using Monocle;
 using Snowberry.Editor;
+using Snowberry.Editor.Placements;
 using Snowberry.Editor.Recording;
 
 namespace Snowberry;
@@ -61,6 +62,7 @@ public sealed class Snowberry : EverestModule {
         LoennPluginLoader.LoadPlugins();
 
         Fonts.Load();
+        DecalPlacementProvider.Reload();
     }
 
     public override void Unload() {
