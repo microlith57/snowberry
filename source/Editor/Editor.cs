@@ -54,6 +54,7 @@ public class Editor : UIScene {
         }
 
         private Matrix matrix, inverse, screenview;
+        private Rectangle viewRect;
 
         public Matrix Matrix {
             get {
@@ -79,7 +80,13 @@ public class Editor : UIScene {
             }
         }
 
-        public Rectangle ViewRect { get; private set; }
+        public Rectangle ViewRect {
+            get {
+                if (changedView)
+                    UpdateMatrices();
+                return viewRect;
+            }
+        }
 
         public RenderTarget2D Buffer { get; private set; }
 
@@ -92,13 +99,13 @@ public class Editor : UIScene {
 
             if (Buffer != null) {
                 m *= Matrix.CreateTranslation(Buffer.Width / 2, Buffer.Height / 2, 0f);
-                ViewRect = new Rectangle((int)Position.X - Buffer.Width / 2, (int)Position.Y - Buffer.Height / 2, Buffer.Width, Buffer.Height);
+                viewRect = new Rectangle((int)Position.X - Buffer.Width / 2, (int)Position.Y - Buffer.Height / 2, Buffer.Width, Buffer.Height);
                 screenview = m * Matrix.CreateScale(Zoom);
             } else {
                 m *= Engine.ScreenMatrix * Matrix.CreateTranslation(Engine.ViewWidth / 2, Engine.ViewHeight / 2, 0f);
                 int w = (int)(Engine.Width / Zoom);
                 int h = (int)(Engine.Height / Zoom);
-                ViewRect = new Rectangle((int)Position.X - w / 2, (int)Position.Y - h / 2, w, h);
+                viewRect = new Rectangle((int)Position.X - w / 2, (int)Position.Y - h / 2, w, h);
                 screenview = m;
             }
 
