@@ -273,7 +273,7 @@ public class PlacementTool : Tool {
             Calc.PushRandom(preview.GetHashCode());
             preview.Render();
             if (lastPress != null && preview is Resizable rx)
-                DrawUtil.DrawGuidelines(rx.Bounds(), Color.White);
+                DrawUtil.DrawGuidelines(rx.Bounds, Color.White);
             Calc.PopRandom();
         }
     }
