@@ -87,7 +87,7 @@ public class Surgery(string path, Element elem) : UIScene {
                 attr.AddRight(new UILabel($"({(kvp.Value?.GetType()?.Name ?? "null")})") {
                     FG = Color.Gray
                 }, new(4, 0));
-                var text = (kvp.Value ?? "null").ToString();
+                var text = kvp.Value?.ToString() ?? "null";
                 attr.AddRight(new UILabel(text.Contains('\n') ? "..." : text), new(4, 0));
                 attr.CalculateBounds();
 
