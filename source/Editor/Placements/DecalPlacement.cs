@@ -48,8 +48,8 @@ public class DecalPlacementProvider : PlacementProvider {
                 else {
                     UIElement group = new();
                     string path = c.AggregateUp((s, s1) => s + "/" + s1);
-                    group.Add(PlacementTool.CreatePlacementButton(All[path], maxWidth));
-                    group.AddRight(new UIImage(GFX.Game.GetAtlasSubtextures(path)[0]).ScaleToFit(new(24, 24)), new(3, 0));
+                    group.Add(new UIImage(GFX.Game.GetAtlasSubtextures(path)[0]).ScaleToFit(new(24, 24)));
+                    group.AddRight(PlacementTool.CreatePlacementButton(All[path], maxWidth), new(3, 0));
                     group.CalculateBounds();
                     tree.Add(group);
                 }
