@@ -39,10 +39,9 @@ public class UIElement {
             }
 
         canModify = true;
-        Children.RemoveAll(e => e == null);
-        toRemove.ForEach(a => Children.Remove(a));
+        foreach (var e in toRemove) Children.Remove(e);
         toRemove.Clear();
-        toAdd.ForEach(Add);
+        foreach(var e in toAdd) Add(e);
         toAdd.Clear();
     }
 
@@ -97,6 +96,9 @@ public class UIElement {
     }
 
     public void Add(UIElement element) {
+        if (element == null)
+            return;
+
         if (canModify) {
             if (element.Parent == null) {
                 Children.Add(element);
