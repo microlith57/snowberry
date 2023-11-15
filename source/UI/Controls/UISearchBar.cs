@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 
@@ -7,7 +8,7 @@ namespace Snowberry.UI.Controls;
 
 public class UISearchBar<T> : UITextField {
     public T[] Entries;
-    public T[] Found { get; private set; }
+    public ISet<T> Found { get; private set; }
     private Color[] highlighting;
 
     public string InfoText = "...";
@@ -111,8 +112,8 @@ public class UISearchBar<T> : UITextField {
                 found.Add(entry); // the search matched this entry
         }
 
-        Found = found.ToArray();
-        searchInfo = SearchInfo?.Invoke(Found.Length);
+        Found = found.ToHashSet();
+        searchInfo = SearchInfo?.Invoke(Found.Count);
 
         base.OnInputUpdate(input);
     }
