@@ -62,7 +62,7 @@ public class EntityPlacement : Placement {
         Defaults = defaults;
         IsTrigger = isTrigger;
 
-        var split = name.Split('/');
+        var split = entityName.Split('/');
         ModName = split.Length > 1 ? split[0] : "Celeste";
     }
 
