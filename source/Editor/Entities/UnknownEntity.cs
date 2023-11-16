@@ -7,7 +7,7 @@ using Monocle;
 namespace Snowberry.Editor.Entities;
 
 // Any entity that doesn't have its own plugin.
-public class UnknownEntity : Entity {
+public partial class UnknownEntity : Entity {
     public static readonly Color TriggerColor = Calc.HexToColor("0c5f7a");
 
     public readonly Dictionary<string, object> Attrs = new();
@@ -18,13 +18,9 @@ public class UnknownEntity : Entity {
     public override bool IsTrigger => LoadedFromTrigger;
 
     // not strictly necessary, but avoids unnecessary overhead
-    public override void Set(string option, object value) {
-        Attrs[option] = value;
-    }
+    public override void Set(string option, object value) => Attrs[option] = value;
 
-    public override object Get(string option) {
-        return Attrs[option];
-    }
+    public override object Get(string option) => Attrs[option];
 
     public override void Render() {
         base.Render();
@@ -34,7 +30,7 @@ public class UnknownEntity : Entity {
             Draw.Rect(rect, TriggerColor * 0.3f);
             Draw.HollowRect(rect, TriggerColor);
 
-            triggerText ??= string.Join(" ", Regex.Split(char.ToUpper(Name[0]) + Name.Substring(1), @"(?=[A-Z])")).Trim();
+            triggerText ??= string.Join(" ", BeforeCapitalsRegex().Split(char.ToUpper(Name[0]) + Name[1..])).Trim();
 
             Fonts.Pico8.Draw(triggerText, new Vector2(rect.X + rect.Width / 2f, rect.Y + rect.Height / 2f), Vector2.One, Vector2.One * 0.5f, Color.Black);
         } else {
@@ -48,4 +44,7 @@ public class UnknownEntity : Entity {
         foreach (string opt in Attrs.Keys)
             e.Attributes[opt] = ObjectToStr(Attrs[opt]);
     }
+
+    [GeneratedRegex("(?=[A-Z])")]
+    private static partial Regex BeforeCapitalsRegex();
 }
