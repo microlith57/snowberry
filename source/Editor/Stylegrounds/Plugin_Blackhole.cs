@@ -1,5 +1,4 @@
-﻿namespace Snowberry.Editor.Stylegrounds; 
+﻿namespace Snowberry.Editor.Stylegrounds;
 
 [Plugin("blackhole")]
-internal class Plugin_Blackhole : Styleground {
-}
+internal class Plugin_Blackhole : Styleground;

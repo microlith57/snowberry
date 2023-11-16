@@ -1,5 +1,4 @@
-﻿namespace Snowberry.Editor.Stylegrounds; 
+﻿namespace Snowberry.Editor.Stylegrounds;
 
 [Plugin("stardust")]
-internal class Plugin_Stardust : Styleground {
-}
+internal class Plugin_Stardust : Styleground;
