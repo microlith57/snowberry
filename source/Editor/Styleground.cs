@@ -1,4 +1,5 @@
-﻿using Celeste.Mod;
+﻿using System.Linq;
+using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.Stylegrounds;
@@ -57,9 +58,7 @@ public class Styleground : Plugin {
     // Render on the Snowberry background
     public virtual void Render(Room room) { }
 
-    public virtual string Title() {
-        return Name;
-    }
+    public virtual string Title() => Name;
 
     public bool IsVisible(Room room) {
         if (!string.IsNullOrWhiteSpace(Flag)) {
@@ -83,23 +82,11 @@ public class Styleground : Plugin {
         return true;
     }
 
-    public static bool MatchRoomName(string predicate, string roomName) {
-        string[] array = predicate.Split(',');
-        foreach (string text in array) {
-            if (text.Equals(roomName)) {
-                return true;
-            }
-
-            if (text.Contains('*')) {
-                string pattern = "^" + Regex.Escape(text).Replace("\\*", ".*") + "$";
-                if (Regex.IsMatch(roomName, pattern)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
+    public static bool MatchRoomName(string predicate, string name) =>
+        name != null && predicate
+            .Split(',')
+            .Any(text => text.Equals(name) ||
+                (text.Contains('*') && Regex.IsMatch(name, "^" + Regex.Escape(text).Replace("\\*", ".*") + "$")));
 
     public static Styleground Create(string name, Map map, Element data, Element applyData = null) {
         // try both lowercased and exact
@@ -134,79 +121,79 @@ public class Styleground : Plugin {
             if (data.HasAttr("tag"))
                 styleground.Tags = data.Attr("tag");
 
-            if (applyData != null && applyData.HasAttr("tag"))
+            if (applyData.HasAttr("tag"))
                 styleground.Tags = applyData.Attr("tag");
 
             if (data.HasAttr("x"))
                 styleground.Position.X = data.AttrFloat("x");
-            else if (applyData != null && applyData.HasAttr("x"))
+            else if (applyData.HasAttr("x"))
                 styleground.Position.X = applyData.AttrFloat("x");
 
             if (data.HasAttr("y"))
                 styleground.Position.Y = data.AttrFloat("y");
-            else if (applyData != null && applyData.HasAttr("y"))
+            else if (applyData.HasAttr("y"))
                 styleground.Position.Y = applyData.AttrFloat("y");
 
             if (data.HasAttr("scrollx"))
                 styleground.Scroll.X = data.AttrFloat("scrollx");
-            else if (applyData != null && applyData.HasAttr("scrollx"))
+            else if (applyData.HasAttr("scrollx"))
                 styleground.Scroll.X = applyData.AttrFloat("scrollx");
 
             if (data.HasAttr("scrolly"))
                 styleground.Scroll.Y = data.AttrFloat("scrolly");
-            else if (applyData != null && applyData.HasAttr("scrolly"))
+            else if (applyData.HasAttr("scrolly"))
                 styleground.Scroll.Y = applyData.AttrFloat("scrolly");
 
             if (data.HasAttr("speedx"))
                 styleground.Speed.X = data.AttrFloat("speedx");
-            else if (applyData != null && applyData.HasAttr("speedx"))
+            else if (applyData.HasAttr("speedx"))
                 styleground.Speed.X = applyData.AttrFloat("speedx");
 
             if (data.HasAttr("speedy"))
                 styleground.Speed.Y = data.AttrFloat("speedy");
-            else if (applyData != null && applyData.HasAttr("speedy"))
+            else if (applyData.HasAttr("speedy"))
                 styleground.Speed.Y = applyData.AttrFloat("speedy");
 
             styleground.RawColor = Color.White;
             if (data.HasAttr("color"))
                 styleground.RawColor = Calc.HexToColor(data.Attr("color"));
-            else if (applyData != null && applyData.HasAttr("color"))
+            else if (applyData.HasAttr("color"))
                 styleground.RawColor = Calc.HexToColor(applyData.Attr("color"));
 
             if (data.HasAttr("alpha"))
                 styleground.Alpha = data.AttrFloat("alpha");
-            else if (applyData != null && applyData.HasAttr("alpha"))
+            else if (applyData.HasAttr("alpha"))
                 styleground.Alpha = applyData.AttrFloat("alpha");
 
             if (data.HasAttr("flipx"))
                 styleground.FlipX = data.AttrBool("flipx");
-            else if (applyData != null && applyData.HasAttr("flipx"))
+            else if (applyData.HasAttr("flipx"))
                 styleground.FlipX = applyData.AttrBool("flipx");
 
             if (data.HasAttr("flipy"))
                 styleground.FlipY = data.AttrBool("flipy");
-            else if (applyData != null && applyData.HasAttr("flipy"))
+            else if (applyData.HasAttr("flipy"))
                 styleground.FlipY = applyData.AttrBool("flipy");
 
             if (data.HasAttr("loopx"))
                 styleground.LoopX = data.AttrBool("loopx");
-            else if (applyData != null && applyData.HasAttr("loopx"))
+            else if (applyData.HasAttr("loopx"))
                 styleground.LoopX = applyData.AttrBool("loopx");
 
             if (data.HasAttr("loopy"))
                 styleground.LoopY = data.AttrBool("loopy");
-            else if (applyData != null && applyData.HasAttr("loopy"))
+            else if (applyData.HasAttr("loopy"))
                 styleground.LoopY = applyData.AttrBool("loopy");
 
             if (data.HasAttr("wind"))
                 styleground.WindMultiplier = data.AttrFloat("wind");
-            else if (applyData != null && applyData.HasAttr("wind"))
+            else if (applyData.HasAttr("wind"))
                 styleground.WindMultiplier = applyData.AttrFloat("wind");
 
             string exclude = null;
             if (data.HasAttr("exclude"))
                 exclude = data.Attr("exclude");
-            else if (applyData != null && applyData.HasAttr("exclude"))
+            else if (applyData.HasAttr("exclude"))
                 exclude = applyData.Attr("exclude");
 
             if (exclude != null)
@@ -215,7 +202,7 @@ public class Styleground : Plugin {
             string only = null;
             if (data.HasAttr("only"))
                 only = data.Attr("only");
-            else if (applyData != null && applyData.HasAttr("only"))
+            else if (applyData.HasAttr("only"))
                 only = applyData.Attr("only");
 
             if (only != null)
@@ -224,7 +211,7 @@ public class Styleground : Plugin {
             string flag = null;
             if (data.HasAttr("flag"))
                 flag = data.Attr("flag");
-            else if (applyData != null && applyData.HasAttr("flag"))
+            else if (applyData.HasAttr("flag"))
                 flag = applyData.Attr("flag");
 
             if (flag != null)
@@ -233,7 +220,7 @@ public class Styleground : Plugin {
             string notFlag = null;
             if (data.HasAttr("notflag"))
                 notFlag = data.Attr("notflag");
-            else if (applyData != null && applyData.HasAttr("notflag"))
+            else if (applyData.HasAttr("notflag"))
                 notFlag = applyData.Attr("notflag");
 
             if (notFlag != null)
@@ -242,7 +229,7 @@ public class Styleground : Plugin {
             string alwaysFlag = null;
             if (data.HasAttr("always"))
                 alwaysFlag = data.Attr("always");
-            else if (applyData != null && applyData.HasAttr("always"))
+            else if (applyData.HasAttr("always"))
                 alwaysFlag = applyData.Attr("always");
 
             if (alwaysFlag != null)
@@ -251,7 +238,7 @@ public class Styleground : Plugin {
             bool? dreaming = null;
             if (data.HasAttr("dreaming"))
                 dreaming = data.AttrBool("dreaming");
-            else if (applyData != null && applyData.HasAttr("dreaming"))
+            else if (applyData.HasAttr("dreaming"))
                 dreaming = applyData.AttrBool("dreaming");
 
             if (dreaming.HasValue)
@@ -259,12 +246,12 @@ public class Styleground : Plugin {
 
             if (data.HasAttr("instantIn"))
                 styleground.InstantIn = data.AttrBool("instantIn");
-            else if (applyData != null && applyData.HasAttr("instantIn"))
+            else if (applyData.HasAttr("instantIn"))
                 styleground.InstantIn = applyData.AttrBool("instantIn");
 
             if (data.HasAttr("instantOut"))
                 styleground.InstantOut = data.AttrBool("instantOut");
-            else if (applyData != null && applyData.HasAttr("instantOut"))
+            else if (applyData.HasAttr("instantOut"))
                 styleground.InstantOut = applyData.AttrBool("instantOut");
         }
 
