@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,11 +7,11 @@ using System.Text.RegularExpressions;
 namespace Snowberry;
 
 public partial class FormattedText {
-    private readonly (char?, Color)[] characters;
+    private readonly List<(char?, Color)> characters;
 
     public FormattedText(string expr) {
         var colors = new Stack<Color>();
-        var characters = new List<(char?, Color)>();
+        characters = new List<(char?, Color)>();
 
         var esc = false;
         for (var i = 0; i < expr.Length; i++) {
@@ -23,7 +22,7 @@ public partial class FormattedText {
             }
 
             if (!esc) {
-                var cmdMatch = CommandRegex().Match(expr.Substring(i));
+                var cmdMatch = CommandRegex().Match(expr[i..]);
                 if (cmdMatch.Success) {
                     var cmd = cmdMatch.Groups[1].Value;
 
@@ -44,8 +43,6 @@ public partial class FormattedText {
 
             characters.Add((c, colors.Count == 0 ? Color.White : colors.Peek()));
         }
-
-        this.characters = characters.ToArray();
     }
 
     public string Format(out Color[] colors, params object[] values) {
