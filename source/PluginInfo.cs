@@ -102,13 +102,7 @@ public interface PluginOption {
     string Tooltip { get; }
 }
 
-public class FieldOption : PluginOption {
-    private readonly FieldInfo field;
-
-    public FieldOption(FieldInfo field, string key) {
-        this.field = field;
-        Key = key;
-    }
+public class FieldOption(FieldInfo field, string key) : PluginOption {
 
     public object GetValue(Plugin from) => field.GetValue(from);
 
@@ -116,32 +110,31 @@ public class FieldOption : PluginOption {
 
     public Type FieldType => field.FieldType;
 
-    public string Key { get; }
+    public string Key { get; } = key;
 
     public string Tooltip => null;
+}
+
+public interface DictBackedPlugin {
+    public Dictionary<string, object> Attrs { get; }
 }
 
 public class UnknownPluginInfo : PluginInfo {
     public UnknownPluginInfo(string name, Dictionary<string, object> values = null) : base(name, typeof(Plugin), null, CelesteEverest.INSTANCE) {
         if (values != null)
             foreach (var pair in values)
-                Options[pair.Key] = new UnknownEntityAttr(pair.Value.GetType(), pair.Key);
+                Options[pair.Key] = new UnknownPluginAttr(pair.Value.GetType(), pair.Key);
     }
 }
 
-public class UnknownEntityAttr : PluginOption {
+public class UnknownPluginAttr(Type fieldType, string key) : PluginOption {
 
-    public UnknownEntityAttr(Type fieldType, string key) {
-        FieldType = fieldType;
-        Key = key;
-    }
+    public object GetValue(Plugin from) => ((DictBackedPlugin)from).Attrs[Key];
 
-    public object GetValue(Plugin from) => ((UnknownEntity)from).Attrs[Key];
+    public void SetValue(Plugin on, object value) => ((DictBackedPlugin)on).Attrs[Key] = value;
 
-    public void SetValue(Plugin on, object value) => ((UnknownEntity)on).Attrs[Key] = value;
-
-    public Type FieldType { get; }
-    public string Key { get; }
+    public Type FieldType { get; } = fieldType;
+    public string Key { get; } = key;
 
     public string Tooltip => null;
 }
