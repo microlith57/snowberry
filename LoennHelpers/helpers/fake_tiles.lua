@@ -1,5 +1,5 @@
 ﻿-- here we do something called "cheating"
-local sb = require("#Snowberry.LoennPluginLoader")
+local sb = require("#Snowberry.Editor.LoennInterop.LoennShims")
 
 local fakeTilesHelper = {}
 

@@ -1,4 +1,4 @@
-﻿local sb_loader = require("#Snowberry.LoennPluginLoader")
+﻿local sb_loader = require("#Snowberry.Editor.LoennInterop.LoennShims")
 
 local mods = {}
 

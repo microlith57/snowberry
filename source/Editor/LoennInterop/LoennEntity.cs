@@ -7,12 +7,13 @@ using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 using NLua;
+using Snowberry.Editor.Entities;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
 
-namespace Snowberry.Editor.Entities.Lua;
+namespace Snowberry.Editor.LoennInterop;
 
-public partial class LuaEntity : Entity {
+public partial class LoennEntity : Entity {
     private readonly LuaTable plugin;
     private bool initialized = false;
 
@@ -22,13 +23,13 @@ public partial class LuaEntity : Entity {
     private Color? color, fillColor, borderColor;
     private string texture, nodeTexture;
     //private List<SpriteWithPos> sprites;
-    private LuaSprites sprites;
+    private LoennSprites sprites;
     private Vector2 justify = Vector2.One * 0.5f, nodeJustify = Vector2.One * 0.5f;
     private NodeLineRenderType nodeLines = NodeLineRenderType.none;
 
     public Dictionary<string, object> Values = new();
 
-    public LuaEntity(string name, LoennPluginInfo info, LuaTable plugin, bool isTrigger) {
+    public LoennEntity(string name, LoennEntityPluginInfo info, LuaTable plugin, bool isTrigger) {
         Name = name;
         Info = info;
         this.plugin = plugin;
@@ -223,7 +224,7 @@ public partial class LuaEntity : Entity {
     }
 
     public override (UIElement, int height)? CreateOptionUi(string optionName) {
-        if (Info.Options[optionName] is LuaEntityOption { Options: { Count: > 0 } options, Editable: var editable }) {
+        if (Info.Options[optionName] is LoennEntityOption { Options: { Count: > 0 } options, Editable: var editable }) {
             var value = Get(optionName);
 
             // it's like UIPluginOptionList but evil
@@ -272,7 +273,7 @@ public partial class LuaEntity : Entity {
     }
 
     private LuaTable WrapEntity() {
-        var table = WrapTable(Values.OrElse(((LoennPluginInfo)Info).Defaults));
+        var table = WrapTable(Values.OrElse(((LoennEntityPluginInfo)Info).Defaults));
 
         if (table != null) {
             table["name"] = Name;

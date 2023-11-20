@@ -1,7 +1,7 @@
 ﻿-- snowberry header
 local snowberry_orig_require = require
 local require = function(name)
-    return snowberry_orig_require("#Snowberry.LoennPluginLoader").EverestRequire(name)
+    return snowberry_orig_require("#Snowberry.Editor.LoennInterop.LoennShims").EverestRequire(name)
 end
 -- end snowberry header
 

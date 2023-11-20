@@ -1,12 +1,12 @@
 ﻿-- snowberry header
 local snowberry_orig_require = require
 local require = function(name)
-    return snowberry_orig_require("#Snowberry.LoennPluginLoader").EverestRequire(name)
+    return snowberry_orig_require("#Snowberry.Editor.LoennInterop.LoennShims").EverestRequire(name)
 end
 -- end snowberry header
 
 local utils = require("utils")
-local loennPluginLoader = snowberry_orig_require("#Snowberry.LoennPluginLoader")
+local loennShims = snowberry_orig_require("#Snowberry.Editor.LoennInterop.LoennShims")
 
 local drawableSpriteStruct = {}
 
@@ -179,7 +179,7 @@ end
 
 function drawableSpriteStruct.fromTexture(texture, data)
     local atlas = data and data.atlas or "Gameplay"
-    local spriteMeta = loennPluginLoader.LuaGetImage(texture, atlas)
+    local spriteMeta = loennShims.LuaGetImage(texture, atlas)
 
     if spriteMeta then
         return drawableSpriteStruct.fromMeta(spriteMeta, data)

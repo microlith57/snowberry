@@ -7,9 +7,9 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using NLua;
 
-namespace Snowberry.Editor.Entities.Lua;
+namespace Snowberry.Editor.LoennInterop;
 
-internal sealed class LuaSprites(string entityName) {
+internal sealed class LoennSprites(string entityName) {
 
     // for diagnostics
     private readonly List<Drawable> drawables = new();

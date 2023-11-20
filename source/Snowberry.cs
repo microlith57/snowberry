@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using Monocle;
 using Snowberry.Editor;
+using Snowberry.Editor.LoennInterop;
 using Snowberry.Editor.Placements;
 using Snowberry.Editor.Recording;
 
