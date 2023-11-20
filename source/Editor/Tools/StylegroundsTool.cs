@@ -144,17 +144,22 @@ public class StylegroundsTool : Tool {
             }
         }, new Vector2(4));
 
-        optionsPanel.Height = optionsPanel.Children.Select(k => k.Height).Max() + 8;
+        optionsPanel.CalculateBounds();
+        optionsPanel.Height += 8;
         panel.AddBelow(optionsPanel);
+        panel.CalculateBounds(); // for height calculation below
 
-        UIElement stylegroundInfo = new() {
+        UIElement stylegroundInfo = new UIScrollPane {
             Tag = "stylegrounds_info",
             Width = 175,
-            Position = new Vector2(5, 0)
+            Height = height - panel.Height,
+            Position = new Vector2(5, 0),
+            Background = Color.Transparent
         };
 
         panel.AddBelow(stylegroundInfo);
         AddStylegroundInfo(stylegroundInfo);
+        panel.CalculateBounds();
         return panel;
     }
 
