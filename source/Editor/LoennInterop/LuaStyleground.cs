@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using NLua;
 
-namespace Snowberry.Editor.Stylegrounds;
+namespace Snowberry.Editor.LoennInterop;
 
 public class LuaStyleground : Styleground {
 
