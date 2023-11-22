@@ -662,7 +662,7 @@ public class Editor : UIScene {
         var tool = Map == null ? null : CurrentTool;
         bool canClick = UI.CanClickThrough() && !Message.Shown;
         bool middlePan = Snowberry.Settings.MiddleClickPan;
-        var panning = (middlePan && MInput.Mouse.CheckMiddleButton || !middlePan && MInput.Mouse.CheckRightButton) && canClick;
+        var panning = (middlePan && MInput.Mouse.CheckMiddleButton || !middlePan && MInput.Mouse.CheckRightButton) && canClick && Map != null;
 
         if (panning) {
             texture = panningCursor;
