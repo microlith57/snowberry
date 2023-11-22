@@ -91,6 +91,10 @@ public class PluginInfo {
     }
 }
 
+public interface DefaultedPluginInfo {
+    bool TryGetDefault(string key, out object value);
+}
+
 public interface PluginOption {
     object GetValue(Plugin from);
     void SetValue(Plugin on, object value);
@@ -110,10 +114,6 @@ public class FieldOption(FieldInfo field, string key) : PluginOption {
     public string Key { get; } = key;
 
     public string Tooltip => null;
-}
-
-public interface DictBackedPlugin {
-    public Dictionary<string, object> Attrs { get; }
 }
 
 public class UnknownPluginInfo : PluginInfo {

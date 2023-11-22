@@ -1,6 +1,7 @@
 ﻿using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Snowberry.Editor;
 using Snowberry.UI;
@@ -91,4 +92,8 @@ public abstract class Plugin {
         Tileset ts => ts.Key.ToString(),
         _ => obj
     };
+}
+
+public interface DictBackedPlugin {
+    public Dictionary<string, object> Attrs { get; }
 }

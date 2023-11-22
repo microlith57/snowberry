@@ -3,12 +3,12 @@ using NLua;
 
 namespace Snowberry.Editor.LoennInterop;
 
-public class LoennStyleground : Styleground {
+public class LoennStyleground : Styleground, DictBackedPlugin {
 
     // conceptually much simpler than `LuaEntity`, because modded stylegrounds do not (yet) have any behaviour
     private readonly LuaTable plugin;
 
-    public readonly Dictionary<string, object> Attrs = new();
+    public Dictionary<string, object> Attrs { get; } = new();
 
     public LoennStyleground(string name, LoennStylegroundPluginInfo info, LuaTable plugin) {
         Name = name;

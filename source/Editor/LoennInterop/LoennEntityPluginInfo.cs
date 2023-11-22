@@ -6,7 +6,7 @@ using NLua;
 
 namespace Snowberry.Editor.LoennInterop;
 
-public class LoennEntityPluginInfo : PluginInfo {
+public class LoennEntityPluginInfo : PluginInfo, DefaultedPluginInfo {
 
     protected readonly LuaTable Plugin;
     protected readonly bool IsTrigger;
@@ -98,37 +98,38 @@ public class LoennEntityPluginInfo : PluginInfo {
             return new LoennEntity(name, this, Plugin, IsTrigger) as T;
         return null;
     }
+
+    public bool TryGetDefault(string key, out object value) => Defaults.TryGetValue(key, out value);
 }
 
-public class LoennEntityOption : PluginOption {
+public class LoennEntityOption(string key, Type t, string tooltip) : PluginOption {
 
     // store as strings for "simplicity", pass through StrToObject when necessary
     public Dictionary<string, object> Options = null;
     public bool Editable = true;
 
-    public LoennEntityOption(string key, Type t, string entityName, bool isTrigger) {
-        Key = key;
-        FieldType = t;
-        string pfix = isTrigger ? "triggers" : "entities";
-        Tooltip = LoennPluginLoader.Dialog.TryGetValue($"{pfix}.{entityName}.attributes.description.{key}", out var k) ? k.Key : null;
-    }
+    public LoennEntityOption(string key, Type t, string entityName, bool isTrigger) : this(key, t, FindTooltip(key, entityName, isTrigger)) {}
 
     public object GetValue(Plugin from) {
-        if (((LoennEntity)from).Values.TryGetValue(Key, out object v))
+        if (((DictBackedPlugin)from).Attrs.TryGetValue(Key, out object v))
             return v;
-        if (from.Info is LoennEntityPluginInfo lpi && lpi.Defaults.TryGetValue(Key, out var def))
+        if (from.Info is DefaultedPluginInfo lpi && lpi.TryGetDefault(Key, out var def))
             return def is string str ? Plugin.StrToObject(FieldType, str) : Convert.ChangeType(def, FieldType);
         return Util.Default(FieldType);
     }
 
     public void SetValue(Plugin on, object value) {
-        var onEntity = (LoennEntity)on;
-        var was = onEntity.Values.TryGetValue(Key, out var v) ? v : null;
-        onEntity.Values[Key] = value;
-        onEntity.Dirty = was != value;
+        var attrs = ((DictBackedPlugin)on).Attrs;
+        var was = attrs.TryGetValue(Key, out var v) ? v : null;
+        attrs[Key] = value;
+        if (on is Entity onEntity)
+            onEntity.Dirty = was != value;
     }
 
-    public Type FieldType { get; }
-    public string Key { get; }
-    public string Tooltip { get; }
+    public Type FieldType { get; } = t;
+    public string Key { get; } = key;
+    public string Tooltip { get; } = tooltip;
+
+    private static string FindTooltip(string key, string entityName, bool isTrigger) =>
+        LoennPluginLoader.Dialog.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{entityName}.attributes.description.{key}", out var k) ? k.Key : null;
 }

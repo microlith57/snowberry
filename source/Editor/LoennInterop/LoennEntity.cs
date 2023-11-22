@@ -13,7 +13,7 @@ using Snowberry.UI.Controls;
 
 namespace Snowberry.Editor.LoennInterop;
 
-public partial class LoennEntity : Entity {
+public partial class LoennEntity : Entity, DictBackedPlugin {
     private readonly LuaTable plugin;
     private bool initialized = false;
 
@@ -27,7 +27,7 @@ public partial class LoennEntity : Entity {
     private Vector2 justify = Vector2.One * 0.5f, nodeJustify = Vector2.One * 0.5f;
     private NodeLineRenderType nodeLines = NodeLineRenderType.none;
 
-    public Dictionary<string, object> Values = new();
+    public Dictionary<string, object> Attrs { get; } = new();
 
     public LoennEntity(string name, LoennEntityPluginInfo info, LuaTable plugin, bool isTrigger) {
         Name = name;
@@ -273,7 +273,7 @@ public partial class LoennEntity : Entity {
     }
 
     private LuaTable WrapEntity() {
-        var table = WrapTable(Values.OrElse(((LoennEntityPluginInfo)Info).Defaults));
+        var table = WrapTable(Attrs.OrElse(((LoennEntityPluginInfo)Info).Defaults));
 
         if (table != null) {
             table["name"] = Name;
