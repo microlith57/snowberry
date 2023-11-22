@@ -134,7 +134,7 @@ internal sealed class LoennSprites(string entityName) {
         return null; // weh
     }
 
-    private List<LuaTable> Normalize(LuaTable sp){
+    private static List<LuaTable> Normalize(LuaTable sp){
         // normalize ninepatches...
         if(sp["_type"] is "drawableNinePatch" && sp["getDrawableSprite"] is LuaFunction h && h.Call(sp)?.FirstOrDefault() is LuaTable sp2)
             return sp2.Values.OfType<LuaTable>().ToList();
