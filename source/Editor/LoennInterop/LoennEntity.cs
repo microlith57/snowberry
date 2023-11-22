@@ -136,7 +136,7 @@ public partial class LoennEntity : Entity, DictBackedPlugin {
             }
         }
 
-        if (texture != null)
+        if (texture != null && /* TODO: log once? */ GFX.Game.Has(texture))
             GFX.Game[texture].DrawJustified(Position, justify);
 
         if ((nodeTexture ?? texture) != null)
