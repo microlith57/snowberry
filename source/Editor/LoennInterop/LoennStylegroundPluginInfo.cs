@@ -16,7 +16,7 @@ public class LoennStylegroundPluginInfo : PluginInfo, DefaultedPluginInfo {
         if (plugin["defaultData"] is LuaTable data) {
             foreach (var item in data.Keys.OfType<string>())
                 if (!Styleground.IllegalOptionNames.Contains(item)) {
-                    Options[item] = new LoennEntityOption(item, data[item].GetType(), FindTooltip(item, name));
+                    Options[item] = new LoennEntityOption(item, data[item].GetType(), Tooltip(item, name));
                     Defaults.TryAdd(item, data[item]);
                 }
         }
@@ -30,6 +30,9 @@ public class LoennStylegroundPluginInfo : PluginInfo, DefaultedPluginInfo {
 
     public bool TryGetDefault(string key, out object value) => Defaults.TryGetValue(key, out value);
 
-    private static string FindTooltip(string key, string effectName) =>
+    private static string Tooltip(string key, string effectName) =>
         LoennPluginLoader.Dialog.TryGetValue($"style.effects.{effectName}.description.{key}", out var k) ? k.Key : null;
+
+    public string Title() =>
+        LoennPluginLoader.Dialog.TryGetValue($"style.effects.{name}.name", out var k) ? k.Key + $" [{k.Value}]" : null;
 }

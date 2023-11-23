@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections.Generic;
 using System.Linq;
+using Snowberry.Editor.LoennInterop;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
 using Snowberry.UI.Layout;
@@ -97,27 +98,32 @@ public class StylegroundsTool : Tool {
             // add new styleground
             OnPress = () => {
                 Vector2 targetPos = Add.GetBoundsPos() + Vector2.UnitY * (Add.Height + 2);
-                UIScene.Instance.Overlay.Add(new UIDropdown(font, PluginInfo.Stylegrounds.Select(k => new UIDropdown.DropdownEntry(
-                    font.FitWithSuffix(k.Key, 150),
-                    () => {
-                        var newSg = k.Value.Instantiate<Styleground>();
-                        var selected = SelectedButton();
-                        if (selected == null)
-                            Bgs().Add(newSg);
-                        else {
-                            var style = Stylegrounds[selected];
-                            if (IsFg(style))
-                                Fgs().Insert(SelectedStyleground, newSg);
-                            else
-                                Bgs().Insert(SelectedStyleground - Fgs().Count, newSg);
-                        }
+                UIScene.Instance.Overlay.Add(new UIDropdown(font, PluginInfo.Stylegrounds.Select(k => {
+                    // TODO: bweh
+                    var label = k.Key;
+                    if (k.Value is LoennStylegroundPluginInfo lspi) label = lspi.Title() ?? label;
+                    return new UIDropdown.DropdownEntry(
+                        font.FitWithSuffix(label, 150),
+                        () => {
+                            var newSg = k.Value.Instantiate<Styleground>();
+                            var selected = SelectedButton();
+                            if (selected == null)
+                                Bgs().Add(newSg);
+                            else {
+                                var style = Stylegrounds[selected];
+                                if (IsFg(style))
+                                    Fgs().Insert(SelectedStyleground, newSg);
+                                else
+                                    Bgs().Insert(SelectedStyleground - Fgs().Count, newSg);
+                            }
 
-                        RefreshPanel();
-                    }) {
+                            RefreshPanel();
+                        }) {
                         BG = BothSelectedBtnBg,
                         HoveredBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.25f),
                         PressedBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.5f),
-                    }).ToArray()) {
+                    };
+                }).ToArray()) {
                         Limit = (int)((UIScene.Instance.Overlay.Height - targetPos.Y - 30) / (font.LineHeight + 3)),
                         Width = 170,
                         Position = targetPos
