@@ -170,6 +170,15 @@ public class UIDropdown : UIElement {
         bottom.Draw(new Vector2(position.X, position.Y + h2), Vector2.Zero, defaultColor);
         bottomFill.Draw(new Vector2(position.X + 3, position.Y + h2), Vector2.Zero, defaultColor, new Vector2(Width - 6, 1));
         bottom.Draw(new Vector2(position.X + Width, position.Y + h2), Vector2.Zero, defaultColor, new Vector2(-1, 1));
+
+        // draw scroll arrows
+        int diff = Entries.Count - Limit;
+        if (diff > 0) {
+            if (offset > 0)
+                font.Draw("\u2191", position + new Vector2(Width - 4, 2), new Vector2(1), new Vector2(1, 0), Color.White);
+            if (offset < diff)
+                font.Draw("\u2193", position + new Vector2(Width - 4, h2 - 2), new Vector2(1), new Vector2(1, 1), Color.White);
+        }
     }
 
     public Color ColorForEntry(int index) {
