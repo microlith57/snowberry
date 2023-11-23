@@ -43,9 +43,10 @@ public class StylegroundsTool : Tool {
         stylegrounds.Add(fgLabel);
 
         int i = 0;
+        Font font = Fonts.Regular;
         foreach (var styleground in Editor.Instance.Map.FGStylegrounds) {
             int copy = i;
-            UIButton element = new UIButton(styleground.Title(), Fonts.Regular, 4, 2) {
+            UIButton element = new UIButton(styleground.Title(), font, 4, 2) {
                 Position = new Vector2(10, i * 20 + 20),
                 OnPress = () => {
                     SelectedStyleground = copy;
@@ -67,7 +68,7 @@ public class StylegroundsTool : Tool {
 
         foreach (var styleground in Editor.Instance.Map.BGStylegrounds) {
             int copy = i;
-            UIButton element = new UIButton(styleground.Title(), Fonts.Regular, 4, 2) {
+            UIButton element = new UIButton(styleground.Title(), font, 4, 2) {
                 Position = new Vector2(10, i * 20 + 60),
                 OnPress = () => {
                     SelectedStyleground = copy;
@@ -92,35 +93,39 @@ public class StylegroundsTool : Tool {
         panel.Add(stylebg);
 
         UIElement optionsPanel = new();
-        optionsPanel.AddRight(Add = new UIButton("+ \uF036", Fonts.Regular, 4, 4) {
+        optionsPanel.AddRight(Add = new UIButton("+ \uF036", font, 4, 4) {
             // add new styleground
             OnPress = () => {
-                Editor.Instance.ToolPanel.Add(new UIDropdown(Fonts.Regular, PluginInfo.Stylegrounds.Select(k => new UIDropdown.DropdownEntry(k.Key, () => {
-                    var newSg = k.Value.Instantiate<Styleground>();
-                    var selected = SelectedButton();
-                    if (selected == null) {
-                        Bgs().Add(newSg);
-                    } else {
-                        var style = Stylegrounds[selected];
-                        if (IsFg(style)) {
-                            Fgs().Insert(SelectedStyleground, newSg);
-                        } else {
-                            Bgs().Insert(SelectedStyleground - Fgs().Count, newSg);
+                Vector2 targetPos = Add.GetBoundsPos() + Vector2.UnitY * (Add.Height + 2);
+                UIScene.Instance.Overlay.Add(new UIDropdown(font, PluginInfo.Stylegrounds.Select(k => new UIDropdown.DropdownEntry(
+                    font.FitWithSuffix(k.Key, 150),
+                    () => {
+                        var newSg = k.Value.Instantiate<Styleground>();
+                        var selected = SelectedButton();
+                        if (selected == null)
+                            Bgs().Add(newSg);
+                        else {
+                            var style = Stylegrounds[selected];
+                            if (IsFg(style))
+                                Fgs().Insert(SelectedStyleground, newSg);
+                            else
+                                Bgs().Insert(SelectedStyleground - Fgs().Count, newSg);
                         }
-                    }
 
-                    RefreshPanel();
-                }) {
-                    BG = BothSelectedBtnBg,
-                    HoveredBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.25f),
-                    PressedBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.5f)
-                }).ToArray()) {
-                    Position = (Add.GetBoundsPos() + Vector2.UnitY * (Add.Height + 2)) - Editor.Instance.ToolPanel.GetBoundsPos()
-                });
+                        RefreshPanel();
+                    }) {
+                        BG = BothSelectedBtnBg,
+                        HoveredBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.25f),
+                        PressedBG = Color.Lerp(BothSelectedBtnBg, Color.Black, 0.5f),
+                    }).ToArray()) {
+                        Limit = (int)((UIScene.Instance.Overlay.Height - targetPos.Y - 30) / (font.LineHeight + 3)),
+                        Width = 170,
+                        Position = targetPos
+                    });
             }
         }, new Vector2(4));
 
-        optionsPanel.AddRight(Delete = new UIButton("-", Fonts.Regular, 4, 4) {
+        optionsPanel.AddRight(Delete = new UIButton("-", font, 4, 4) {
             OnPress = () => {
                 UIButton selected = SelectedButton();
                 if (selected != null) { // if there are no stylegrounds
@@ -132,13 +137,13 @@ public class StylegroundsTool : Tool {
             }
         }, new Vector2(4));
 
-        optionsPanel.AddRight(MoveUp = new UIButton("↑", Fonts.Regular, 4, 4) {
+        optionsPanel.AddRight(MoveUp = new UIButton("↑", font, 4, 4) {
             OnPress = () => {
                 MoveStyleground(-1);
             }
         }, new Vector2(4));
 
-        optionsPanel.AddRight(MoveDown = new UIButton("↓", Fonts.Regular, 4, 4) {
+        optionsPanel.AddRight(MoveDown = new UIButton("↓", font, 4, 4) {
             OnPress = () => {
                 MoveStyleground(1);
             }
