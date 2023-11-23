@@ -25,10 +25,14 @@ public class UIDropdown : UIElement {
         public Color HoveredBG = UIButton.DefaultHoveredBG;
     }
 
+    public int Limit = 25;
+
     private readonly Vector2 spacing = new(4);
     private Font font;
     private float[] lerps;
     private int hoverIdx = -1, pressIdx = -1;
+
+    private int offset = 0; // scrolling etc
 
     public readonly List<DropdownEntry> Entries = new();
 
@@ -77,7 +81,7 @@ public class UIDropdown : UIElement {
             .Select(v => new DropdownEntry(v.ToString(), () => onSelect(v)))
             .ToArray();
 
-        return new UIDropdown(Fonts.Regular, values);
+        return new UIDropdown(font, values);
     }
 
     public override void Update(Vector2 position = default) {
@@ -103,22 +107,32 @@ public class UIDropdown : UIElement {
 
         for (int i = 0; i < lerps.Length; i++)
             lerps[i] = Calc.Approach(lerps[i], pressIdx == i ? 1f : 0f, Engine.DeltaTime * 20f);
+
+        int diff = Entries.Count - Limit;
+        if (diff > 0) {
+            if (new Rectangle((int)position.X, (int)position.Y, Width, Height).Contains(Mouse.Screen.ToPoint())) {
+                offset = MInput.Mouse.WheelDelta switch {
+                    < 0 => Math.Min(offset + 1, diff),
+                    > 0 => Math.Max(offset - 1, 0),
+                    _ => offset
+                };
+            }
+        }
     }
 
     public int FindHoverIdx(Vector2 position) {
         var ret = -1;
         var mouse = Mouse.Screen.ToPoint();
 
-        for (int i = 0; i < Entries.Count; i++)
-            if (new Rectangle((int)position.X + 1, (int)(position.Y + YPosFor(i)) + 1 + 4, Width - 2, (int)font.Measure(Entries[i].Label).Y + 4).Contains(mouse))
+        int realCount = Math.Min(Entries.Count, Limit);
+        for (int i = 0; i < realCount; i++)
+            if (new Rectangle((int)position.X + 1, (int)(position.Y + i * (font.LineHeight + 4)) + 1 + 4, Width - 2, font.LineHeight + 4).Contains(mouse))
                 ret = i;
 
-        return ret;
+        return ret == -1 ? -1 : ret + offset;
     }
 
-    public float YPosFor(int i) {
-        return Entries.Take(i).Select(k => font.Measure(k.Label).Y + 4).Sum();
-    }
+    public float YPosFor(int i) => (i - offset) * (font.LineHeight + 4);
 
     public override void Render(Vector2 position = default) {
         base.Render(position);
@@ -129,7 +143,8 @@ public class UIDropdown : UIElement {
         topFill.Draw(new Vector2(position.X + 3, position.Y), Vector2.Zero, defaultColor, new Vector2(Width - 6, 1));
         top.Draw(new Vector2(position.X + Width, position.Y), Vector2.Zero, defaultColor, new Vector2(-1, 1));
         // draw each entry
-        for (int i = 0; i < Entries.Count; i++) {
+        int realCount = Math.Min(Entries.Count, Limit);
+        for (int i = offset; i < offset + realCount; i++) {
             DropdownEntry entry = Entries[i];
             var ePos = position + Vector2.UnitY * YPosFor(i);
             var press = pressIdx == i ? 1 : 0;
@@ -150,8 +165,8 @@ public class UIDropdown : UIElement {
         }
 
         // draw bottom
-        defaultColor = ColorForEntry(Entries.Count - 1);
-        var h2 = YPosFor(Entries.Count) + 4;
+        defaultColor = ColorForEntry(realCount - 1);
+        var h2 = YPosFor(realCount + offset) + 4;
         bottom.Draw(new Vector2(position.X, position.Y + h2), Vector2.Zero, defaultColor);
         bottomFill.Draw(new Vector2(position.X + 3, position.Y + h2), Vector2.Zero, defaultColor, new Vector2(Width - 6, 1));
         bottom.Draw(new Vector2(position.X + Width, position.Y + h2), Vector2.Zero, defaultColor, new Vector2(-1, 1));
