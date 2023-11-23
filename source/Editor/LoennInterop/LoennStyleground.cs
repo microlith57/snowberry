@@ -15,4 +15,6 @@ public class LoennStyleground : Styleground, DictBackedPlugin {
         Info = info;
         this.plugin = plugin;
     }
+
+    public override string Title() => ((LoennStylegroundPluginInfo)Info).Title() ?? base.Title();
 }
