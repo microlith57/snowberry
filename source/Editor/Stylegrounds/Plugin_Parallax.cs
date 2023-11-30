@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
-namespace Snowberry.Editor.Stylegrounds; 
+namespace Snowberry.Editor.Stylegrounds;
 
 [Plugin("parallax")]
 internal class Plugin_Parallax : Styleground {

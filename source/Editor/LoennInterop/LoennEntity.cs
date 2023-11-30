@@ -234,7 +234,7 @@ public partial class LoennEntity : Entity, DictBackedPlugin {
                 OnPress = () => {
                     var dropdown = new UIDropdown(Fonts.Regular, options
                         .Select(x => new UIDropdown.DropdownEntry(x.Key, () => {
-                            Set(optionName, x.Value);
+                            SnapshotAndSet(optionName, x.Value);
                             var displayName = options.LookupName(x.Value, x.Value.ToString());
                             if (!editable)
                                 button.SetText(displayName + " \uF036");

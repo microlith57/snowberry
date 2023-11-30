@@ -45,7 +45,7 @@ public abstract class Plugin {
                     $"Tried to set field {option} to an invalid value {value} ({value?.GetType().FullName ?? "null"})");
                 Snowberry.Log(LogLevel.Warn, e.ToString());
             }
-        }
+        } /* else { ... store excess values ... } */
     }
 
     public virtual object Get(string option) =>
@@ -55,6 +55,23 @@ public abstract class Plugin {
         Info.Options.TryGetValue(option, out PluginOption f) ? f.Tooltip : null;
 
     public virtual (UIElement, int height)? CreateOptionUi(string optionName) => null;
+
+    // editing of a specific property
+    public UndoRedo.Snapshotter<object> SOption(string option) => new(
+        () => Get(option),
+        v => {
+            if (!Equals(Get(option), v))
+                Set(option, v);
+        });
+
+    public void SnapshotAndSet(string option, object value) {
+        if (value == Get(option))
+            return;
+
+        UndoRedo.BeginAction("edit plugin option", SOption(option));
+        Set(option, value);
+        UndoRedo.CompleteAction();
+    }
 
     public static object StrToObject(Type targetType, string raw){
         if(targetType.IsEnum)

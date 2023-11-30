@@ -115,7 +115,7 @@ public class UIPluginOptionList : UIElement {
 
     public static UIOption StringOption(string name, string value, Plugin plugin, int width = 80) {
         var checkbox = new UITextField(Fonts.Regular, width, value) {
-            OnInputChange = str => plugin.Set(name, str)
+            OnInputChange = str => plugin.SnapshotAndSet(name, str)
         };
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
@@ -129,7 +129,7 @@ public class UIPluginOptionList : UIElement {
 
     public static UIOption LiteralValueOption<T>(string name, string value, Plugin plugin, int width = 80) {
         var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value) {
-            OnValidInputChange = v => plugin.Set(name, v)
+            OnValidInputChange = v => plugin.SnapshotAndSet(name, v)
         };
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
@@ -143,7 +143,7 @@ public class UIPluginOptionList : UIElement {
 
     public static UIOption BoolOption(string name, bool value, Plugin plugin) {
         var checkbox = new UICheckBox(-1, value) {
-            OnPress = b => plugin.Set(name, b)
+            OnPress = b => plugin.SnapshotAndSet(name, b)
         };
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
@@ -164,7 +164,7 @@ public class UIPluginOptionList : UIElement {
 
     public static UIOption ColorOption(string name, Color value, Plugin plugin) {
         var colorpicker = new UIColorPicker(value) {
-            OnColorChange = (color, _) => plugin.Set(name, color)
+            OnColorChange = (color, _) => plugin.SnapshotAndSet(name, color)
         };
         return new UIOption(name, colorpicker, plugin.GetTooltipFor(name));
     }
@@ -190,7 +190,7 @@ public class UIPluginOptionList : UIElement {
     }
 
     public static UIOption DropdownOption(string name, Type t, object value, Plugin plugin) {
-        return DropdownOption(name, t, value, v => plugin.Set(name, v), plugin.GetTooltipFor(name));
+        return DropdownOption(name, t, value, v => plugin.SnapshotAndSet(name, v), plugin.GetTooltipFor(name));
     }
 
     public static UIOption TilesetDropdownOption(string name, Tileset value, Plugin plugin) {
@@ -200,7 +200,7 @@ public class UIPluginOptionList : UIElement {
                 var dropdown = new UIDropdown(Fonts.Regular, Tileset.FgTilesets
                     .Where(ts => ts.Key != '0')
                     .Select(ts => new UIDropdown.DropdownEntry(ts.Name, () => {
-                        plugin.Set(name, ts.Key);
+                        plugin.SnapshotAndSet(name, ts.Key);
                         button.SetText(ts.Name + " \uF036");
                     }) {
                         Icon = ts.Tile.Tiles[0, 0]
