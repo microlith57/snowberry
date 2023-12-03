@@ -613,10 +613,10 @@ public partial class Room {
     private record EntityInclusionSnapshotter(Room r, Entity e) : UndoRedo.Snapshotter<bool> {
         public bool Snapshot() => r.AllEntities.Contains(e);
 
-        public void Apply(bool t) {
-            if (r.AllEntities.Contains(e))
+        public void Apply(bool included) {
+            if (!included && r.AllEntities.Contains(e))
                 r.RemoveEntity(e);
-            else
+            else if (included && !r.AllEntities.Contains(e))
                 r.AddEntity(e);
         }
     }
