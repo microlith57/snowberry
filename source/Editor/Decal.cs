@@ -65,7 +65,12 @@ public partial class Decal : Placeable {
         return StripDigits().Replace(ctxPath, "");
     }
 
-    public UndoRedo.Snapshotter<Vector2> SPosition() => new(() => Position, p => Position = p, this);
+    public UndoRedo.Snapshotter SnapshotPosition() => new PositionSnapshotter(this);
+
+    private record PositionSnapshotter(Decal d) : UndoRedo.Snapshotter<Vector2> {
+        public Vector2 Snapshot() => d.Position;
+        public void Apply(Vector2 t) => d.Position = t;
+    }
 
     [GeneratedRegex("\\d+$", RegexOptions.Compiled)]
     private static partial Regex StripDigits();

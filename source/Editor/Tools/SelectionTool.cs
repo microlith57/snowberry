@@ -231,7 +231,7 @@ public class SelectionTool : Tool {
                             resizingY = solo.MinHeight > -1 && (Math.Abs(Mouse.World.Y - (solo.Position.Y + solo.Height)) <= resizeMargins || fromTop);
                             oldEntityBounds = solo.Bounds;
                             if (resizingX || resizingY)
-                                UndoRedo.BeginAction("resize objects", solo.SBounds());
+                                UndoRedo.BeginAction("resize objects", solo.SnapshotBounds());
                         } else if (resizingX || resizingY) {
                             var wSnapped = Mouse.World.RoundTo(8);
                             if (resizingX) {

@@ -278,16 +278,18 @@ public abstract class Entity : Plugin, Resizable {
     #region Snapshotters
 
     // everything that might be affected by simply dragging while selected
-    public UndoRedo.Snapshotter<(Vector2 pos, int width, int height, List<Vector2> nodes)> SBounds() => new(
-        () => (Position, Width, Height, Nodes.ToList()),
-        tuple => {
-            Position = tuple.pos;
-            Width = tuple.width;
-            Height = tuple.height;
-            SetNodes(tuple.nodes);
-        },
-        this
-    );
+    public UndoRedo.Snapshotter SnapshotBounds() => new BoundsSnapshotter(this);
+
+    private record BoundsSnapshotter(Entity e) : UndoRedo.Snapshotter<(Vector2 pos, int width, int height, List<Vector2> nodes)> {
+
+        public (Vector2 pos, int width, int height, List<Vector2> nodes) Snapshot() =>
+            (e.Position, e.Width, e.Height, e.Nodes.ToList());
+
+        public void Apply((Vector2 pos, int width, int height, List<Vector2> nodes) t) {
+            (e.Position, e.Width, e.Height, _) = t;
+            e.SetNodes(t.nodes);
+        }
+    }
 
     #endregion
 }

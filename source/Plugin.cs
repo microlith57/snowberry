@@ -57,18 +57,22 @@ public abstract class Plugin {
     public virtual (UIElement, int height)? CreateOptionUi(string optionName) => null;
 
     // editing of a specific property
-    public UndoRedo.Snapshotter<object> SOption(string option) => new(
-        () => Get(option),
-        v => {
-            if (!Equals(Get(option), v))
-                Set(option, v);
-        });
+    public UndoRedo.Snapshotter SnapshotOption(string option) => new PropertySnapshotter(this, option);
+
+    private record PropertySnapshotter(Plugin p, string option) : UndoRedo.Snapshotter<object> {
+        public object Snapshot() => p.Get(option);
+
+        public void Apply(object t) {
+            if (!Equals(p.Get(option), t))
+                p.Set(option, t);
+        }
+    }
 
     public void SnapshotAndSet(string option, object value) {
-        if (value == Get(option))
+        if (Equals(value, Get(option)))
             return;
 
-        UndoRedo.BeginAction("edit plugin option", SOption(option));
+        UndoRedo.BeginAction("edit plugin option", SnapshotOption(option));
         Set(option, value);
         UndoRedo.CompleteAction();
     }

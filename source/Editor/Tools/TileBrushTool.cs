@@ -197,7 +197,7 @@ public class TileBrushTool : Tool {
             if (mode != TileBrushMode.Eyedropper) {
                 isPainting = true;
                 if (Editor.SelectedRoom != null)
-                    UndoRedo.BeginAction("edit tiles", Editor.SelectedRoom.STiles());
+                    UndoRedo.BeginAction("edit tiles", Editor.SelectedRoom.SnapshotTiles());
             } else if (Editor.SelectedRoom != null) {
                 Vector2 tilePos = new((float)Math.Floor(Mouse.World.X / 8) * 8, (float)Math.Floor(Mouse.World.Y / 8) * 8);
                 bool lookBg = MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift);

@@ -11,39 +11,24 @@ public static class UndoRedo{
     public interface Snapshotter{
         public object SnapshotRaw();
         public void ApplyRaw(object o);
-        public object Key { get; }
     }
 
-    // and then what's actually exposed
-    public class Snapshotter<T> : Snapshotter{
-        public readonly Func<T> Snapshot;
-        public readonly Action<T> Apply;
-        public object Key { get; }
+    public interface Snapshotter<T> : Snapshotter {
+        public T Snapshot();
+        public void Apply(T t);
 
-        public Snapshotter(Func<T> snapshot, Action<T> apply, object key = null){
-            Snapshot = snapshot;
-            Apply = apply;
-            Key = key;
-        }
-
-        public Snapshotter<(T, U)> And<U>(Snapshotter<U> other) => new(
-            () => (Snapshot(), other.Snapshot()),
-            tuple => {
-                Apply(tuple.Item1);
-                other.Apply(tuple.Item2);
-            },
-            (Key, other.Key)
-        );
-
-        public object SnapshotRaw() => Snapshot();
-        public void ApplyRaw(object o) => Apply((T)o);
+        object Snapshotter.SnapshotRaw() => Snapshot();
+        void Snapshotter.ApplyRaw(object o) => Apply((T)o);
     }
 
-    public static Snapshotter<object> OfAction(Action a) => new(() => null, _ => a());
+    public class FlimsySnapshotter(Action apply) : Snapshotter {
+        public object SnapshotRaw() => null;
+        public void ApplyRaw(object o) => apply();
+    }
 
-    public static IEnumerable<Snapshotter> Unique(IEnumerable<Snapshotter> snapshotters) =>
-        snapshotters.GroupBy(x => x.Key)
-            .SelectMany(IEnumerable<Snapshotter> (x) => x.Key == null ? x : new[] { x.First() });
+    public static Snapshotter OfAction(Action a) => new FlimsySnapshotter(a);
+
+    public static IEnumerable<Snapshotter> Unique(IEnumerable<Snapshotter> snapshotters) => snapshotters.Distinct();
 
     public class EditorAction{
         public string Name;

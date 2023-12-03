@@ -581,15 +581,17 @@ public partial class Room {
 
     public bool IsEntityTypeDirty(Type t) => DirtyTrackedEntities.ContainsKey(t) && DirtyTrackedEntities[t];
 
-    public UndoRedo.Snapshotter<(VirtualMap<char> fg, VirtualMap<char> bg)> STiles() => new(
-        () => (fgTileMap.Clone(), bgTileMap.Clone()),
-        data => {
-            fgTileMap = data.fg;
-            bgTileMap = data.bg;
-            Autotile();
-        },
-        this
-    );
+    public UndoRedo.Snapshotter SnapshotTiles() => new TilesSnapshotter(this);
+
+    private record TilesSnapshotter(Room r) : UndoRedo.Snapshotter<(VirtualMap<char> fg, VirtualMap<char> bg)> {
+
+        public (VirtualMap<char> fg, VirtualMap<char> bg) Snapshot() => (r.fgTileMap.Clone(), r.bgTileMap.Clone());
+
+        public void Apply((VirtualMap<char> fg, VirtualMap<char> bg) t) {
+            (r.fgTileMap, r.bgTileMap) = t;
+            r.Autotile();
+        }
+    }
 
     [GeneratedRegex(@"\r\n|\n\r|\n|\r")]
     private static partial Regex TileSplitter();

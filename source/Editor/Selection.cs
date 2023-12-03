@@ -50,7 +50,7 @@ public class EntitySelection : Selection {
 
     public override Rectangle Area() => Entity.SelectionRectangles[Index + 1];
 
-    public override UndoRedo.Snapshotter Snapshotter() => Entity.SBounds();
+    public override UndoRedo.Snapshotter Snapshotter() => Entity.SnapshotBounds();
 
     public override bool Equals(object obj) => obj is EntitySelection s && s.Entity.Equals(Entity) && s.Index == Index;
 
@@ -82,7 +82,7 @@ public class DecalSelection : Selection {
 
     public override Rectangle Area() => Decal.Bounds;
 
-    public override UndoRedo.Snapshotter Snapshotter() => Decal.SPosition();
+    public override UndoRedo.Snapshotter Snapshotter() => Decal.SnapshotPosition();
 
     public override bool Equals(object obj) => obj is DecalSelection ds && ds.Decal == Decal;
 
@@ -124,7 +124,7 @@ public class TileSelection : Selection {
 
     public override Rectangle Area() => new Rectangle(Position.X, Position.Y, 1, 1).Multiply(8);
 
-    public override UndoRedo.Snapshotter Snapshotter() => Room.STiles();
+    public override UndoRedo.Snapshotter Snapshotter() => Room.SnapshotTiles();
 
     public override bool Equals(object obj) =>
         obj is TileSelection ts && ts.Position == Position && ts.Fg == Fg && ts.Room == Room;
