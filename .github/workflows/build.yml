@@ -29,3 +29,6 @@ jobs:
           Dialog/**/*
           Graphics/**/*
           Maps/**/*
+          LoennHelpers/**/*
+          Selene/**/*
+          Audio/**/*
