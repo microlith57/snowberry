@@ -17,7 +17,9 @@ public abstract class Selection {
 
     public abstract Rectangle Area();
 
-    public abstract UndoRedo.Snapshotter Snapshotter();
+    public abstract UndoRedo.Snapshotter BoundsSnapshotter();
+
+    public abstract UndoRedo.Snapshotter InclusionSnapshotter();
 
     public bool Contains(Point p) => Area().Contains(p);
 }
@@ -50,7 +52,8 @@ public class EntitySelection : Selection {
 
     public override Rectangle Area() => Entity.SelectionRectangles[Index + 1];
 
-    public override UndoRedo.Snapshotter Snapshotter() => Entity.SnapshotBounds();
+    public override UndoRedo.Snapshotter BoundsSnapshotter() => Entity.SnapshotBounds();
+    public override UndoRedo.Snapshotter InclusionSnapshotter() => Entity.Room.SnapshotEntityInclusion(Entity);
 
     public override bool Equals(object obj) => obj is EntitySelection s && s.Entity.Equals(Entity) && s.Index == Index;
 
@@ -82,7 +85,8 @@ public class DecalSelection : Selection {
 
     public override Rectangle Area() => Decal.Bounds;
 
-    public override UndoRedo.Snapshotter Snapshotter() => Decal.SnapshotPosition();
+    public override UndoRedo.Snapshotter BoundsSnapshotter() => Decal.SnapshotPosition();
+    public override UndoRedo.Snapshotter InclusionSnapshotter() => null;
 
     public override bool Equals(object obj) => obj is DecalSelection ds && ds.Decal == Decal;
 
@@ -124,7 +128,8 @@ public class TileSelection : Selection {
 
     public override Rectangle Area() => new Rectangle(Position.X, Position.Y, 1, 1).Multiply(8);
 
-    public override UndoRedo.Snapshotter Snapshotter() => Room.SnapshotTiles();
+    public override UndoRedo.Snapshotter BoundsSnapshotter() => Room.SnapshotTiles();
+    public override UndoRedo.Snapshotter InclusionSnapshotter() => null;
 
     public override bool Equals(object obj) =>
         obj is TileSelection ts && ts.Position == Position && ts.Fg == Fg && ts.Room == Room;

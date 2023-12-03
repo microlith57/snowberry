@@ -581,6 +581,20 @@ public partial class Room {
 
     public bool IsEntityTypeDirty(Type t) => DirtyTrackedEntities.ContainsKey(t) && DirtyTrackedEntities[t];
 
+    public void SnapshotAndAddEntity(Entity e) {
+        UndoRedo.BeginAction("add entity", SnapshotEntityInclusion(e));
+        AddEntity(e);
+        UndoRedo.CompleteAction();
+    }
+
+    public void SnapshotAndRemoveEntity(Entity e) {
+        UndoRedo.BeginAction("remove entity", SnapshotEntityInclusion(e));
+        RemoveEntity(e);
+        UndoRedo.CompleteAction();
+    }
+
+    #region Snapshotters
+
     public UndoRedo.Snapshotter SnapshotTiles() => new TilesSnapshotter(this);
 
     private record TilesSnapshotter(Room r) : UndoRedo.Snapshotter<(VirtualMap<char> fg, VirtualMap<char> bg)> {
@@ -592,6 +606,22 @@ public partial class Room {
             r.Autotile();
         }
     }
+
+    public UndoRedo.Snapshotter SnapshotEntityInclusion(Entity e) => new EntityInclusionSnapshotter(this, e);
+
+    // split in this way to make tracked entities behave nicer
+    private record EntityInclusionSnapshotter(Room r, Entity e) : UndoRedo.Snapshotter<bool> {
+        public bool Snapshot() => r.AllEntities.Contains(e);
+
+        public void Apply(bool t) {
+            if (r.AllEntities.Contains(e))
+                r.RemoveEntity(e);
+            else
+                r.AddEntity(e);
+        }
+    }
+
+    #endregion
 
     [GeneratedRegex(@"\r\n|\n\r|\n|\r")]
     private static partial Regex TileSplitter();

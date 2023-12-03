@@ -182,7 +182,7 @@ public abstract class Entity : Plugin, Resizable {
     public virtual void HQRender() { }
 
     public void AddToRoom(Room room) {
-        room.AddEntity(this);
+        room.SnapshotAndAddEntity(this);
         if (Name != "player")
             EntityID = PlacementTool.AllocateId();
     }

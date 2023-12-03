@@ -145,11 +145,14 @@ public class SelectionTool : Tool {
             AdjustPastedEntities();
 
             if (MInput.Keyboard.Released(Keys.V)) {
-                if (Editor.SelectedRoom != null)
+                if (Editor.SelectedRoom != null && toPaste.Count > 0) {
+                    UndoRedo.BeginAction("paste entities", toPaste.Select(Editor.SelectedRoom.SnapshotEntityInclusion));
                     foreach (Entity e in toPaste) {
                         e.EntityID = PlacementTool.AllocateId();
                         Editor.SelectedRoom.AddEntity(e);
                     }
+                    UndoRedo.CompleteAction();
+                }
 
                 pasting = false;
                 toPaste.Clear();
@@ -261,7 +264,7 @@ public class SelectionTool : Tool {
                     Vector2 move = worldSnapped - worldLastSnapped;
                     if (move != Vector2.Zero) {
                         if (!MoveInProgress) {
-                            UndoRedo.BeginAction("move objects", Editor.SelectedObjects.Select(x => x.Snapshotter()));
+                            UndoRedo.BeginAction("move objects", Editor.SelectedObjects.Select(x => x.BoundsSnapshotter()));
                             MoveInProgress = true;
                         }
 
@@ -326,12 +329,10 @@ public class SelectionTool : Tool {
         if (Editor.Instance.CanTypeShortcut()) {
             bool ctrl = MInput.Keyboard.Check(Keys.LeftControl) || MInput.Keyboard.Check(Keys.RightControl);
             if (MInput.Keyboard.Check(Keys.Delete)) { // Del to delete entities
-                foreach (var item in Editor.SelectedObjects) {
-                    item.RemoveSelf();
+                if (Editor.SelectedObjects.Count > 0) {
                     refreshPanel = true;
+                    DeleteSelections();
                 }
-
-                Editor.SelectedObjects.Clear();
             } else if (MInput.Keyboard.Pressed(Keys.N)) { // N to create node
                 // only visit each entity once
                 HashSet<Entity> seen = new();
@@ -344,7 +345,7 @@ public class SelectionTool : Tool {
                                 UndoRedo.BeginAction("add nodes", Editor.SelectedObjects
                                     .OfType<EntitySelection>()
                                     .Where(x => x.Entity.Nodes.Count < x.Entity.MaxNodes || x.Entity.MaxNodes == -1)
-                                    .Select(x => x.Snapshotter())
+                                    .Select(x => x.BoundsSnapshotter())
                                     .ConcatN(CheckSelection()));
                             }
 
@@ -382,14 +383,11 @@ public class SelectionTool : Tool {
                 } else if (MInput.Keyboard.Pressed(Keys.C, Keys.X)) { // Ctrl-C to copy
                     CopyPaste.Clipboard = CopyPaste.CopyEntities(Editor.SelectedObjects.OfType<EntitySelection>().Select(x => x.Entity).Distinct());
 
-                    if (MInput.Keyboard.Pressed(Keys.X)) {
-                        foreach (var item in Editor.SelectedObjects) {
-                            item.RemoveSelf();
+                    if (MInput.Keyboard.Pressed(Keys.X))
+                        if (Editor.SelectedObjects.Count > 0) {
                             refreshPanel = true;
+                            DeleteSelections();
                         }
-
-                        Editor.SelectedObjects.Clear();
-                    }
                 } else if (MInput.Keyboard.Pressed(Keys.V)) { // Ctrl-V to paste
                     try {
                         List<(EntityData data, bool trigger)> entities = CopyPaste.PasteEntities(CopyPaste.Clipboard);
@@ -411,6 +409,16 @@ public class SelectionTool : Tool {
 
         if ((MInput.Mouse.ReleasedLeftButton && canClick && canSelect) || refreshPanel)
             selectionPanel?.Display(Editor.SelectedObjects);
+    }
+
+    private static void DeleteSelections(){
+        UndoRedo.BeginAction("delete objects", Editor.SelectedObjects.Select(x => x.InclusionSnapshotter()));
+        foreach (var item in Editor.SelectedObjects)
+            item.RemoveSelf();
+
+        UndoRedo.CompleteAction();
+
+        Editor.SelectedObjects.Clear();
     }
 
     public override void RenderWorldSpace() {
@@ -500,7 +508,7 @@ public class SelectionTool : Tool {
 
     private void Nudge(Vector2 by) {
         if (Editor.SelectedObjects.Count > 0) {
-            UndoRedo.BeginAction("nudge objects", Editor.SelectedObjects.Select(x => x.Snapshotter()));
+            UndoRedo.BeginAction("nudge objects", Editor.SelectedObjects.Select(x => x.BoundsSnapshotter()));
             foreach (Selection s in Editor.SelectedObjects) {
                 s.Move(by);
                 SnapIfNecessary(s);
