@@ -413,8 +413,10 @@ public class SelectionTool : Tool {
 
     private static void DeleteSelections(){
         UndoRedo.BeginAction("delete objects", Editor.SelectedObjects.Select(x => x.InclusionSnapshotter()));
+
         foreach (var item in Editor.SelectedObjects)
             item.RemoveSelf();
+        TileSelection.FinishMove();
 
         UndoRedo.CompleteAction();
 

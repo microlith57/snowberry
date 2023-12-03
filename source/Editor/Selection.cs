@@ -129,7 +129,7 @@ public class TileSelection : Selection {
     public override Rectangle Area() => new Rectangle(Position.X, Position.Y, 1, 1).Multiply(8);
 
     public override UndoRedo.Snapshotter BoundsSnapshotter() => Room.SnapshotTiles();
-    public override UndoRedo.Snapshotter InclusionSnapshotter() => null;
+    public override UndoRedo.Snapshotter InclusionSnapshotter() => Room.SnapshotTiles();
 
     public override bool Equals(object obj) =>
         obj is TileSelection ts && ts.Position == Position && ts.Fg == Fg && ts.Room == Room;
