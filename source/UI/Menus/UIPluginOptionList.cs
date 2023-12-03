@@ -115,7 +115,7 @@ public class UIPluginOptionList : UIElement {
 
     public static UIOption StringOption(string name, string value, Plugin plugin, int width = 80) {
         var checkbox = new UITextField(Fonts.Regular, width, value) {
-            OnInputChange = str => plugin.SnapshotAndSet(name, str)
+            OnInputChange = str => plugin.SnapshotWeakAndSet(name, str)
         };
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
@@ -129,7 +129,7 @@ public class UIPluginOptionList : UIElement {
 
     public static UIOption LiteralValueOption<T>(string name, string value, Plugin plugin, int width = 80) {
         var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value) {
-            OnValidInputChange = v => plugin.SnapshotAndSet(name, v)
+            OnValidInputChange = v => plugin.SnapshotWeakAndSet(name, v)
         };
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
@@ -164,7 +164,7 @@ public class UIPluginOptionList : UIElement {
 
     public static UIOption ColorOption(string name, Color value, Plugin plugin) {
         var colorpicker = new UIColorPicker(value) {
-            OnColorChange = (color, _) => plugin.SnapshotAndSet(name, color)
+            OnColorChange = (color, _) => plugin.SnapshotWeakAndSet(name, color)
         };
         return new UIOption(name, colorpicker, plugin.GetTooltipFor(name));
     }

@@ -77,6 +77,17 @@ public abstract class Plugin {
         UndoRedo.CompleteAction();
     }
 
+    public void SnapshotWeakAndSet(string option, object value) {
+        if (Equals(value, Get(option)))
+            return;
+
+        if (UndoRedo.ViewInProgress() is not { /* non-null */ } u
+            || !u.HasMatching(sn => sn is PropertySnapshotter ps && ps.p == this && ps.option == option))
+            UndoRedo.BeginWeakAction("edit plugin option", SnapshotOption(option));
+
+        Set(option, value);
+    }
+
     public static object StrToObject(Type targetType, string raw){
         if(targetType.IsEnum)
             try {

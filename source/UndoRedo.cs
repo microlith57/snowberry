@@ -50,6 +50,13 @@ public static class UndoRedo{
                 state.snapshotter.ApplyRaw(state.after);
         }
 
+        public bool HasMatching(Predicate<Snapshotter> p){
+            foreach((Snapshotter sn, var _, var _) in States)
+                if(p(sn))
+                    return true;
+            return false;
+        }
+
         internal void BackupRedoState(){
             var old = States;
             States = new(old.Count);
@@ -79,7 +86,12 @@ public static class UndoRedo{
         BeginAction(name, snapshotters.AsEnumerable());
     }
 
-    public static void BeginAction(string name, IEnumerable<Snapshotter> snapshotters) {
+    // this is kind of annoying - really i'd like to have `params T[] ts, U u = default` where the latter is a kwarg
+    public static void BeginWeakAction(string name, params Snapshotter[] snapshotters) {
+        BeginAction(name, snapshotters.AsEnumerable(), true);
+    }
+
+    public static void BeginAction(string name, IEnumerable<Snapshotter> snapshotters, bool weak = false) {
         snapshotters = Unique(snapshotters);
         // either you have some undone actions (and nothing in progress)
         // or you have an in progress action (and are at the end of the log)
@@ -91,7 +103,7 @@ public static class UndoRedo{
             else
                 InProgress.Undo();
 
-        InProgress = new EditorAction(name);
+        InProgress = new EditorAction(name, weak);
         foreach(var snapshotter in snapshotters)
             InProgress.States.Add((snapshotter, snapshotter.SnapshotRaw(), null));
 
