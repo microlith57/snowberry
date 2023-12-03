@@ -68,7 +68,5 @@ public class DecalPlacement(string name, string modName, string decalPath) : Pla
     public string ModName { get; } = modName;
     public string DecalPath { get; } = decalPath;
 
-    public Placeable Build(Room room) => new Decal(room, DecalPath) {
-        Fg = PlacementTool.DecalsAreFg
-    };
+    public Placeable Build(Room room) => new Decal(room, DecalPath, PlacementTool.DecalsAreFg);
 }

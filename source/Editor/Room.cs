@@ -116,11 +116,11 @@ public partial class Room {
 
         // BgDecals
         foreach (DecalData decal in data.BgDecals)
-            BgDecals.Add(new Decal(this, decal));
+            BgDecals.Add(new Decal(this, decal, false));
 
         // FgDecals
         foreach (DecalData decal in data.FgDecals)
-            FgDecals.Add(new Decal(this, decal));
+            FgDecals.Add(new Decal(this, decal, true));
 
         // Entities
         foreach (EntityData entity in data.Entities) {
@@ -618,6 +618,22 @@ public partial class Room {
                 r.RemoveEntity(e);
             else if (included && !r.AllEntities.Contains(e))
                 r.AddEntity(e);
+        }
+    }
+
+    public UndoRedo.Snapshotter SnapshotDecalInclusion(Decal d) => new DecalInclusionSnapshotter(this, d);
+
+    // deja vu
+    private record DecalInclusionSnapshotter(Room r, Decal d) : UndoRedo.Snapshotter<bool> {
+        public bool Snapshot() => (d.Fg ? r.FgDecals : r.BgDecals).Contains(d);
+
+        public void Apply(bool included) {
+            var list = (d.Fg ? r.FgDecals : r.BgDecals);
+
+            if (!included && list.Contains(d))
+                list.Remove(d);
+            else if (included && !list.Contains(d))
+                list.Add(d);
         }
     }
 

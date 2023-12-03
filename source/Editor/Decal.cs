@@ -22,14 +22,16 @@ public partial class Decal : Placeable {
 
     public Rectangle Bounds => new((int)(Position.X - Math.Abs(tex.Width * Scale.X) / 2), (int)(Position.Y - Math.Abs(tex.Height * Scale.Y) / 2), (int)Math.Abs(tex.Width * Scale.X), (int)Math.Abs(tex.Height * Scale.Y));
 
-    internal Decal(Room room, string texture) {
+    internal Decal(Room room, string texture, bool fg) {
         Room = room;
         Texture = texture;
+        Fg = fg;
         tex = LookupTex(texture);
     }
 
-    internal Decal(Room room, DecalData data) {
+    internal Decal(Room room, DecalData data, bool fg) {
         Room = room;
+        Fg = fg;
 
         Texture = data.Texture;
         tex = LookupTex(Texture);
@@ -45,7 +47,9 @@ public partial class Decal : Placeable {
 
     public void AddToRoom(Room room) {
         Room = room;
+        UndoRedo.BeginAction("add decal", Room.SnapshotDecalInclusion(this));
         (Fg ? room.FgDecals : room.BgDecals).Add(this);
+        UndoRedo.CompleteAction();
     }
 
     private static MTexture LookupTex(string tex) =>

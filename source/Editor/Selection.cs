@@ -86,7 +86,7 @@ public class DecalSelection : Selection {
     public override Rectangle Area() => Decal.Bounds;
 
     public override UndoRedo.Snapshotter BoundsSnapshotter() => Decal.SnapshotPosition();
-    public override UndoRedo.Snapshotter InclusionSnapshotter() => null;
+    public override UndoRedo.Snapshotter InclusionSnapshotter() => Decal.Room.SnapshotDecalInclusion(Decal);
 
     public override bool Equals(object obj) => obj is DecalSelection ds && ds.Decal == Decal;
 
