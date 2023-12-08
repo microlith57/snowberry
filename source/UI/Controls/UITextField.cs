@@ -30,6 +30,9 @@ public class UITextField : UIElement {
 
     private float timeOffset;
 
+    private Keys? repeatKey = null;
+    private float repeatCounter = 0;
+
     protected char[] AllowedCharacters;
 
     public override bool GrabsKeyboard => Selected;
@@ -159,10 +162,34 @@ public class UITextField : UIElement {
             if (MInput.Keyboard.Pressed(Keys.Escape)) {
                 Selected = false;
             } else {
+                bool pressedLeft = MInput.Keyboard.Pressed(Keys.Left);
+                bool pressedRight = MInput.Keyboard.Pressed(Keys.Right);
+
+                // this is how `Monocle.Commands` implemented it, so,
+                // except it's a bit more gracious but *whatever*
+                if (repeatKey is { /* non-null */ } key)
+                    if (MInput.Keyboard.CurrentState[key] == KeyState.Down) {
+                        for (repeatCounter += Engine.RawDeltaTime; repeatCounter >= 0.5; repeatCounter -= 0.033333335f)
+                            if (key == Keys.Left)
+                                pressedLeft = true;
+                            else if (key == Keys.Right)
+                                pressedRight = true;
+                    } else
+                        repeatKey = null;
+
+                if (pressedLeft && repeatKey == null) {
+                    repeatKey = Keys.Left;
+                    repeatCounter = 0;
+                }
+                if (pressedRight && repeatKey == null) {
+                    repeatKey = Keys.Right;
+                    repeatCounter = 0;
+                }
+
                 bool moved = false;
-                if (moved |= MInput.Keyboard.Pressed(Keys.Left))
+                if (moved |= pressedLeft)
                     charIndex = MoveIndex(-1, ctrl);
-                else if (moved |= MInput.Keyboard.Pressed(Keys.Right))
+                else if (moved |= pressedRight)
                     charIndex = MoveIndex(1, ctrl);
                 if (moved) {
                     timeOffset = Engine.Scene.TimeActive;
