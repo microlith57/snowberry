@@ -232,117 +232,117 @@ public class TileBrushTool : Tool {
             var tilePos = new Vector2((float)Math.Floor(Mouse.World.X / 8 - Editor.SelectedRoom.Position.X), (float)Math.Floor(Mouse.World.Y / 8 - Editor.SelectedRoom.Position.Y));
             int x = (int)tilePos.X;
             int y = (int)tilePos.Y;
-            if (Editor.SelectedRoom.Bounds.Contains((int)(x + Editor.SelectedRoom.Position.X), (int)(y + Editor.SelectedRoom.Position.Y))) {
-                var lastPress = (Editor.Instance.worldClick / 8).Floor();
-                var roomLastPress = lastPress - Editor.SelectedRoom.Position;
-                int ax = (int)Math.Min(x, roomLastPress.X);
-                int ay = (int)Math.Min(y, roomLastPress.Y);
-                int bx = (int)Math.Max(x, roomLastPress.X);
-                int by = (int)Math.Max(y, roomLastPress.Y);
-                var rect = new Rectangle(ax, ay, bx - ax + 1, by - ay + 1);
-                switch (mode) {
-                    case TileBrushMode.Brush:
+            bool inBounds = Editor.SelectedRoom.Bounds.Contains((int)(x + Editor.SelectedRoom.Position.X), (int)(y + Editor.SelectedRoom.Position.Y));
+
+            var lastPress = (Editor.Instance.worldClick / 8).Floor();
+            var roomLastPress = lastPress - Editor.SelectedRoom.Position;
+            int ax = (int)Math.Min(x, roomLastPress.X);
+            int ay = (int)Math.Min(y, roomLastPress.Y);
+            int bx = (int)Math.Max(x, roomLastPress.X);
+            int by = (int)Math.Max(y, roomLastPress.Y);
+            var rect = new Rectangle(ax, ay, bx - ax + 1, by - ay + 1);
+            switch (mode) {
+                case TileBrushMode.Brush:
+                    SetHoloTile(fg, tileset, x, y);
+                    break;
+                case TileBrushMode.HollowRect:
+                case TileBrushMode.Rect:
+                    for (int x2 = 0; x2 < holoFgTileMap.Columns; x2++)
+                        for (int y2 = 0; y2 < holoFgTileMap.Rows; y2++) {
+                            bool set = rect.Contains(x2, y2);
+                            if (mode == TileBrushMode.HollowRect) {
+                                set &= !new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2).Contains(x2, y2);
+                            }
+
+                            SetHoloTile(fg, set ? tileset : 0, x2, y2, !set);
+                        }
+
+                    break;
+                case TileBrushMode.Fill:
+                    // start at x,y
+                    // while new tiles have been found:
+                    //   for each tile found:
+                    //     check their neighbors
+                    if (inBounds && !holoSetTiles[x, y]) {
+                        char origTile = Editor.SelectedRoom.GetTile(fg, new Vector2((x + Editor.SelectedRoom.X) * 8, (y + Editor.SelectedRoom.Y) * 8));
+
+                        bool inside(int cx, int cy) {
+                            return (cx >= 0 && cy >= 0 && cx < Editor.SelectedRoom.Width && cy < Editor.SelectedRoom.Height) && Editor.SelectedRoom.GetTile(fg, new Vector2((cx + Editor.SelectedRoom.X) * 8, (cy + Editor.SelectedRoom.Y) * 8)) == origTile;
+                        }
+
+                        Queue<Point> toCheck = new Queue<Point>();
+
+                        void scan(int lx, int rx, int y) {
+                            bool added = false;
+                            for (int i = lx; i <= rx; i++) {
+                                if (!inside(i, y))
+                                    added = false;
+                                else if (!added && !holoSetTiles[i, y]) {
+                                    toCheck.Enqueue(new Point(i, y));
+                                    added = true;
+                                }
+                            }
+                        }
+
+                        toCheck.Enqueue(new Point(x, y));
+                        while (toCheck.Count > 0) {
+                            Point checking = toCheck.Dequeue();
+                            int x2 = checking.X, y2 = checking.Y;
+                            var lx = x2;
+                            while (inside(lx - 1, y2)) {
+                                SetHoloTile(fg, tileset, lx - 1, y2);
+                                lx--;
+                            }
+
+                            while (inside(x2, y2)) {
+                                SetHoloTile(fg, tileset, x2, y2);
+                                x2++;
+                            }
+
+                            scan(lx, x2 - 1, y2 + 1);
+                            scan(lx, x2 - 1, y2 - 1);
+                        }
+                    }
+
+                    break;
+                case TileBrushMode.Line:
+                    for (int x2 = 0; x2 < holoFgTileMap.Columns; x2++)
+                        for (int y2 = 0; y2 < holoFgTileMap.Rows; y2++)
+                            SetHoloTile(fg, 0, x2, y2, true);
+                    if (roomLastPress.X - x == 0 && roomLastPress.Y - y == 0)
                         SetHoloTile(fg, tileset, x, y);
-                        break;
-                    case TileBrushMode.HollowRect:
-                    case TileBrushMode.Rect:
-                        for (int x2 = 0; x2 < holoFgTileMap.Columns; x2++)
-                            for (int y2 = 0; y2 < holoFgTileMap.Rows; y2++) {
-                                bool set = rect.Contains(x2, y2);
-                                if (mode == TileBrushMode.HollowRect) {
-                                    set &= !new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2).Contains(x2, y2);
-                                }
+                    else if (Math.Abs(roomLastPress.X - x) > Math.Abs(roomLastPress.Y - y)) {
+                        int sign = -Math.Sign(roomLastPress.X - x);
+                        float grad = (roomLastPress.Y - y) / (roomLastPress.X - x);
+                        for (int p = 0; p < rect.Width; p++) {
+                            SetHoloTile(fg, tileset, (int)(sign * p + roomLastPress.X), (int)(sign * p * grad + roomLastPress.Y));
+                        }
+                    } else {
+                        int sign = -Math.Sign(roomLastPress.Y - y);
+                        float grad = (roomLastPress.X - x) / (roomLastPress.Y - y);
+                        for (int p = 0; p < rect.Height; p++) {
+                            SetHoloTile(fg, tileset, (int)(sign * p * grad + roomLastPress.X), (int)(sign * p + roomLastPress.Y));
+                        }
+                    }
 
-                                SetHoloTile(fg, set ? tileset : 0, x2, y2, !set);
-                            }
-
-                        break;
-                    case TileBrushMode.Fill:
-                        // start at x,y
-                        // while new tiles have been found:
-                        //   for each tile found:
-                        //     check their neighbors
-                        if (!holoSetTiles[x, y]) {
-                            char origTile = Editor.SelectedRoom.GetTile(fg, new Vector2((x + Editor.SelectedRoom.X) * 8, (y + Editor.SelectedRoom.Y) * 8));
-
-                            bool inside(int cx, int cy) {
-                                return (cx >= 0 && cy >= 0 && cx < Editor.SelectedRoom.Width && cy < Editor.SelectedRoom.Height) && Editor.SelectedRoom.GetTile(fg, new Vector2((cx + Editor.SelectedRoom.X) * 8, (cy + Editor.SelectedRoom.Y) * 8)) == origTile;
-                            }
-
-                            Queue<Point> toCheck = new Queue<Point>();
-
-                            void scan(int lx, int rx, int y) {
-                                bool added = false;
-                                for (int i = lx; i <= rx; i++) {
-                                    if (!inside(i, y))
-                                        added = false;
-                                    else if (!added && !holoSetTiles[i, y]) {
-                                        toCheck.Enqueue(new Point(i, y));
-                                        added = true;
-                                    }
-                                }
-                            }
-
-                            toCheck.Enqueue(new Point(x, y));
-                            while (toCheck.Count > 0) {
-                                Point checking = toCheck.Dequeue();
-                                int x2 = checking.X, y2 = checking.Y;
-                                var lx = x2;
-                                while (inside(lx - 1, y2)) {
-                                    SetHoloTile(fg, tileset, lx - 1, y2);
-                                    lx--;
-                                }
-
-                                while (inside(x2, y2)) {
-                                    SetHoloTile(fg, tileset, x2, y2);
-                                    x2++;
-                                }
-
-                                scan(lx, x2 - 1, y2 + 1);
-                                scan(lx, x2 - 1, y2 - 1);
-                            }
+                    break;
+                case TileBrushMode.Circle:
+                    int radiusSquared = (rect.Width - 1) * (rect.Width - 1) + (rect.Height - 1) * (rect.Height - 1);
+                    for (int x2 = 0; x2 < holoFgTileMap.Columns; x2++)
+                        for (int y2 = 0; y2 < holoFgTileMap.Rows; y2++) {
+                            float deltaSquared = (roomLastPress.X - x2) * (roomLastPress.X - x2) + (roomLastPress.Y - y2) * (roomLastPress.Y - y2);
+                            bool set = deltaSquared <= radiusSquared;
+                            SetHoloTile(fg, set ? tileset : 0, x2, y2, !set);
                         }
 
-                        break;
-                    case TileBrushMode.Line:
-                        for (int x2 = 0; x2 < holoFgTileMap.Columns; x2++)
-                            for (int y2 = 0; y2 < holoFgTileMap.Rows; y2++)
-                                SetHoloTile(fg, 0, x2, y2, true);
-                        if (roomLastPress.X - x == 0 && roomLastPress.Y - y == 0)
-                            SetHoloTile(fg, tileset, x, y);
-                        else if (Math.Abs(roomLastPress.X - x) > Math.Abs(roomLastPress.Y - y)) {
-                            int sign = -Math.Sign(roomLastPress.X - x);
-                            float grad = (roomLastPress.Y - y) / (roomLastPress.X - x);
-                            for (int p = 0; p < rect.Width; p++) {
-                                SetHoloTile(fg, tileset, (int)(sign * p + roomLastPress.X), (int)(sign * p * grad + roomLastPress.Y));
-                            }
-                        } else {
-                            int sign = -Math.Sign(roomLastPress.Y - y);
-                            float grad = (roomLastPress.X - x) / (roomLastPress.Y - y);
-                            for (int p = 0; p < rect.Height; p++) {
-                                SetHoloTile(fg, tileset, (int)(sign * p * grad + roomLastPress.X), (int)(sign * p + roomLastPress.Y));
-                            }
-                        }
+                    break;
+                case TileBrushMode.Eyedropper:
+                    break;
+            }
 
-                        break;
-                    case TileBrushMode.Circle:
-                        int radiusSquared = (rect.Width - 1) * (rect.Width - 1) + (rect.Height - 1) * (rect.Height - 1);
-                        for (int x2 = 0; x2 < holoFgTileMap.Columns; x2++)
-                            for (int y2 = 0; y2 < holoFgTileMap.Rows; y2++) {
-                                float deltaSquared = (roomLastPress.X - x2) * (roomLastPress.X - x2) + (roomLastPress.Y - y2) * (roomLastPress.Y - y2);
-                                bool set = deltaSquared <= radiusSquared;
-                                SetHoloTile(fg, set ? tileset : 0, x2, y2, !set);
-                            }
-
-                        break;
-                    case TileBrushMode.Eyedropper:
-                        break;
-                }
-
-                if (holoRetile) {
-                    holoRetile = false;
-                    holoGrid = (fg ? GFX.FGAutotiler : GFX.BGAutotiler).GenerateMapStable(fg ? holoFgTileMap : holoBgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid;
-                }
+            if (holoRetile) {
+                holoRetile = false;
+                holoGrid = (fg ? GFX.FGAutotiler : GFX.BGAutotiler).GenerateMapStable(fg ? holoFgTileMap : holoBgTileMap, new Autotiler.Behaviour { EdgesExtend = true }).TileGrid;
             }
         }
 
@@ -387,9 +387,12 @@ public class TileBrushTool : Tool {
         }
     }
 
-    public void SetHoloTile(bool fg, int tileset, int x, int y, bool unset = false) {
-        char tile = fg ? FgTilesets[tileset].Key : BgTilesets[tileset].Key;
+    public static void SetHoloTile(bool fg, int tileset, int x, int y, bool unset = false) {
         VirtualMap<char> tiles = fg ? holoFgTileMap : holoBgTileMap;
+        if (x < 0 || y < 0 || tiles.Columns <= x || tiles.Rows <= y)
+            return;
+
+        char tile = fg ? FgTilesets[tileset].Key : BgTilesets[tileset].Key;
         char prev = tiles[x, y];
         bool reset = !holoSetTiles[x, y] || (holoSetTiles[x, y] && unset);
         if (prev != tile || reset) {
