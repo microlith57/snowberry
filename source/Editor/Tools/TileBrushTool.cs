@@ -198,18 +198,8 @@ public class TileBrushTool : Tool {
                 isPainting = true;
                 if (Editor.SelectedRoom != null)
                     UndoRedo.BeginAction("edit tiles", Editor.SelectedRoom.SnapshotTiles());
-            } else if (Editor.SelectedRoom != null) {
-                Vector2 tilePos = new((float)Math.Floor(Mouse.World.X / 8) * 8, (float)Math.Floor(Mouse.World.Y / 8) * 8);
-                bool lookBg = MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift);
-                char at = Editor.SelectedRoom.GetTile(!lookBg, tilePos);
-                if (left) {
-                    LeftFg = !lookBg;
-                    CurLeftTileset = (lookBg ? BgTilesets : FgTilesets).FindIndex(t => t.Key == at);
-                } else {
-                    RightFg = !lookBg;
-                    CurRightTileset = (lookBg ? BgTilesets : FgTilesets).FindIndex(t => t.Key == at);
-                }
-            }
+            } else
+                HandleEyedropper(left);
         } else if (MInput.Mouse.ReleasedLeftButton || (middlePan && MInput.Mouse.ReleasedRightButton)) {
             if (Editor.SelectedRoom != null && canClick && isPainting)
                 for (int x = 0; x < holoFgTileMap.Columns; x++)
@@ -337,6 +327,7 @@ public class TileBrushTool : Tool {
 
                     break;
                 case TileBrushMode.Eyedropper:
+                    HandleEyedropper(left);
                     break;
             }
 
@@ -446,6 +437,21 @@ public class TileBrushTool : Tool {
             for (int y = 0; y < tile.Tiles.Rows; y++)
                 if (tile.Tiles[x, y] != null)
                     tile.Tiles[x, y].Draw(position + new Vector2(x, y) * 8 * scale, Vector2.Zero, color, scale);
+    }
+
+    private static void HandleEyedropper(bool left){
+        if (Editor.SelectedRoom != null) {
+            Vector2 tilePos = new((float)Math.Floor(Mouse.World.X / 8) * 8, (float)Math.Floor(Mouse.World.Y / 8) * 8);
+            bool lookBg = MInput.Keyboard.Check(Keys.LeftShift, Keys.RightShift);
+            char at = Editor.SelectedRoom.GetTile(!lookBg, tilePos);
+            if (left) {
+                LeftFg = !lookBg;
+                CurLeftTileset = (lookBg ? BgTilesets : FgTilesets).FindIndex(t => t.Key == at);
+            } else {
+                RightFg = !lookBg;
+                CurRightTileset = (lookBg ? BgTilesets : FgTilesets).FindIndex(t => t.Key == at);
+            }
+        }
     }
 
     public override void SuggestCursor(ref MTexture cursor, ref Vector2 justify) {
