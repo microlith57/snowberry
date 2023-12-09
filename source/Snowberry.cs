@@ -184,7 +184,7 @@ public sealed class Snowberry : EverestModule {
 
     public static void LogInfo(string message) => Log(LogLevel.Info, message);
 
-    private void UsePlaytestMap(On.Celeste.Editor.MapEditor.orig_ctor orig, Celeste.Editor.MapEditor self, AreaKey area, bool reloadMapData) {
+    private static void UsePlaytestMap(On.Celeste.Editor.MapEditor.orig_ctor orig, Celeste.Editor.MapEditor self, AreaKey area, bool reloadMapData) {
         orig(self, area, reloadMapData);
         var selfData = new DynamicData(self);
         if (selfData.Get<Session>("CurrentSession") == Editor.Editor.PlaytestSession) {
@@ -198,7 +198,7 @@ public sealed class Snowberry : EverestModule {
         }
     }
 
-    private LevelData DontCrashOnEmptyPlaytestLevel(On.Celeste.MapData.orig_StartLevel orig, MapData self) {
+    private static LevelData DontCrashOnEmptyPlaytestLevel(On.Celeste.MapData.orig_StartLevel orig, MapData self) {
         // TODO: just add an empty room lol
         if (self.Area.SID == PlaytestSid && self.Levels.Count == 0) {
             var empty = new BinaryPacker.Element {
@@ -213,7 +213,7 @@ public sealed class Snowberry : EverestModule {
         return orig(self);
     }
 
-    private System.Collections.IEnumerator DontEnterPlaytestMap(On.Celeste.LevelEnter.orig_Routine orig, LevelEnter self) {
+    private static System.Collections.IEnumerator DontEnterPlaytestMap(On.Celeste.LevelEnter.orig_Routine orig, LevelEnter self) {
         var session = new DynamicData(self).Get<Session>("session");
         if (session.Area.SID == PlaytestSid && session != Editor.Editor.PlaytestSession && string.IsNullOrEmpty(LevelEnter.ErrorMessage)) {
             return CantEnterRoutine(self);
@@ -222,7 +222,7 @@ public sealed class Snowberry : EverestModule {
         return orig(self);
     }
 
-    private System.Collections.IEnumerator CantEnterRoutine(LevelEnter self) {
+    private static System.Collections.IEnumerator CantEnterRoutine(LevelEnter self) {
         yield return 1f;
         Postcard postcard;
         self.Add(postcard = new Postcard(Dialog.Get("SNOWBERRY_PLAYTEST_MAP_POSTCARD"), "event:/ui/main/postcard_csides_in", "event:/ui/main/postcard_csides_out"));
@@ -234,7 +234,7 @@ public sealed class Snowberry : EverestModule {
         Engine.Scene = new OverworldLoader(Overworld.StartMode.AreaQuit);
     }
 
-    private void DontCrashOnMissingAnimatedTile(On.Celeste.AnimatedTiles.orig_Set orig, AnimatedTiles self, int x, int y, string name, float scalex, float scaley) {
+    private static void DontCrashOnMissingAnimatedTile(On.Celeste.AnimatedTiles.orig_Set orig, AnimatedTiles self, int x, int y, string name, float scalex, float scaley) {
         if (self.Bank.AnimationsByName.ContainsKey(name))
             orig(self, x, y, name, scalex, scaley);
     }
