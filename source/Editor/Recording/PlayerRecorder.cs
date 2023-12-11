@@ -3,17 +3,48 @@ using System.Collections.Generic;
 using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
+using Monocle;
+using MonoMod.Utils;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
+using Snowberry.UI.Menus;
 
 namespace Snowberry.Editor.Recording;
 
 public class PlayerRecorder : Recorder{
 
-    private readonly List<Player.ChaserState> States = new();
+    private record struct PlayerState(
+        Player.ChaserState underlying,
+        Vector2 Speed,
+        int State,
+        int Dashes,
+        float Stamina,
+        float CoyoteTimer
+    ) {
+        public static PlayerState Observe(Player p) => new(
+            p.ChaserStates[^1],
+            p.Speed,
+            p.StateMachine.State,
+            p.Dashes,
+            p.Stamina,
+            DynamicData.For(p).Get<float>("jumpGraceTimer")
+        );
+
+        public float TimeStamp {
+            get => underlying.TimeStamp;
+            set {
+                var tmp = underlying;
+                tmp.TimeStamp = value;
+                underlying = tmp;
+            }
+        }
+    }
+
+    private readonly List<PlayerState> States = [];
     private PlayerSprite Sprite;
     private PlayerHair Hair;
     private string Skin = "Default";
+    private bool ShowPreciseData = false;
     // TODO: death animation...
 
     public PlayerRecorder() {
@@ -29,7 +60,7 @@ public class PlayerRecorder : Recorder{
 
     public override void UpdateInGame(Level l, float time){
         if(l.Tracker.GetEntity<Player>() is { ChaserStates.Count: > 0 } player) {
-            Player.ChaserState state = player.ChaserStates[player.ChaserStates.Count - 1];
+            PlayerState state = PlayerState.Observe(player);
             state.TimeStamp = time; // it's a struct, so no need to copy
             States.Add(state);
         }
@@ -38,18 +69,19 @@ public class PlayerRecorder : Recorder{
     public override void RenderScreenSpace(float time){}
 
     public override void RenderWorldSpace(float time){
-        Player.ChaserState? display = States.LastOrDefault(chaserState => chaserState.TimeStamp <= time);
+        PlayerState? display = States.LastOrDefault(chaserState => chaserState.TimeStamp <= time);
         if(display is { /*non null*/ } state){
             Sprite.Visible = true;
             Hair.Visible = true;
 
-            Sprite.RenderPosition = state.Position;
-            if (state.Animation != Sprite.CurrentAnimationID && state.Animation != null && Sprite.Has(state.Animation))
-                Sprite.Play(state.Animation, true);
-            Sprite.Scale = state.Scale;
+            Player.ChaserState cs = state.underlying;
+            Sprite.RenderPosition = cs.Position;
+            if (cs.Animation != Sprite.CurrentAnimationID && cs.Animation != null && Sprite.Has(cs.Animation))
+                Sprite.Play(cs.Animation, true);
+            Sprite.Scale = cs.Scale;
             if (Sprite.Scale.X != 0.0)
                 Hair.Facing = (Facings) Math.Sign(Sprite.Scale.X);
-            Hair.Color = state.HairColor; // note that this sets it to the hair colours of whatever skinmod was enabled
+            Hair.Color = cs.HairColor; // note that this sets it to the hair colours of whatever skinmod was enabled
             if (Sprite.Mode == PlayerSpriteMode.Playback)
                 Sprite.Color = Hair.Color;
 
@@ -59,6 +91,22 @@ public class PlayerRecorder : Recorder{
 
             SmhInterop.RunWithSkin(() => Hair.Render(), Skin); // fix bangs sprite
             Sprite.Render();
+
+            // TODO: expose this in a reasonable format
+            /*if (ShowPreciseData) {
+                string data = $"""
+                              State: {state.State}
+                              Position: {state.underlying.Position}
+                              Speed: {state.Speed}
+                              Dashes: {state.Dashes}
+                              Stamina: {state.Stamina}
+                              """;
+                if (state.CoyoteTimer > 0)
+                    data += $"\nCoyote Timer: {state.CoyoteTimer}";
+                var area = Fonts.Regular.Measure(data);
+                Draw.Rect(cs.Position.X - area.X - 5, cs.Position.Y - area.Y - 5, area.X + 10, area.Y + 10, Color.Gray * 0.5f);
+                Fonts.Regular.Draw(data, cs.Position - new Vector2(area.X - 5, -5), new(1), Color.White);
+            }*/
         }else{
             // ReSharper disable once HeuristicUnreachableCode
             Sprite.Visible = false;
@@ -73,7 +121,7 @@ public class PlayerRecorder : Recorder{
         UIButton button = null;
         button = new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_PT_SKIN_MADELINE") + " \uF036", Fonts.Regular, 2, 2) {
             OnPress = () => {
-                List<UIDropdown.DropdownEntry> entries = new();
+                List<UIDropdown.DropdownEntry> entries = [];
                 foreach (PlayerSpriteMode sm in Enum.GetValues(typeof(PlayerSpriteMode)).OfType<PlayerSpriteMode>()) {
                     string name = Dialog.Clean($"SNOWBERRY_EDITOR_PT_SKIN_{sm.ToString().ToUpperInvariant()}");
                     entries.Add(new UIDropdown.DropdownEntry(name, () => {
@@ -100,10 +148,7 @@ public class PlayerRecorder : Recorder{
             }
         };
         orig.AddBelow(button, new(6, 3));
-        /*orig.AddBelow(UIPluginOptionList.DropdownOption(Dialog.Clean("SNOWBERRY_EDITOR_PT_OPTS_SKIN"), Mode, mode => {
-            Mode = mode;
-            ChangeMode(ref Sprite, ref Hair, Mode);
-        }), new(6, 3));*/
+        //orig.AddBelow(UIPluginOptionList.BoolOption("precise info", ShowPreciseData, u => ShowPreciseData = u), new(6, 3));
         orig.CalculateBounds();
         orig.Height += 3;
         return orig;

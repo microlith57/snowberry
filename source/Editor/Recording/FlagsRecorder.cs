@@ -11,10 +11,10 @@ public class FlagsRecorder : Recorder {
 
     public override string Name() => Dialog.Clean("SNOWBERRY_EDITOR_PT_FLAGS");
 
-    private List<(string flag, List<(bool value, float time)> snapshots)> States = new();
+    private readonly List<(string flag, List<(bool value, float time)> snapshots)> States = [];
 
     public override void UpdateInGame(Level l, float time) {
-        HashSet<string> toTrack = new(l.Session.Flags);
+        HashSet<string> toTrack = [..l.Session.Flags];
 
         foreach(var state in States){
             bool value = toTrack.Contains(state.flag);
@@ -26,7 +26,7 @@ public class FlagsRecorder : Recorder {
 
         // discovered new flags to track
         foreach(string flag in toTrack)
-            States.Add((flag, new() { (l.Session.GetFlag(flag), time) }));
+            States.Add((flag, [(l.Session.GetFlag(flag), time)]));
     }
 
     public override void RenderScreenSpace(float time) {
