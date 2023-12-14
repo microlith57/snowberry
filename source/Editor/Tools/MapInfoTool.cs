@@ -68,11 +68,14 @@ public class MapInfoTool : Tool {
 
     public override UIElement CreateActionBar() {
         UIElement bar = new();
-        bar.AddRight(new UIKeyboundButton(UIScene.ActionbarAtlas.GetSubtexture(0, 80, 16, 16), 3, 3) {
-            OnPress = () => Editor.Instance.Camera.Zoom = 6
-        }, new(0, 4));
+        bar.AddRight(CreateScaleButton(), new(0, 4));
         return bar;
     }
 
     public override void Update(bool canClick){}
+
+    public static UIKeyboundButton CreateScaleButton() =>
+        new(UIScene.ActionbarAtlas.GetSubtexture(0, 80, 16, 16), 3, 3) {
+            OnPress = () => Editor.Instance.Camera.Zoom = 6
+        };
 }

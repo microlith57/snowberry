@@ -240,6 +240,12 @@ public class StylegroundsTool : Tool {
         return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_STYLEGROUNDS");
     }
 
+    public override UIElement CreateActionBar() {
+        UIElement bar = new();
+        bar.AddRight(MapInfoTool.CreateScaleButton(), new(0, 4));
+        return bar;
+    }
+
     public override void Update(bool canClick) {
         for (int i = 0; i < StylegroundButtons.Count; i++) {
             UIButton item = StylegroundButtons[i];
