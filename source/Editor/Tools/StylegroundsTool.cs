@@ -232,13 +232,11 @@ public class StylegroundsTool : Tool {
         }
     }
 
-    private UIButton SelectedButton() {
-        return StylegroundButtons.Count > SelectedStyleground ? StylegroundButtons[SelectedStyleground] : null;
-    }
+    private UIButton SelectedButton() =>
+        StylegroundButtons.Count > SelectedStyleground ? StylegroundButtons[SelectedStyleground] : null;
 
-    public override string GetName() {
-        return Dialog.Clean("SNOWBERRY_EDITOR_TOOL_STYLEGROUNDS");
-    }
+    public override string GetName() =>
+        Dialog.Clean("SNOWBERRY_EDITOR_TOOL_STYLEGROUNDS");
 
     public override UIElement CreateActionBar() {
         UIElement bar = new();

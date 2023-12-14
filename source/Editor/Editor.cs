@@ -679,6 +679,8 @@ public class Editor : UIScene {
         Tool.Tools[Toolbar.CurrentTool].ResizePanel(UI.Height - Toolbar.Height);
     }
 
+    protected override bool ShouldShowUi() => Map == null || !Input.MenuJournal.Check;
+
     public bool CanTypeShortcut() => !UI.NestedGrabsKeyboard();
 
     public static void TryBackup(Backups.BackupReason reason) {

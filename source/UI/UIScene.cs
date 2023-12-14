@@ -87,18 +87,21 @@ public abstract class UIScene : Scene {
     public override void Render() {
         Draw.SpriteBatch.GraphicsDevice.Clear(BG);
 
+        bool showUi = ShouldShowUi();
+
         #region UI Rendering
 
         Engine.Instance.GraphicsDevice.SetRenderTarget(UIBuffer);
         Engine.Instance.GraphicsDevice.Clear(Color.Transparent);
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
-        UI.Render();
+        if(showUi)
+            UI.Render();
 
         MTexture curCursor = DefaultCursor;
         Vector2 curJustify = Vector2.Zero;
         SuggestCursor(ref curCursor, ref curJustify);
-        curCursor.DrawJustified(Mouse.Screen, curJustify);
+        curCursor.DrawJustified(Mouse.Screen, curJustify, Color.White * (showUi ? 1 : 0.5f));
 
         // Tooltip rendering
         var tooltip = UI.HoveredTooltip();
@@ -137,4 +140,5 @@ public abstract class UIScene : Scene {
     protected virtual Vector2 CalculateMouseWorld(MouseState m) => new Vector2(m.X, m.Y) / 2;
     protected virtual void SuggestCursor(ref MTexture texture, ref Vector2 justify) {}
     protected virtual void OnScreenResized() {}
+    protected virtual bool ShouldShowUi() => true;
 }
