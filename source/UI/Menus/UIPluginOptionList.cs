@@ -67,22 +67,22 @@ public class UIPluginOptionList : UIElement {
                 l += 91;
             } else if (option.Value.FieldType == typeof(int)) {
                 UIOption ui;
-                Add(ui = LiteralValueOption<int>(option.Key, value.ToString(), Plugin));
+                Add(ui = LiteralValueOption(option.Key, (int)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
             } else if (option.Value.FieldType == typeof(long)) {
                 UIOption ui;
-                Add(ui = LiteralValueOption<long>(option.Key, value.ToString(), Plugin));
+                Add(ui = LiteralValueOption(option.Key, (long)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
             } else if (option.Value.FieldType == typeof(float)) {
                 UIOption ui;
-                Add(ui = LiteralValueOption<float>(option.Key, value.ToString(), Plugin));
+                Add(ui = LiteralValueOption(option.Key, (float)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
             } else if (option.Value.FieldType == typeof(double)) {
                 UIOption ui;
-                Add(ui = LiteralValueOption<double>(option.Key, value.ToString(), Plugin));
+                Add(ui = LiteralValueOption(option.Key, (double)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
             } else if (option.Value.FieldType == typeof(Tileset)) {
@@ -120,15 +120,15 @@ public class UIPluginOptionList : UIElement {
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
     }
 
-    public static UIOption LiteralValueOption<T>(string name, string value, Action<T> onChange, int width = 80) {
-        var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value) {
+    public static UIOption LiteralValueOption<T>(string name, T value, Action<T> onChange, int width = 80) {
+        var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value.ToInvString()) {
             OnValidInputChange = v => onChange?.Invoke(v)
         };
         return new UIOption(name, checkbox);
     }
 
-    public static UIOption LiteralValueOption<T>(string name, string value, Plugin plugin, int width = 80) {
-        var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value) {
+    public static UIOption LiteralValueOption<T>(string name, T value, Plugin plugin, int width = 80) {
+        var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value.ToInvString()) {
             OnValidInputChange = v => plugin.SnapshotWeakAndSet(name, v)
         };
         return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
