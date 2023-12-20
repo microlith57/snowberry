@@ -20,7 +20,22 @@ public partial class Decal : Placeable {
 
     public string Texture { get; private set; }
 
-    public Rectangle Bounds => new((int)(Position.X - Math.Abs(tex.Width * Scale.X) / 2), (int)(Position.Y - Math.Abs(tex.Height * Scale.Y) / 2), (int)Math.Abs(tex.Width * Scale.X), (int)Math.Abs(tex.Height * Scale.Y));
+    public Rectangle Bounds {
+        get {
+            float w = Math.Abs(tex.Width * Scale.X);
+            float h = Math.Abs(tex.Height * Scale.Y);
+            if (Rotation != 0) {
+                Vector2 tL = new Vector2(-w/2, -h/2).Rotate(Rotation);
+                Vector2 bL = new Vector2(-w/2, h/2).Rotate(Rotation);
+                Vector2 tR = new Vector2(w/2, -h/2).Rotate(Rotation);
+                Vector2 bR = new Vector2(w/2, h/2).Rotate(Rotation);
+                w = 2 * Math.Abs(Math.Min(Math.Min(tL.X, bL.X), Math.Min(tR.X, bR.X)));
+                h = 2 * Math.Abs(Math.Min(Math.Min(tL.Y, bL.Y), Math.Min(tR.Y, bR.Y)));
+            }
+
+            return new((int)(Position.X - w / 2), (int)(Position.Y - h / 2), (int)w, (int)h);
+        }
+    }
 
     internal Decal(Room room, string texture, bool fg) {
         Room = room;
