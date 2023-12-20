@@ -94,6 +94,11 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_EDITOR_SELECT_PASTE_TT=           paste (ctrl-V)
 	SNOWBERRY_EDITOR_SELECT_CUT_TT=             cut (ctrl-X)
 	SNOWBERRY_EDITOR_SELECT_DELETE_TT=          delete (del)
+	
+	SNOWBERRY_EDITOR_DECAL_OPT_SCALE_X=         scale X
+	SNOWBERRY_EDITOR_DECAL_OPT_SCALE_Y=         scale Y
+	SNOWBERRY_EDITOR_DECAL_OPT_ROTATION=        rotation
+	SNOWBERRY_EDITOR_DECAL_OPT_COLOUR=          colour
 
 # *** Tile Brush Tool ***
 	SNOWBERRY_EDITOR_TILE_BRUSH_BRUSH_TT=       brush (P, alt-P)

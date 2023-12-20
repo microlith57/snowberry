@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Celeste;
 using Microsoft.Xna.Framework;
 using Snowberry.Editor;
 using Snowberry.UI.Layout;
@@ -54,7 +55,13 @@ public class UISelectionPane : UIScrollPane{
                 Position = new Vector2(3, name.Height + 3)
             };
 
-            options.AddBelow(UIPluginOptionList.LiteralValueOption("scale x", d.Scale.X, sc => d.Scale.X = sc));
+            Vector2 offset = new(4, 3);
+
+            options.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_SCALE_X"), d.Scale.X, sc => d.Scale.X = sc), offset);
+            options.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_SCALE_Y"), d.Scale.Y, sc => d.Scale.Y = sc), offset);
+            options.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_ROTATION"), d.Rotation, r => d.Rotation = r), offset);
+            options.AddBelow(UIPluginOptionList.ColorOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_COLOUR"), d.Color, c => d.Color = c));
+            options.CalculateBounds();
 
             entry = Regroup(name, options);
         }
