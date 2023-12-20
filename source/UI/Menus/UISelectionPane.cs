@@ -60,7 +60,7 @@ public class UISelectionPane : UIScrollPane{
             options.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_SCALE_X"), d.Scale.X, sc => d.Scale.X = sc), offset);
             options.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_SCALE_Y"), d.Scale.Y, sc => d.Scale.Y = sc), offset);
             options.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_ROTATION"), d.Rotation, r => d.Rotation = r), offset);
-            options.AddBelow(UIPluginOptionList.ColorOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_COLOUR"), d.Color, c => d.Color = c));
+            options.AddBelow(UIPluginOptionList.ColorOption(Dialog.Clean("SNOWBERRY_EDITOR_DECAL_OPT_COLOUR"), d.Color, c => d.Color = c), offset);
             options.CalculateBounds();
 
             entry = Regroup(name, options);
