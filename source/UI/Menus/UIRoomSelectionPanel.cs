@@ -155,8 +155,8 @@ partial class UIRoomSelectionPanel : UIElement {
         AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_ALT_MUSIC"), room.AltMusic, text => room.AltMusic = text), offset);
         AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_AMBIENCE"), room.Ambience, text => room.Ambience = text), offset);
 
-        AddBelow(UIPluginOptionList.LiteralValueOption<int>(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_MUSIC_PROG"), room.MusicProgress.ToString(), prog => room.MusicProgress = prog), offset);
-        AddBelow(UIPluginOptionList.LiteralValueOption<int>(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_AMBIENCE_PROG"), room.AmbienceProgress.ToString(), prog => room.AmbienceProgress = prog), offset);
+        AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_MUSIC_PROG"), room.MusicProgress, prog => room.MusicProgress = prog), offset);
+        AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPT_AMBIENCE_PROG"), room.AmbienceProgress, prog => room.AmbienceProgress = prog), offset);
 
         var titleOffset = new Vector2(12, 8);
         AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_MUSIC_LAYERS")), titleOffset);
@@ -170,8 +170,8 @@ partial class UIRoomSelectionPanel : UIElement {
 
         AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_OPTS_CAMERA_OFFSET")), titleOffset);
         UIElement coords = new();
-        coords.AddRight(UIPluginOptionList.LiteralValueOption<float>("x", room.CameraOffset.X.ToString(CultureInfo.InvariantCulture), val => room.CameraOffset.X = val, width: 40), new(4, 0));
-        coords.AddRight(UIPluginOptionList.LiteralValueOption<float>("y", room.CameraOffset.Y.ToString(CultureInfo.InvariantCulture), val => room.CameraOffset.Y = val, width: 40), new(15, 0));
+        coords.AddRight(UIPluginOptionList.LiteralValueOption("x", room.CameraOffset.X, val => room.CameraOffset.X = val, width: 40), new(4, 0));
+        coords.AddRight(UIPluginOptionList.LiteralValueOption("y", room.CameraOffset.Y, val => room.CameraOffset.Y = val, width: 40), new(15, 0));
         coords.CalculateBounds();
         AddBelow(coords);
 

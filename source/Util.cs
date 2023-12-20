@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Celeste.Mod;
@@ -23,13 +24,11 @@ public static class Util {
         public static readonly Color CloudLightGray = Calc.HexToColor("5c646b");
     }
 
-    public static readonly List<Keys> DigitKeys = new() {
+    public static readonly List<Keys> DigitKeys = [
         Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9, Keys.D0
-    };
+    ];
 
-    public static int Bit(this bool b) {
-        return b ? 1 : 0;
-    }
+    public static int Bit(this bool b) => b ? 1 : 0;
 
     public static object Default(Type t) {
         if (t.IsEnum)
@@ -134,6 +133,8 @@ public static class Util {
             new[] { (byte)Math.Round(c.R * f), (byte)Math.Round(c.G * f), (byte)Math.Round(c.B * f), c.A }
         ).Replace("-", string.Empty);
     }
+
+    public static string ToInvString(this object o) => o is IConvertible c ? c.ToString(CultureInfo.InvariantCulture) : o.ToString();
 
     public static Dictionary<K, V> OrElse<K, V>(this Dictionary<K, V> primary, Dictionary<K, V> fallback) {
         var result = new Dictionary<K, V>(primary);

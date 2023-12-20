@@ -39,9 +39,9 @@ public class MapInfoTool : Tool {
         ret.AddBelow(UIPluginOptionList.DropdownOption("core mode", map.Meta.CoreMode ?? Session.CoreModes.None, i => map.Meta.CoreMode = i), optionOffset);
         ret.AddBelow(UIPluginOptionList.BoolOption("dreaming", map.Meta.Dreaming ?? false, i => map.Meta.Dreaming = i), optionOffset);
         // ambient visuals
-        ret.AddBelow(UIPluginOptionList.LiteralValueOption<float>("darkness alpha", map.Meta.DarknessAlpha?.ToString() ?? "0.05", i => map.Meta.DarknessAlpha = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.LiteralValueOption<float>("bloom base", map.Meta.BloomBase?.ToString() ?? "0", i => map.Meta.BloomBase = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.LiteralValueOption<float>("bloom strength", map.Meta.BloomStrength?.ToString() ?? "1", i => map.Meta.BloomStrength = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption("darkness alpha", map.Meta.DarknessAlpha ?? 0.05f, i => map.Meta.DarknessAlpha = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption("bloom base", map.Meta.BloomBase ?? 0, i => map.Meta.BloomBase = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption("bloom strength", map.Meta.BloomStrength ?? 1, i => map.Meta.BloomStrength = i), optionOffset);
         ret.AddBelow(UIPluginOptionList.StringOption("color grade", map.Meta.ColorGrade ?? "", i => map.Meta.ColorGrade = i), optionOffset);
         // music
         ret.AddBelow(UIPluginOptionList.StringOption("cassette song", map.Meta.CassetteSong ?? "event:/music/cassette/01_forsaken_city", i => map.Meta.CassetteSong = i), optionOffset);
