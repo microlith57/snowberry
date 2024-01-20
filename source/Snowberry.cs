@@ -82,7 +82,7 @@ public sealed class Snowberry : EverestModule {
     }
 
     private static void LoadModules() {
-        List<SnowberryModule> modules = new List<SnowberryModule>();
+        List<SnowberryModule> modules = [];
 
         foreach (EverestModule module in Everest.Modules) {
             Assembly asm = module.GetType().Assembly;
@@ -104,33 +104,29 @@ public sealed class Snowberry : EverestModule {
                 }
             }
 
-            if (sm != null) {
-                if (module.GetType() != typeof(Snowberry)) {
-                    foreach (Type type in types.Where(t => !t.IsAbstract && typeof(Tool).IsAssignableFrom(t))) {
-                        ConstructorInfo ctor = type.GetConstructor(Array.Empty<Type>());
-                        if (ctor != null) {
-                            Tool pluginTool = (Tool)ctor.Invoke(Array.Empty<object>());
-                            pluginTool.Owner = sm;
-                            Tool.Tools.Add(pluginTool);
-                            Log(LogLevel.Info, $"Loaded plugin tool '{pluginTool.GetName()}' from {module.Metadata.Name}");
-                        }
+            if (sm != null && module.GetType() != typeof(Snowberry))
+                foreach (Type type in types.Where(t => !t.IsAbstract && typeof(Tool).IsAssignableFrom(t)))
+                    if (type.GetConstructor(Array.Empty<Type>()) is {} ctor) {
+                        Tool pluginTool = (Tool)ctor.Invoke(Array.Empty<object>());
+                        pluginTool.Owner = sm;
+                        Tool.Tools.Add(pluginTool);
+                        Log(LogLevel.Info, $"Loaded plugin tool '{pluginTool.GetName()}' from {module.Metadata.Name}");
                     }
-                }
-            }
         }
 
         Modules = modules.ToArray();
     }
 
-    private void MainMenu_OnCreateButtons(OuiMainMenu menu, List<MenuButton> buttons) {
+    private static void MainMenu_OnCreateButtons(OuiMainMenu menu, List<MenuButton> buttons) {
         MainMenuSmallButton btn = new MainMenuSmallButton("EDITOR_MAINMENU", "menu/editor", menu, Vector2.Zero, Vector2.Zero, Editor.Editor.OpenMainMenu);
-        int c = 2;
-        if (Celeste.Celeste.PlayMode == Celeste.Celeste.PlayModes.Debug) c++;
-        buttons.Insert(c, btn);
+        int idx = 2;
+        if (Celeste.Celeste.PlayMode == Celeste.Celeste.PlayModes.Debug)
+            idx++;
+        buttons.Insert(idx, btn);
     }
 
     // from Collab Utils 2, adjusted for Snowberry
-    private void Level_OnCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
+    private static void Level_OnCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
         int buttonIdx(string label) =>
             menu.Items.FindIndex(item =>
                 item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button)item).Label == Dialog.Clean(label));
@@ -202,8 +198,8 @@ public sealed class Snowberry : EverestModule {
         // TODO: just add an empty room lol
         if (self.Area.SID == PlaytestSid && self.Levels.Count == 0) {
             var empty = new BinaryPacker.Element {
-                Children = new List<BinaryPacker.Element>(),
-                Attributes = new Dictionary<string, object> {
+                Children = [],
+                Attributes = new() {
                     ["name"] = "lvl_empty_map"
                 }
             };

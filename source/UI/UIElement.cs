@@ -8,12 +8,12 @@ using Monocle;
 namespace Snowberry.UI;
 
 public class UIElement {
-    protected readonly List<UIElement> toRemove = new();
-    protected readonly List<UIElement> toAdd = new();
+    protected readonly List<UIElement> toRemove = [];
+    protected readonly List<UIElement> toAdd = [];
     private bool canModify = true;
 
     public UIElement Parent;
-    public List<UIElement> Children = new();
+    public List<UIElement> Children = [];
     public bool Visible = true, Active = true;
     public bool RenderChildren = true;
     public bool Destroyed = false;
@@ -26,6 +26,7 @@ public class UIElement {
     public bool GrabsClick = false;
 
     public object Tag = "";
+    public event Action OnUninitialized;
 
     public Rectangle Bounds => new((int)(Position.X + (Parent?.Bounds.X ?? 0) + (Parent?.BoundsOffset().X ?? 0)), (int)(Position.Y + (Parent?.Bounds.Y ?? 0) + (Parent?.BoundsOffset().Y ?? 0)), Width, Height);
 
@@ -76,8 +77,9 @@ public class UIElement {
 
     protected virtual void Initialize() { }
 
-    protected virtual void OnDestroy() {
+    protected virtual void Uninitialize() {
         Destroyed = true;
+        OnUninitialized?.Invoke();
     }
 
     public virtual string Tooltip() => null;
@@ -92,7 +94,7 @@ public class UIElement {
     public void Destroy() {
         foreach (UIElement element in Children)
             element?.Destroy();
-        OnDestroy();
+        Uninitialize();
     }
 
     public void Add(UIElement element) {

@@ -11,6 +11,8 @@ public class UIPluginOptionList : UIElement {
         public readonly UIElement Input;
         private readonly UILabel Label;
 
+        internal bool locked = false;
+
         public UIOption(string name, UIElement input, string tooltip = default) {
             Input = input;
 
@@ -106,32 +108,54 @@ public class UIPluginOptionList : UIElement {
         }
     }
 
+    private static UIOption WithPropListener<T>(string name, Plugin plugin, UIOption e, Action<T> changed){
+        Action<string, object> pluginOnOnPropChange = ((pname, pvalue) => {
+            if (pname == name && pvalue is T t && !e.locked)
+                changed(t);
+        });
+        plugin.OnPropChange += pluginOnOnPropChange;
+        e.OnUninitialized += () => plugin.OnPropChange -= pluginOnOnPropChange;
+        return e;
+    }
+
+    private static Action<T> Locking<T>(Action<T> underlying, Func<UIOption> e) {
+        return u => {
+            e().locked = true;
+            underlying(u);
+            e().locked = false;
+        };
+    }
+
     public static UIOption StringOption(string name, string value, Action<string> onChange, int width = 80) {
-        var checkbox = new UITextField(Fonts.Regular, width, value) {
+        var field = new UITextField(Fonts.Regular, width, value) {
             OnInputChange = str => onChange?.Invoke(str)
         };
-        return new UIOption(name, checkbox);
+        return new UIOption(name, field);
     }
 
     public static UIOption StringOption(string name, string value, Plugin plugin, int width = 80) {
-        var checkbox = new UITextField(Fonts.Regular, width, value) {
-            OnInputChange = str => plugin.SnapshotWeakAndSet(name, str)
+        UIOption o = null;
+        var field = new UITextField(Fonts.Regular, width, value) {
+            OnInputChange = Locking<string>(str => plugin.SnapshotWeakAndSet(name, str), () => o)
         };
-        return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
+        o = new UIOption(name, field, plugin.GetTooltipFor(name));
+        return WithPropListener<string>(name, plugin, o, s => field.UpdateInput(s, false));
     }
 
     public static UIOption LiteralValueOption<T>(string name, T value, Action<T> onChange, int width = 80) {
-        var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value.ToInvString()) {
+        var field = new UIValueTextField<T>(Fonts.Regular, width, value.ToInvString()) {
             OnValidInputChange = v => onChange?.Invoke(v)
         };
-        return new UIOption(name, checkbox);
+        return new UIOption(name, field);
     }
 
     public static UIOption LiteralValueOption<T>(string name, T value, Plugin plugin, int width = 80) {
-        var checkbox = new UIValueTextField<T>(Fonts.Regular, width, value.ToInvString()) {
-            OnValidInputChange = v => plugin.SnapshotWeakAndSet(name, v)
+        UIOption o = null;
+        var field = new UIValueTextField<T>(Fonts.Regular, width, value.ToInvString()) {
+            OnValidInputChange = Locking<T>(v => plugin.SnapshotWeakAndSet(name, v), () => o)
         };
-        return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
+        o = new UIOption(name, field, plugin.GetTooltipFor(name));
+        return WithPropListener<T>(name, plugin, o, t => field.UpdateInput(t.ToInvString(), false));
     }
 
     public static UIOption BoolOption(string name, bool value, Action<bool> onChange) {
@@ -142,10 +166,12 @@ public class UIPluginOptionList : UIElement {
     }
 
     public static UIOption BoolOption(string name, bool value, Plugin plugin) {
+        UIOption o = null;
         var checkbox = new UICheckBox(-1, value) {
-            OnPress = b => plugin.SnapshotAndSet(name, b)
+            OnPress = Locking<bool>(b => plugin.SnapshotAndSet(name, b), () => o)
         };
-        return new UIOption(name, checkbox, plugin.GetTooltipFor(name));
+        o = new UIOption(name, checkbox, plugin.GetTooltipFor(name));
+        return WithPropListener<bool>(name, plugin, o, checkbox.SetChecked);
     }
 
     public static UIOption ColorOption(string name, Color value, Action<Color> onChange) {
@@ -163,10 +189,16 @@ public class UIPluginOptionList : UIElement {
     }
 
     public static UIOption ColorOption(string name, Color value, Plugin plugin) {
+        UIOption o = null;
         var colorpicker = new UIColorPicker(value) {
-            OnColorChange = (color, _) => plugin.SnapshotWeakAndSet(name, color)
+            OnColorChange = (color, _) => {
+                o.locked = true;
+                plugin.SnapshotWeakAndSet(name, color);
+                o.locked = false;
+            }
         };
-        return new UIOption(name, colorpicker, plugin.GetTooltipFor(name));
+        o = new UIOption(name, colorpicker, plugin.GetTooltipFor(name));
+        return WithPropListener<Color>(name, plugin, o, colorpicker.SetColor);
     }
 
     public static UIOption DropdownOption<T>(string name, T value, Action<T> onChange) where T : Enum {
@@ -190,17 +222,35 @@ public class UIPluginOptionList : UIElement {
     }
 
     public static UIOption DropdownOption(string name, Type t, object value, Plugin plugin) {
-        return DropdownOption(name, t, value, v => plugin.SnapshotAndSet(name, v), plugin.GetTooltipFor(name));
+        UIOption o = null;
+        UIButton button = null;
+        button = new UIButton(value + " \uF036", Fonts.Regular, 2, 2) {
+            OnPress = () => {
+                var dropdown = UIDropdown.OfEnum(Fonts.Regular, t, it => {
+                    o.locked = true;
+                    plugin.SnapshotAndSet(name, it);
+                    o.locked = false;
+                    button.SetText(it + " \uF036");
+                });
+                dropdown.Position = button.GetBoundsPos() + Vector2.UnitY * (button.Height + 2) - Editor.Editor.Instance.ToolPanel.GetBoundsPos();
+                Editor.Editor.Instance.ToolPanel.Add(dropdown);
+            }
+        };
+        o = new UIOption(name, button, plugin.GetTooltipFor(name));
+        return WithPropListener<object>(name, plugin, o, it => button.SetText(it + " \uF036"));
     }
 
     public static UIOption TilesetDropdownOption(string name, Tileset value, Plugin plugin) {
+        UIOption o = null;
         UIButton button = null;
         button = new UIButton(value.Name + " \uF036", Fonts.Regular, 2, 2) {
             OnPress = () => {
                 var dropdown = new UIDropdown(Fonts.Regular, Tileset.FgTilesets
                     .Where(ts => ts.Key != '0')
                     .Select(ts => new UIDropdown.DropdownEntry(ts.Name, () => {
+                        o.locked = true;
                         plugin.SnapshotAndSet(name, ts.Key);
+                        o.locked = false;
                         button.SetText(ts.Name + " \uF036");
                     }) {
                         Icon = ts.Tile.Tiles[0, 0]
@@ -211,8 +261,8 @@ public class UIPluginOptionList : UIElement {
                 Editor.Editor.Instance.ToolPanel.Add(dropdown);
             }
         };
+        o = new UIOption(name, button, plugin.GetTooltipFor(name));
+        return WithPropListener<Tileset>(name, plugin, o, ts => button.SetText(ts.Name + " \uF036"));
         // TODO: give the button an icon as well
-
-        return new UIOption(name, button, plugin.GetTooltipFor(name));
     }
 }

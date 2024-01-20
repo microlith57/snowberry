@@ -72,7 +72,7 @@ public class UITextField : UIElement {
         UpdateInput(Value[..from] + str + Value[to..]);
     }
 
-    public void UpdateInput(string str) {
+    public void UpdateInput(string str, bool updateUnderlying = true) {
         Value = str;
         widthAtIndex = new int[Value.Length + 1];
         int w = 0;
@@ -82,7 +82,8 @@ public class UITextField : UIElement {
         }
 
         widthAtIndex[^1] = w;
-        OnInputUpdate(Value);
+        if(updateUnderlying)
+            OnInputUpdate(Value);
     }
 
     protected virtual void OnInputUpdate(string input) {
@@ -245,11 +246,11 @@ public class UITextField : UIElement {
 
         if (Selected) {
             if ((Engine.Scene.TimeActive - timeOffset) % 1f < 0.5f) {
-                Draw.Rect(position + Vector2.UnitX * widthAtIndex[charIndex], 1, Font.LineHeight, FG);
+                Draw.Rect(position + Vector2.UnitX * GetWidthAt(charIndex), 1, Font.LineHeight, FG);
             }
 
             if (selection != charIndex) {
-                int a = widthAtIndex[charIndex], b = widthAtIndex[selection];
+                int a = GetWidthAt(charIndex), b = GetWidthAt(selection);
                 if (a < b)
                     Draw.Rect(position + Vector2.UnitX * a, b - a, Font.LineHeight, Color.Blue * 0.25f);
                 else
@@ -258,8 +259,10 @@ public class UITextField : UIElement {
         }
     }
 
-    protected override void OnDestroy() {
-        base.OnDestroy();
+    private int GetWidthAt(int index) => index < 0 ? 0 : index >= widthAtIndex.Length ? widthAtIndex[^1] : widthAtIndex[index];
+
+    protected override void Uninitialize() {
+        base.Uninitialize();
 
         TextInput.OnInput -= OnInput;
     }

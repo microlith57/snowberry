@@ -40,8 +40,12 @@ public class UICheckBox : UIButton {
 
     protected override void Pressed() {
         base.Pressed();
-        Checked = !Checked;
+        SetChecked(!Checked);
         OnPress?.Invoke(Checked);
+    }
+
+    public void SetChecked(bool c) {
+        Checked = c;
         SetText(Checked ? Enabled : Disabled);
     }
 }

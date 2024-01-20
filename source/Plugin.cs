@@ -24,6 +24,9 @@ public abstract class Plugin {
     public PluginInfo Info { get; internal set; }
     public string Name { get; internal set; }
 
+    /// Called before a property is set.
+    public event Action<string, object> OnPropChange;
+
     // overriden by generic plugins
     public virtual void Set(string option, object value) {
         if (Info.Options.TryGetValue(option, out PluginOption f)) {
@@ -39,6 +42,7 @@ public abstract class Plugin {
                     v = Tileset.ByKey(value.ToString()[0], false);
                 else
                     v = value is string str ? StrToObject(f.FieldType, str) : Convert.ChangeType(value, f.FieldType);
+                OnPropChange?.Invoke(option, v);
                 f.SetValue(this, v);
             } catch (ArgumentException e) {
                 Snowberry.Log(LogLevel.Warn,
