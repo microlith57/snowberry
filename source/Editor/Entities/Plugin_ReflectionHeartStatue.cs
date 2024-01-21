@@ -8,20 +8,20 @@ namespace Snowberry.Editor.Entities;
 [Plugin("reflectionHeartStatue")]
 public class Plugin_ReflectionHeartStatue : Entity {
 
-    public static readonly MTexture[] sprites = {
+    public static readonly MTexture[] sprites = [
         GFX.Game["objects/reflectionHeart/statue"],
         GFX.Game["objects/reflectionHeart/gem"],
         GFX.Game["objects/reflectionHeart/torch00"]
-    };
+    ];
 
-    public static readonly Color[] gemColors = {
+    public static readonly Color[] gemColors = [
         Calc.HexToColor("F0F0F0"), // U
         Calc.HexToColor("9171F2"), // L
         Calc.HexToColor("0A44E0"), // DR
         Calc.HexToColor("B32D00"), // UR
         Calc.HexToColor("9171F2"), // L
         Calc.HexToColor("FFCD37") // UL
-    };
+    ];
 
     public override int MinNodes => 5;
     public override int MaxNodes => 5;

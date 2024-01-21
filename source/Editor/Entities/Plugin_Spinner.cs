@@ -78,7 +78,7 @@ public class Plugin_Spinner : Entity {
 
     private void UpdateConnections() {
         if (connectTo == null || Room.IsEntityTypeDirty(typeof(Plugin_Spinner))) {
-            connectTo = new List<Entity>();
+            connectTo = [];
             foreach (var item in Room.TrackedEntities[typeof(Plugin_Spinner)]) {
                 if ((item.Position - Position).LengthSquared() < 24 * 24) {
                     connectTo.Add(item);
@@ -88,7 +88,7 @@ public class Plugin_Spinner : Entity {
     }
 
     public static void AddPlacements() {
-        string[] types = { "Blue", "Red", "Purple", "Rainbow" };
+        string[] types = ["Blue", "Red", "Purple", "Rainbow"];
         foreach (var type in types)
             Placements.EntityPlacementProvider.Create($"Spinner ({type})", "spinner", new() { ["color"] = type });
 

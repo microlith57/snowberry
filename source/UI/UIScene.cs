@@ -106,7 +106,7 @@ public abstract class UIScene : Scene {
         // Tooltip rendering
         var tooltip = UI.HoveredTooltip();
         if (tooltip != null) {
-            string[] array = tooltip.Split(new[] { "\\n" }, StringSplitOptions.None);
+            string[] array = tooltip.Split(["\\n"], StringSplitOptions.None);
             for(int i = 0; i < array.Length; i++) {
                 string line = array[i];
                 var tooltipArea = Fonts.Regular.Measure(line);

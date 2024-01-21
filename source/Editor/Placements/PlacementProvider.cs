@@ -5,10 +5,10 @@ namespace Snowberry.Editor.Placements;
 
 public interface PlacementProvider {
 
-    public static readonly List<PlacementProvider> All = new() {
+    public static readonly List<PlacementProvider> All = [
         new EntityPlacementProvider(),
         new DecalPlacementProvider()
-    };
+    ];
 
     public IEnumerable<Placement> Placements();
 

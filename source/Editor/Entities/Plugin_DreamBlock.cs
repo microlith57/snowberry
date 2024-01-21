@@ -16,12 +16,12 @@ public class Plugin_DreamBlock : Entity {
     public override int MinHeight => 8;
     public override int MaxNodes => 1;
 
-    public MTexture[] ParticleTextures = {
+    public MTexture[] ParticleTextures = [
         GFX.Game["objects/dreamblock/particles"].GetSubtexture(14, 0, 7, 7),
         GFX.Game["objects/dreamblock/particles"].GetSubtexture(7, 0, 7, 7),
         GFX.Game["objects/dreamblock/particles"].GetSubtexture(0, 0, 7, 7),
         GFX.Game["objects/dreamblock/particles"].GetSubtexture(7, 0, 7, 7)
-    };
+    ];
 
     public override void Render() {
         base.Render();

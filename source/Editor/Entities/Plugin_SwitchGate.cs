@@ -84,7 +84,7 @@ public class Plugin_SwitchGate : Entity {
     }
 
     public static void AddPlacements() {
-        string[] types = { "Block", "Mirror", "Stars", "Temple" };
+        string[] types = ["Block", "Mirror", "Stars", "Temple"];
         foreach (var type in types)
             Placements.EntityPlacementProvider.Create($"Switch Gate ({type})", "switchGate", new Dictionary<string, object>() { { "sprite", type.ToLower() } });
     }

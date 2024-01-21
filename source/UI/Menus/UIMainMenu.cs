@@ -16,7 +16,7 @@ public class UIMainMenu : UIElement {
         Start, Create, Load, Exiting, Settings
     }
     private States state = States.Start;
-    private readonly float[] stateLerp = { 1f, 0f, 0f, 0f, 0f };
+    private readonly float[] stateLerp = [1f, 0f, 0f, 0f, 0f];
 
     private readonly UIRibbon authors, version;
     private readonly UIButton settings;

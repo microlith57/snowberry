@@ -56,11 +56,11 @@ public class Styleground : Plugin {
 
     public Color Color => RawColor * Alpha;
 
-    public static readonly List<string> IllegalOptionNames = new() {
+    public static readonly List<string> IllegalOptionNames = [
         "name", "tag", "x", "y", "only", "exclude", "flag", "notflag", "always",
         "scrollx", "scrolly", "speedx", "speedy", "color", "alpha", "flipx", "flipy", "loopx", "loopy", "fadex", "fadey",
         "wind", "dreaming", "instantIn", "instantOut"
-    };
+    ];
 
     // Render on the Snowberry background
     public virtual void Render(Room room) { }

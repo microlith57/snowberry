@@ -29,7 +29,7 @@ public class Plugin_ClutterBlock : Entity {
     public override void Render() {
         base.Render();
 
-        List<MTexture> blocks = new List<MTexture>(this.blocks);
+        List<MTexture> blocks = [..this.blocks];
 
         int w = Width / 8;
         int h = Height / 8;

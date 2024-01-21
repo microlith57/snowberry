@@ -13,12 +13,12 @@ public class Plugin_CassetteBlock : Entity {
     public override int MinWidth => 16;
     public override int MinHeight => 16;
 
-    private static readonly Color[] colors = new Color[4] {
+    private static readonly Color[] colors = [
         Calc.HexToColor("49aaf0"),
         Calc.HexToColor("f049be"),
         Calc.HexToColor("fcdc3a"),
-        Calc.HexToColor("38e04e"),
-    };
+        Calc.HexToColor("38e04e")
+    ];
 
     public override void Render() {
         base.Render();

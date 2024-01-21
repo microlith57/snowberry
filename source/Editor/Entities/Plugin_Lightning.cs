@@ -13,10 +13,10 @@ public class Plugin_Lightning : Entity {
     private List<bool> leftEdges;
     private List<bool> rightEdges;
 
-    public static Color[] ElectricityColors = {
+    public static Color[] ElectricityColors = [
         Calc.HexToColor("8cf7e2"),
         Calc.HexToColor("fcf579")
-    };
+    ];
 
     public override int MinWidth => 8;
     public override int MinHeight => 8;

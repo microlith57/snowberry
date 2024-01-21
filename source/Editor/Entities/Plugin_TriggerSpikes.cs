@@ -11,11 +11,11 @@ namespace Snowberry.Editor.Entities;
 [Plugin("triggerSpikesRight")]
 public class Plugin_TriggerSpikes : Entity {
 
-    public static readonly Color[] EdgeColors = {
+    public static readonly Color[] EdgeColors = [
         Calc.HexToColor("f25a10"),
         Calc.HexToColor("ff0000"),
         Calc.HexToColor("f21067")
-    };
+    ];
 
     private Directions dir;
     private bool initialized = false;

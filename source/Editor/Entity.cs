@@ -67,7 +67,7 @@ public abstract class Entity : Plugin, Resizable {
 
     public bool Dirty = false;
 
-    public readonly List<Vector2> Nodes = new();
+    public readonly List<Vector2> Nodes = [];
 
     private bool updateSelection = true;
     private Rectangle[] selectionRectangles;
@@ -156,9 +156,9 @@ public abstract class Entity : Plugin, Resizable {
     }
 
     protected virtual IEnumerable<Rectangle> Select() {
-        List<Rectangle> ret = new List<Rectangle> {
+        List<Rectangle> ret = [
             new(Width < 6 ? X - 3 : X, Height < 6 ? Y - 3 : Y, Width < 6 ? 6 : Width, Height < 6 ? 6 : Height)
-        };
+        ];
         ret.AddRange(Nodes.Select(node => new Rectangle((int)node.X - 3, (int)node.Y - 3, 6, 6)));
 
         return ret.ToArray();

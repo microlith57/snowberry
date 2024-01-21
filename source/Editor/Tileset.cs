@@ -51,10 +51,10 @@ public class Tileset {
             i++;
         }
 
-        List<Tileset> ret = new List<Tileset> {
+        List<Tileset> ret = [
             // not a "real" tileset
             new('0', "air", bg)
-        };
+        ];
         ret.AddRange(chars.Select((item, i1) => new Tileset(item, paths[i1], bg)));
 
         return ret;

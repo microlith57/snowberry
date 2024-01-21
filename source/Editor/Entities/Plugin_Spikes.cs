@@ -65,8 +65,8 @@ public class Plugin_Spikes : Entity {
     }
 
     public static void AddPlacements() {
-        string[] directions = { "Up", "Down", "Left", "Right" };
-        string[] types = { "Default", "Outline", "Cliffside", "Reflection" };
+        string[] directions = ["Up", "Down", "Left", "Right"];
+        string[] types = ["Default", "Outline", "Cliffside", "Reflection"];
         foreach (var type in types)
             foreach (var dir in directions)
                 Placements.EntityPlacementProvider.Create($"Spikes ({dir}, {type})", "spikes" + dir, new Dictionary<string, object>() { { "type", type.ToLower() } });

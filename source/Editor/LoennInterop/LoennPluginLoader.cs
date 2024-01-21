@@ -38,7 +38,7 @@ public static class LoennPluginLoader {
         Snowberry.LogInfo("Trying to load Loenn plugins");
 
         Dictionary<string, LuaTable> plugins = new();
-        HashSet<string> triggers = new(), effects = new();
+        HashSet<string> triggers = [], effects = [];
 
         if(!Everest.Content.Mods.SelectMany(x => x.List).Any(asset => asset.PathVirtual.Replace('\\', '/').StartsWith("Loenn/")))
             ReCrawlForLua();
@@ -59,7 +59,7 @@ public static class LoennPluginLoader {
                         if (pluginTables != null)
                             foreach (var p in pluginTables) {
                                 if (p is LuaTable pluginTable) {
-                                    List<LuaTable> pluginsFromScript = new() { pluginTable };
+                                    List<LuaTable> pluginsFromScript = [pluginTable];
                                     // returning multiple plugins at once
                                     if (pluginTable["name"] == null)
                                         pluginsFromScript = pluginTable.Values.OfType<LuaTable>().ToList();

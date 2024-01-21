@@ -10,16 +10,16 @@ public class Plugin_ForegroundDebris : Entity {
     public override void Initialize() {
         base.Initialize();
         if (Calc.Random.Next(2) == 1)
-            debris = new[] {
+            debris = [
                 GFX.Game["scenery/fgdebris/rock_a00"],
                 GFX.Game["scenery/fgdebris/rock_a01"],
-                GFX.Game["scenery/fgdebris/rock_a02"],
-            };
+                GFX.Game["scenery/fgdebris/rock_a02"]
+            ];
         else
-            debris = new[] {
+            debris = [
                 GFX.Game["scenery/fgdebris/rock_b00"],
-                GFX.Game["scenery/fgdebris/rock_b01"],
-            };
+                GFX.Game["scenery/fgdebris/rock_b01"]
+            ];
     }
 
     public override void Render() {

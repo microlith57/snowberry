@@ -12,7 +12,7 @@ namespace Snowberry.Editor.LoennInterop;
 internal sealed class LoennSprites(string entityName) {
 
     // for diagnostics
-    private readonly List<Drawable> drawables = new();
+    private readonly List<Drawable> drawables = [];
 
     public void Process(object[] sprites) {
         drawables.Clear();
@@ -71,7 +71,7 @@ internal sealed class LoennSprites(string entityName) {
                 };
             }
         } else if (type == "drawableLine") {
-            List<Vector2> points = new();
+            List<Vector2> points = [];
             Color lnColor = Color.White;
             float thickness = Float(table, "thickness", 1);
 
@@ -138,7 +138,7 @@ internal sealed class LoennSprites(string entityName) {
         // normalize ninepatches...
         if(sp["_type"] is "drawableNinePatch" && sp["getDrawableSprite"] is LuaFunction h && h.Call(sp)?.FirstOrDefault() is LuaTable sp2)
             return sp2.Values.OfType<LuaTable>().ToList();
-        return new(){ sp };
+        return [sp];
     }
 
     private float Float<T>(LuaTable from, T index, float def = 1f) {

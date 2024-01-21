@@ -208,18 +208,18 @@ public partial class LoennEntity : Entity, DictBackedPlugin {
                 room["height"] = Room?.Height ?? 0;
 
                 if (entity == null)
-                    return new[] { orElse };
+                    return [orElse];
                 try {
-                    return f.Call(room, entity) ?? new[] { orElse };
+                    return f.Call(room, entity) ?? [orElse];
                 } catch (Exception e) {
                     Snowberry.Log(LogLevel.Error, $"Failed to call loenn plugin function with exception: {e}");
-                    return new[] { orElse };
+                    return [orElse];
                 }
             }
             case object s:
-                return new[] { s };
+                return [s];
             default:
-                return new[] { orElse };
+                return [orElse];
         }
     }
 

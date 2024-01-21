@@ -16,7 +16,7 @@ namespace Snowberry.UI;
 public class Example : UIScene {
 
     // on resizing
-    protected List<UIElement> centre = new(), stretch = new();
+    protected List<UIElement> centre = [], stretch = [];
 
     protected override void BeginContent() {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
@@ -140,7 +140,7 @@ public class Example : UIScene {
         content.AddBelow(new UILabel(() => v.ToString()), new(4, 5));
 
         // TODO: simplify searching
-        List<string> thingsToSearch = new() {
+        List<string> thingsToSearch = [
             "snowberry",
             "snowberries",
             "the snow berries",
@@ -162,7 +162,7 @@ public class Example : UIScene {
             "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             "so true, latin scholars",
             "..."
-        };
+        ];
         thingsToSearch.AddRange("abcdefghijklmnopqrstuvwxyz".Select(c => c.ToString()));
 
         const int searchDemoWidth = 230;
@@ -176,7 +176,7 @@ public class Example : UIScene {
             TopPadding = 5,
             Background = Color.White * 0.5f
         };
-        List<(string value, UIElement display)> elements = new();
+        List<(string value, UIElement display)> elements = [];
         foreach (string s in thingsToSearch) {
             UILabel label = new(s);
             elements.Add((s, label));

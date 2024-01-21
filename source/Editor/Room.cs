@@ -52,17 +52,17 @@ public partial class Room {
     private VirtualMap<char> fgTileMap, bgTileMap;
     private VirtualMap<MTexture> fgTileSprites, bgTileSprites;
 
-    public readonly List<Decal> FgDecals = new();
-    public readonly List<Decal> BgDecals = new();
+    public readonly List<Decal> FgDecals = [];
+    public readonly List<Decal> BgDecals = [];
 
-    public readonly List<Entity> Entities = new();
-    public readonly List<Entity> Triggers = new();
-    public readonly List<Entity> AllEntities = new();
+    public readonly List<Entity> Entities = [];
+    public readonly List<Entity> Triggers = [];
+    public readonly List<Entity> AllEntities = [];
 
     public readonly Dictionary<Type, List<Entity>> TrackedEntities = new();
     public readonly Dictionary<Type, bool> DirtyTrackedEntities = new();
 
-    public static readonly HashSet<string> IllegalOptionNames = new(){ "id", "x", "y", "width", "height", "originX", "originY", "nodes" };
+    public static readonly HashSet<string> IllegalOptionNames = ["id", "x", "y", "width", "height", "originX", "originY", "nodes"];
 
     internal Room(string name, Rectangle bounds, Map map) {
         Name = name;
@@ -196,7 +196,7 @@ public partial class Room {
         bool fgTiles = false,
         bool bgTiles = false
     ) {
-        List<Selection> result = new();
+        List<Selection> result = [];
 
         if (entities || triggers)
             foreach (Entity entity in AllEntities) {
@@ -405,14 +405,14 @@ public partial class Room {
         Element entitiesElement = new Element {
             Attributes = new Dictionary<string, object>(),
             Name = "entities",
-            Children = new List<Element>()
+            Children = []
         };
-        ret.Children = new List<Element> { entitiesElement };
+        ret.Children = [entitiesElement];
 
         foreach (var entity in Entities) {
             Element entityElem = new Element {
                 Name = entity.Name,
-                Children = new List<Element>(),
+                Children = [],
                 Attributes = new Dictionary<string, object> {
                     ["id"] = entity.EntityID,
                     ["x"] = entity.X - X * 8,
@@ -440,14 +440,14 @@ public partial class Room {
         Element triggersElement = new Element {
             Attributes = new Dictionary<string, object>(),
             Name = "triggers",
-            Children = new List<Element>()
+            Children = []
         };
         ret.Children.Add(triggersElement);
 
         foreach (var trigger in Triggers) {
             Element triggersElem = new Element {
                 Name = trigger.Name,
-                Children = new List<Element>(),
+                Children = [],
                 Attributes = new Dictionary<string, object> {
                     ["id"] = trigger.EntityID,
                     ["x"] = trigger.X - X * 8,
@@ -474,7 +474,7 @@ public partial class Room {
 
         Element fgDecalsElem = new Element {
             Name = "fgdecals",
-            Children = new List<Element>()
+            Children = []
         };
         ret.Children.Add(fgDecalsElem);
         foreach (var decal in FgDecals) {
@@ -493,7 +493,7 @@ public partial class Room {
 
         Element bgDecalsElem = new Element {
             Name = "bgdecals",
-            Children = new List<Element>()
+            Children = []
         };
         ret.Children.Add(bgDecalsElem);
         foreach (var decal in BgDecals) {
@@ -554,7 +554,7 @@ public partial class Room {
         if (e.Tracked) {
             Type tracking = e.GetType();
             if (!TrackedEntities.ContainsKey(tracking))
-                TrackedEntities[tracking] = new();
+                TrackedEntities[tracking] = [];
             TrackedEntities[tracking].Add(e);
             DirtyTrackedEntities[tracking] = true;
         }

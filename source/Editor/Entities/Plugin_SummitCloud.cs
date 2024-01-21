@@ -8,11 +8,11 @@ namespace Snowberry.Editor.Entities;
 [Plugin("summitCloud")]
 public class Plugin_SummitCloud : Entity {
 
-    public static readonly MTexture[] sprites = {
+    public static readonly MTexture[] sprites = [
         GFX.Game["scenery/summitclouds/cloud00"],
         GFX.Game["scenery/summitclouds/cloud01"],
         GFX.Game["scenery/summitclouds/cloud03"]
-    };
+    ];
 
     public override void Render() {
         base.Render();

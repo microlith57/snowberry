@@ -14,10 +14,10 @@ public class HitboxesRecorder : Recorder{
 
     // split things up into "each entity at a specific time", so the various entities that don't do much with theirs
     // can be more efficient about it.
-    private List<(WeakReference<CEntity> entityRef, List<(Collider collider, Vector2 offset, bool collidable, float time)> cs)> OldStates = new(), InProgressStates = new();
+    private List<(WeakReference<CEntity> entityRef, List<(Collider collider, Vector2 offset, bool collidable, float time)> cs)> OldStates = [], InProgressStates = [];
 
     public override void UpdateInGame(Level l, float time){
-        HashSet<CEntity> toTrack = new(l.Entities);
+        HashSet<CEntity> toTrack = [..l.Entities];
 
         foreach(var state in InProgressStates /* copy to allow mutation */ .ToList()){
             if(state.entityRef.TryGetTarget(out var entity) && toTrack.Contains(entity)){
@@ -40,7 +40,7 @@ public class HitboxesRecorder : Recorder{
         // discovered new entities to track
         foreach(CEntity entity in toTrack)
             if(entity.Collider != null)
-                InProgressStates.Add((new WeakReference<CEntity>(entity), new() { (entity.Collider.Clone(), entity.Position, entity.Collidable, time) }));
+                InProgressStates.Add((new WeakReference<CEntity>(entity), [(entity.Collider.Clone(), entity.Position, entity.Collidable, time)]));
     }
 
     public override void FinalizeRecording(){

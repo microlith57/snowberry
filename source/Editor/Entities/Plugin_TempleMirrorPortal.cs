@@ -7,11 +7,11 @@ namespace Snowberry.Editor.Entities;
 [Plugin("templeMirrorPortal")]
 public class Plugin_TempleMirrorPortal : Entity {
 
-    private static readonly MTexture[] texs = {
+    private static readonly MTexture[] texs = [
         GFX.Game["objects/temple/portal/portalframe"],
         GFX.Game["objects/temple/portal/portalcurtain00"],
         GFX.Game["objects/temple/portal/portaltorch00"]
-    };
+    ];
 
     public override void Render() {
         base.Render();

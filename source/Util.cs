@@ -56,7 +56,7 @@ public static class Util {
 
     // adapted from https://stackoverflow.com/a/4975942
     public static string FormatFilesize(long bytes) {
-        string[] suffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+        string[] suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
         if (bytes == 0)
             return "0" + suffixes[0];
         long absBytes = Math.Abs(bytes);
@@ -119,7 +119,7 @@ public static class Util {
         return s;
     }
 
-    public static string ToHex(this byte b) => BitConverter.ToString(new[] { b }).ToLower();
+    public static string ToHex(this byte b) => BitConverter.ToString([b]).ToLower();
 
     public static string IntoRgbString(this Color c) =>
         $"{c.R.ToHex()}{c.G.ToHex()}{c.B.ToHex()}".ToLower();
@@ -130,7 +130,7 @@ public static class Util {
     public static string IntoRgbaString(this Color c) {
         float f = 255f / c.A;
         return c.A == 0 ? "00000000" : BitConverter.ToString(
-            new[] { (byte)Math.Round(c.R * f), (byte)Math.Round(c.G * f), (byte)Math.Round(c.B * f), c.A }
+            [(byte)Math.Round(c.R * f), (byte)Math.Round(c.G * f), (byte)Math.Round(c.B * f), c.A]
         ).Replace("-", string.Empty);
     }
 

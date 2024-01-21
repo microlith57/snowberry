@@ -12,12 +12,12 @@ public class Plugin_BossStarfield : Styleground {
 
     private VertexPositionColor[] verts;
 
-    private static readonly Color[] colors = {
+    private static readonly Color[] colors = [
         Calc.HexToColor("030c1b"),
         Calc.HexToColor("0b031b"),
         Calc.HexToColor("1b0319"),
         Calc.HexToColor("0f0301")
-    };
+    ];
 
     public override void Render(Room room) {
         base.Render(room);

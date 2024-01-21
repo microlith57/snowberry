@@ -7,12 +7,12 @@ namespace Snowberry.Editor.Entities;
 
 [Plugin("flutterbird")]
 public class Plugin_FlutterBird : Entity {
-    private static readonly Color[] colors = {
+    private static readonly Color[] colors = [
         Calc.HexToColor("89fbff"),
         Calc.HexToColor("f0fc6c"),
         Calc.HexToColor("f493ff"),
         Calc.HexToColor("93baff")
-    };
+    ];
     // TODO: per-entity randomness
 
     public override void Render() {

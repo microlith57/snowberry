@@ -25,11 +25,11 @@ public class Map {
     public readonly AreaKey From;
     public readonly Element FromRaw;
 
-    public readonly List<Room> Rooms = new();
-    public readonly List<Rectangle> Fillers = new();
+    public readonly List<Room> Rooms = [];
+    public readonly List<Rectangle> Fillers = [];
 
-    public readonly List<Styleground> FGStylegrounds = new();
-    public readonly List<Styleground> BGStylegrounds = new();
+    public readonly List<Styleground> FGStylegrounds = [];
+    public readonly List<Styleground> BGStylegrounds = [];
 
     internal Map(string name) {
         Name = name;
@@ -137,7 +137,7 @@ public class Map {
     internal void Render(Editor.BufferCamera camera) {
         Rectangle viewRect = camera.ViewRect;
 
-        List<Room> visibleRooms = new List<Room>();
+        List<Room> visibleRooms = [];
         foreach (Room room in Rooms) {
             Rectangle rect = new Rectangle(room.Bounds.X * 8, room.Bounds.Y * 8, room.Bounds.Width * 8, room.Bounds.Height * 8);
             if (viewRect.Intersects(rect)) {
@@ -242,14 +242,14 @@ public class Map {
 
     public Element Export(){
         Element map = new Element{
-            Children = new List<Element>()
+            Children = []
         };
 
         // children:
         //   levels w/ levels as children
         Element levels = new Element{
             Name = "levels",
-            Children = new List<Element>()
+            Children = []
         };
         foreach(var room in Rooms)
             levels.Children.Add(room.CreateLevelData());
@@ -258,7 +258,7 @@ public class Map {
         //   Filler w/ children w/ x,y,w,h
         Element fillers = new Element{
             Name = "Filler",
-            Children = new List<Element>()
+            Children = []
         };
         foreach(var filler in Fillers)
             fillers.Children.Add(new Element{
@@ -276,7 +276,7 @@ public class Map {
         Element style = new Element{
             Name = "Style",
             Attributes = new(),
-            Children = new()
+            Children = []
         };
 
         Element fgStyles = GenerateStylegroundsElement(false);
@@ -290,7 +290,7 @@ public class Map {
         Element meta = new Element{
             Name = "meta",
             Attributes = new(),
-            Children = new()
+            Children = []
         };
         meta.SetAttrNn("Parent", Meta.Parent);
         meta.SetAttrNn("Icon", Meta.Icon);
@@ -321,7 +321,7 @@ public class Map {
             MapMetaCassetteModifier mod = Meta.CassetteModifier;
             Element cm = new Element{
                 Name = "cassettemodifier",
-                Children = new()
+                Children = []
             };
 
             cm.SetAttr("TempoMult", mod.TempoMult);
@@ -338,7 +338,7 @@ public class Map {
 
         Element mode = new() {
             Name = "mode",
-            Children = new()
+            Children = []
         };
         var modeProp = Meta.Modes[0];
         mode.SetAttrNn("IgnoreLevelAudioLayerData", modeProp.IgnoreLevelAudioLayerData);
@@ -358,7 +358,7 @@ public class Map {
     private Element GenerateStylegroundsElement(bool bg){
         Element styles = new Element{
             Name = bg ? "Backgrounds" : "Foregrounds",
-            Children = new List<Element>()
+            Children = []
         };
 
         // save elements in reverse, to match loading in reverse
@@ -455,9 +455,9 @@ public class Map {
 
     private XmlDocument GetSanitized(string path) {
         var getSanitizedMInfo = typeof(SpriteBank).GetMethod("GetSpriteBankExcludingVanillaCopyPastes", BindingFlags.Static | BindingFlags.NonPublic);
-        return (XmlDocument)getSanitizedMInfo.Invoke(null, new object[] {
+        return (XmlDocument)getSanitizedMInfo.Invoke(null, [
             Calc.orig_LoadContentXML(Path.Combine("Graphics", "Sprites.xml")), Calc.LoadContentXML(path), path
-        });
+        ]);
     }
 }
 

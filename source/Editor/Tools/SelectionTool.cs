@@ -19,8 +19,8 @@ public class SelectionTool : Tool {
     private static bool canSelect;
     private static bool selectEntities = true, selectTriggers = true, selectFgDecals = false, selectBgDecals = false, selectFgTiles = false, selectBgTiles = false;
     private static UISelectionPane selectionPanel;
-    private static List<UIButton> modeButtons = new(), toggleButtons = new();
-    private static List<Selection> next = new();
+    private static List<UIButton> modeButtons = [], toggleButtons = [];
+    private static List<Selection> next = [];
 
     private static Rectangle? SelectionInProgress;
     private static List<Vector2> PathInProgress;
@@ -32,9 +32,7 @@ public class SelectionTool : Tool {
     private enum SelectionMode {
         Rect, Line, Lasso, MagicWand
     }
-    private static readonly List<Keys> ModeKeybinds = new() {
-        Keys.R, Keys.L, Keys.S, Keys.W
-    };
+    private static readonly List<Keys> ModeKeybinds = [Keys.R, Keys.L, Keys.S, Keys.W];
 
     private static SelectionMode currentMode = SelectionMode.Rect;
 
@@ -129,7 +127,7 @@ public class SelectionTool : Tool {
 
         if (Editor.SelectedRoom == null && Editor.SelectedObjects.Count > 0) {
             // refreshPanel code gets skipped because there's no room
-            Editor.SelectedObjects = new();
+            Editor.SelectedObjects = [];
             selectionPanel?.Display(null);
         }
 
@@ -188,7 +186,7 @@ public class SelectionTool : Tool {
                         next = GetEnabledSelections(r);
                     } else {
                         // all other selection tools use paths
-                        PathInProgress ??= new();
+                        PathInProgress ??= [];
                         SelectionInProgress = null;
                         // add to the path if the mouse moves a lot
                         if (PathInProgress.Count == 0 || (PathInProgress.Last() - Mouse.World).LengthSquared() > 7 * 7)
@@ -203,7 +201,7 @@ public class SelectionTool : Tool {
                             List<Vector2> path = PathInProgress;
                             Vector2 back = (path[0] - path.Last());
                             if (back.LengthSquared() > 7 * 7) {
-                                path = new(path);
+                                path = [..path];
                                 var numPts = back.Length() / 7;
                                 for (int i = 0; i < numPts; i++)
                                     // note that path.Last() is different each time as we get closer to the start of the path
@@ -294,10 +292,10 @@ public class SelectionTool : Tool {
                     Selection first = Editor.SelectedObjects is { Count: > 0 } es ? es[0] : null;
                     int idx = at.IndexOf(first);
                     if (idx != -1)
-                        Editor.SelectedObjects = new() { at[(idx + 1) % at.Count] };
+                        Editor.SelectedObjects = [at[(idx + 1) % at.Count]];
                     // not hovering over something selected -> just take the first one
                     if (idx == -1 || first == null)
-                        Editor.SelectedObjects = at.Count == 0 ? new() : new() { at[0] };
+                        Editor.SelectedObjects = at.Count == 0 ? [] : [at[0]];
                 }
 
                 refreshPanel = true;
@@ -308,7 +306,7 @@ public class SelectionTool : Tool {
                 Editor.SelectedObjects = CurrentEffect switch {
                     SelectionEffect.Add => Editor.SelectedObjects.Concat(next).Distinct().ToList(),
                     SelectionEffect.Subtract => Editor.SelectedObjects.Except(next).ToList(),
-                    _ => new(next)
+                    _ => [..next]
                 };
                 next.Clear();
             }
@@ -335,7 +333,7 @@ public class SelectionTool : Tool {
                 }
             } else if (MInput.Keyboard.Pressed(Keys.N)) { // N to create node
                 // only visit each entity once
-                HashSet<Entity> seen = new();
+                HashSet<Entity> seen = [];
                 // iterate backwards to allow modifying the list as we go
                 for (var idx = Editor.SelectedObjects.Count - 1; idx >= 0; idx--) {
                     var item = Editor.SelectedObjects[idx];
@@ -554,15 +552,15 @@ public class SelectionTool : Tool {
     }
 
     private static List<Selection> GetEnabledSelections(Rectangle? r) =>
-        Editor.SelectedRoom?.GetSelections(r, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles) ?? new();
+        Editor.SelectedRoom?.GetSelections(r, selectEntities, selectTriggers, selectFgDecals, selectBgDecals, selectFgTiles, selectBgTiles) ?? [];
 
     private static List<Selection> MagicWand() {
         // first get everything under the mouse
         var at = Editor.SelectedRoom.GetSelections(Mouse.World.ToRect(), selectEntities, selectTriggers /* nothing else does anything here */);
         // then get all types of those entities
-        HashSet<string> entityTypes = new(at.OfType<EntitySelection>().Select(x => x.Entity.Name));
+        HashSet<string> entityTypes = [..at.OfType<EntitySelection>().Select(x => x.Entity.Name)];
         // add all entities of the same type
-        List<Selection> into = new();
+        List<Selection> into = [];
         foreach (var entity in Editor.SelectedRoom.AllEntities.Where(entity => entityTypes.Contains(entity.Name)))
             if (entity.SelectionRectangles is { Length: > 0 } rs)
                 into.AddRange(rs.Select((_, i) => new EntitySelection(entity, i - 1)).ToList());

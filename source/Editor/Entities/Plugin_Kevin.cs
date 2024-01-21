@@ -9,11 +9,11 @@ namespace Snowberry.Editor.Entities;
 public class Plugin_Kevin : Entity {
 
     public static readonly Color kevinColor = Calc.HexToColor("62222b");
-    public static readonly EditorNinePatch[] patches = {
+    public static readonly EditorNinePatch[] patches = [
         new(GFX.Game["objects/crushblock/block03"]),
         new(GFX.Game["objects/crushblock/block01"]),
         new(GFX.Game["objects/crushblock/block02"])
-    };
+    ];
 
     [Option("axes")] public CrushBlock.Axes Axes = CrushBlock.Axes.Both;
     [Option("chillout")] public bool Chillout = false;

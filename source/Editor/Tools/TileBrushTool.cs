@@ -19,9 +19,7 @@ public class TileBrushTool : Tool {
     public enum TileBrushMode {
         Brush, Rect, HollowRect, Fill, Line, Circle, Eyedropper
     }
-    private static readonly List<Keys> ModeKeybinds = new() {
-        Keys.P, Keys.R, Keys.H, Keys.F, Keys.L, Keys.C, Keys.K
-    };
+    private static readonly List<Keys> ModeKeybinds = [Keys.P, Keys.R, Keys.H, Keys.F, Keys.L, Keys.C, Keys.K];
 
     public static int CurLeftTileset = 2;
     public static bool LeftFg = true;
@@ -40,9 +38,9 @@ public class TileBrushTool : Tool {
     public static List<Tileset> FgTilesets => Tileset.FgTilesets;
     public static List<Tileset> BgTilesets => Tileset.BgTilesets;
 
-    private readonly List<UIButton> fgTilesetButtons = new();
-    private readonly List<UIButton> bgTilesetButtons = new();
-    private readonly List<UIButton> modeButtons = new();
+    private readonly List<UIButton> fgTilesetButtons = [];
+    private readonly List<UIButton> bgTilesetButtons = [];
+    private readonly List<UIButton> modeButtons = [];
     private UIElement tilesetsPanel;
 
     private static bool isPainting;

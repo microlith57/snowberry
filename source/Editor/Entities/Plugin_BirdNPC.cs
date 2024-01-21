@@ -9,7 +9,7 @@ namespace Snowberry.Editor.Entities;
 public class Plugin_BirdNPC : Entity {
 
     // This list of x-scales lines up with the order of the Modes enum. I am so sorry. I'm usually better I swear. - Gamation
-    private static readonly int[] facingScales = {-1, 1, 1, -1, -1, -1, -1, 1, -1, -1};
+    private static readonly int[] facingScales = [-1, 1, 1, -1, -1, -1, -1, 1, -1, -1];
 
     [Option("mode")] public BirdNPC.Modes Mode = BirdNPC.Modes.Sleeping;
     [Option("onlyOnce")] public bool OnlyOnce = false;

@@ -8,11 +8,11 @@ namespace Snowberry.Editor.Entities;
 [Plugin("fakeHeart")]
 public class Plugin_FakeHeart : Entity {
 
-    public static readonly MTexture[] sprites = {
+    public static readonly MTexture[] sprites = [
         GFX.Game["collectables/heartGem/0/00"],
         GFX.Game["collectables/heartGem/1/00"],
         GFX.Game["collectables/heartGem/2/00"]
-    };
+    ];
 
     [Option("color")] public HeartColors Color = HeartColors.Random;
 

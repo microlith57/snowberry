@@ -8,13 +8,13 @@ namespace Snowberry.Editor.Recording;
 
 public abstract class Recorder{
 
-    public static readonly List<Func<Recorder>> Recorders = new() {
+    public static readonly List<Func<Recorder>> Recorders = [
         () => new TimeRecorder(),
         () => new PlayerRecorder(),
         () => new HitboxesRecorder(),
         () => new CameraRecorder(),
         () => new FlagsRecorder()
-    };
+    ];
 
     public abstract void UpdateInGame(Level l, float time);
     public virtual void FinalizeRecording(){}

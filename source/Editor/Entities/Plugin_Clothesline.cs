@@ -7,12 +7,12 @@ namespace Snowberry.Editor.Entities;
 [Plugin("clothesline")]
 public class Plugin_Clothesline : Entity {
 
-    public static readonly Color[] Colours = {
+    public static readonly Color[] Colours = [
         Calc.HexToColor("0d2e6b"),
         Calc.HexToColor("3d2688"),
         Calc.HexToColor("4f6e9d"),
         Calc.HexToColor("47194a")
-    };
+    ];
     public static readonly Color LineColour = Color.Lerp(Color.Gray, Color.DarkBlue, 0.25f);
     public static readonly Color PinColour = Color.Gray;
 
