@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
-using Monocle;
 using MonoMod.Utils;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
-using Snowberry.UI.Menus;
 
 namespace Snowberry.Editor.Recording;
 
