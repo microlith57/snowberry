@@ -68,7 +68,7 @@ public class LoennEntityPluginInfo : PluginInfo, DefaultedPluginInfo {
                             "integer" => typeof(int),
                             "boolean" => typeof(bool),
                             "color" => typeof(Color),
-                            "snowberry:tileset" => typeof(Tileset),
+                            "snowberry:tileset" or "ext:tileset" => typeof(Tileset),
                             _ => typeof(string)
                         };
 
