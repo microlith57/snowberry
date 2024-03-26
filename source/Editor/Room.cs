@@ -417,12 +417,15 @@ public partial class Room {
                     ["id"] = entity.EntityID,
                     ["x"] = entity.X - X * 8,
                     ["y"] = entity.Y - Y * 8,
-                    ["width"] = entity.Width,
-                    ["height"] = entity.Height,
                     ["originX"] = entity.Origin.X,
                     ["originY"] = entity.Origin.Y
                 }
             };
+            if (entity.MinWidth != -1 || entity.Width != 0)
+                entityElem.Attributes["width"] = entity.Width;
+            if (entity.MinHeight != -1 || entity.Height != 0)
+                entityElem.Attributes["height"] = entity.Height;
+
             entity.SaveAttrs(entityElem);
 
             foreach (var node in entity.Nodes)
@@ -452,12 +455,14 @@ public partial class Room {
                     ["id"] = trigger.EntityID,
                     ["x"] = trigger.X - X * 8,
                     ["y"] = trigger.Y - Y * 8,
-                    ["width"] = trigger.Width,
-                    ["height"] = trigger.Height,
                     ["originX"] = trigger.Origin.X,
                     ["originY"] = trigger.Origin.Y
                 }
             };
+            if (trigger.MinWidth != -1 || trigger.Width != 0)
+                triggersElem.Attributes["width"] = trigger.Width;
+            if (trigger.MinHeight != -1 || trigger.Height != 0)
+                triggersElem.Attributes["height"] = trigger.Height;
             trigger.SaveAttrs(triggersElem);
 
             foreach (var node in trigger.Nodes)
