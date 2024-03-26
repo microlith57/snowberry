@@ -128,6 +128,13 @@ public class UIMainMenu : UIElement {
         }), settingsOffset);
         settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP_SUB")), descOffset);
 
+        // TODO: reenable when the main menu is a scene & can resize properly
+        /*settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_SMALL_SCALE"), Snowberry.Settings.SmallScale, b => {
+            Snowberry.Settings.SmallScale = b;
+            Snowberry.Instance.SaveSettings();
+        }), settingsOffset);
+        settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_SMALL_SCALE_SUB")), descOffset);*/
+
         UIButton openBackupsFolder = new(Dialog.Clean("SNOWBERRY_BACKUPS_OPEN_FOLDER"), Fonts.Regular, 6, 6) {
             OnPress = () => {
                 string folder = Backups.BackupsDirectory;

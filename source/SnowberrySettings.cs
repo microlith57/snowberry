@@ -20,6 +20,10 @@ public class SnowberrySettings : EverestModuleSettings {
     [SettingSubText("SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP_SUB")]
     public bool AggressiveSnap { get; set; } = false;
 
+    [SettingName("SNOWBERRY_SETTINGS_SMALL_SCALE")]
+    [SettingSubText("SNOWBERRY_SETTINGS_SMALL_SCALE_SUB")]
+    public bool SmallScale { get; set; } = false;
+
     // saved but not displayed
     [SettingIgnore]
     public Dictionary<string, (bool show, bool record)> RecorderSettings { get; set; } = new();

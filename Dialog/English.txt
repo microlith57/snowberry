@@ -209,6 +209,9 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	
 	SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP=         Aggressive Snapping
 	SNOWBERRY_SETTINGS_AGGRESSIVE_SNAP_SUB=     Whether to always snap entities to the grid when pasting, and when moving{n}without holding Control.
+	
+	SNOWBERRY_SETTINGS_SMALL_SCALE=             Small Scale
+	SNOWBERRY_SETTINGS_SMALL_SCALE_SUB=         Reduce UI scale for smaller screens.
 
 # *** Pause Menu ***
 

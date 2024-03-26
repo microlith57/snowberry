@@ -17,6 +17,8 @@ public abstract class UIScene : Scene {
 
     public static bool DebugShowUIBounds = false;
 
+    public static int UiScale => Snowberry.Settings.SmallScale ? 1 : 2;
+
     public RenderTarget2D UIBuffer;
     public UIElement UI = new();
     public UIMessage Message;
@@ -28,7 +30,7 @@ public abstract class UIScene : Scene {
     public override void Begin() {
         base.Begin();
 
-        UIBuffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, Engine.ViewWidth / 2, Engine.ViewHeight / 2);
+        UIBuffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, Engine.ViewWidth / UiScale, Engine.ViewHeight / UiScale);
         UI.Width = UIBuffer.Width;
         UI.Height = UIBuffer.Height;
 
@@ -56,9 +58,9 @@ public abstract class UIScene : Scene {
     public override void Update() {
         base.Update();
 
-        if (Engine.ViewWidth / 2 != UI.Width || Engine.ViewHeight / 2 != UI.Height) {
+        if (Engine.ViewWidth / UiScale != UI.Width || Engine.ViewHeight / UiScale != UI.Height) {
             UIBuffer.Dispose();
-            UIBuffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, Engine.ViewWidth / 2, Engine.ViewHeight / 2);
+            UIBuffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, Engine.ViewWidth / UiScale, Engine.ViewHeight / UiScale);
             UI.Width = UIBuffer.Width;
             UI.Height = UIBuffer.Height;
             Message.Width = UIBuffer.Width;
@@ -72,7 +74,7 @@ public abstract class UIScene : Scene {
         Mouse.ScreenLast = Mouse.Screen;
 
         MouseState m = Microsoft.Xna.Framework.Input.Mouse.GetState();
-        Mouse.Screen = new Vector2(m.X, m.Y) / 2;
+        Mouse.Screen = new Vector2(m.X, m.Y) / UiScale;
         Mouse.World = CalculateMouseWorld(m);
 
         MouseClicked = false;
@@ -127,7 +129,7 @@ public abstract class UIScene : Scene {
         Engine.Instance.GraphicsDevice.SetRenderTarget(null);
 
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
-        Draw.SpriteBatch.Draw(UIBuffer, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, Vector2.One * 2, SpriteEffects.None, 0f);
+        Draw.SpriteBatch.Draw(UIBuffer, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, Vector2.One * UiScale, SpriteEffects.None, 0f);
         Draw.SpriteBatch.End();
 
         #endregion
@@ -137,7 +139,7 @@ public abstract class UIScene : Scene {
     protected virtual void PostBeginContent() {}
     protected virtual void RenderContent() {}
     protected virtual void UpdateContent() {}
-    protected virtual Vector2 CalculateMouseWorld(MouseState m) => new Vector2(m.X, m.Y) / 2;
+    protected virtual Vector2 CalculateMouseWorld(MouseState m) => new Vector2(m.X, m.Y) / UiScale;
     protected virtual void SuggestCursor(ref MTexture texture, ref Vector2 justify) {}
     protected virtual void OnScreenResized() {}
     protected virtual bool ShouldShowUi() => true;

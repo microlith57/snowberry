@@ -672,11 +672,13 @@ public class Editor : UIScene {
     }
 
     protected override void OnScreenResized() {
-        Toolbar.Width = UI.Width;
-        ToolPanel.Position = new Vector2(UI.Width - ToolPanel.Width, Toolbar.Height);
-        ToolPanel.Height = UI.Height;
-        ActionBar.Width = UI.Width - ToolPanel.Width;
-        Tool.Tools[Toolbar.CurrentTool].ResizePanel(UI.Height - Toolbar.Height);
+        if(Toolbar != null) { // TODO: remove when the main menu becomes its own scene
+            Toolbar.Width = UI.Width;
+            ToolPanel.Position = new Vector2(UI.Width - ToolPanel.Width, Toolbar.Height);
+            ToolPanel.Height = UI.Height;
+            ActionBar.Width = UI.Width - ToolPanel.Width;
+            Tool.Tools[Toolbar.CurrentTool].ResizePanel(UI.Height - Toolbar.Height);
+        }
     }
 
     protected override bool ShouldShowUi() => Map == null || !Input.MenuJournal.Check;
