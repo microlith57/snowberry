@@ -2,6 +2,7 @@
 using System.Linq;
 using Celeste;
 using Monocle;
+using Snowberry.Editor;
 using Snowberry.UI;
 
 namespace Snowberry;
@@ -24,7 +25,10 @@ internal class Commands {
             }
         }
 
-        Editor.Editor.Open(Engine.Scene is Level level ? level.Session.MapData : null);
+        if (Engine.Scene is Level l)
+            Editor.Editor.Open(l.Session.MapData);
+        else
+            MainMenu.OpenMainMenu(fast: true);
     }
 
     [Command("editor_new", "opens the snowberry level editor on an empty map")]

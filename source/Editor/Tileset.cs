@@ -30,6 +30,7 @@ public class Tileset {
     }
 
     public static void Load() {
+        SaveData.InitializeDebugMode(); // xaphan helper moment
         FgTilesets = LoadTilesets(false);
         BgTilesets = LoadTilesets(true);
         Snowberry.Log(LogLevel.Info, $"Loaded {FgTilesets.Count} foreground and {BgTilesets.Count} background tilesets.");

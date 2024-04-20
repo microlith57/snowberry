@@ -118,7 +118,7 @@ public sealed class Snowberry : EverestModule {
     }
 
     private static void MainMenu_OnCreateButtons(OuiMainMenu menu, List<MenuButton> buttons) {
-        MainMenuSmallButton btn = new MainMenuSmallButton("EDITOR_MAINMENU", "menu/editor", menu, Vector2.Zero, Vector2.Zero, Editor.Editor.OpenMainMenu);
+        MainMenuSmallButton btn = new MainMenuSmallButton("EDITOR_MAINMENU", "menu/editor", menu, Vector2.Zero, Vector2.Zero, () => MainMenu.OpenMainMenu());
         int idx = 2;
         if (Celeste.Celeste.PlayMode == Celeste.Celeste.PlayModes.Debug)
             idx++;
