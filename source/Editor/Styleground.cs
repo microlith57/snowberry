@@ -110,7 +110,7 @@ public class Styleground : Plugin {
                 sanitized.Remove(badName);
             styleground = new UnknownStyleground {
                 Name = name,
-                Info = new UnknownPluginInfo(name, sanitized)
+                Info = new UnknownPluginInfo(name)
             };
         }
 

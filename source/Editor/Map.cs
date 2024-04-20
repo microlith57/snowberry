@@ -395,15 +395,12 @@ public class Map {
             if(styleground.DreamingOnly.HasValue)
                 elem.Attributes["dreaming"] = styleground.DreamingOnly.Value;
 
-            foreach(var opt in styleground.Info.Options.Keys){
-                var val = styleground.Get(opt);
-                if (val != null)
+            foreach(var opt in styleground.Info.Options.Keys)
+                if (styleground.Get(opt) is {} val)
                     elem.Attributes[opt] = val;
-            }
-
-            if(styleground is UnknownStyleground placeholder)
-                foreach (string opt in placeholder.Attrs.Keys)
-                    elem.Attributes[opt] = placeholder.Attrs[opt];
+            foreach (var (option, value) in styleground.UnknownAttrs)
+                if (value != null)
+                    elem.Attributes.TryAdd(option, Plugin.ObjectToStr(value));
 
             styles.Children.Add(elem);
         }

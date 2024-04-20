@@ -27,6 +27,9 @@ public abstract class Plugin {
     /// Called before a property is set.
     public event Action<string, object> OnPropChange;
 
+    /// Holds attributes not recognized as plugin options.
+    public Dictionary<string, object> UnknownAttrs { get; } = new();
+
     // overriden by generic plugins
     public virtual void Set(string option, object value) {
         if (Info.Options.TryGetValue(option, out PluginOption f)) {
@@ -49,11 +52,19 @@ public abstract class Plugin {
                     $"Tried to set field {option} to an invalid value {value} ({value?.GetType().FullName ?? "null"})");
                 Snowberry.Log(LogLevel.Warn, e.ToString());
             }
-        } /* else { ... store excess values ... } */
+        } else
+            UnknownAttrs[option] = value;
     }
 
-    public virtual object Get(string option) =>
-        Info.Options.TryGetValue(option, out PluginOption f) ? ObjectToStr(f.GetValue(this)) : null;
+    public virtual object Get(string option) {
+        object o;
+        if (Info.Options.TryGetValue(option, out PluginOption f))
+            o = f.GetValue(this);
+        else
+            UnknownAttrs.TryGetValue(option, out o); // sets o to null if not present
+
+        return ObjectToStr(o);
+    }
 
     public string GetTooltipFor(string option) =>
         Info.Options.TryGetValue(option, out PluginOption f) ? f.Tooltip : null;
@@ -126,7 +137,8 @@ public abstract class Plugin {
         Enum => obj.ToString(),
         char ch => ch.ToString(),
         Tileset ts => ts.Key.ToString(),
-        _ => obj
+        null => null, // good to be explicit
+        _ => obj,
     };
 }
 

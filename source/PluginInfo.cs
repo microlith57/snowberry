@@ -116,22 +116,4 @@ public class FieldOption(FieldInfo field, string key) : PluginOption {
     public string Tooltip => null;
 }
 
-public class UnknownPluginInfo : PluginInfo {
-    public UnknownPluginInfo(string name, Dictionary<string, object> values = null) : base(name, typeof(Plugin), null, CelesteEverest.INSTANCE) {
-        if (values != null)
-            foreach (var pair in values)
-                Options[pair.Key] = new UnknownPluginAttr(pair.Value.GetType(), pair.Key);
-    }
-}
-
-public class UnknownPluginAttr(Type fieldType, string key) : PluginOption {
-
-    public object GetValue(Plugin from) => ((DictBackedPlugin)from).Attrs[Key];
-
-    public void SetValue(Plugin on, object value) => ((DictBackedPlugin)on).Attrs[Key] = value;
-
-    public Type FieldType { get; } = fieldType;
-    public string Key { get; } = key;
-
-    public string Tooltip => null;
-}
+public class UnknownPluginInfo(string name) : PluginInfo(name, typeof(Plugin), null, CelesteEverest.INSTANCE);

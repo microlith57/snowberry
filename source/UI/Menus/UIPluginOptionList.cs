@@ -9,7 +9,7 @@ namespace Snowberry.UI.Menus;
 public class UIPluginOptionList : UIElement {
     public class UIOption : UIElement {
         public readonly UIElement Input;
-        private readonly UILabel Label;
+        public readonly UILabel Label;
 
         internal bool locked = false;
 
@@ -47,64 +47,71 @@ public class UIPluginOptionList : UIElement {
     public void Refresh() {
         int l = 0;
         const int spacing = 13;
-        foreach (var option in Plugin.Info.Options) {
-            object value = option.Value.GetValue(Plugin);
+        foreach (var (key, option) in Plugin.Info.Options)
+            l = handle(key, option.FieldType, option.GetValue(Plugin), true);
+        foreach (var (key, value) in Plugin.UnknownAttrs)
+            l = handle(key, value.GetType(), value, false);
 
-            if (Plugin.CreateOptionUi(option.Key) is (UIElement i, var height)) {
-                UIOption ui = new UIOption(option.Key, i, Plugin.GetTooltipFor(option.Key));
+        int handle(string key, Type ftype, object value, bool known) {
+            UIOption ui;
+            if (Plugin.CreateOptionUi(key) is (UIElement i, var height)) {
+                ui = new UIOption(key, i, Plugin.GetTooltipFor(key));
                 Add(ui);
                 ui.Position.Y = l;
                 l += height;
             }
             // TODO: this is kind of silly
-            else if (option.Value.FieldType == typeof(bool)) {
-                UIOption ui;
-                Add(ui = BoolOption(option.Key, (bool)value, Plugin));
+            else if (ftype == typeof(bool)) {
+                Add(ui = BoolOption(key, (bool)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
-            } else if (option.Value.FieldType == typeof(Color)) {
-                UIOption ui;
-                Add(ui = ColorOption(option.Key, value is Color c ? c : Color.White, Plugin));
+            } else if (ftype == typeof(Color)) {
+                Add(ui = ColorOption(key, value is Color c ? c : Color.White, Plugin));
                 ui.Position.Y = l;
                 l += 91;
-            } else if (option.Value.FieldType == typeof(int)) {
-                UIOption ui;
-                Add(ui = LiteralValueOption(option.Key, (int)value, Plugin));
+            } else if (ftype == typeof(int)) {
+                Add(ui = LiteralValueOption(key, (int)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
-            } else if (option.Value.FieldType == typeof(long)) {
-                UIOption ui;
-                Add(ui = LiteralValueOption(option.Key, (long)value, Plugin));
+            } else if (ftype == typeof(long)) {
+                Add(ui = LiteralValueOption(key, (long)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
-            } else if (option.Value.FieldType == typeof(float)) {
-                UIOption ui;
-                Add(ui = LiteralValueOption(option.Key, (float)value, Plugin));
+            } else if (ftype == typeof(float)) {
+                Add(ui = LiteralValueOption(key, (float)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
-            } else if (option.Value.FieldType == typeof(double)) {
-                UIOption ui;
-                Add(ui = LiteralValueOption(option.Key, (double)value, Plugin));
+            } else if (ftype == typeof(double)) {
+                Add(ui = LiteralValueOption(key, (double)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing;
-            } else if (option.Value.FieldType == typeof(Tileset)) {
-                UIOption ui;
-                Add(ui = TilesetDropdownOption(option.Key, (Tileset)value, Plugin));
+            } else if (ftype == typeof(Tileset)) {
+                Add(ui = TilesetDropdownOption(key, (Tileset)value, Plugin));
                 ui.Position.Y = l;
                 l += spacing + 6;
-            } else if (option.Value.FieldType.IsEnum) {
-                UIOption ui;
-                Add(ui = DropdownOption(option.Key, option.Value.FieldType, value, Plugin));
+            } else if (ftype.IsEnum) {
+                Add(ui = DropdownOption(key, ftype, value, Plugin));
                 ui.Position.Y = l;
                 l += spacing + 6;
             } else {
-                UIOption ui;
-                Add(ui = StringOption(option.Key, value?.ToString() ?? "", Plugin));
+                Add(ui = StringOption(key, value?.ToString() ?? "", Plugin));
                 ui.Position.Y = l;
                 l += spacing;
             }
+
+            if (!known) {
+                // Fun
+                string now = ui.Label.Value()[..^3] + "? : ";
+                ui.Label.Value = () => now;
+                ui.Label.FG = Color.Orange;
+                ui.Label.UpdateBoundsFromText();
+                ui.Input.Position.X = ui.Label.Width + 1;
+                ui.CalculateBounds();
+            }
+
             Height = l;
             Width = Math.Max(Children.Max(k => k.Width), Width);
+            return l;
         }
     }
 

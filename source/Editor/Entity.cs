@@ -147,12 +147,13 @@ public abstract class Entity : Plugin, Resizable {
     public virtual void InitializeAfter() { }
 
     public virtual void SaveAttrs(BinaryPacker.Element e) {
-        foreach (var opt in Info.Options.Keys) {
-            var val = Get(opt);
-            // check that we don't overwrite any of the above (e.g. from a LuaEntity)
-            if(val != null && !Room.IllegalOptionNames.Contains(opt))
+        foreach (var opt in Info.Options.Keys)
+            // check that we don't overwrite any builtin options (e.g. from a bad LuaEntity)
+            if (Get(opt) is {} val && !Room.IllegalOptionNames.Contains(opt))
                 e.Attributes[opt] = val;
-        }
+        foreach (var (opt, val) in UnknownAttrs)
+            if (val != null && !Room.IllegalOptionNames.Contains(opt))
+                e.Attributes.TryAdd(opt, ObjectToStr(val));
     }
 
     protected virtual IEnumerable<Rectangle> Select() {
@@ -262,7 +263,7 @@ public abstract class Entity : Plugin, Resizable {
             entity = new UnknownEntity {
                 Room = room,
                 LoadedFromTrigger = trigger,
-                Info = new UnknownPluginInfo(name, entityData.Values),
+                Info = new UnknownPluginInfo(name),
                 Name = name
             };
             entity.InitializeData(entityData);

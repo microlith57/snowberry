@@ -4,10 +4,10 @@ using Monocle;
 
 namespace Snowberry.UI;
 
-class UILabel : UIElement {
+public class UILabel : UIElement {
     private readonly Font font;
 
-    public Func<string> Value { get; private set; }
+    public Func<string> Value { get; set; }
     public Color FG = Calc.HexToColor("f0f0f0");
     public bool Underline = false, Strikethrough = false;
     public string LabelTooltip;
@@ -42,4 +42,6 @@ class UILabel : UIElement {
     }
 
     public override string Tooltip() => LabelTooltip;
+
+    public void UpdateBoundsFromText() => Width = (int)(font.Measure(Value()).X * Scale);
 }

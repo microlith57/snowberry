@@ -224,7 +224,7 @@ public partial class LoennEntity : Entity, DictBackedPlugin {
     }
 
     public override (UIElement, int height)? CreateOptionUi(string optionName) {
-        if (Info.Options[optionName] is LoennEntityOption { Options: { Count: > 0 } options, Editable: var editable }) {
+        if (Info.Options.TryGetValue(optionName, out var o) && o is LoennEntityOption { Options: { Count: > 0 } options, Editable: var editable }) {
             var value = Get(optionName);
 
             // it's like UIPluginOptionList but evil
