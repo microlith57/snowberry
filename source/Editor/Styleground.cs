@@ -120,11 +120,13 @@ public class Styleground : Plugin {
             applyData ??= new Element();
             applyData.Attributes ??= new();
 
-            foreach (var item in applyData.Attributes)
-                styleground.Set(item.Key, item.Value);
+            foreach (var (key, value) in applyData.Attributes)
+                if (!IllegalOptionNames.Contains(key))
+                    styleground.Set(key, value);
 
-            foreach (var item in data.Attributes)
-                styleground.Set(item.Key, item.Value);
+            foreach (var (key, value) in data.Attributes)
+                if (!IllegalOptionNames.Contains(key))
+                    styleground.Set(key, value);
 
             // currently this is just the same thing map data does
             // its terrible
