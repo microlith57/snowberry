@@ -16,10 +16,9 @@ public class UIMainMenu : UIElement {
     }
 
     private States state = States.Start;
-    private readonly float[] stateLerp = [1f, 0f, 0f, 0f, 0f];
+    private readonly float[] stateLerp = [1, 0, 0, 0, 0];
 
     private readonly UIRibbon authors, version;
-    private readonly UIButton settings;
     private readonly UIMainMenuButtons buttons;
     private readonly UILevelSelector levelSelector;
     private readonly UIElement settingsOptions;
@@ -88,7 +87,7 @@ public class UIMainMenu : UIElement {
         RegroupIn(buttons, create, load, exit);
         buttons.Position = new Vector2(width - buttons.Width, height - buttons.Height) / 2;
 
-        settings = new UIButton(Dialog.Clean("SNOWBERRY_MAINMENU_SETTINGS"), Fonts.Regular, 4, 8) {
+        UIButton settingsButton = new UIButton(Dialog.Clean("SNOWBERRY_MAINMENU_SETTINGS"), Fonts.Regular, 4, 8) {
             OnPress = () => {
                 if (state is States.Start or States.Load) {
                     state = States.Settings;
@@ -97,10 +96,26 @@ public class UIMainMenu : UIElement {
                     state = States.Start;
             }
         };
-        Add(settings);
-        settings.Position = Vector2.UnitX * (Width - settings.Width) + new Vector2(-8, 8);
+        Add(settingsButton);
+        settingsButton.Position = Vector2.UnitX * (Width - settingsButton.Width) + new Vector2(-8, 8);
 
-        settingsOptions = new UIElement {
+        Add(settingsOptions = SettingsUi());
+
+        Color rib = Calc.HexToColor("20212e"), acc = Calc.HexToColor("3889d9");
+        Add(authors = new UIRibbon(Dialog.Clean("SNOWBERRY_MAINMENU_CREDITS")) {
+            Position = new Vector2(0, 8),
+            BG = rib,
+            BGAccent = acc
+        });
+        Add(version = new UIRibbon($"ver{Snowberry.Instance.Metadata.VersionString}") {
+            Position = new Vector2(0, 23),
+            BG = rib,
+            BGAccent = acc,
+        });
+    }
+
+    private static UIElement SettingsUi() {
+        UIElement settingsOptions = new UIElement {
             Position = new(30, 0),
             Visible = false
         };
@@ -153,19 +168,7 @@ public class UIMainMenu : UIElement {
 
         settingsOptions.AddBelow(group, settingsOffset);
 
-        Add(settingsOptions);
-
-        Color rib = Calc.HexToColor("20212e"), acc = Calc.HexToColor("3889d9");
-        Add(authors = new UIRibbon(Dialog.Clean("SNOWBERRY_MAINMENU_CREDITS")) {
-            Position = new Vector2(0, 8),
-            BG = rib,
-            BGAccent = acc
-        });
-        Add(version = new UIRibbon($"ver{Snowberry.Instance.Metadata.VersionString}") {
-            Position = new Vector2(0, 23),
-            BG = rib,
-            BGAccent = acc,
-        });
+        return settingsOptions;
     }
 
     public override void Update(Vector2 position = default) {
