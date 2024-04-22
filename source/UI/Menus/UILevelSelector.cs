@@ -9,6 +9,8 @@ namespace Snowberry.UI.Menus;
 
 public class UILevelSelector : UIElement {
     public float LevelRibbonAnim;
+    public bool Enabled;
+
     private int lvlCount;
 
     private UISearchBar<UILevelRibbon> searchBar;

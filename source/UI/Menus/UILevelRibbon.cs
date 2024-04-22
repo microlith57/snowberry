@@ -104,7 +104,7 @@ public class UILevelRibbon : UIRibbon {
         lerp = Calc.Approach(lerp, (hover || pressing).Bit(), Engine.DeltaTime * 6f);
         listLerp = Calc.Approach(listLerp, (selector.LevelRibbonAnim < n).Bit(), Engine.DeltaTime * 4f);
 
-        if (Visible) {
+        if (Visible && selector.Enabled) {
             if (!UIScene.Instance.Message.Shown && hover && ConsumeLeftClick()) {
                 if (dropdown) {
                     if (!HoveringChildren()) {

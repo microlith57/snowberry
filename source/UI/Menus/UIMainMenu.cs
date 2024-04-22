@@ -10,11 +10,11 @@ using Snowberry.UI.Controls;
 namespace Snowberry.UI.Menus;
 
 public class UIMainMenu : UIElement {
-    public static UIMainMenu Instance { get; private set; }
 
     public enum States {
         Start, Create, Load, Exiting, Settings
     }
+
     private States state = States.Start;
     private readonly float[] stateLerp = [1f, 0f, 0f, 0f, 0f];
 
@@ -27,19 +27,16 @@ public class UIMainMenu : UIElement {
     private float fade;
 
     public UIMainMenu(int width, int height) {
-        Instance = this;
-
         Width = width;
         Height = height;
 
-        UIMainMenuButtons buttons = new UIMainMenuButtons();
         Add(levelSelector = new UILevelSelector());
 
         string mainmenuload = Dialog.Clean("SNOWBERRY_MAINMENU_LOAD");
         string mainmenucreate = Dialog.Clean("SNOWBERRY_MAINMENU_CREATE");
         string mainmenuclose = Dialog.Clean("SNOWBERRY_MAINMENU_CLOSE");
 
-        UIButton create = null, load = null, exit = null;
+        UIButton create = null, load = null, exit;
 
         create = new UIButton(mainmenucreate, Fonts.Regular, 16, 24) {
             FG = Util.Colors.White,
@@ -86,7 +83,8 @@ public class UIMainMenu : UIElement {
         load.Position = new Vector2(-load.Width / 2, create.Position.Y + create.Height + 4);
         exit.Position = new Vector2(-exit.Width / 2, load.Position.Y + load.Height + 4);
 
-        Add(this.buttons = buttons);
+        buttons = new UIMainMenuButtons();
+        Add(buttons);
         RegroupIn(buttons, create, load, exit);
         buttons.Position = new Vector2(width - buttons.Width, height - buttons.Height) / 2;
 
@@ -195,9 +193,6 @@ public class UIMainMenu : UIElement {
                 }
 
                 break;
-
-            default:
-                break;
         }
 
         float startEase = 1 - Ease.CubeInOut(stateLerp[0]);
@@ -210,6 +205,7 @@ public class UIMainMenu : UIElement {
 
         levelSelector.Position.X = (int)Math.Round(buttons.Position.X + buttons.Width + 24 - levelSelector.Width * (1 - loadEase));
         levelSelector.Visible = stateLerp[2] != 0f;
+        levelSelector.Enabled = stateLerp[2] > 0.9f;
 
         float settingsEase = Ease.CubeInOut(stateLerp[4]);
         buttons.Position.Y = (int)Math.Round((Height - buttons.Height) / 2 - (Height / 2 + buttons.Height) * settingsEase);
