@@ -86,7 +86,7 @@ public class UILevelSelector : UIElement {
     public override void Update(Vector2 position = default) {
         base.Update(position);
 
-        LevelRibbonAnim = Calc.Approach(LevelRibbonAnim, lvlCount, Engine.DeltaTime * 60f);
+        LevelRibbonAnim = Calc.Approach(LevelRibbonAnim, lvlCount, Engine.DeltaTime * (60f + LevelRibbonAnim / 10f));
 
         if (levels != null) {
             int y = (int)levels[0].Position.Y;
