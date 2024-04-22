@@ -159,6 +159,7 @@ public class UILevelRibbon : UIRibbon {
         float ease = Ease.CubeOut(lerp);
         float listEase = Ease.ExpoIn(listLerp);
         position.X += (int)(ease * 16 - Width * listEase + (pressing ? 4 : 0));
+        from.X -= Width * listEase;
 
         float sin = Settings.Instance.DisableFlashes || lerp == 0f ? 0f : ((float)Math.Sin(Engine.Scene.TimeActive * 12f) * 0.1f);
         Fonts.Regular.Draw(raw, position + Vector2.UnitX * (Width + 5), Vector2.One, Color.Lerp(Util.Colors.CloudGray, Util.Colors.White, ease * (0.9f + sin)) * (1 - listEase));
