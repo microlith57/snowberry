@@ -13,6 +13,12 @@ using Element = BinaryPacker.Element;
 
 public class Surgery(string path, Element elem) : UIScene {
 
+    public override void Begin() {
+        Audio.Stop(Audio.CurrentAmbienceEventInstance);
+        Audio.Stop(Audio.CurrentMusicEventInstance);
+        base.Begin();
+    }
+
     protected override void BeginContent() {
         SurgeryUi();
     }
