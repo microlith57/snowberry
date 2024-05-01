@@ -118,19 +118,8 @@ public class UILevelRibbon : UIRibbon {
             }
             if (UIScene.Instance.Message.Shown || pressing && ConsumeLeftClick(pressed: false, released: true)) {
                 pressing = false;
-                if (hover) {
-                    if (MInput.Keyboard.CurrentState[Keys.LeftControl] == KeyState.Down || MInput.Keyboard.CurrentState[Keys.RightControl] == KeyState.Down)
-                        TryOpen();
-                    else {
-                        UIScene.Instance.Message.Clear();
-
-                        UIScene.Instance.Message.AddElement(ConfirmLoadMessage(), new(0, -30), hiddenJustifyY: -0.1f);
-                        var buttons = UIMessage.YesAndNoButtons(TryOpen, () => UIScene.Instance.Message.Shown = false);
-                        UIScene.Instance.Message.AddElement(buttons, new(0, 20));
-
-                        UIScene.Instance.Message.Shown = true;
-                    }
-                }
+                if (hover)
+                    TryOpen();
             }
             if (MInput.Mouse.ReleasedLeftButton) {
                 // we only actually activate if the mouse was released on this button + it's visible,
