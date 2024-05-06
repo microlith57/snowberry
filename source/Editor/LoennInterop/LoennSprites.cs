@@ -95,8 +95,6 @@ internal sealed class LoennSprites(string entityName) {
                 Points = points,
                 Thickness = thickness
             };
-        } else if (type == "drawableNinePatch") {
-            // TODO
         } else if (type == "drawableRectangle") {
             Rectangle at = new Rectangle((int)Float(table, "x", 0), (int)Float(table, "y", 0), (int)Float(table, "width", 8), (int)Float(table, "height", 8));
             Color rectColor = Color.White, rectSecondaryColor = Color.Black;
@@ -126,6 +124,14 @@ internal sealed class LoennSprites(string entityName) {
                 Color = gridColor,
                 Position = new(x, y),
                 Tiles = matrix
+            };
+        } else if (type == "drawableText") {
+            float x = Float(table, "x"), y = Float(table, "y");
+            float w = Float(table, "width", -1), h = Float(table, "height", -1);
+            return new Text {
+                String = (string)table["text"],
+                Position = new(x, y),
+                Bounds = new(w, h)
             };
         }
 
@@ -216,16 +222,6 @@ internal sealed class LoennSprites(string entityName) {
         protected internal override void Draw() => Texture.DrawJustified(Position, Justification, Color, Scale, Rotation);
     }
 
-    // TODO
-    /*internal sealed class NinePatch : Drawable {
-        public MTexture Texture;
-        public Rectangle Area;
-
-        protected internal override void Draw() {
-
-        }
-    }*/
-
     internal sealed class TileGrid : Drawable {
         public Vector2 Position;
         public VirtualMap<MTexture> Tiles;
@@ -235,6 +231,15 @@ internal sealed class LoennSprites(string entityName) {
                 for (int x = 0; x < Tiles.Columns; x++)
                     for (int y = 0; y < Tiles.Rows; y++)
                         Tiles[x, y]?.Draw(Position + new Vector2(x, y) * 8, Vector2.Zero, Color);
+        }
+    }
+
+    internal sealed class Text : Drawable {
+        public Vector2 Position, Bounds;
+        public string String;
+
+        protected internal override void Draw() {
+            Fonts.Pico8.Draw(String, Position, new(1), new(0.5f), Color.White);
         }
     }
 }

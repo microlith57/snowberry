@@ -38,7 +38,7 @@ public class Font {
         if (justify != Vector2.Zero)
             position -= Measure(str) * scale * justify;
 
-        position = Calc.Floor(position);
+        position = position.Floor();
         float startX = position.X;
 
         for (int i = 0; i < str.Length; i++) {
