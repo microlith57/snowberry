@@ -25,7 +25,7 @@ public class MapInfoTool : Tool {
 
         Map map = Editor.Instance.Map;
 
-        Vector2 titleOffset = new(12, 3), optionOffset = new(4, 3);
+        Vector2 optionOffset = new(4, 3);
 
         UIRibbon ribbon = new UIRibbon(map.Name, leftEdge: true, rightEdge: true) {
             FG = Calc.HexToColor(map.Meta.TitleTextColor),
@@ -37,51 +37,51 @@ public class MapInfoTool : Tool {
 
         // TODO: initialize with defaults and put them somewhere proper
         // overworld
-        ret.AddBelow(UIPluginOptionList.StringOption("icon", map.Meta.Icon ?? "", i => map.Meta.Icon = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_ICON"), map.Meta.Icon ?? "", i => map.Meta.Icon = i), optionOffset);
         // intro
-        ret.AddBelow(UIPluginOptionList.StringOption("wipe", map.Meta.Wipe ?? "Celeste.AngledWipe", i => map.Meta.Wipe = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.DropdownOption("intro type", map.Meta.IntroType ?? Player.IntroTypes.None, i => map.Meta.IntroType = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.DropdownOption("core mode", map.Meta.CoreMode ?? Session.CoreModes.None, i => map.Meta.CoreMode = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.BoolOption("dreaming", map.Meta.Dreaming ?? false, i => map.Meta.Dreaming = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_WIPE"), map.Meta.Wipe ?? "Celeste.AngledWipe", i => map.Meta.Wipe = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.DropdownOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_INTRO_TYPE"), map.Meta.IntroType ?? Player.IntroTypes.None, i => map.Meta.IntroType = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.DropdownOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_CORE_MODE"), map.Meta.CoreMode ?? Session.CoreModes.None, i => map.Meta.CoreMode = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_DREAMING"), map.Meta.Dreaming ?? false, i => map.Meta.Dreaming = i), optionOffset);
         // ambient visuals
-        ret.AddBelow(UIPluginOptionList.LiteralValueOption("darkness alpha", map.Meta.DarknessAlpha ?? 0.05f, i => map.Meta.DarknessAlpha = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.LiteralValueOption("bloom base", map.Meta.BloomBase ?? 0, i => map.Meta.BloomBase = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.LiteralValueOption("bloom strength", map.Meta.BloomStrength ?? 1, i => map.Meta.BloomStrength = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.StringOption("color grade", map.Meta.ColorGrade ?? "", i => map.Meta.ColorGrade = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_DARKNESS_ALPHA"), map.Meta.DarknessAlpha ?? 0.05f, i => map.Meta.DarknessAlpha = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_BLOOM_BASE"), map.Meta.BloomBase ?? 0, i => map.Meta.BloomBase = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.LiteralValueOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_BLOOM_STRENGTH"), map.Meta.BloomStrength ?? 1, i => map.Meta.BloomStrength = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_COLORGRADE"), map.Meta.ColorGrade ?? "", i => map.Meta.ColorGrade = i), optionOffset);
         // music
-        ret.AddBelow(UIPluginOptionList.StringOption("cassette song", map.Meta.CassetteSong ?? "event:/music/cassette/01_forsaken_city", i => map.Meta.CassetteSong = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_CASSETTE_SONG"), map.Meta.CassetteSong ?? "event:/music/cassette/01_forsaken_city", i => map.Meta.CassetteSong = i), optionOffset);
         // reskins
-        ret.AddBelow(UIPluginOptionList.StringOption("sprites xml", map.Meta.Sprites ?? "", i => map.Meta.Sprites = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.StringOption("portraits xml", map.Meta.Portraits ?? "", i => map.Meta.Portraits = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.StringOption("FG tiles xml", map.Meta.ForegroundTiles ?? "", i => map.Meta.ForegroundTiles = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.StringOption("BG tiles xml", map.Meta.BackgroundTiles ?? "", i => map.Meta.BackgroundTiles = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.StringOption("anim. tiles xml", map.Meta.AnimatedTiles ?? "", i => map.Meta.AnimatedTiles = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_SPRITES_XML"), map.Meta.Sprites ?? "", i => map.Meta.Sprites = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_PORTRAITS_XML"), map.Meta.Portraits ?? "", i => map.Meta.Portraits = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_FGTILES_XML"), map.Meta.ForegroundTiles ?? "", i => map.Meta.ForegroundTiles = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_BGTILES_XML"), map.Meta.BackgroundTiles ?? "", i => map.Meta.BackgroundTiles = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_ANIMTILES_XML"), map.Meta.AnimatedTiles ?? "", i => map.Meta.AnimatedTiles = i), optionOffset);
 
         // colours
-        ret.AddBelow(new UILabel("title colours :"), new(12, 6));
-        ret.AddBelow(UIPluginOptionList.ColorOption("title text colour", Calc.HexToColor(map.Meta.TitleTextColor ?? ""), c => {
+        ret.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_MI_TITLE_COLOURS")), new(12, 6));
+        ret.AddBelow(UIPluginOptionList.ColorOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_TITLE_TEXT_COLOUR"), Calc.HexToColor(map.Meta.TitleTextColor ?? ""), c => {
             map.Meta.TitleTextColor = c.IntoRgbString();
             ribbon.FG = c;
         }), optionOffset);
-        ret.AddBelow(UIPluginOptionList.ColorOption("title base colour", Calc.HexToColor(map.Meta.TitleBaseColor ?? ""), c => {
+        ret.AddBelow(UIPluginOptionList.ColorOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_TITLE_BASE_COLOUR"), Calc.HexToColor(map.Meta.TitleBaseColor ?? ""), c => {
             map.Meta.TitleBaseColor = c.IntoRgbString();
             ribbon.BG = c;
         }), optionOffset);
-        ret.AddBelow(UIPluginOptionList.ColorOption("title accent colour", Calc.HexToColor(map.Meta.TitleAccentColor ?? ""), c => {
+        ret.AddBelow(UIPluginOptionList.ColorOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_TITLE_ACCENT_COLOUR"), Calc.HexToColor(map.Meta.TitleAccentColor ?? ""), c => {
             map.Meta.TitleAccentColor = c.IntoRgbString();
             ribbon.BGAccent = c;
         }), optionOffset);
 
         // mode meta
-        ret.AddBelow(UIPluginOptionList.BoolOption("override a-side meta", map.Meta.OverrideASideMeta ?? false, i => map.Meta.OverrideASideMeta = i), optionOffset);
-        ret.AddBelow(new UILabel("current side :"), new(12, 6));
-        ret.AddBelow(UIPluginOptionList.StringOption("poem dialog key", map.Meta.Modes[0].PoemID ?? "", i => map.Meta.Modes[0].PoemID = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.StringOption("starting room", map.Meta.Modes[0].StartLevel ?? "", i => map.Meta.Modes[0].StartLevel = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.DropdownOption("starting inventory", Enum.TryParse(map.Meta.Modes[0].Inventory, false, out InventoryType inv) ? inv : InventoryType.Default, i => map.Meta.Modes[0].Inventory = i.ToString()), optionOffset);
-        ret.AddBelow(UIPluginOptionList.BoolOption("end level on heart", map.Meta.Modes[0].HeartIsEnd ?? false, i => map.Meta.Modes[0].HeartIsEnd = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.BoolOption("seeker slowdown", map.Meta.Modes[0].SeekerSlowdown ?? true, i => map.Meta.Modes[0].SeekerSlowdown = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.BoolOption("carry theo in boosters", map.Meta.Modes[0].TheoInBubble ?? false, i => map.Meta.Modes[0].TheoInBubble = i), optionOffset);
-        ret.AddBelow(UIPluginOptionList.BoolOption("ignore music layers", map.Meta.Modes[0].IgnoreLevelAudioLayerData ?? false, i => map.Meta.Modes[0].IgnoreLevelAudioLayerData = i), optionOffset);
+        ret.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_MI_CURRENT_SIDE")), new(12, 6));
+        ret.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_OVERRIDE_ASIDE_META"), map.Meta.OverrideASideMeta ?? false, i => map.Meta.OverrideASideMeta = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_POEM_DIALOG_KEY"), map.Meta.Modes[0].PoemID ?? "", i => map.Meta.Modes[0].PoemID = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_START_ROOM"), map.Meta.Modes[0].StartLevel ?? "", i => map.Meta.Modes[0].StartLevel = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.DropdownOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_START_INVENTORY"), Enum.TryParse(map.Meta.Modes[0].Inventory, false, out InventoryType inv) ? inv : InventoryType.Default, i => map.Meta.Modes[0].Inventory = i.ToString()), optionOffset);
+        ret.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_END_LEVEL_ON_HEART"), map.Meta.Modes[0].HeartIsEnd ?? false, i => map.Meta.Modes[0].HeartIsEnd = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_SEEKER_SLOWDOWN"), map.Meta.Modes[0].SeekerSlowdown ?? true, i => map.Meta.Modes[0].SeekerSlowdown = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_THEO_BOOSTERS"), map.Meta.Modes[0].TheoInBubble ?? false, i => map.Meta.Modes[0].TheoInBubble = i), optionOffset);
+        ret.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_MI_IGNORE_MUSIC_LAYERS"), map.Meta.Modes[0].IgnoreLevelAudioLayerData ?? false, i => map.Meta.Modes[0].IgnoreLevelAudioLayerData = i), optionOffset);
 
         return ret;
     }

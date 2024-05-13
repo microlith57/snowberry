@@ -226,9 +226,9 @@ public class Editor : UIScene {
 
         if (From != null) {
             ActionBar.AddRight(new UILabel(From.Value.Mode switch {
-                AreaMode.Normal => "A-Side",
-                AreaMode.BSide => "B-Side",
-                AreaMode.CSide => "C-Side",
+                AreaMode.Normal => Dialog.Clean("SNOWBERRY_EDITOR_SIDE_A"),
+                AreaMode.BSide => Dialog.Clean("SNOWBERRY_EDITOR_SIDE_B"),
+                AreaMode.CSide => Dialog.Clean("SNOWBERRY_EDITOR_SIDE_C"),
                 _ => "???"
             }) {
                 Underline = true,

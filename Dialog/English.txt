@@ -58,6 +58,10 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_EDITOR_UTIL_BACKGROUND=           background
     
     SNOWBERRY_EDITOR_HISTORY=                   history
+	
+	SNOWBERRY_EDITOR_SIDE_A=                    A-Side
+	SNOWBERRY_EDITOR_SIDE_B=                    B-Side
+	SNOWBERRY_EDITOR_SIDE_C=                    C-Side
 
 # *** Backups Menu ***
 	SNOWBERRY_BACKUPS=                          backups
@@ -142,6 +146,38 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 
 # *** Placement Tool ***
 	SNOWBERRY_EDITOR_PLACEMENT_DECALS_FG_TT=    place decals in foreground (shift-F)
+
+# *** Map Info Tool ***
+	SNOWBERRY_EDITOR_MI_ICON=                   icon
+	SNOWBERRY_EDITOR_MI_WIPE=                   wipe
+	SNOWBERRY_EDITOR_MI_INTRO_TYPE=             intro type
+	SNOWBERRY_EDITOR_MI_CORE_MODE=              core mode
+	SNOWBERRY_EDITOR_MI_DREAMING=               dreaming
+	SNOWBERRY_EDITOR_MI_DARKNESS_ALPHA=         darkness alpha
+	SNOWBERRY_EDITOR_MI_BLOOM_BASE=             bloom base
+	SNOWBERRY_EDITOR_MI_BLOOM_STRENGTH=         bloom strength
+	SNOWBERRY_EDITOR_MI_COLORGRADE=             colorgrade
+	SNOWBERRY_EDITOR_MI_CASSETTE_SONG=          cassette song
+	SNOWBERRY_EDITOR_MI_SPRITES_XML=            sprites XML
+	SNOWBERRY_EDITOR_MI_PORTRAITS_XML=           portraits XML
+	SNOWBERRY_EDITOR_MI_FGTILES_XML=            FG tiles XML
+	SNOWBERRY_EDITOR_MI_BGTILES_XML=            BG tiles XML
+	SNOWBERRY_EDITOR_MI_ANIMTILES_XML=          anim. tiles XML
+
+	SNOWBERRY_EDITOR_MI_TITLE_COLOURS=          title colours :
+	SNOWBERRY_EDITOR_MI_TITLE_TEXT_COLOUR=      title text colour
+	SNOWBERRY_EDITOR_MI_TITLE_BASE_COLOUR=      title BG colour
+	SNOWBERRY_EDITOR_MI_TITLE_ACCENT_COLOUR=    title accent colour
+
+	SNOWBERRY_EDITOR_MI_CURRENT_SIDE=           this side :
+	SNOWBERRY_EDITOR_MI_OVERRIDE_ASIDE_META=    override a-side meta
+	SNOWBERRY_EDITOR_MI_POEM_DIALOG_KEY=        poem dialog key
+	SNOWBERRY_EDITOR_MI_START_ROOM=             start room
+	SNOWBERRY_EDITOR_MI_START_INVENTORY=        start inventory
+	SNOWBERRY_EDITOR_MI_END_LEVEL_ON_HEART=     end level on heart
+	SNOWBERRY_EDITOR_MI_SEEKER_SLOWDOWN=        seeker slowdown
+	SNOWBERRY_EDITOR_MI_THEO_BOOSTERS=          carry theo in boosters
+	SNOWBERRY_EDITOR_MI_IGNORE_MUSIC_LAYERS=    ignore music layers
 
 # *** Playtest Tool ***
 	SNOWBERRY_EDITOR_PT_NO_DATA=                no data recorded
