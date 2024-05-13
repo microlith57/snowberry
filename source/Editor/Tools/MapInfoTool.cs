@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
+using Snowberry.UI.Layout;
 using Snowberry.UI.Menus;
 using static Snowberry.Editor.Triggers.Plugin_ChangeInventoryTrigger;
 
@@ -14,7 +15,7 @@ public class MapInfoTool : Tool {
     public override string GetName() => Dialog.Clean("SNOWBERRY_EDITOR_TOOL_MAPINFO");
 
     public override UIElement CreatePanel(int height){
-        var ret = new UIElement{
+        var ret = new UIScrollPane {
             Width = 220,
             Height = height,
             GrabsClick = true,
@@ -26,9 +27,13 @@ public class MapInfoTool : Tool {
 
         Vector2 titleOffset = new(12, 3), optionOffset = new(4, 3);
 
-        ret.AddBelow(new UILabel($"editing {map.Name}"){
-            Underline = true
-        }, titleOffset);
+        UIRibbon ribbon = new UIRibbon(map.Name, leftEdge: true, rightEdge: true) {
+            FG = Calc.HexToColor(map.Meta.TitleTextColor),
+            BG = Calc.HexToColor(map.Meta.TitleBaseColor),
+            BGAccent = Calc.HexToColor(map.Meta.TitleAccentColor)
+        };
+        ribbon.Position.X = (ret.Width - ribbon.Width) / 2;
+        ret.AddBelow(ribbon);
 
         // TODO: initialize with defaults and put them somewhere proper
         // overworld
@@ -51,6 +56,21 @@ public class MapInfoTool : Tool {
         ret.AddBelow(UIPluginOptionList.StringOption("FG tiles xml", map.Meta.ForegroundTiles ?? "", i => map.Meta.ForegroundTiles = i), optionOffset);
         ret.AddBelow(UIPluginOptionList.StringOption("BG tiles xml", map.Meta.BackgroundTiles ?? "", i => map.Meta.BackgroundTiles = i), optionOffset);
         ret.AddBelow(UIPluginOptionList.StringOption("anim. tiles xml", map.Meta.AnimatedTiles ?? "", i => map.Meta.AnimatedTiles = i), optionOffset);
+
+        // colours
+        ret.AddBelow(new UILabel("title colours :"), new(12, 6));
+        ret.AddBelow(UIPluginOptionList.ColorOption("title text colour", Calc.HexToColor(map.Meta.TitleTextColor ?? ""), c => {
+            map.Meta.TitleTextColor = c.IntoRgbString();
+            ribbon.FG = c;
+        }), optionOffset);
+        ret.AddBelow(UIPluginOptionList.ColorOption("title base colour", Calc.HexToColor(map.Meta.TitleBaseColor ?? ""), c => {
+            map.Meta.TitleBaseColor = c.IntoRgbString();
+            ribbon.BG = c;
+        }), optionOffset);
+        ret.AddBelow(UIPluginOptionList.ColorOption("title accent colour", Calc.HexToColor(map.Meta.TitleAccentColor ?? ""), c => {
+            map.Meta.TitleAccentColor = c.IntoRgbString();
+            ribbon.BGAccent = c;
+        }), optionOffset);
 
         // mode meta
         ret.AddBelow(UIPluginOptionList.BoolOption("override a-side meta", map.Meta.OverrideASideMeta ?? false, i => map.Meta.OverrideASideMeta = i), optionOffset);
