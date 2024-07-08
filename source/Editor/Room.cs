@@ -483,7 +483,7 @@ public partial class Room {
         };
         ret.Children.Add(fgDecalsElem);
         foreach (var decal in FgDecals) {
-            fgDecalsElem.Children.Add(new Element {
+            var dElem = new Element {
                 Attributes = new Dictionary<string, object> {
                     ["x"] = decal.Position.X - X * 8,
                     ["y"] = decal.Position.Y - Y * 8,
@@ -493,7 +493,10 @@ public partial class Room {
                     ["color"] = decal.Color.IntoRgbString(),
                     ["rotation"] = decal.Rotation
                 }
-            });
+            };
+            if (decal.Depth is int i)
+                dElem.Attributes["depth"] = i;
+            fgDecalsElem.Children.Add(dElem);
         }
 
         Element bgDecalsElem = new Element {
@@ -502,7 +505,7 @@ public partial class Room {
         };
         ret.Children.Add(bgDecalsElem);
         foreach (var decal in BgDecals) {
-            bgDecalsElem.Children.Add(new Element {
+            var dElem = new Element {
                 Attributes = new Dictionary<string, object> {
                     ["x"] = decal.Position.X - X * 8,
                     ["y"] = decal.Position.Y - Y * 8,
@@ -512,7 +515,10 @@ public partial class Room {
                     ["color"] = decal.Color.IntoRgbString(),
                     ["rotation"] = decal.Rotation
                 }
-            });
+            };
+            if (decal.Depth is int i)
+                dElem.Attributes["depth"] = i;
+            bgDecalsElem.Children.Add(dElem);
         }
 
         StringBuilder fgTilesTxt = new StringBuilder();

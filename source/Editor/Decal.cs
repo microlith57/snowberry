@@ -17,6 +17,7 @@ public partial class Decal : Placeable {
     public float Rotation = 0;
     public Color Color = Color.White;
     public bool Fg = false;
+    public int? Depth = null;
 
     public string Texture { get; private set; }
 
@@ -54,6 +55,7 @@ public partial class Decal : Placeable {
         Scale = data.Scale;
         Rotation = data.Rotation;
         Color = Calc.HexToColorWithAlpha(data.ColorHex);
+        Depth = data.Depth;
     }
 
     public void Render() {
