@@ -38,11 +38,16 @@ internal class Commands {
 
     [Command("editor_surgery", "opens the snowberry surgery screen for low-level map manipulation")]
     internal static void SurgeryCommand(string mapPath) {
+        if (mapPath == null) {
+            Engine.Commands.Log("provide a map path, starting from & including Mods/");
+            return;
+        }
+
         var file = Util.GetRealPath(mapPath) ?? mapPath;
         if (File.Exists(file))
             Engine.Scene = new Surgery.Surgery(mapPath, BinaryPacker.FromBinary(mapPath));
         else
-            Engine.Commands.Log($"could not find map file {mapPath ?? "null"}");
+            Engine.Commands.Log($"could not find map file {mapPath}");
     }
 
     [Command("editor_mixer", "opens the snowberry audio mixer screen for testing audio")]
