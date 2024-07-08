@@ -24,7 +24,7 @@ public class Plugin_Player : Entity{
     }
 
     public static void AddPlacements(){
-        Placements.EntityPlacementProvider.Create("Spawn Point", "player");
+        Placements.EntityPlacementProvider.Create("Player (Spawn Point)", "player");
     }
 
     protected Facings? GetSpawnFacing(){
