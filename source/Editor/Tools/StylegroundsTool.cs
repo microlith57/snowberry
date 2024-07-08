@@ -180,16 +180,48 @@ public class StylegroundsTool : Tool {
         // might not have any stylegrounds
         if(selected != null && Stylegrounds.TryGetValue(selected, out var styleground)){
             var offset = Vector2.UnitY * 4;
-            panel.Add(UIPluginOptionList.StringOption("only in", styleground.OnlyIn, s => styleground.OnlyIn = s));
-            panel.AddBelow(UIPluginOptionList.StringOption("not in", styleground.ExcludeFrom, s => styleground.ExcludeFrom = s), offset);
-            panel.AddBelow(UIPluginOptionList.StringOption("flag", styleground.Flag, s => styleground.Flag = s), offset);
-            panel.AddBelow(UIPluginOptionList.StringOption("not flag", styleground.NotFlag, s => styleground.NotFlag = s), offset);
-            panel.AddBelow(UIPluginOptionList.StringOption("force flag", styleground.ForceFlag, s => styleground.ForceFlag = s), offset);
-            panel.AddBelow(UIPluginOptionList.ColorAlphaOption("colour", styleground.RawColor, styleground.Alpha, (c, f) => {
+            panel.Add(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_ONLY_IN"), styleground.OnlyIn, s => styleground.OnlyIn = s));
+            panel.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_NOT_IN"), styleground.ExcludeFrom, s => styleground.ExcludeFrom = s), offset);
+            panel.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_FLAG"), styleground.Flag, s => styleground.Flag = s), offset);
+            panel.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_NOTFLAG"), styleground.NotFlag, s => styleground.NotFlag = s), offset);
+            panel.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_FCFLAG"), styleground.ForceFlag, s => styleground.ForceFlag = s), offset);
+            panel.AddBelow(UIPluginOptionList.ColorAlphaOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_COLOUR"), styleground.RawColor, styleground.Alpha, (c, f) => {
                 styleground.RawColor = c;
                 styleground.Alpha = f;
             }), offset);
-            panel.AddBelow(UIPluginOptionList.StringOption("tags", styleground.Tags, t => styleground.Tags = t), offset);
+            panel.AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_TAGS"), styleground.Tags, t => styleground.Tags = t), offset);
+
+            panel.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_POS")), offset);
+            UIElement posC = new();
+            posC.AddRight(UIPluginOptionList.LiteralValueOption("x", styleground.Position.X, val => styleground.Position.X = val, width: 40), new(4, 0));
+            posC.AddRight(UIPluginOptionList.LiteralValueOption("y", styleground.Position.Y, val => styleground.Position.Y = val, width: 40), new(15, 0));
+            posC.CalculateBounds();
+            panel.AddBelow(posC, offset);
+
+            panel.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_SCROLL")), offset);
+            UIElement scrollC = new();
+            scrollC.AddRight(UIPluginOptionList.LiteralValueOption("x", styleground.Scroll.X, val => styleground.Scroll.X = val, width: 40), new(4, 0));
+            scrollC.AddRight(UIPluginOptionList.LiteralValueOption("y", styleground.Scroll.Y, val => styleground.Scroll.Y = val, width: 40), new(15, 0));
+            scrollC.CalculateBounds();
+            panel.AddBelow(scrollC, offset);
+
+            panel.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_SPEED")), offset);
+            UIElement speedC = new();
+            speedC.AddRight(UIPluginOptionList.LiteralValueOption("x", styleground.Speed.X, val => styleground.Speed.X = val, width: 40), new(4, 0));
+            speedC.AddRight(UIPluginOptionList.LiteralValueOption("y", styleground.Speed.Y, val => styleground.Speed.Y = val, width: 40), new(15, 0));
+            speedC.CalculateBounds();
+            panel.AddBelow(speedC, offset);
+
+            panel.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_LOOP_X"), styleground.LoopX, l => styleground.LoopX = l), offset);
+            panel.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_LOOP_Y"), styleground.LoopY, l => styleground.LoopY = l), offset);
+
+            panel.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_FLIP_X"), styleground.FlipX, l => styleground.FlipX = l), offset);
+            panel.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_FLIP_Y"), styleground.FlipY, l => styleground.FlipY = l), offset);
+
+            panel.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_INSTIN"), styleground.InstantIn, l => styleground.InstantIn = l), offset);
+            panel.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_EDITOR_STYLEGROUNDS_OPTS_INSTOUT"), styleground.InstantOut, l => styleground.InstantOut = l), offset);
+
+            // TODO: dreaming only?
 
             panel.AddBelow(new UIPluginOptionList(styleground), offset * 2);
         }

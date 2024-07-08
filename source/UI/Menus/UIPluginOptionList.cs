@@ -165,6 +165,29 @@ public class UIPluginOptionList : UIElement {
         return WithPropListener<T>(name, plugin, o, t => field.UpdateInput(t.ToInvString(), false));
     }
 
+    public static UIOption OptionalLiteralValueOption<T>(string name, T? value, T? defaultValue, Action<T?> onChange, int width = 80) where T : struct {
+        UICheckBox checkbox = null;
+        var field = new UIValueTextField<T>(Fonts.Regular, width, value?.ToInvString() ?? "") {
+            OnValidInputChange = v => {
+                onChange?.Invoke(v);
+                checkbox.SetChecked(true);
+            },
+            Position = new Vector2(10, 0)
+        };
+        checkbox = new UICheckBox(-1, value != null) {
+            OnPress = b => {
+                if (!b) {
+                    onChange?.Invoke(null);
+                    field.UpdateInput("", updateUnderlying: false);
+                } else {
+                    onChange?.Invoke(defaultValue);
+                    field.UpdateInput(defaultValue.ToInvString(), updateUnderlying: false);
+                }
+            }
+        };
+        return new UIOption(name, Regroup(field, checkbox));
+    }
+
     public static UIOption BoolOption(string name, bool value, Action<bool> onChange) {
         var checkbox = new UICheckBox(-1, value) {
             OnPress = b => onChange?.Invoke(b)
