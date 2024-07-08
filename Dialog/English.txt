@@ -26,7 +26,7 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_MAINMENU_EXIT=                    ← exit
 
     SNOWBERRY_MAINMENU_SETTINGS=                settings
-    SNOWBERRY_MAINMENU_CREDITS=                 by catapillie, leppa, Viv
+    SNOWBERRY_MAINMENU_CREDITS=                 by catapillie, luna, Viv, and others
 
 # *** Editor ***
     SNOWBERRY_EDITOR_RETURN=                    return to map
