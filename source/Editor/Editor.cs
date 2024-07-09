@@ -153,6 +153,7 @@ public class Editor : UIScene {
 
     public static int VanillaLevelID { get; private set; }
     public static AreaKey? From;
+    public static string UnloadedBinName;
 
     private Editor(Map map) {
         Map = map;
@@ -191,6 +192,7 @@ public class Editor : UIScene {
         } else
             From = null;
 
+        UnloadedBinName = null;
         Engine.Scene = new Editor(map);
     }
 
@@ -205,6 +207,7 @@ public class Editor : UIScene {
         var map = new Map("snowberry map");
         map.Rooms.ForEach(r => r.AllEntities.ForEach(e => e.InitializeAfter()));
         From = null;
+        UnloadedBinName = null;
 
         Engine.Scene = new Editor(map);
     }
@@ -243,7 +246,7 @@ public class Editor : UIScene {
 
         ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(16, 0, 16, 16), 3, 3) {
             OnPress = () => {
-                if (From == null || Files.KeyToPath(From.Value) == null) {
+                if (UnloadedBinName == null && (From == null || Files.KeyToPath(From.Value) == null)) {
                     // show a popup asking for a filename to save to
                     Message.Clear();
                     // with a useful message
@@ -253,15 +256,19 @@ public class Editor : UIScene {
                     UIValidatedTextField newName = new UIValidatedTextField(Fonts.Regular, 300);
                     newName.Position = new Vector2(-newName.Width / 2f, -8);
                     newName.OnInputChange += s => newName.Error = !Files.IsValidFilename(s);
+                    newName.Error = true; // starts off empty
                     Message.AddElement(UIElement.Regroup(info, newName), new(0, -30), hiddenJustifyY: -0.1f);
                     Message.AddElement(UIMessage.YesAndNoButtons(() => {
                         string name = newName.Value;
                         if (Files.IsValidFilename(name)) {
                             BinaryExporter.ExportMapToFile(Map, newName.Value + ".bin");
                             Message.Shown = false;
+                            UnloadedBinName = name;
                         }
                     }, () => Message.Shown = false), new(0, 24));
                     Message.Shown = true;
+                } else if (UnloadedBinName != null) {
+                    BinaryExporter.ExportMapToFile(Map, UnloadedBinName + ".bin");
                 } else {
                     TryBackup(Backups.BackupReason.OnSave);
                     BinaryExporter.ExportMapToFile(Map);
