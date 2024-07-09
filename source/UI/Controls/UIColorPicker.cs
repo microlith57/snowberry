@@ -34,7 +34,18 @@ public class UIColorPicker : UIElement {
             Line = Color.Transparent,
             LineSelected = Color.Transparent,
             BG = Color.Transparent,
-            BGSelected = Color.Transparent
+            BGSelected = Color.Transparent,
+            OnInputChange = hex => {
+                Color target = alphaWheel ? Calc.HexToColorWithAlpha(hex) : Calc.HexToColor(hex);
+                // recalculate visual HSVA
+                HSV(target, out h, out s, out v);
+                a = target.A / 255f;
+                // set our value, but don't let it have an alpha value
+                target.A = 255;
+                Value = target;
+                // update listeners
+                OnColorChange?.Invoke(Value, a);
+            }
         });
 
         a = alpha ?? color.A / 255f;
@@ -46,7 +57,7 @@ public class UIColorPicker : UIElement {
     public void SetColor(Color c) {
         Value = c;
         bool showAlpha = a < 1 || alphaWheel;
-        hexTextField.UpdateInput(showAlpha ? $"#{Value.IntoRgbString()}{((byte)(a * 255f)).ToHex()}" : $"#{Value.IntoRgbString()}");
+        hexTextField.UpdateInput(showAlpha ? $"{Value.IntoRgbString()}{((byte)(a * 255f)).ToHex()}" : $"{Value.IntoRgbString()}");
     }
 
     public override void Update(Vector2 position = default) {
