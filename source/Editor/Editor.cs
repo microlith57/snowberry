@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using Celeste;
 using Celeste.Mod;
-using Celeste.Mod.Meta;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -250,17 +249,16 @@ public class Editor : UIScene {
                     // with a useful message
                     UILabel info = new UILabel(Dialog.Clean(From == null ? "SNOWBERRY_EDITOR_EXPORT_NEW" : "SNOWBERRY_EDITOR_EXPORT_UNSAVEABLE"));
                     info.Position = new Vector2(-info.Width / 2f, -28);
-
-                    UITextField newName = new UITextField(Fonts.Regular, 300);
+                    // validated textbox
+                    UIValidatedTextField newName = new UIValidatedTextField(Fonts.Regular, 300);
                     newName.Position = new Vector2(-newName.Width / 2f, -8);
+                    newName.OnInputChange += s => newName.Error = !Files.IsValidFilename(s);
                     Message.AddElement(UIElement.Regroup(info, newName), new(0, -30), hiddenJustifyY: -0.1f);
                     Message.AddElement(UIMessage.YesAndNoButtons(() => {
                         string name = newName.Value;
                         if (Files.IsValidFilename(name)) {
                             BinaryExporter.ExportMapToFile(Map, newName.Value + ".bin");
                             Message.Shown = false;
-                        } else {
-                            // complain!
                         }
                     }, () => Message.Shown = false), new(0, 24));
                     Message.Shown = true;
