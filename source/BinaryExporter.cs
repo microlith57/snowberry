@@ -11,7 +11,7 @@ using Element = Celeste.BinaryPacker.Element;
 public static class BinaryExporter {
 
     public static void ExportMapToFile(Map map, string filename = null) {
-        ExportToFile(map.Export(), filename ?? (Editor.Editor.From is {} v ? Util.KeyToPath(v) : "untitled_snowberry_map.bin"));
+        ExportToFile(map.Export(), filename ?? (Editor.Editor.From is {} v ? Files.KeyToPath(v) : "untitled_snowberry_map.bin"));
     }
 
     public static void ExportToFile(Element e, string filename) {

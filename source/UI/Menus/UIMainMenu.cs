@@ -159,8 +159,8 @@ public class UIMainMenu : UIElement {
             HoveredBG = Calc.HexToColor("e37e02"),
             PressedBG = Calc.HexToColor("874e07")
         };
-        long folderSize = Directory.Exists(Backups.BackupsDirectory) ? Util.DirSize(new DirectoryInfo(Backups.BackupsDirectory)) : 0;
-        UILabel backupsTotalSize = new UILabel(Dialog.Get("SNOWBERRY_BACKUPS_TOTAL_SIZE").Substitute(Util.FormatFilesize(folderSize)));
+        long folderSize = Directory.Exists(Backups.BackupsDirectory) ? Files.DirSize(new DirectoryInfo(Backups.BackupsDirectory)) : 0;
+        UILabel backupsTotalSize = new UILabel(Dialog.Get("SNOWBERRY_BACKUPS_TOTAL_SIZE").Substitute(Files.FormatFilesize(folderSize)));
         UIElement group = new();
         group.AddRight(openBackupsFolder);
         group.AddRight(backupsTotalSize, new(6, (openBackupsFolder.Height - backupsTotalSize.Height) / 2f));

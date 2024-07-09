@@ -43,7 +43,7 @@ internal class Commands {
             return;
         }
 
-        var file = Util.GetRealPath(mapPath) ?? mapPath;
+        var file = Files.GetRealPath(mapPath) ?? mapPath;
         if (File.Exists(file))
             Engine.Scene = new Surgery.Surgery(mapPath, BinaryPacker.FromBinary(mapPath));
         else

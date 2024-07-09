@@ -244,20 +244,24 @@ public class Editor : UIScene {
 
         ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(16, 0, 16, 16), 3, 3) {
             OnPress = () => {
-                if (From == null || Util.KeyToPath(From.Value) == null) {
+                if (From == null || Files.KeyToPath(From.Value) == null) {
                     // show a popup asking for a filename to save to
                     Message.Clear();
                     // with a useful message
                     UILabel info = new UILabel(Dialog.Clean(From == null ? "SNOWBERRY_EDITOR_EXPORT_NEW" : "SNOWBERRY_EDITOR_EXPORT_UNSAVEABLE"));
                     info.Position = new Vector2(-info.Width / 2f, -28);
-                    // TODO: validate that it's a valid filename & doesn't already exist
+
                     UITextField newName = new UITextField(Fonts.Regular, 300);
                     newName.Position = new Vector2(-newName.Width / 2f, -8);
                     Message.AddElement(UIElement.Regroup(info, newName), new(0, -30), hiddenJustifyY: -0.1f);
                     Message.AddElement(UIMessage.YesAndNoButtons(() => {
-                        // no point auto-reloading when the map definitely doesn't exist yet
-                        BinaryExporter.ExportMapToFile(Map, newName.Value + ".bin");
-                        Message.Shown = false;
+                        string name = newName.Value;
+                        if (Files.IsValidFilename(name)) {
+                            BinaryExporter.ExportMapToFile(Map, newName.Value + ".bin");
+                            Message.Shown = false;
+                        } else {
+                            // complain!
+                        }
                     }, () => Message.Shown = false), new(0, 24));
                     Message.Shown = true;
                 } else {
@@ -284,7 +288,7 @@ public class Editor : UIScene {
             Key = Keys.Q
         }, new(6, 4));
 
-        if(From != null && Util.KeyToPath(From.Value) != null){
+        if(From != null && Files.KeyToPath(From.Value) != null){
             ActionBar.AddRight(new UIKeyboundButton(ActionbarAtlas.GetSubtexture(48, 0, 16, 16), 3, 3) {
                 OnPress = () => {
                     var backups = Backups.GetBackupsFor(From.Value);
@@ -307,7 +311,7 @@ public class Editor : UIScene {
                             b.Timestamp
                         ));
                         bg.AddBelow(label, new((bg.Height - label.Height) / 2f));
-                        UILabel filesize = new UILabel(Util.FormatFilesize(b.Filesize));
+                        UILabel filesize = new UILabel(Files.FormatFilesize(b.Filesize));
                         filesize.Position = new Vector2(bg.Width - filesize.Width - (bg.Height - filesize.Height) / 2f, (bg.Height - filesize.Height) / 2f);
                         bg.Add(filesize);
                         list.AddBelow(bg);
@@ -663,7 +667,7 @@ public class Editor : UIScene {
 
     public static void TryBackup(Backups.BackupReason reason) {
         if(From != null) {
-            string realPath = Util.KeyToPath(From.Value);
+            string realPath = Files.KeyToPath(From.Value);
             if (File.Exists(realPath))
                 Backups.SaveBackup(File.ReadAllBytes(realPath), From.Value, reason);
         }
