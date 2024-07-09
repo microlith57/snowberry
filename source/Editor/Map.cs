@@ -4,7 +4,6 @@ using Celeste.Mod.Meta;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using Snowberry.Editor.Stylegrounds;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,13 +11,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using MonoMod.Utils;
 
 namespace Snowberry.Editor;
 
 using Element = BinaryPacker.Element;
 
 public class Map {
+
+    public static Dictionary<string, int> MissingObjectReports = new();
+
     public readonly string Name;
     public readonly MapMeta Meta;
 
@@ -56,6 +57,7 @@ public class Map {
         FromRaw = BinaryPacker.FromBinary(data.Filepath);
         // TODO: crashes in vanilla maps, pretty sure it's not actually necessary?
         //new MapDataFixup(data).Process(FromRaw);
+        MissingObjectReports = new();
 
         if (FromRaw.Children?.Find(element => element.Name == "meta") is {} metaElem) {
             Meta = new MapMeta(metaElem);
@@ -120,6 +122,10 @@ public class Map {
         }
 
         Snowberry.Log(LogLevel.Info, $"Loaded {FGStylegrounds.Count} foreground and {BGStylegrounds.Count} background stylegrounds.");
+        foreach (var (name, quantity) in MissingObjectReports)
+            if (quantity > 0)
+                Snowberry.Log(LogLevel.Warn, $"Attempted to load unknown object ('{name}') x{quantity}, using placeholder plugin");
+        MissingObjectReports = new();
     }
 
     internal Room GetRoomAt(Point at) => Rooms.FirstOrDefault(room => new Rectangle(room.X * 8, room.Y * 8, room.Width * 8, room.Height * 8).Contains(at));

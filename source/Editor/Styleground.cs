@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.Editor.Stylegrounds;
@@ -107,7 +106,7 @@ public class Styleground : Plugin {
         if (exists) {
             styleground = plugin.Instantiate<Styleground>();
         } else {
-            Snowberry.Log(LogLevel.Info, $"Attempted to load unknown styleground ('{name}'), using placeholder plugin.");
+            Map.MissingObjectReports[name] = Map.MissingObjectReports.TryGetValue(name, out var u) ? u + 1 : 1;
             // remove builtin or illegal option names before passing them along
             Dictionary<string, object> sanitized = new(data.Attributes);
             foreach(string badName in IllegalOptionNames)

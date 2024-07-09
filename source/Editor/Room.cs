@@ -126,7 +126,7 @@ public partial class Room {
         foreach (EntityData entity in data.Entities) {
             AddEntity(Entity.TryCreate(this, entity, false, out bool success));
             if (!success)
-                Snowberry.Log(LogLevel.Warn, $"Attempted to load unknown entity ('{entity.Name}'), using placeholder plugin");
+                Map.MissingObjectReports[entity.Name] = Map.MissingObjectReports.TryGetValue(entity.Name, out var u) ? u + 1 : 1;
         }
 
         // Player Spawnpoints (excluded from LevelData.Entities)
@@ -140,7 +140,7 @@ public partial class Room {
         foreach (EntityData trigger in data.Triggers) {
             AddEntity(Entity.TryCreate(this, trigger, true, out bool success));
             if (!success)
-                Snowberry.Log(LogLevel.Warn, $"Attempted to load unknown trigger ('{trigger.Name}')");
+                Map.MissingObjectReports[trigger.Name] = Map.MissingObjectReports.TryGetValue(trigger.Name, out var u) ? u + 1 : 1;
         }
     }
 
