@@ -103,7 +103,7 @@ public abstract class UIScene : Scene {
         MTexture curCursor = DefaultCursor;
         Vector2 curJustify = Vector2.Zero;
         SuggestCursor(ref curCursor, ref curJustify);
-        curCursor.DrawJustified(Mouse.Screen, curJustify, Color.White * (showUi ? 1 : 0.5f));
+        curCursor.DrawJustified(Mouse.Screen.Floor(), curJustify, Color.White * (showUi ? 1 : 0.5f));
 
         // Tooltip rendering
         var tooltip = UI.HoveredTooltip();
