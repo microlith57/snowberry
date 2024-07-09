@@ -193,9 +193,10 @@ public class TileBrushTool : Tool {
 
         if (canClick && (MInput.Mouse.PressedLeftButton || (middlePan && MInput.Mouse.PressedRightButton))) {
             if (mode != TileBrushMode.Eyedropper) {
-                isPainting = true;
-                if (Editor.SelectedRoom != null)
+                if (Editor.SelectedRoom != null) {
+                    isPainting = true;
                     UndoRedo.BeginAction("edit tiles", Editor.SelectedRoom.SnapshotTiles());
+                }
             } else
                 HandleEyedropper(left);
         } else if (MInput.Mouse.ReleasedLeftButton || (middlePan && MInput.Mouse.ReleasedRightButton)) {
