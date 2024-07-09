@@ -17,15 +17,15 @@ public class Plugin_FireBall : Entity {
         base.Render();
 
         Vector2 start = Position;
-        Vector2 end = Nodes[0];
+        Vector2? end = Nodes.Count > 0 ? Nodes[0] : null;
 
         MTexture orb = FromSprite("fireball", NotCoreMode ? "ice" : "hot");
 
-        if (Amount == 0 || start == end) {
+        if (end == null || Amount == 0 || start == end) {
             orb?.DrawCentered(Position);
         } else {
-            Draw.Line(start, end, Color.Teal);
-            Vector2 d = end - start;
+            Draw.Line(start, end.Value, Color.Teal);
+            Vector2 d = end.Value - start;
             float step = 1f / Amount;
             for (float f = 0f; f < 1f; f += step)
                 orb?.DrawCentered(Position + d * ((f + Offset) % 1f));
