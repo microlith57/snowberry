@@ -388,9 +388,14 @@ public class Map {
                     ["always"] = styleground.ForceFlag,
                     ["instantIn"] = styleground.InstantIn,
                     ["instantOut"] = styleground.InstantOut,
-                    //["fadex"] = fg.FadeX,
                 }
             };
+
+            if(styleground.FadeX != null)
+                elem.Attributes["fadex"] = styleground.FadeX;
+
+            if(styleground.FadeY != null)
+                elem.Attributes["fadey"] = styleground.FadeY;
 
             if(styleground.DreamingOnly.HasValue)
                 elem.Attributes["dreaming"] = styleground.DreamingOnly.Value;

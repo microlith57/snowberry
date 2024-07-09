@@ -38,6 +38,10 @@ public class Styleground : Plugin {
 
     public bool FlipY;
 
+    public string FadeX;
+
+    public string FadeY;
+
     public string OnlyIn = "*";
 
     public string ExcludeFrom = "";
@@ -197,6 +201,16 @@ public class Styleground : Plugin {
                 styleground.LoopY = data.AttrBool("loopy");
             else if (applyData.HasAttr("loopy"))
                 styleground.LoopY = applyData.AttrBool("loopy");
+
+            if (data.HasAttr("fadex"))
+                styleground.FadeX = data.Attr("fadex");
+            else if (applyData.HasAttr("fadex"))
+                styleground.FadeX = applyData.Attr("fadex");
+
+            if (data.HasAttr("fadey"))
+                styleground.FadeY = data.Attr("fadey");
+            else if (applyData.HasAttr("fadey"))
+                styleground.FadeY = applyData.Attr("fadey");
 
             if (data.HasAttr("wind"))
                 styleground.WindMultiplier = data.AttrFloat("wind");
