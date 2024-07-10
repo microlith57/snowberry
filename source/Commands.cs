@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Celeste;
 using Monocle;
@@ -27,7 +28,10 @@ internal class Commands {
 
         if (Engine.Scene is Level l)
             Editor.Editor.Open(l.Session.MapData);
-        else
+        else if (Engine.Scene is Surgery.Surgery s) {
+            Engine.Commands.Log("todo");
+            return;
+        } else
             MainMenu.OpenMainMenu(fast: true);
     }
 
@@ -39,8 +43,20 @@ internal class Commands {
     [Command("editor_surgery", "opens the snowberry surgery screen for low-level map manipulation")]
     internal static void SurgeryCommand(string mapPath) {
         if (mapPath == null) {
-            Engine.Commands.Log("provide a map path, starting from & including Mods/");
-            return;
+            if (Engine.Scene is Level l) {
+                var path = l.Session.MapData.Filepath;
+                if (string.IsNullOrEmpty(path)) {
+                    Engine.Commands.Log("could not find the map file for the current map");
+                    return;
+                }
+                mapPath = path;
+            } else if (Engine.Scene is Editor.Editor e) {
+                Engine.Commands.Log("todo");
+                return;
+            } else {
+                Engine.Commands.Log("provide a map path, starting from & including Mods/");
+                return;
+            }
         }
 
         var file = Files.GetRealPath(mapPath) ?? mapPath;
