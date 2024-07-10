@@ -58,9 +58,13 @@ public class UITextField : UIElement {
         GetSelection(out int a, out int b);
 
         if (c == '\b' && Value.Length != 0 && !(a == 0 && b == 0)) {
-            int nextCharIndex = a == b ? a - 1 : a;
-            InsertString(nextCharIndex, b);
-            selection = charIndex = nextCharIndex;
+            int next = a == b ? a - 1 : a;
+            if (MInput.Keyboard.Check(Keys.LeftControl, Keys.RightControl))
+                while (next > 0 && !MustSeparate(Value[next], Value[next - 1]))
+                    next -= 1;
+
+            InsertString(next, b);
+            selection = charIndex = next;
             timeOffset = Engine.Scene.TimeActive;
         } else if (!char.IsControl(c) && (CharacterWhitelist == null || CharacterWhitelist.Contains(c)) && (CharacterBlacklist == null || !CharacterBlacklist.Contains(c))) {
             UpdateInput(Value[..a] + c + Value[b..]);
