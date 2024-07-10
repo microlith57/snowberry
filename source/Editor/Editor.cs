@@ -253,10 +253,12 @@ public class Editor : UIScene {
                     UILabel info = new UILabel(Dialog.Clean(From == null ? "SNOWBERRY_EDITOR_EXPORT_NEW" : "SNOWBERRY_EDITOR_EXPORT_UNSAVEABLE"));
                     info.Position = new Vector2(-info.Width / 2f, -28);
                     // validated textbox
-                    UIValidatedTextField newName = new UIValidatedTextField(Fonts.Regular, 300);
+                    UIValidatedTextField newName = new UIValidatedTextField(Fonts.Regular, 300) {
+                        Error = true, // textfield starts off empty
+                        CharacterBlacklist = Files.IllegalFilenameChars // just... don't type those
+                    };
                     newName.Position = new Vector2(-newName.Width / 2f, -8);
                     newName.OnInputChange += s => newName.Error = !Files.IsValidFilename(s);
-                    newName.Error = true; // starts off empty
                     Message.AddElement(UIElement.Regroup(info, newName), new(0, -30), hiddenJustifyY: -0.1f);
                     Message.AddElement(UIMessage.YesAndNoButtons(() => {
                         string name = newName.Value;

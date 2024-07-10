@@ -10,16 +10,16 @@ public static class Files {
 
     // assume the worst (windows)
     // see https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file
-    private static readonly HashSet<string> IllegalFilenames = [
+    public static readonly HashSet<string> IllegalFilenames = [
         "CON", "PRN", "AUX", "NUL", "COM", "LPT"
     ];
-    private static readonly List<string> IllegalFilenamesSuffixed = [
+    public static readonly List<string> IllegalFilenamesSuffixed = [
         "COM", "LPT"
     ];
-    private static readonly List<char> IllegalFilenameSuffixes = [
+    public static readonly List<char> IllegalFilenameSuffixes = [
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\u00b9', '\u00b2', '\u00b3'
     ];
-    private static readonly List<char> IllegalFilenameChars = [
+    public static readonly HashSet<char> IllegalFilenameChars = [
         '/', '\\', ':', '<', '>', '"', '|', '?', '*', /* we choose the extension */ '.'
     ];
 

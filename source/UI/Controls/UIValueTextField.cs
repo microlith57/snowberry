@@ -1,6 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Monocle;
+using System.Collections.Generic;
 
 namespace Snowberry.UI.Controls;
 
@@ -9,11 +8,11 @@ public class UIValueTextField<T> : UIValidatedTextField {
     public Action<T> OnValidInputChange;
     public new T Value { get; private set; }
 
-    private static readonly char[] integerChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'];
-    private static readonly char[] floatChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', ',', 'e'];
+    private static readonly HashSet<char> integerChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'];
+    private static readonly HashSet<char> floatChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', ',', 'e'];
 
     public UIValueTextField(Font font, int width, string input = "") : base(font, width, input) {
-        AllowedCharacters = Type.GetTypeCode(typeof(T)) switch {
+        CharacterWhitelist = Type.GetTypeCode(typeof(T)) switch {
             TypeCode.Int32 or TypeCode.Int64 => integerChars,
             TypeCode.Single or TypeCode.Double => floatChars,
             _ => null

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod;
 using Microsoft.Xna.Framework;
@@ -33,7 +34,7 @@ public class UITextField : UIElement {
     private Keys? repeatKey = null;
     private float repeatCounter = 0;
 
-    protected char[] AllowedCharacters;
+    public HashSet<char> CharacterWhitelist, CharacterBlacklist;
 
     public override bool GrabsKeyboard => Selected;
 
@@ -61,7 +62,7 @@ public class UITextField : UIElement {
             InsertString(nextCharIndex, b);
             selection = charIndex = nextCharIndex;
             timeOffset = Engine.Scene.TimeActive;
-        } else if (!char.IsControl(c) && (AllowedCharacters == null || AllowedCharacters.Contains(c))) {
+        } else if (!char.IsControl(c) && (CharacterWhitelist == null || CharacterWhitelist.Contains(c)) && (CharacterBlacklist == null || !CharacterBlacklist.Contains(c))) {
             UpdateInput(Value[..a] + c + Value[b..]);
             selection = charIndex = a + 1;
             timeOffset = Engine.Scene.TimeActive;
