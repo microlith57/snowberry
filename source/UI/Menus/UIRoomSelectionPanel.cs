@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
 using Celeste;
 using Microsoft.Xna.Framework;
@@ -6,7 +6,6 @@ using Monocle;
 using Snowberry.Editor;
 using Snowberry.Editor.Tools;
 using Snowberry.UI.Controls;
-using WindController = Celeste.WindController;
 
 namespace Snowberry.UI.Menus;
 
@@ -67,7 +66,17 @@ partial class UIRoomSelectionPanel : UIElement {
             UILabel newNameInvalid, newNameTaken;
             UIButton newRoom;
 
-            AddBelow(UIPluginOptionList.StringOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_NAME"), newName, text => newName = text), offset);
+            UIValidatedTextField field = null;
+            field = new UIValidatedTextField(Fonts.Regular, 80, newName) {
+                OnInputChange = str => {
+                    newName = str;
+                    field.Error = str.Length <= 0 || Editor.Editor.Instance.Map.Rooms.Exists(it => it.Name.Equals(str));
+                },
+                // [0-9a-zA-Z\\-_ ]+
+                CharacterWhitelist = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_ ".ToCharArray().ToHashSet(),
+                Error = true // starts off empty
+            };
+            AddBelow(new UIPluginOptionList.UIOption(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_NAME"), field), offset);
 
             AddBelow(newRoom = new UIButton(Dialog.Clean("SNOWBERRY_EDITOR_ROOM_CREATE_ROOM"), Fonts.Regular, 2, 2) {
                 Position = new Vector2(4, 4)
