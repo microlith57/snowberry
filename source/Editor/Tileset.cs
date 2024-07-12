@@ -47,7 +47,10 @@ public class Tileset {
         foreach (var item in entries) {
             var itemData = new DynamicData(item);
             var tilesData = new DynamicData(itemData.Get("Center"));
-            string path = GFX.Game.Textures.FirstOrDefault(t => t.Value.Equals(tilesData.Get<List<MTexture>>("Textures")[0].Parent)).Key ?? "Tileset of " + chars[i];
+            string path = GFX.Game.Textures.FirstOrDefault(t => {
+                List<MTexture> textures = tilesData.Get<List<MTexture>>("Textures");
+                return textures.Count > 0 && t.Value.Equals(textures[0].Parent);
+            }).Key ?? "Tileset of " + chars[i];
             paths.Add(path);
             i++;
         }
