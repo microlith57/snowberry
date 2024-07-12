@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Monocle;
 
 namespace Snowberry.UI.Layout;
@@ -42,8 +43,18 @@ public class UIScrollPane : UICutoutElement {
     public override void Update(Vector2 position = default) {
         base.Update(position);
 
-        if (ViewBounds(position).Contains(Mouse.Screen.ToPoint()))
+        if (ViewBounds(position).Contains(Mouse.Screen.ToPoint())) {
             ScrollBy(MInput.Mouse.WheelDelta);
+
+            if (!UIScene.Instance.UI.NestedGrabsKeyboard()) {
+                if (MInput.Keyboard.Pressed(Keys.Down)) ScrollBy(-30);
+                if (MInput.Keyboard.Pressed(Keys.Up)) ScrollBy(30);
+                if (MInput.Keyboard.Pressed(Keys.PageDown)) ScrollBy(-150);
+                if (MInput.Keyboard.Pressed(Keys.PageUp)) ScrollBy(150);
+                if (MInput.Keyboard.Pressed(Keys.Home)) ClampToStart();
+                if (MInput.Keyboard.Pressed(Keys.End)) ClampToEnd();
+            }
+        }
 
         // TODO: make optional? or into UIElement behaviour?
         // fit to parent's height if not set, like for the tile brush panel
