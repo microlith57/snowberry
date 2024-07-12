@@ -149,6 +149,10 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
 	SNOWBERRY_EDITOR_PLACEMENT_DECALS_FG_TT=    place decals in foreground (shift-F)
 
 # *** Map Info Tool ***
+	SNOWBERRY_EDITOR_MI_ONE_TO_ONE_TT=          one-to-one scale
+	SNOWBERRY_EDITOR_MI_STYLEGROUNDS_TT=        preview stylegrounds (ctrl-L)
+	SNOWBERRY_EDITOR_MI_FANCY_RENDERING_TT=     fancy rendering (ctrl-F)
+
 	SNOWBERRY_EDITOR_MI_ICON=                   icon
 	SNOWBERRY_EDITOR_MI_WIPE=                   wipe
 	SNOWBERRY_EDITOR_MI_INTRO_TYPE=             intro type

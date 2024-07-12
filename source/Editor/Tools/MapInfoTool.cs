@@ -1,6 +1,7 @@
 ﻿using System;
 using Celeste;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Monocle;
 using Snowberry.UI;
 using Snowberry.UI.Controls;
@@ -89,6 +90,17 @@ public class MapInfoTool : Tool {
     public override UIElement CreateActionBar() {
         UIElement bar = new();
         bar.AddRight(CreateScaleButton(), new(0, 4));
+
+        bar.AddRight(CreateToggleButtonNoKb(96, 0, Keys.L, "STYLEGROUNDS", () => Snowberry.Settings.StylegroundsPreview,
+            b => {
+                Snowberry.Settings.StylegroundsPreview = b;
+                Snowberry.Instance.SaveSettings();
+            }), new(5, 4));
+        bar.AddRight(CreateToggleButtonNoKb(64, 0, Keys.F, "FANCY_RENDERING", () => Snowberry.Settings.FancyRender,
+            b => {
+                Snowberry.Settings.FancyRender = b;
+                Snowberry.Instance.SaveSettings();
+            }), new(5, 4));
         return bar;
     }
 
@@ -96,6 +108,28 @@ public class MapInfoTool : Tool {
 
     public static UIKeyboundButton CreateScaleButton() =>
         new(UIScene.ActionbarAtlas.GetSubtexture(0, 80, 16, 16), 3, 3) {
-            OnPress = () => Editor.Instance.Camera.Zoom = 6
+            OnPress = () => Editor.Instance.Camera.Zoom = 6,
+            ButtonTooltip = Dialog.Clean("SNOWBERRY_EDITOR_MI_ONE_TO_ONE_TT")
         };
+
+    private static UIButton CreateToggleButtonNoKb(int icoX, int icoY, Keys toggleBind, string tooltipKey, Func<bool> value, Action<bool> onPress) {
+        MTexture active = UIScene.ActionbarAtlas.GetSubtexture(icoX, icoY, 16, 16);
+        MTexture inactive = UIScene.ActionbarAtlas.GetSubtexture(icoX + 16, icoY, 16, 16);
+        UIKeyboundButton button = null; // to allow referring to it in OnPress
+        button = new UIKeyboundButton(value() ? active : inactive, 3, 3) {
+            OnPress = () => {
+                onPress(!value());
+                button.SetIcon(value() ? active : inactive);
+            },
+            OnKbPress = () => {
+                // Editor actually handles these binds for us
+                // since we update before Editor, we'll always lag behind by one switch
+                button.SetIcon(value() ? inactive : active);
+            },
+            Ctrl = true,
+            Key = toggleBind,
+            ButtonTooltip = Dialog.Clean($"SNOWBERRY_EDITOR_MI_{tooltipKey}_TT")
+        };
+        return button;
+    }
 }
