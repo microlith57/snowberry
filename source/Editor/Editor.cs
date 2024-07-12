@@ -570,9 +570,19 @@ public class Editor : UIScene {
             ToolActionGroup.AddRight(new UILabel("|") {
                 Position = new(5, 11)
             });
-            ToolActionGroup.AddRight(toolActionGroup);
+            var toolScrollPane = new UIScrollPane {
+                Vertical = false,
+                Height = ActionBar.Height,
+                Background = null,
+                TopPadding = 5,
+                BottomPadding = 5
+            };
+            toolScrollPane.AddRight(toolActionGroup);
+            ToolActionGroup.AddRight(toolScrollPane, new Vector2(5, 0));
+            toolScrollPane.CalculateBounds();
             ToolActionGroup.CalculateBounds(); // same
             ActionBar.AddRight(ToolActionGroup);
+            toolScrollPane.Width = (int)(ActionBar.Width - ToolActionGroup.Position.X - 10);
         }
 
         SelectedObjects.Clear();
@@ -585,7 +595,7 @@ public class Editor : UIScene {
             HistoryLog.AddBelow(RenderAction(log[idx], idx <= UndoRedo.ViewCurActionIdx(), idx % 2 == 0));
         if (UndoRedo.ViewInProgress() is { /* non-null */ } inProgress)
             HistoryLog.AddBelow(RenderAction(inProgress, null, true));
-        HistoryLog.ClampToBottom();
+        HistoryLog.ClampToEnd();
     }
 
     private UIElement RenderAction(UndoRedo.EditorAction action, bool? done, bool odd) {
