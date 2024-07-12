@@ -64,6 +64,8 @@ public class UIDropdown : UIElement {
 
         Width = (int)maxWidth + 6;
         Height += 8;
+
+        GrabsScroll = true;
     }
 
     public static UIDropdown OfEnum<T>(Font font, Action<T> onSelect) where T : Enum {
