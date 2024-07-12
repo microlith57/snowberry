@@ -233,11 +233,12 @@ function drawableNinePatchMt.__index:getDrawableSprite()
     local x, y = self.drawX, self.drawY
     local width, height = self.drawWidth, self.drawHeight
     local dummySprite = drawableSprite.fromTexture(self.texture, {atlas = self.atlas})
-    local spriteWidth, spriteHeight = self:getSpriteSize(dummySprite)
 
     if not matrix then
         return sprites
     end
+
+    local spriteWidth, spriteHeight = self:getSpriteSize(dummySprite)
 
     local drawBorder = self.mode == "border" or self.mode == "fill"
     local drawMiddle = self.mode == "fill"
