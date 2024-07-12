@@ -217,7 +217,7 @@ public class TileBrushTool : Tool {
             holoFgTileMap = null;
             holoBgTileMap = null;
             holoGrid = null;
-        } else if ((MInput.Mouse.CheckLeftButton || (middlePan && MInput.Mouse.CheckRightButton)) && Editor.SelectedRoom != null) {
+        } else if (canClick && (MInput.Mouse.CheckLeftButton || (middlePan && MInput.Mouse.CheckRightButton)) && Editor.SelectedRoom != null) {
             var tilePos = new Vector2((float)Math.Floor(Mouse.World.X / 8 - Editor.SelectedRoom.Position.X), (float)Math.Floor(Mouse.World.Y / 8 - Editor.SelectedRoom.Position.Y));
             int x = (int)tilePos.X;
             int y = (int)tilePos.Y;
