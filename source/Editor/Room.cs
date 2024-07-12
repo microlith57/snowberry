@@ -648,6 +648,25 @@ public partial class Room {
         }
     }
 
+    private record RoomPositionSnapshotter(Room r) : UndoRedo.Snapshotter<Vector2> {
+        public Vector2 Snapshot() => r.Position;
+
+        public void Apply(Vector2 t) {
+            Vector2 fromPos = r.Position;
+            r.Bounds.X = (int)t.X;
+            r.Bounds.Y = (int)t.Y;
+            Vector2 diff = t - fromPos;
+            // TODO: common with RoomTool, extract elsewhere for sanity
+            foreach (var e in r.AllEntities) {
+                e.Move(diff * 8);
+                for (int i = 0; i < e.Nodes.Count; i++)
+                    e.MoveNode(i, diff * 8);
+            }
+            foreach(Decal decal in r.BgDecals.Concat(r.FgDecals))
+                decal.Position += diff * 8;
+        }
+    }
+
     #endregion
 
     [GeneratedRegex(@"\r\n|\n\r|\n|\r")]
