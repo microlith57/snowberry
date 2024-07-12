@@ -22,13 +22,17 @@ public class UIScrollPane : UICutoutElement {
 
         if (ShowScrollBar) {
             var hilo = HighLow();
-            float minScroll = Height - hilo.lo, maxScroll = -hilo.hi;
+            float minScroll = Max - hilo.lo, maxScroll = -hilo.hi;
             if (minScroll < maxScroll) { // otherwise, we can't scroll at all
                 float offscreen = maxScroll - minScroll;
                 // we would like to keep the blank area = offscreen area, so dragging appears to linearly move things
                 // until we get to very small sizes, then we need to just rely on a minimum
-                float thumbSize = Math.Max(Height - offscreen, 12);
-                Draw.Rect(position + new Vector2(Width - 4, (Height - thumbSize) * (1 - (Scroll - minScroll) / offscreen)), 3, thumbSize, Color.DarkCyan * 0.5f);
+                float thumbSize = Math.Max(Max - offscreen, 12);
+                if (Vertical) {
+                    Draw.Rect(position + new Vector2(Width - 4, (Height - thumbSize) * (1 - (Scroll - minScroll) / offscreen)), 3, thumbSize, Color.DarkCyan * 0.35f);
+                } else {
+                    Draw.Rect(position + new Vector2((Width - thumbSize) * (1 - (Scroll - minScroll) / offscreen), Height - 4), thumbSize, 3, Color.DarkCyan * 0.35f);
+                }
             }
         }
     }
@@ -46,34 +50,36 @@ public class UIScrollPane : UICutoutElement {
         Height = Height == 0 ? Parent?.Height ?? 0 : Height;
     }
 
-    // TODO: a
     public override Vector2 BoundsOffset() => ContentOffset();
+
+    private float Max => Vertical ? Height : Width;
+    private float Magnitude(UIElement e) => Vertical ? e.Position.Y : e.Position.X;
 
     public void ScrollBy(float amount) {
         // note that Scroll is almost always negative, hence the maximum value is always negative unless some element has negative coords
         var hilo = HighLow();
         Scroll += amount;
-        Scroll = Clamp(Scroll, Height - hilo.lo, -hilo.hi);
+        Scroll = Clamp(Scroll, Max - hilo.lo, -hilo.hi);
     }
 
     public (float hi, float lo) HighLow() {
         UIElement low = null, high = null;
         foreach(var item in Children.Where(item => item.Visible)){
-            if (low == null || item.Position.Y > low.Position.Y) low = item;
-            if (high == null || item.Position.Y < high.Position.Y) high = item;
+            if (low == null || Magnitude(item) > Magnitude(low)) low = item;
+            if (high == null || Magnitude(item) < Magnitude(high)) high = item;
         }
 
-        return (high != null ? high.Position.Y - TopPadding : 0, low != null ? low.Position.Y + low.Height + BottomPadding : 0);
+        return (high != null ? Magnitude(high) - TopPadding : 0, low != null ? Magnitude(low) + (Vertical ? low.Height : low.Width) + BottomPadding : 0);
     }
 
-    public void ClampToBottom() {
+    public void ClampToEnd() {
         var hilo = HighLow();
-        Scroll = Clamp(Height - hilo.lo, Height - hilo.lo, -hilo.hi);
+        Scroll = Clamp(Max - hilo.lo, Max - hilo.lo, -hilo.hi);
     }
 
-    public void ClampToTop() {
+    public void ClampToStart() {
         var hilo = HighLow();
-        Scroll = Clamp(-hilo.hi, Height - hilo.lo, -hilo.hi);
+        Scroll = Clamp(-hilo.hi, Max - hilo.lo, -hilo.hi);
     }
 
     // MathHelper.clamp, but we check constraints the other way around,
