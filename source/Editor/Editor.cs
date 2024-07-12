@@ -564,7 +564,6 @@ public class Editor : UIScene {
         ActionBar.Width = UIBuffer.Width - ToolPanel.Width;
         var toolActionGroup = tool.CreateActionBar();
         if (toolActionGroup != null) {
-            toolActionGroup.Position = new(5, 0);
             toolActionGroup.CalculateBounds(); // required for sub-elements to get any tooltips
             ToolActionGroup = new();
             ToolActionGroup.AddRight(new UILabel("|") {
@@ -574,7 +573,6 @@ public class Editor : UIScene {
                 Vertical = false,
                 Height = ActionBar.Height,
                 Background = null,
-                TopPadding = 5,
                 BottomPadding = 5
             };
             toolScrollPane.AddRight(toolActionGroup);
