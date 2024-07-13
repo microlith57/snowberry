@@ -91,7 +91,7 @@ public class MapInfoTool : Tool {
         UIElement bar = new();
         bar.AddRight(CreateScaleButton(), new(0, 4));
 
-        bar.AddRight(CreateToggleButtonNoKb(96, 0, Keys.L, "STYLEGROUNDS", () => Snowberry.Settings.StylegroundsPreview,
+        bar.AddRight(CreateToggleButtonNoKb(64, 16, Keys.L, "STYLEGROUNDS", () => Snowberry.Settings.StylegroundsPreview,
             b => {
                 Snowberry.Settings.StylegroundsPreview = b;
                 Snowberry.Instance.SaveSettings();
