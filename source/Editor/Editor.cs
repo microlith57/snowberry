@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -21,6 +21,7 @@ namespace Snowberry.Editor;
 public class Editor : UIScene {
     public class BufferCamera {
         private bool changedView = true;
+        public void SetViewChanged() => changedView = true;
 
         private Vector2 pos;
 
@@ -94,18 +95,24 @@ public class Editor : UIScene {
         }
 
         private void UpdateMatrices() {
-            Matrix m = Matrix.CreateTranslation((int)-Position.X, (int)-Position.Y, 0f) * Matrix.CreateScale(Math.Min(1f, Zoom));
+            Matrix m = Matrix.CreateTranslation((int)-Position.X, (int)-Position.Y, 0f);
+
+            screenview = m
+                       * Matrix.CreateScale(Zoom)
+                       * Engine.ScreenMatrix
+                       * Matrix.CreateTranslation(Engine.ViewWidth / 2 + Engine.Viewport.X,
+                                                  Engine.ViewHeight / 2 + Engine.Viewport.Y, 0f);
+
+            m *= Matrix.CreateScale(Math.Min(1f, Zoom));
 
             if (Buffer != null) {
                 m *= Matrix.CreateTranslation(Buffer.Width / 2, Buffer.Height / 2, 0f);
                 viewRect = new Rectangle((int)Position.X - Buffer.Width / 2, (int)Position.Y - Buffer.Height / 2, Buffer.Width, Buffer.Height);
-                screenview = m * Matrix.CreateScale(Zoom);
             } else {
-                m *= Engine.ScreenMatrix * Matrix.CreateTranslation(Engine.ViewWidth / 2, Engine.ViewHeight / 2, 0f);
+                m *= Engine.ScreenMatrix * Matrix.CreateTranslation(Engine.ViewWidth / 2 + Engine.Viewport.X, Engine.ViewHeight / 2 + Engine.Viewport.Y, 0f);
                 int w = (int)(Engine.Width / Zoom);
                 int h = (int)(Engine.Height / Zoom);
                 viewRect = new Rectangle((int)Position.X - w / 2, (int)Position.Y - h / 2, w, h);
-                screenview = m;
             }
 
             inverse = Matrix.Invert(matrix = m);
@@ -468,7 +475,7 @@ public class Editor : UIScene {
         mousePos = MInput.Mouse.Position;
 
         // zooming
-        bool canZoom = UI.CanScrollThrough();
+        bool canZoom = Mouse.IsFocused && UI.CanScrollThrough();
         int wheel = Math.Sign(MInput.Mouse.WheelDelta);
         if (wheel != 0) {
             float scale = Camera.Zoom;
@@ -488,7 +495,7 @@ public class Editor : UIScene {
             mousePos /= Camera.Zoom;
 
         // controls
-        bool canClick = UI.CanClickThrough() && !Message.Shown;
+        bool canClick = Mouse.IsFocused && UI.CanClickThrough() && !Message.Shown;
 
         // panning
         bool middlePan = Snowberry.Settings.MiddleClickPan;
@@ -620,10 +627,12 @@ public class Editor : UIScene {
 
         Engine.Instance.GraphicsDevice.Clear(BG);
         Map.Render(Camera);
+
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
             DepthStencilState.None, RasterizerState.CullNone, null, Camera.Matrix);
         CurrentTool.RenderWorldSpace();
         Draw.SpriteBatch.End();
+
         Map.PostRender();
 
         #endregion
@@ -631,15 +640,32 @@ public class Editor : UIScene {
         #region Displaying on Backbuffer + HQRender
 
         if (Camera.Buffer != null) {
+            // draw the buffer onto the actual screen
             Engine.Instance.GraphicsDevice.SetRenderTarget(null);
 
-            Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Engine.ScreenMatrix);
-            Draw.SpriteBatch.Draw(Camera.Buffer, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, Camera.Zoom, SpriteEffects.None, 0f);
+            Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
+            float scale = Engine.ViewWidth / (float)Camera.Buffer.Width;
+            Draw.SpriteBatch.Draw(Camera.Buffer, new(Engine.Viewport.X, Engine.Viewport.Y), null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             Draw.SpriteBatch.End();
         }
 
-        // HQRender
         Map.HQRender(Camera);
+
+        // we've already drawn onto the screen, but what we've drawn might leak out of the drawable area
+        // so we add back the black bars at the sides on top
+        Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
+        Vector2 bufSize = new(Engine.Instance.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                              Engine.Instance.GraphicsDevice.PresentationParameters.BackBufferHeight);
+
+        if (Engine.Viewport.X != 0) {
+            Draw.Rect(new(0f, 0f), Engine.Viewport.X, bufSize.Y, Color.Black);
+            Draw.Rect(new(bufSize.X - Engine.Viewport.X, 0f), Engine.Viewport.X, bufSize.Y, Color.Black);
+        }
+        if (Engine.Viewport.Y != 0) {
+            Draw.Rect(new(0f, 0f), bufSize.X, Engine.Viewport.Y, Color.Black);
+            Draw.Rect(new(0f, bufSize.Y - Engine.Viewport.Y), bufSize.X, Engine.Viewport.Y, Color.Black);
+        }
+        Draw.SpriteBatch.End();
 
         #endregion
 

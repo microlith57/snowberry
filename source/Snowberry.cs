@@ -45,6 +45,8 @@ public sealed class Snowberry : EverestModule {
             typeof(Editor.Editor).GetMethod("HookSessionGetAreaData", BindingFlags.Static | BindingFlags.NonPublic)
         );
 
+        On.Monocle.Engine.UpdateView += UpdateView;
+
         On.Celeste.Editor.MapEditor.ctor += UsePlaytestMap;
         On.Celeste.MapData.StartLevel += DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine += DontEnterPlaytestMap;
@@ -69,6 +71,8 @@ public sealed class Snowberry : EverestModule {
     public override void Unload() {
         hook_MapData_orig_Load?.Dispose();
         hook_Session_get_MapData?.Dispose();
+
+        On.Monocle.Engine.UpdateView -= UpdateView;
 
         On.Celeste.Editor.MapEditor.ctor -= UsePlaytestMap;
         On.Celeste.MapData.StartLevel -= DontCrashOnEmptyPlaytestLevel;
@@ -179,6 +183,13 @@ public sealed class Snowberry : EverestModule {
     public static void Log(LogLevel level, string message) => Logger.Log(level, "Snowberry", message);
 
     public static void LogInfo(string message) => Log(LogLevel.Info, message);
+
+    public static void UpdateView(On.Monocle.Engine.orig_UpdateView orig, Engine self) {
+        orig(self);
+
+        if (Engine.Scene is Editor.Editor e)
+            e.Camera?.SetViewChanged();
+    }
 
     private static void UsePlaytestMap(On.Celeste.Editor.MapEditor.orig_ctor orig, Celeste.Editor.MapEditor self, AreaKey area, bool reloadMapData) {
         orig(self, area, reloadMapData);

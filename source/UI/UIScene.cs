@@ -24,10 +24,15 @@ public abstract class UIScene : Scene {
     public UIElement Overlay;
     public bool MouseClicked = false;
 
+    private bool isActive, wasActive = false;
+    private bool wasMouseVisible;
+
     public static UIScene Instance => Engine.Scene as UIScene;
 
     public override void Begin() {
         base.Begin();
+
+        wasMouseVisible = Engine.Instance.IsMouseVisible;
 
         UIBuffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, Engine.ViewWidth / UiScale, Engine.ViewHeight / UiScale);
         UI.Width = UIBuffer.Width;
@@ -52,6 +57,8 @@ public abstract class UIScene : Scene {
         base.End();
         UIBuffer.Dispose();
         UI.Destroy();
+
+        Engine.Instance.IsMouseVisible = wasMouseVisible;
     }
 
     public override void Update() {
@@ -73,15 +80,25 @@ public abstract class UIScene : Scene {
         Mouse.ScreenLast = Mouse.Screen;
 
         MouseState m = Microsoft.Xna.Framework.Input.Mouse.GetState();
-        Mouse.Screen = new Vector2(m.X, m.Y) / UiScale;
+        Vector2 pos = new(m.X - Engine.Viewport.X, m.Y - Engine.Viewport.Y);
+
+        Mouse.InBounds = pos.X >= 0 && pos.X < Engine.ViewWidth
+                      && pos.Y >= 0 && pos.Y < Engine.ViewHeight;
+        Mouse.Screen = pos / UiScale;
         Mouse.World = CalculateMouseWorld(m);
+
+        wasActive = isActive;
+        isActive = Engine.Instance.IsActive && !Engine.Commands.Open && Mouse.InBounds;
+        Mouse.IsFocused = wasActive && isActive;
+
+        Engine.Instance.IsMouseVisible = !isActive && !Engine.Commands.Open;
 
         MouseClicked = false;
         UI.Update();
 
         UpdateContent();
 
-        if (MInput.Mouse.PressedLeftButton)
+        if (Mouse.IsFocused && MInput.Mouse.PressedLeftButton)
             Mouse.LastClick = DateTime.Now;
     }
 
@@ -96,24 +113,27 @@ public abstract class UIScene : Scene {
         Engine.Instance.GraphicsDevice.Clear(Color.Transparent);
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
-        if(showUi)
+        if (showUi)
             UI.Render();
 
-        MTexture curCursor = DefaultCursor;
-        Vector2 curJustify = Vector2.Zero;
-        SuggestCursor(ref curCursor, ref curJustify);
-        curCursor.DrawJustified(Mouse.Screen.Floor(), curJustify, Color.White * (showUi ? 1 : 0.5f));
+        if (Mouse.IsFocused) {
+            // Cursor rendering
+            MTexture curCursor = DefaultCursor;
+            Vector2 curJustify = Vector2.Zero;
+            SuggestCursor(ref curCursor, ref curJustify);
+            curCursor.DrawJustified(Mouse.Screen.Floor(), curJustify, Color.White * (showUi ? 1 : 0.5f));
 
-        // Tooltip rendering
-        var tooltip = UI.HoveredTooltip();
-        if (tooltip != null) {
-            string[] array = tooltip.Split(["\\n"], StringSplitOptions.None);
-            for(int i = 0; i < array.Length; i++) {
-                string line = array[i];
-                var tooltipArea = Fonts.Regular.Measure(line);
-                var at = Mouse.Screen.Floor() - new Vector2(tooltipArea.X + 8, -(tooltipArea.Y + 6) * i);
-                Draw.Rect(at, tooltipArea.X + 8, tooltipArea.Y + 6, Color.Black * 0.8f);
-                Fonts.Regular.Draw(line, at + new Vector2(4, 3), Vector2.One, Color.White);
+            // Tooltip rendering
+            var tooltip = UI.HoveredTooltip();
+            if (tooltip != null) {
+                string[] array = tooltip.Split(["\\n"], StringSplitOptions.None);
+                for (int i = 0; i < array.Length; i++) {
+                    string line = array[i];
+                    var tooltipArea = Fonts.Regular.Measure(line);
+                    var at = Mouse.Screen.Floor() - new Vector2(tooltipArea.X + 8, -(tooltipArea.Y + 6) * i);
+                    Draw.Rect(at, tooltipArea.X + 8, tooltipArea.Y + 6, Color.Black * 0.8f);
+                    Fonts.Regular.Draw(line, at + new Vector2(4, 3), Vector2.One, Color.White);
+                }
             }
         }
 
@@ -128,7 +148,7 @@ public abstract class UIScene : Scene {
         Engine.Instance.GraphicsDevice.SetRenderTarget(null);
 
         Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
-        Draw.SpriteBatch.Draw(UIBuffer, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, Vector2.One * UiScale, SpriteEffects.None, 0f);
+        Draw.SpriteBatch.Draw(UIBuffer, new(Engine.Viewport.X, Engine.Viewport.Y), null, Color.White, 0f, Vector2.Zero, Vector2.One * UiScale, SpriteEffects.None, 0f);
         Draw.SpriteBatch.End();
 
         #endregion
