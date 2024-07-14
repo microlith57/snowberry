@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -693,6 +693,8 @@ public class Editor : UIScene {
     }
 
     protected override void OnScreenResized() {
+        Camera?.SetViewChanged();
+
         if(Toolbar != null) { // TODO: remove when the main menu becomes its own scene
             Toolbar.Width = UI.Width;
             ToolPanel.Position = new Vector2(UI.Width - ToolPanel.Width, Toolbar.Height);
