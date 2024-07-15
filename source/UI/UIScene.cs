@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -107,13 +109,41 @@ public abstract class UIScene : Scene {
         // Tooltip rendering
         var tooltip = UI.HoveredTooltip();
         if (tooltip != null) {
-            string[] array = tooltip.Split(["\\n"], StringSplitOptions.None);
-            for(int i = 0; i < array.Length; i++) {
-                string line = array[i];
-                var tooltipArea = Fonts.Regular.Measure(line);
-                var at = Mouse.Screen.Floor() - new Vector2(tooltipArea.X + 8, -(tooltipArea.Y + 6) * i);
-                Draw.Rect(at, tooltipArea.X + 8, tooltipArea.Y + 6, Color.Black * 0.8f);
-                Fonts.Regular.Draw(line, at + new Vector2(4, 3), Vector2.One, Color.White);
+            Vector2 mouse = Mouse.Screen.Floor();
+            int availableSpace = (int)Math.Max(mouse.X, UIBuffer.Width - mouse.X) - 16;
+
+            string[] lines = tooltip.Split(["\\n"], StringSplitOptions.None);
+            List<Tuple<string, int>> linesWrapped = [];
+            Vector2 tooltipArea = Vector2.Zero;
+
+            for(int i = 0; i < lines.Length; i++) {
+                var lineSize = Fonts.Regular.MeasureWrapped(lines[i].Trim(), availableSpace, out string wrapped);
+                linesWrapped.Add(new(wrapped, (int)lineSize.Y));
+
+                if (lineSize.X > tooltipArea.X)
+                    tooltipArea = new(lineSize.X, tooltipArea.Y);
+                tooltipArea += new Vector2(0, lineSize.Y);
+
+                if (i < lines.Length - 1)
+                    tooltipArea += Vector2.UnitY * 2;
+            }
+
+            var rect = new Rectangle(
+                (int)(mouse.X - tooltipArea.X - 10), (int)mouse.Y,
+                (int)tooltipArea.X + 12, (int)tooltipArea.Y + 8
+            );
+
+            if (rect.X < 0) rect.X = 0;
+            if (rect.X + rect.Width > UIBuffer.Width) rect.X = UIBuffer.Width - rect.Width;
+            if (rect.Y < 0) rect.X = 0;
+            if (rect.Y + rect.Height > UIBuffer.Height) rect.Y = UIBuffer.Height - rect.Height;
+
+            Draw.Rect(rect, Color.Black * 0.8f);
+
+            Vector2 pos = new(rect.X + 4, rect.Y + 4);
+            foreach(var line in linesWrapped) {
+                Fonts.Regular.Draw(line.Item1, pos, Vector2.One, Color.White);
+                pos += Vector2.UnitY * (line.Item2 + 2);
             }
         }
 

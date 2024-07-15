@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -134,5 +134,67 @@ public static class Util {
         // clown language
         var pairs = dict.Where(pair => pair.Value.ToString().Equals(value.ToString()));
         return pairs.Any() ? pairs.FirstOrDefault().Key : fallback;
+    }
+
+    public static Vector2 MeasureWrapped(this Font font, string str, int availableSpace, out string wrapped) {
+        wrapped = "";
+        var size = Vector2.Zero;
+
+        int currentWidth = 0;
+        var currentWord = "";
+        int currentWordWidth = 0;
+
+        int spaceWidth = (int)font.Measure(' ').X;
+
+        foreach (char c in str + '\n') {
+            var lineWidth = currentWidth + spaceWidth + currentWordWidth;
+
+            switch (c) {
+                case '\n':
+                    if (lineWidth <= availableSpace) {
+                        wrapped += " " + currentWord + "\n";
+                        currentWidth = lineWidth;
+                    } else {
+                        wrapped += "\n" + currentWord + "\n";
+                        if (currentWidth > size.X)
+                            size.X = currentWidth;
+                        if (currentWordWidth > size.X)
+                            size.X = currentWordWidth;
+                        currentWidth = 0;
+                        size.Y += 2 * font.LineHeight;
+                    }
+                    currentWord = "";
+                    currentWordWidth = 0;
+
+                    if (currentWidth > size.X)
+                        size.X = currentWidth;
+                    currentWidth = 0;
+                    size.Y += font.LineHeight;
+                    break;
+
+                case ' ':
+                    if (lineWidth <= availableSpace) {
+                        wrapped += " " + currentWord;
+                        currentWidth = lineWidth;
+                    } else {
+                        wrapped += "\n" + currentWord;
+                        if (currentWidth > size.X)
+                            size.X = currentWidth;
+                        currentWidth = 0;
+                        size.Y += font.LineHeight;
+                    }
+                    currentWord = "";
+                    currentWordWidth = 0;
+
+                    break;
+
+                default:
+                    currentWord += c;
+                    currentWordWidth += (int)font.Measure(c).X;
+                    break;
+            }
+        }
+
+        return size;
     }
 }
