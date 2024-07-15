@@ -43,7 +43,7 @@ public class UIScrollPane : UICutoutElement {
     public override void Update(Vector2 position = default) {
         base.Update(position);
 
-        if (ViewBounds(position).Contains(Mouse.Screen.ToPoint())) {
+        if (Mouse.IsFocused && ViewBounds(position).Contains(Mouse.Screen.ToPoint())) {
             ScrollBy(MInput.Mouse.WheelDelta);
 
             if (!UIScene.Instance.UI.NestedGrabsKeyboard()) {
