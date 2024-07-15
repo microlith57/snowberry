@@ -39,8 +39,18 @@ internal class Commands {
     [Command("editor_surgery", "opens the snowberry surgery screen for low-level map manipulation")]
     internal static void SurgeryCommand(string mapPath) {
         if (mapPath == null) {
-            Engine.Commands.Log("provide a map path, starting from & including Mods/");
-            return;
+            if (Engine.Scene is Level l) {
+                string path = l.Session.MapData.Filepath;
+                if (string.IsNullOrEmpty(path)) {
+                    Engine.Commands.Log("could not find the map file for the current map,");
+                    Engine.Commands.Log("provide a map path, starting from & including Mods/");
+                    return;
+                }
+                mapPath = path;
+            } else {
+                Engine.Commands.Log("provide a map path, starting from & including Mods/");
+                return;
+            }
         }
 
         var file = Files.GetRealPath(mapPath) ?? mapPath;
