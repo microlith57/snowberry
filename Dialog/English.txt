@@ -261,6 +261,9 @@ SNOWBERRY_SNOWBERRY={# d12626}Snowberry{#}
     SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN=        Middle Click to Pan
     SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN_SUB=    Whether to use middle click to pan and right click for alternate placements,{n}or right click to pan and alt-left-click for alternate placements.
     
+    SNOWBERRY_SETTINGS_PAN_WRAPS_MOUSE=        Use Mouse Wrapping
+    SNOWBERRY_SETTINGS_PAN_WRAPS_MOUSE_SUB=    Whether the mouse pointer should wrap around the editor when panning,{n}to avoid hitting the edge of the monitor.
+    
     SNOWBERRY_SETTINGS_FANCY_RENDER=            Fancy Rendering
     SNOWBERRY_SETTINGS_FANCY_RENDER_SUB=        Whether to display entities more accurately in-editor, such as spinners and dream blocks.
     

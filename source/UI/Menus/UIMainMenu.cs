@@ -125,6 +125,11 @@ public class UIMainMenu : UIElement {
             Snowberry.Instance.SaveSettings();
         }));
         settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN_SUB")), descOffset);
+        settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_PAN_WRAPS_MOUSE"), Snowberry.Settings.PanWrapsMouse, b => {
+            Snowberry.Settings.PanWrapsMouse = b;
+            Snowberry.Instance.SaveSettings();
+        }), settingsOffset);
+        settingsOptions.AddBelow(new UILabel(Dialog.Clean("SNOWBERRY_SETTINGS_PAN_WRAPS_MOUSE_SUB")), descOffset);
         settingsOptions.AddBelow(UIPluginOptionList.BoolOption(Dialog.Clean("SNOWBERRY_SETTINGS_FANCY_RENDER"), Snowberry.Settings.FancyRender, b => {
             Snowberry.Settings.FancyRender = b;
             Snowberry.Instance.SaveSettings();

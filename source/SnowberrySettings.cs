@@ -8,6 +8,10 @@ public class SnowberrySettings : EverestModuleSettings {
     [SettingSubText("SNOWBERRY_SETTINGS_MIDDLE_CLICK_PAN_SUB")]
     public bool MiddleClickPan { get; set; } = true;
 
+    [SettingName("SNOWBERRY_SETTINGS_PAN_WRAPS_MOUSE")]
+    [SettingSubText("SNOWBERRY_SETTINGS_PAN_WRAPS_MOUSE_SUB")]
+    public bool PanWrapsMouse { get; set; } = false;
+
     [SettingName("SNOWBERRY_SETTINGS_FANCY_RENDER")]
     [SettingSubText("SNOWBERRY_SETTINGS_FANCY_RENDER_SUB")]
     public bool FancyRender { get; set; } = true;

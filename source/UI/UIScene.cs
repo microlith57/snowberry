@@ -85,7 +85,7 @@ public abstract class UIScene : Scene {
         Mouse.InBounds = pos.X >= 0 && pos.X < Engine.ViewWidth
                       && pos.Y >= 0 && pos.Y < Engine.ViewHeight;
         Mouse.Screen = pos / UiScale;
-        Mouse.World = CalculateMouseWorld(m);
+        Mouse.World = ScreenToWorld(Mouse.Screen);
 
         wasActive = isActive;
         isActive = Engine.Instance.IsActive && !Engine.Commands.Open && Mouse.InBounds;
@@ -100,6 +100,17 @@ public abstract class UIScene : Scene {
 
         if (Mouse.IsFocused && MInput.Mouse.PressedLeftButton)
             Mouse.LastClick = DateTime.Now;
+
+        if (Mouse.PendingWarp != Vector2.Zero)
+            WarpMouse();
+    }
+
+    protected virtual void WarpMouse() {
+        var destScreen = Mouse.ScreenAfterWarp;
+        var destWindow = (destScreen * UiScale) + new Vector2(Engine.Viewport.X, Engine.Viewport.Y);
+
+        Microsoft.Xna.Framework.Input.Mouse.SetPosition((int)destWindow.X, (int)destWindow.Y);
+        Mouse.PendingWarp = Vector2.Zero;
     }
 
     public override void Render() {
@@ -158,7 +169,8 @@ public abstract class UIScene : Scene {
     protected virtual void PostBeginContent() {}
     protected virtual void RenderContent() {}
     protected virtual void UpdateContent() {}
-    protected virtual Vector2 CalculateMouseWorld(MouseState m) => new Vector2(m.X, m.Y) / UiScale;
+    protected virtual Vector2 ScreenToWorld(Vector2 pos) => pos;
+    protected virtual Vector2 WorldToScreen(Vector2 pos) => pos;
     protected virtual void SuggestCursor(ref MTexture texture, ref Vector2 justify) {}
     protected virtual void OnScreenResized() {}
     protected virtual bool ShouldShowUi() => true;
