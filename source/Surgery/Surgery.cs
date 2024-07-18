@@ -29,9 +29,9 @@ public class Surgery(string path, Element elem) : UIScene {
 
     internal void SurgeryUi() {
         if (path.StartsWith(Everest.PathGame))
-            path = path[Everest.PathGame.Length..].TrimStart('/');
+            path = path[Everest.PathGame.Length..].TrimStart('/', '\\');
 
-        UIElement topBar = new() {
+        TopBar = new() {
             Background = Color.DarkRed,
             Width = UI.Width,
             Height = 40
