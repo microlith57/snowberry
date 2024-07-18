@@ -129,10 +129,11 @@ public class Editor : UIScene {
     public static bool StylegroundsPreviews => Snowberry.Settings.StylegroundsPreview;
 
     public static readonly MTexture panningCursor = CursorsAtlas.GetSubtexture(32, 16, 16, 16);
+    public bool Panning;
+    public Vector2 PanWorldPos;
 
     public BufferCamera Camera { get; private set; }
 
-    public Vector2 mousePos, lastMousePos;
     public Vector2 worldClick;
 
     public Map Map { get; private set; }
@@ -146,6 +147,8 @@ public class Editor : UIScene {
     public UIToolbar Toolbar;
     public UIElement ToolPanel, ToolPanelContainer;
     public UIElement ActionBar, ToolActionGroup;
+
+    public Rectangle WorkArea;
 
     public UIPopOut HistoryWindow;
     public UIScrollPane HistoryLog;
@@ -471,39 +474,44 @@ public class Editor : UIScene {
     }
 
     protected override void UpdateContent() {
-        lastMousePos = mousePos;
-        mousePos = MInput.Mouse.Position;
+        float zoomScale = Camera.Zoom;
 
         // zooming
         bool canZoom = Mouse.IsFocused && UI.CanScrollThrough();
         int wheel = Math.Sign(MInput.Mouse.WheelDelta);
         if (wheel != 0) {
-            float scale = Camera.Zoom;
             if (canZoom) {
                 if (wheel > 0)
-                    scale = scale >= 1 ? scale + 1 : scale * 2f;
+                    zoomScale = zoomScale >= 1 ? zoomScale + 1 : zoomScale * 2f;
                 else if (wheel < 0)
-                    scale = scale > 1 ? scale - 1 : scale / 2f;
+                    zoomScale = zoomScale > 1 ? zoomScale - 1 : zoomScale / 2f;
             }
 
-            scale = Calc.Clamp(scale, 0.0625f, 24f);
-            if (scale != Camera.Zoom)
-                Camera.Zoom = scale;
+            zoomScale = Calc.Clamp(zoomScale, 0.0625f, 24f);
         }
-
-        if (Camera.Buffer != null)
-            mousePos /= Camera.Zoom;
 
         // controls
         bool canClick = Mouse.IsFocused && UI.CanClickThrough() && !Message.Shown;
 
         // panning
         bool middlePan = Snowberry.Settings.MiddleClickPan;
-        if ((middlePan && MInput.Mouse.CheckMiddleButton || !middlePan && MInput.Mouse.CheckRightButton) && canClick) {
-            Vector2 move = lastMousePos - mousePos;
-            if (move != Vector2.Zero)
-                Camera.Position += move / (Camera.Buffer == null ? Camera.Zoom : 1f);
-        }
+        bool panButtonPressed = middlePan ? MInput.Mouse.CheckMiddleButton : MInput.Mouse.CheckRightButton;
+        bool shouldWrap = Snowberry.Settings.PanWrapsMouse;
+        if (panButtonPressed) {
+            if (Panning) {
+                var panDelta = PanWorldPos - Mouse.World;
+                if (panDelta != Vector2.Zero) {
+                    Camera.Position += panDelta;
+
+                    var wrapScreenDelta = shouldWrap ? WrapMousePosition() : Vector2.Zero;
+                    PanWorldPos = ScreenToWorld(Mouse.Screen + wrapScreenDelta);
+                }
+            } else if (canClick) {
+                Panning = true;
+                PanWorldPos = Mouse.World;
+            }
+        } else
+            Panning = false;
 
         // room & filler select
         if ((MInput.Mouse.CheckLeftButton || MInput.Mouse.CheckRightButton) && canClick) {
@@ -552,9 +560,27 @@ public class Editor : UIScene {
             TryAutosave(Backups.BackupReason.Autosave);
             LastAutosave = now; // in case we fail
         }
+
+        // this happens at the end of the frame, to avoid coordinate conversions earlier being messed up
+        if (zoomScale != Camera.Zoom) {
+            var panScreenPos = WorldToScreen(PanWorldPos);
+            Camera.Zoom = zoomScale;
+            PanWorldPos = ScreenToWorld(panScreenPos);
+        }
     }
 
-    protected override Vector2 CalculateMouseWorld(MouseState m) => Vector2.Transform(Camera.Buffer == null ? new(m.X, m.Y) : mousePos, Camera.Inverse).Floor();
+    protected override Vector2 ScreenToWorld(Vector2 screenPos) => Vector2.Transform(
+        (Camera.Buffer == null ? screenPos
+                               : screenPos / Camera.Zoom / (Engine.ViewWidth / (float)Engine.Width))
+        * UiScale,
+        Camera.Inverse).Floor();
+
+    protected override Vector2 WorldToScreen(Vector2 worldPos) => Vector2.Transform(worldPos, Camera.Matrix).Floor() * (
+        Camera.Buffer == null ? 1f
+                               : Camera.Zoom * (Engine.ViewWidth / (float)Engine.Width)
+        ) / UiScale;
+
+    protected Vector2 WrapMousePosition() => Mouse.Wrap(WorkArea);
 
     public void SwitchTool(int toolIdx) {
         ToolPanel?.RemoveSelf();
@@ -589,6 +615,11 @@ public class Editor : UIScene {
             ActionBar.AddRight(ToolActionGroup);
             toolScrollPane.Width = (int)(ActionBar.Width - ToolActionGroup.Position.X - 10);
         }
+
+        WorkArea = new Rectangle(
+            0, ActionBar.Bounds.Bottom,
+            ActionBar.Width, UIBuffer.Height - ActionBar.Bounds.Bottom
+        );
 
         SelectedObjects.Clear();
     }
@@ -682,10 +713,8 @@ public class Editor : UIScene {
 
     protected override void SuggestCursor(ref MTexture texture, ref Vector2 justify) {
         bool canClick = UI.CanClickThrough() && !Message.Shown;
-        bool middlePan = Snowberry.Settings.MiddleClickPan;
-        var panning = (middlePan && MInput.Mouse.CheckMiddleButton || !middlePan && MInput.Mouse.CheckRightButton) && canClick;
 
-        if (panning) {
+        if (Panning) {
             texture = panningCursor;
             justify = new(0.5f);
         } else if (canClick)
@@ -702,6 +731,11 @@ public class Editor : UIScene {
             ActionBar.Width = UI.Width - ToolPanel.Width;
             Tool.Tools[Toolbar.CurrentTool].ResizePanel(UI.Height - Toolbar.Height);
         }
+
+        WorkArea = new Rectangle(
+            0, ActionBar.Bounds.Bottom,
+            ActionBar.Width, UIBuffer.Height - ActionBar.Bounds.Bottom
+        );
     }
 
     protected override bool ShouldShowUi() => !Input.MenuJournal.Check;

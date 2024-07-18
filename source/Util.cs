@@ -135,4 +135,7 @@ public static class Util {
         var pairs = dict.Where(pair => pair.Value.ToString().Equals(value.ToString()));
         return pairs.Any() ? pairs.FirstOrDefault().Key : fallback;
     }
+
+    public static float Mod(float x, float m) => (x % m + m) % m;
+    public static float Wrap(float val, float min, float max) => Mod(val - min, max - min) + min;
 }
