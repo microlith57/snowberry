@@ -21,6 +21,8 @@ public class Mixer : UIScene {
     private const int HeaderHeight = 40;
 
     private readonly List<(EventInstance, UIElement)> Playing = new();
+    private UIElement TopBar;
+    private UIScrollPane BigScrollPane;
     private UIScrollPane SoundsPane;
 
     protected override void BeginContent() {
@@ -38,25 +40,25 @@ public class Mixer : UIScene {
     }
 
     private void MixerUi() {
-        UIElement topBar = new() {
+        TopBar = new() {
             Background = Color.DarkBlue * 0.5f,
             Width = UI.Width,
             Height = HeaderHeight
         };
 
-        topBar.AddRight(new UILabel("snowberry", Fonts.Regular, 2), new(8, 8));
-        topBar.AddRight(new UILabel(Dialog.Clean("SNOWBERRY_MIXER_TITLE"), Fonts.Bold, 2) {
+        TopBar.AddRight(new UILabel("snowberry", Fonts.Regular, 2), new(8, 8));
+        TopBar.AddRight(new UILabel(Dialog.Clean("SNOWBERRY_MIXER_TITLE"), Fonts.Bold, 2) {
             FG = Color.Blue
         }, new(8));
 
-        topBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
+        TopBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
             OnPress = () => Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu)
         }, new(8));
 
-        UI.Add(topBar);
+        UI.Add(TopBar);
 
         List<(string name, List<EventDescription> events)> audio = GetBigAudioList();
-        var bigScrollPane = new UIScrollPane {
+        BigScrollPane = new UIScrollPane {
             Position = new(0, HeaderHeight),
             Width = ScrollpaneWidth,
             Height = UI.Height - HeaderHeight,
@@ -80,8 +82,8 @@ public class Mixer : UIScene {
         }
 
         bigTree.Layout();
-        bigScrollPane.Add(bigTree);
-        UI.Add(bigScrollPane);
+        BigScrollPane.Add(bigTree);
+        UI.Add(BigScrollPane);
 
         SoundsPane = new UIScrollPane {
             Position = new(ScrollpaneWidth, HeaderHeight),
@@ -90,6 +92,17 @@ public class Mixer : UIScene {
             TopPadding = 5
         };
         UI.Add(SoundsPane);
+    }
+
+    protected override void OnScreenResized() {
+        base.OnScreenResized();
+
+        TopBar.Width = UI.Width;
+
+        BigScrollPane.Height = UI.Height - HeaderHeight;
+
+        SoundsPane.Width = UI.Width - ScrollpaneWidth;
+        SoundsPane.Height = UI.Height - HeaderHeight;
     }
 
     private List<(string name, List<EventDescription> events)> GetBigAudioList() {

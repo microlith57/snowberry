@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using Celeste;
 using Microsoft.Xna.Framework;
@@ -12,6 +12,9 @@ namespace Snowberry.Surgery;
 using Element = BinaryPacker.Element;
 
 public class Surgery(string path, Element elem) : UIScene {
+
+    private UIElement TopBar;
+    private UIScrollPane Rest;
 
     public override void Begin() {
         Audio.Stop(Audio.CurrentAmbienceEventInstance);
@@ -30,37 +33,45 @@ public class Surgery(string path, Element elem) : UIScene {
             Height = 40
         };
 
-        topBar.AddRight(new UILabel("snowberry", Fonts.Regular, 2), new(8, 8));
-        topBar.AddRight(new UILabel(Dialog.Clean("SNOWBERRY_SURGERY_TITLE"), Fonts.Bold, 2) {
+        TopBar.AddRight(new UILabel("snowberry", Fonts.Regular, 2), new(8, 8));
+        TopBar.AddRight(new UILabel(Dialog.Clean("SNOWBERRY_SURGERY_TITLE"), Fonts.Bold, 2) {
             Underline = true,
             FG = Color.Red
         }, new(8, 8));
-        topBar.AddRight(new UILabel($"{Dialog.Clean("SNOWBERRY_SURGERY_PATHING")} {path}", Fonts.Regular) {
+        TopBar.AddRight(new UILabel($"{Dialog.Clean("SNOWBERRY_SURGERY_PATHING")} {path}", Fonts.Regular) {
             FG = Color.Gray
         }, new(8, 20));
 
         UITextField mapName = new UITextField(Fonts.Regular, 400, Path.GetFileName(path));
-        topBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(16, 0, 16, 16), 3, 3) {
+        TopBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(16, 0, 16, 16), 3, 3) {
             OnPress = () => BinaryExporter.ExportToFile(elem, mapName.Value + ".bin")
         }, new(40, 8));
-        topBar.AddRight(mapName, new(8, 14));
+        TopBar.AddRight(mapName, new(8, 14));
 
-        topBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
+        TopBar.AddRight(new UIButton(ActionbarAtlas.GetSubtexture(32, 0, 16, 16), 3, 3) {
             OnPress = () => Engine.Scene = new OverworldLoader(Overworld.StartMode.MainMenu)
         }, new(8));
 
-        UI.Add(topBar);
+        UI.Add(TopBar);
 
-        UIScrollPane rest = new() {
+        Rest = new() {
             Width = UI.Width,
             Height = UI.Height - 40,
             Position = new(0, 40),
             TopPadding = 10
         };
 
-        rest.AddBelow(Render(elem, null), new(10));
+        Rest.AddBelow(Render(elem, null), new(10));
 
-        UI.Add(rest);
+        UI.Add(Rest);
+    }
+
+    protected override void OnScreenResized() {
+        base.OnScreenResized();
+
+        TopBar.Width = UI.Width;
+        Rest.Width = UI.Width;
+        Rest.Height = UI.Height - 40;
     }
 
     internal UIElement Render(Element e, Element parent) {
