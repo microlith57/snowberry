@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Celeste;
+using Celeste.Mod;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Snowberry.UI;
@@ -27,6 +28,9 @@ public class Surgery(string path, Element elem) : UIScene {
     }
 
     internal void SurgeryUi() {
+        if (path.StartsWith(Everest.PathGame))
+            path = path[Everest.PathGame.Length..].TrimStart('/');
+
         UIElement topBar = new() {
             Background = Color.DarkRed,
             Width = UI.Width,
