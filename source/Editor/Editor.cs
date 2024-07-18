@@ -42,13 +42,6 @@ public class Editor : UIScene {
             get => scale;
             set {
                 scale = value;
-                if (scale < 1f)
-                    Buffer = null;
-                else {
-                    Vector2 size = new Vector2(Engine.Width, Engine.Height) / scale;
-                    Buffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, (int)size.X + (Engine.Width % scale == 0 ? 0 : 1), (int)size.Y + (Engine.Height % scale == 0 ? 0 : 1));
-                }
-
                 changedView = true;
             }
         }
@@ -59,7 +52,7 @@ public class Editor : UIScene {
         public Matrix Matrix {
             get {
                 if (changedView)
-                    UpdateMatrices();
+                    UpdateView();
                 return matrix;
             }
         }
@@ -67,7 +60,7 @@ public class Editor : UIScene {
         public Matrix Inverse {
             get {
                 if (changedView)
-                    UpdateMatrices();
+                    UpdateView();
                 return inverse;
             }
         }
@@ -75,7 +68,7 @@ public class Editor : UIScene {
         public Matrix ScreenView {
             get {
                 if (changedView)
-                    UpdateMatrices();
+                    UpdateView();
                 return screenview;
             }
         }
@@ -83,7 +76,7 @@ public class Editor : UIScene {
         public Rectangle ViewRect {
             get {
                 if (changedView)
-                    UpdateMatrices();
+                    UpdateView();
                 return viewRect;
             }
         }
@@ -91,15 +84,23 @@ public class Editor : UIScene {
         public RenderTarget2D Buffer { get; private set; }
 
         public BufferCamera() {
-            Buffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, Engine.Width, Engine.Height);
+            UpdateView();
         }
 
-        private void UpdateMatrices() {
+        private void UpdateView() {
+            if (scale <= 1f)
+                Buffer = null;
+            else {
+                Vector2 size = (new Vector2(Engine.ViewWidth, Engine.ViewHeight) / scale).Ceiling();
+
+                if (Buffer == null || Buffer.IsDisposed || Buffer.Width != (int)size.X || Buffer.Height != (int)size.Y)
+                    Buffer = new RenderTarget2D(Engine.Instance.GraphicsDevice, (int)size.X, (int)size.Y);
+            }
+
             Matrix m = Matrix.CreateTranslation((int)-Position.X, (int)-Position.Y, 0f);
 
             screenview = m
                        * Matrix.CreateScale(Zoom)
-                       * Engine.ScreenMatrix
                        * Matrix.CreateTranslation(Engine.ViewWidth / 2 + Engine.Viewport.X,
                                                   Engine.ViewHeight / 2 + Engine.Viewport.Y, 0f);
 
@@ -109,9 +110,9 @@ public class Editor : UIScene {
                 m *= Matrix.CreateTranslation(Buffer.Width / 2, Buffer.Height / 2, 0f);
                 viewRect = new Rectangle((int)Position.X - Buffer.Width / 2, (int)Position.Y - Buffer.Height / 2, Buffer.Width, Buffer.Height);
             } else {
-                m *= Engine.ScreenMatrix * Matrix.CreateTranslation(Engine.ViewWidth / 2 + Engine.Viewport.X, Engine.ViewHeight / 2 + Engine.Viewport.Y, 0f);
-                int w = (int)(Engine.Width / Zoom);
-                int h = (int)(Engine.Height / Zoom);
+                m *= Matrix.CreateTranslation(Engine.ViewWidth / 2 + Engine.Viewport.X, Engine.ViewHeight / 2 + Engine.Viewport.Y, 0f);
+                int w = (int)(Engine.ViewWidth / Zoom);
+                int h = (int)(Engine.ViewHeight / Zoom);
                 viewRect = new Rectangle((int)Position.X - w / 2, (int)Position.Y - h / 2, w, h);
             }
 
@@ -571,14 +572,14 @@ public class Editor : UIScene {
 
     protected override Vector2 ScreenToWorld(Vector2 screenPos) => Vector2.Transform(
         (Camera.Buffer == null ? screenPos
-                               : screenPos / Camera.Zoom / (Engine.ViewWidth / (float)Engine.Width))
+                               : screenPos / Camera.Zoom)
         * UiScale,
         Camera.Inverse).Floor();
 
-    protected override Vector2 WorldToScreen(Vector2 worldPos) => Vector2.Transform(worldPos, Camera.Matrix).Floor() * (
-        Camera.Buffer == null ? 1f
-                               : Camera.Zoom * (Engine.ViewWidth / (float)Engine.Width)
-        ) / UiScale;
+    protected override Vector2 WorldToScreen(Vector2 worldPos) =>
+        Vector2.Transform(worldPos, Camera.Matrix).Floor()
+        * (Camera.Buffer == null ? 1f : Camera.Zoom)
+        / UiScale;
 
     protected Vector2 WrapMousePosition() => Mouse.Wrap(WorkArea);
 
