@@ -154,10 +154,10 @@ public class Editor : UIScene {
     public UIPopOut HistoryWindow;
     public UIScrollPane HistoryLog;
 
-    // TODO: potentially replace with just setting the MapData of Playtest
-    private static bool generatePlaytestMapData = false;
+    // the bait and switch of all time
+    internal static bool generatePlaytestMapData = false;
+    // for checking whether we're in a real playtest session
     internal static Session PlaytestSession;
-    internal static MapData PlaytestMapData;
 
     private static Vector2? lastPosition = null;
     private static float? lastZoom = null;
@@ -409,24 +409,24 @@ public class Editor : UIScene {
         TryAutosave(Backups.BackupReason.OnPlaytest);
 
         generatePlaytestMapData = true;
-        PlaytestMapData = new MapData(Map.From);
-        PlaytestSession = new Session(Map.From);
-        if ((SelectedRoom?.TrackedEntities.TryGetValue(typeof(Plugin_Player), out var players) ?? false) && players.FirstOrDefault() is { Position: var v }) {
-            PlaytestSession.RespawnPoint = v;
-            PlaytestSession.Level = SelectedRoom.Name;
-            PlaytestSession.StartedFromBeginning = false;
+        try {
+            AreaData playtestAreaData = AreaData.Get(Snowberry.PlaytestSid);
+            MapData playtestData = playtestAreaData.Mode[0].MapData;
+            playtestData.Reload(); // supposedly the same thing as Load...
+            Map.Meta.ApplyTo(playtestAreaData);
+            PlaytestSession = new Session(playtestAreaData.ToKey());
+            // update the room and spawn point
+            if ((SelectedRoom?.TrackedEntities.TryGetValue(typeof(Plugin_Player), out var players) ?? false) &&
+                players.FirstOrDefault() is { Position: var v }) {
+                PlaytestSession.RespawnPoint = v;
+                PlaytestSession.Level = SelectedRoom.Name;
+                PlaytestSession.StartedFromBeginning = false;
+            }
+
+            LevelEnter.Go(PlaytestSession, true);
+        } finally { // make absolute sure this never leaks
+            generatePlaytestMapData = false;
         }
-
-        /*
-          TODO: need to re-apply map meta here to ensure edits made in the editor actually apply during playtest properly
-          but this naive approach doesn't work, causes crashes in Xaphan Helper and others; something is setup inconsistently
-        */
-        // Map.Meta.ApplyTo(PlaytestMapData.Data);
-        // foreach(ModeProperties prop in PlaytestMapData.Data.Mode)
-        //     prop.MapData = PlaytestMapData;
-
-        LevelEnter.Go(PlaytestSession, true);
-        generatePlaytestMapData = false;
     }
 
     protected override void BeginContent() {
@@ -761,7 +761,7 @@ public class Editor : UIScene {
     }
 
     // used reflectively
-    private static void CreatePlaytestMapDataHook(Action<MapData> orig_Load, MapData self) {
+    /*private static void CreatePlaytestMapDataHook(Action<MapData> orig_Load, MapData self) {
         if (!generatePlaytestMapData)
             orig_Load(self);
         else {
@@ -773,7 +773,7 @@ public class Editor : UIScene {
 
     private static MapData HookSessionGetAreaData(Func<Session, MapData> orig, Session self) {
         return self.Area.SID == "Snowberry/Playtest" ? PlaytestMapData : orig(self);
-    }
+    }*/
 
     internal static void CopyAreaData(AreaData from, AreaData to) {
         to.ASideAreaDataBackup = from.ASideAreaDataBackup;

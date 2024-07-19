@@ -202,53 +202,10 @@ public class Map {
         }
     }
 
-    public void GenerateMapData(MapData data) {
-        foreach(var room in Rooms)
-            try{
-                data.Levels.Add(new LevelData(room.CreateLevelData()));
-            }catch(InvalidCastException e){
-                Snowberry.Log(LogLevel.Error, $"Couldn't create room: {e}");
-            }
-
-        foreach(var filler in Fillers)
-            data.Filler.Add(filler);
-        data.Foreground = GenerateStylegroundsElement(false);
-        data.Background = GenerateStylegroundsElement(true);
-
-        // bounds
-        int left = int.MaxValue;
-        int top = int.MaxValue;
-        int right = int.MinValue;
-        int bottom = int.MinValue;
-        foreach(LevelData level in data.Levels){
-            if(level.Bounds.Left < left)
-                left = level.Bounds.Left;
-            if(level.Bounds.Top < top)
-                top = level.Bounds.Top;
-            if(level.Bounds.Right > right)
-                right = level.Bounds.Right;
-            if(level.Bounds.Bottom > bottom)
-                bottom = level.Bounds.Bottom;
-        }
-
-        foreach(Rectangle filler in data.Filler){
-            if(filler.Left < left)
-                left = filler.Left;
-            if(filler.Top < top)
-                top = filler.Top;
-            if(filler.Right > right)
-                right = filler.Right;
-            if(filler.Bottom > bottom)
-                bottom = filler.Bottom;
-        }
-
-        const int pad = 64;
-        data.Bounds = new Rectangle(left - pad, top - pad, right - left + pad * 2, bottom - top + pad * 2);
-    }
-
     public Element Export(){
         Element map = new Element{
-            Children = []
+            Children = [],
+            Package = "" // still has to be non-null, even though it's completely unused
         };
 
         // children:

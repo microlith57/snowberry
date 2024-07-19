@@ -399,7 +399,8 @@ public partial class Room {
 
                 ["cameraOffsetX"] = CameraOffset.X,
                 ["cameraOffsetY"] = CameraOffset.Y
-            }
+            },
+            Children = []
         };
 
         Element entitiesElement = new Element {
@@ -407,7 +408,7 @@ public partial class Room {
             Name = "entities",
             Children = []
         };
-        ret.Children = [entitiesElement];
+        ret.Children.Add(entitiesElement);
 
         foreach (var entity in Entities) {
             Element entityElem = new Element {

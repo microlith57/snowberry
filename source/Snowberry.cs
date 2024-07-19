@@ -16,7 +16,6 @@ using Snowberry.Editor.Recording;
 namespace Snowberry;
 
 public sealed class Snowberry : EverestModule {
-    private static Hook hook_MapData_orig_Load, hook_Session_get_MapData;
 
     public const string PlaytestSid = "Snowberry/Playtest";
 
@@ -35,20 +34,10 @@ public sealed class Snowberry : EverestModule {
     public static SnowberrySettings Settings => (SnowberrySettings)Instance._Settings;
 
     public override void Load() {
-        hook_MapData_orig_Load = new Hook(
-            typeof(MapData).GetMethod("orig_Load", BindingFlags.Instance | BindingFlags.NonPublic),
-            typeof(Editor.Editor).GetMethod("CreatePlaytestMapDataHook", BindingFlags.Static | BindingFlags.NonPublic)
-        );
-
-        hook_Session_get_MapData = new Hook(
-            typeof(Session).GetProperty("MapData", BindingFlags.Instance | BindingFlags.Public).GetGetMethod(),
-            typeof(Editor.Editor).GetMethod("HookSessionGetAreaData", BindingFlags.Static | BindingFlags.NonPublic)
-        );
-
-        On.Celeste.Editor.MapEditor.ctor += UsePlaytestMap;
         On.Celeste.MapData.StartLevel += DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine += DontEnterPlaytestMap;
         On.Celeste.AnimatedTiles.Set += DontCrashOnMissingAnimatedTile;
+        On.Celeste.BinaryPacker.FromBinary += UsePlaytestMapBinary;
 
         Everest.Events.MainMenu.OnCreateButtons += MainMenu_OnCreateButtons;
         Everest.Events.Level.OnCreatePauseMenuButtons += Level_OnCreatePauseMenuButtons;
@@ -67,13 +56,10 @@ public sealed class Snowberry : EverestModule {
     }
 
     public override void Unload() {
-        hook_MapData_orig_Load?.Dispose();
-        hook_Session_get_MapData?.Dispose();
-
-        On.Celeste.Editor.MapEditor.ctor -= UsePlaytestMap;
         On.Celeste.MapData.StartLevel -= DontCrashOnEmptyPlaytestLevel;
         On.Celeste.LevelEnter.Routine -= DontEnterPlaytestMap;
         On.Celeste.AnimatedTiles.Set -= DontCrashOnMissingAnimatedTile;
+        On.Celeste.BinaryPacker.FromBinary -= UsePlaytestMapBinary;
 
         Everest.Events.MainMenu.OnCreateButtons -= MainMenu_OnCreateButtons;
         Everest.Events.Level.OnCreatePauseMenuButtons -= Level_OnCreatePauseMenuButtons;
@@ -180,20 +166,6 @@ public sealed class Snowberry : EverestModule {
 
     public static void LogInfo(string message) => Log(LogLevel.Info, message);
 
-    private static void UsePlaytestMap(On.Celeste.Editor.MapEditor.orig_ctor orig, Celeste.Editor.MapEditor self, AreaKey area, bool reloadMapData) {
-        orig(self, area, reloadMapData);
-        var selfData = new DynamicData(self);
-        if (selfData.Get<Session>("CurrentSession") == Editor.Editor.PlaytestSession) {
-            var templates = selfData.Get<List<Celeste.Editor.LevelTemplate>>("levels");
-            templates.Clear();
-            foreach (LevelData level in Editor.Editor.PlaytestMapData.Levels)
-                templates.Add(new Celeste.Editor.LevelTemplate(level));
-
-            foreach (Rectangle item in Editor.Editor.PlaytestMapData.Filler)
-                templates.Add(new Celeste.Editor.LevelTemplate(item.X, item.Y, item.Width, item.Height));
-        }
-    }
-
     private static LevelData DontCrashOnEmptyPlaytestLevel(On.Celeste.MapData.orig_StartLevel orig, MapData self) {
         // TODO: just add an empty room lol
         if (self.Area.SID == PlaytestSid && self.Levels.Count == 0) {
@@ -233,5 +205,11 @@ public sealed class Snowberry : EverestModule {
     private static void DontCrashOnMissingAnimatedTile(On.Celeste.AnimatedTiles.orig_Set orig, AnimatedTiles self, int x, int y, string name, float scalex, float scaley) {
         if (self.Bank.AnimationsByName.ContainsKey(name))
             orig(self, x, y, name, scalex, scaley);
+    }
+
+    private static BinaryPacker.Element UsePlaytestMapBinary(On.Celeste.BinaryPacker.orig_FromBinary orig, string filename) {
+        if (Editor.Editor.generatePlaytestMapData && Engine.Scene is Editor.Editor editor)
+            return editor.Map.Export();
+        return orig(filename);
     }
 }
