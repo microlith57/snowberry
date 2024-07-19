@@ -760,21 +760,6 @@ public class Editor : UIScene {
         LastAutosave = DateTime.Now;
     }
 
-    // used reflectively
-    /*private static void CreatePlaytestMapDataHook(Action<MapData> orig_Load, MapData self) {
-        if (!generatePlaytestMapData)
-            orig_Load(self);
-        else {
-            if (Engine.Scene is Editor editor) {
-                editor.Map.GenerateMapData(self);
-            } else orig_Load(self);
-        }
-    }
-
-    private static MapData HookSessionGetAreaData(Func<Session, MapData> orig, Session self) {
-        return self.Area.SID == "Snowberry/Playtest" ? PlaytestMapData : orig(self);
-    }*/
-
     internal static void CopyAreaData(AreaData from, AreaData to) {
         to.ASideAreaDataBackup = from.ASideAreaDataBackup;
         to.BloomBase = from.BloomBase;
