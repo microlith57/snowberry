@@ -126,6 +126,8 @@ public class Map {
             if (quantity > 0)
                 Snowberry.Log(LogLevel.Warn, $"Attempted to load unknown object ('{name}') x{quantity}, using placeholder plugin");
         MissingObjectReports = new();
+
+        Events.ImportMap(this, data);
     }
 
     internal Room GetRoomAt(Point at) => Rooms.FirstOrDefault(room => new Rectangle(room.X * 8, room.Y * 8, room.Width * 8, room.Height * 8).Contains(at));
@@ -180,11 +182,15 @@ public class Map {
         }
 
         Draw.SpriteBatch.End();
+
+        Events.RenderMap(this, camera);
     }
 
     internal void PostRender() {
         foreach (var room in Rooms)
             room.PostRender();
+
+        Events.PostRenderMap(this);
     }
 
     internal void HQRender(Editor.BufferCamera camera) {
@@ -200,6 +206,8 @@ public class Map {
             Draw.SpriteBatch.End();
             //DrawUtil.WithinScissorRectangle(room.ScissorRect, room.HQRender, camera.ScreenView, nested: false, false);
         }
+
+        Events.HQRenderMap(this, camera);
     }
 
     public void GenerateMapData(MapData data) {
@@ -357,6 +365,8 @@ public class Map {
         meta.Children.Add(mode);
 
         map.Children.Add(meta);
+
+        Events.ExportMap(this, map);
 
         return map;
     }
