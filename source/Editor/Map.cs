@@ -55,8 +55,6 @@ public class Map {
         From = playtestKey; // TODO: this looks incorrect?
 
         FromRaw = BinaryPacker.FromBinary(data.Filepath);
-        // TODO: crashes in vanilla maps, pretty sure it's not actually necessary?
-        //new MapDataFixup(data).Process(FromRaw);
         MissingObjectReports = new();
 
         if (FromRaw.Children?.Find(element => element.Name == "meta") is {} metaElem) {
