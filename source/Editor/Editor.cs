@@ -120,6 +120,23 @@ public class Editor : UIScene {
 
             changedView = false;
         }
+
+        public void ZoomToFit(Rectangle rect) {
+            Position = rect.Center.ToVector2();
+
+            float fac_x = rect.Width / Engine.ViewWidth;
+            float fac_y = rect.Height / Engine.ViewHeight;
+            var fac = Math.Max(fac_x, fac_y);
+
+            if (fac <= 1f) {
+                // zoom in to an integer scale
+                Zoom = (float)Math.Floor(1f / fac);
+            } else {
+                // zoom out to a power-of-2 scale
+                int zoom_power = (int)Math.Ceiling(Math.Log2(fac));
+                Zoom = 1f / (float) Math.Pow(2f, zoom_power);
+            }
+        }
     }
 
     public static new Editor Instance { get; private set; }
@@ -526,6 +543,10 @@ public class Editor : UIScene {
                 // don't let tools click when clicking onto new rooms
                 if (SelectedRoom != before)
                     canClick = false;
+
+                if (SelectedRoom != null) {
+                    Camera.ZoomToFit(new(SelectedRoom.X * 8, SelectedRoom.Y * 8, SelectedRoom.Width * 8, SelectedRoom.Height * 8));
+                }
             }
         }
 
