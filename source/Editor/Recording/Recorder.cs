@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using Celeste;
 using Snowberry.UI;
 using Snowberry.UI.Menus;
+using YamlDotNet.Core;
+using YamlDotNet.Serialization;
 
 namespace Snowberry.Editor.Recording;
 
-public abstract class Recorder{
+public abstract class Recorder : IYamlConvertible {
 
     public static readonly List<Func<Recorder>> Recorders = [
         () => new TimeRecorder(),
@@ -16,11 +18,12 @@ public abstract class Recorder{
         () => new FlagsRecorder()
     ];
 
-    public abstract void UpdateInGame(Level l, float time);
-    public virtual void FinalizeRecording(){}
+    public virtual void Start() {}
+    public virtual void UpdateInGame(Level l, float time) {}
+    public virtual void FinalizeRecording() {}
 
-    public abstract void RenderScreenSpace(float time);
-    public abstract void RenderWorldSpace(float time);
+    public virtual void RenderScreenSpace(float time) {}
+    public virtual void RenderWorldSpace(float time) {}
 
     public abstract string Name();
     public virtual UIElement CreateOptionsPane() {
@@ -44,4 +47,7 @@ public abstract class Recorder{
 
     public (bool show, bool record) GetSettings() =>
         Snowberry.Settings.RecorderSettings.TryGetValue(GetType().FullName, out var v) ? v : (true, true);
+
+    public abstract void Read(IParser parser, Type expectedType, ObjectDeserializer nestedObjectDeserializer);
+    public abstract void Write(IEmitter emitter, ObjectSerializer nestedObjectSerializer);
 }
