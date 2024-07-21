@@ -72,7 +72,7 @@ public static class LoennPluginLoader {
                                             else if (path.StartsWith("Loenn/effects/"))
                                                 effects.Add(name);
 
-                                            Snowberry.LogInfo($"Loaded Loenn plugin for \"{name}\"");
+                                            Snowberry.Log(LogLevel.Verbose, $"Loaded Loenn plugin for \"{name}\"");
                                             any = true;
                                         } else {
                                             Snowberry.Log(LogLevel.Warn, $"A nameless plugin was found at \"{path}\"");
@@ -82,7 +82,7 @@ public static class LoennPluginLoader {
                             }
 
                         if (!any) {
-                            Snowberry.LogInfo($"No plugins were loaded from \"{curMod}: {path}\"");
+                            Snowberry.Log(LogLevel.Warn, $"No plugins were loaded from \"{curMod}: {path}\"");
                         }
                     } catch (Exception e) {
                         string ex = e.ToString();
@@ -114,42 +114,64 @@ public static class LoennPluginLoader {
         curMod = null;
 
         Snowberry.LogInfo($"Found {plugins.Count} Loenn plugins");
-        Snowberry.Log(LogLevel.Info, $"Loaded {Dialog.Count} dialog entries from language files for Loenn plugins.");
+        Snowberry.LogInfo($"Loaded {Dialog.Count} dialog entries from language files for Loenn plugins.");
 
         foreach(var plugin in plugins){
-            if(effects.Contains(plugin.Key)) {
-                PluginInfo.Stylegrounds[plugin.Key] = new LoennStylegroundPluginInfo(plugin.Key, plugin.Value);
-            }else{
-                bool isTrigger = triggers.Contains(plugin.Key);
-                PluginInfo.Entities[plugin.Key] = new LoennEntityPluginInfo(plugin.Key, plugin.Value, isTrigger);
+            try {
+                if (effects.Contains(plugin.Key)) {
+                    PluginInfo.Stylegrounds[plugin.Key] = new LoennStylegroundPluginInfo(plugin.Key, plugin.Value);
+                } else {
+                    bool isTrigger = triggers.Contains(plugin.Key);
+                    PluginInfo.Entities[plugin.Key] = new LoennEntityPluginInfo(plugin.Key, plugin.Value, isTrigger);
 
-                if (plugin.Value["placements"] is LuaTable placements)
-                    if (placements.Keys.OfType<string>().Contains("name")) {
-                        Dictionary<string, object> options = new();
-                        if (placements["data"] is LuaTable data)
-                            foreach (var item in data.Keys.OfType<string>())
-                                options[item] = data[item];
-
-                        string placementName = placements["name"] as string ?? "";
-                        placementName = placementName.Replace(" ", ""); // thank you Flaglines and Such. very cool
-                        placementName = Dialog.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{placements["name"]}";
-                        EntityPlacementProvider.Create(placementName, plugin.Key, options, isTrigger);
-                    } else if (placements.Keys.Count >= 1) {
-                        foreach (var i in placements.Keys) {
+                    if (plugin.Value["placements"] is LuaTable placements)
+                        if (placements.Keys.OfType<string>().Contains("name")) {
                             Dictionary<string, object> options = new();
-                            // thank you Eevee Helper, very cool
-                            if (placements[i] is LuaTable ptable && (i is "default" || ptable.Keys.OfType<string>().Contains("name"))) {
-                                if (ptable["data"] is LuaTable data)
-                                    foreach (var item in data.Keys.OfType<string>())
-                                        options[item] = data[item];
+                            if (placements["data"] is LuaTable data)
+                                foreach (var item in data.Keys.OfType<string>())
+                                    options[item] = data[item];
 
-                                string placementName = ptable["name"] as string ?? "default";
-                                placementName = placementName.Replace(" ", ""); // lol
-                                placementName = Dialog.TryGetValue($"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}", out var name) ? $"{name.Key} [{name.Value}]" : $"{plugin.Key}.{ptable["name"] ?? "default"}";
-                                EntityPlacementProvider.Create(placementName, plugin.Key, options, isTrigger);
+                            string placementName = placements["name"] as string ?? "";
+                            placementName = placementName.Replace(" ", ""); // thank you Flaglines and Such. very cool
+                            placementName =
+                                Dialog.TryGetValue(
+                                    $"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}",
+                                    out var name)
+                                    ? $"{name.Key} [{name.Value}]"
+                                    : $"{plugin.Key}.{placements["name"]}";
+                            EntityPlacementProvider.Create(placementName, plugin.Key, options, isTrigger);
+                        } else if (placements.Keys.Count >= 1) {
+                            foreach (var i in placements.Keys) {
+                                Dictionary<string, object> options = new();
+                                // thank you Eevee Helper, very cool
+                                if (placements[i] is LuaTable ptable &&
+                                    (i is "default" || ptable.Keys.OfType<string>().Contains("name"))) {
+                                    if (ptable["data"] is LuaTable data)
+                                        foreach (var item in data.Keys.OfType<string>())
+                                            options[item] = data[item];
+
+                                    string placementName = ptable["name"] as string ?? "default";
+                                    placementName = placementName.Replace(" ", ""); // lol
+                                    placementName =
+                                        Dialog.TryGetValue(
+                                            $"{(isTrigger ? "triggers" : "entities")}.{plugin.Key}.placements.name.{placementName}",
+                                            out var name)
+                                            ? $"{name.Key} [{name.Value}]"
+                                            : $"{plugin.Key}.{ptable["name"] ?? "default"}";
+                                    EntityPlacementProvider.Create(placementName, plugin.Key, options, isTrigger);
+                                }
                             }
                         }
-                    }
+                }
+            } catch (Exception e) {
+                string ex = e.ToString();
+                if (ex.Contains("error in error handling")) {
+                    Snowberry.Log(LogLevel.Error, $"Could not load Loenn plugin \"{plugin.Key}\" because of internal Lua errors. No more Lua entities will be loaded. Try restarting the game.");
+                    break;
+                }
+
+                Snowberry.Log(LogLevel.Warn, $"Failed to load Loenn plugin \"{plugin.Key}\"");
+                Snowberry.Log(LogLevel.Warn, $"Reason: {ex}");
             }
         }
     }
